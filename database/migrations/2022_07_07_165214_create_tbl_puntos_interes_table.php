@@ -15,8 +15,21 @@ class CreateTblPuntosInteresTable extends Migration
     {
         Schema::create('tbl_puntos_interes', function (Blueprint $table) {
             $table->bigIncrements('id_punto_interes');
-            
+            $table->unsignedBigInteger('id_zona');
+            $table->string('nombre');
+            $table->string('latitud')->nullable();
+            $table->string('longitud')->nullable();
+            $table->smallInteger('estado')->default(1);
+            $table->string('descripcion');
+            $table->unsignedBigInteger('id_tipo_transporte');
+            $table->unsignedBigInteger('id_tipo_accesso');
+            $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
+
+            $table->foreign('id_zona')->references('id_dominio')->on('tbl_dominios');
+            $table->foreign('id_tipo_transporte')->references('id_dominio')->on('tbl_dominios');
+            $table->foreign('id_tipo_accesso')->references('id_dominio')->on('tbl_dominios');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
         });
     }
 

@@ -66,7 +66,7 @@
                         <span class="nav_name">Habitaciones</span>
                     </a>
                 @endcan --}}
-                <a href="" class="nav_link rounded my-2">
+                <a href="{{ route('sites.index') }}" class="nav_link {{ setActive('sites.index') }} rounded my-2">
                     <i class="fa-solid fa-house-flag nav_icon"></i>
                     <span class="nav_name">Estaciones</span>
                 </a>

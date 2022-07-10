@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveTerceroRequest;
 use App\Models\TblDominio;
-use App\Models\TblHabitacion;
-use App\Models\TblOrden;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Support\Facades\Auth;
