@@ -170,6 +170,27 @@ class SetupSeeder extends Seeder
             'id_usuareg' => $user->id_usuario
         ]);
         sleep(1);
+        $lista_zonas = TblDominio::create([
+            'nombre' => 'Listado de zonas de las estaciones',
+            'descripcion' => 'Listado de zonas de las estaciones',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
+        $lista_transportes = TblDominio::create([
+            'nombre' => 'Listado de transportes de las estaciones',
+            'descripcion' => 'Listado de transportes de las estaciones',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
+        $lista_accesos = TblDominio::create([
+            'nombre' => 'Listado de accesos de las estaciones',
+            'descripcion' => 'Listado de accesos de las estaciones',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
 
         /* Creacioón dominios hijos tipo documentos */
             $cedula = TblDominio::create([
@@ -432,6 +453,96 @@ class SetupSeeder extends Seeder
             sleep(1);
         /* Fin creación dominios hijos tipo tiempos domiciliario */
 
+        /* Creación dominios hijos zonas */
+            TblDominio::create([
+                'nombre' => 'Oriente',
+                'id_dominio_padre' => $lista_zonas->id_dominio,
+                'descripcion' => 'Oriente',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+
+            TblDominio::create([
+                'nombre' => 'Suroccidente',
+                'id_dominio_padre' => $lista_zonas->id_dominio,
+                'descripcion' => 'Suroccidente',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+
+            TblDominio::create([
+                'nombre' => 'Centro',
+                'id_dominio_padre' => $lista_zonas->id_dominio,
+                'descripcion' => 'Centro',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+
+            TblDominio::create([
+                'nombre' => 'Noroccidente',
+                'id_dominio_padre' => $lista_zonas->id_dominio,
+                'descripcion' => 'Noroccidente',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+
+        /* Fin creación dominios hijos zonas */
+
+        /* Creación dominios hijos transportes */
+            TblDominio::create([
+                'nombre' => 'Mular',
+                'id_dominio_padre' => $lista_transportes->id_dominio,
+                'descripcion' => 'Mular',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Aéreo',
+                'id_dominio_padre' => $lista_transportes->id_dominio,
+                'descripcion' => 'Aéreo',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Marítimo',
+                'id_dominio_padre' => $lista_transportes->id_dominio,
+                'descripcion' => 'Marítimo',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Fluvial',
+                'id_dominio_padre' => $lista_transportes->id_dominio,
+                'descripcion' => 'Fluvial',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'No convencional',
+                'id_dominio_padre' => $lista_transportes->id_dominio,
+                'descripcion' => 'No convencional',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creación dominios hijos transportes */
+
+        /* Creación dominios hijos accesos */
+            TblDominio::create([
+                'nombre' => 'Difícil acceso',
+                'id_dominio_padre' => $lista_accesos->id_dominio,
+                'descripcion' => 'Difícil acceso',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Fácil acceso',
+                'id_dominio_padre' => $lista_accesos->id_dominio,
+                'descripcion' => 'Fácil acceso',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creación dominios hijos accesos */
+
         /* Creación parametros */
             // Creación parametro tipo documentos
             TblParametro::create([
@@ -623,6 +734,30 @@ class SetupSeeder extends Seeder
                 'llave' => 'id_tipo_orden_reserva_restaurante',
                 'valor' => $reserva_restaurante->id_dominio,
                 'descripcion' => 'id_tipo_orden_reserva_restaurante',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro lista de las zonas
+            TblParametro::create([
+                'llave' => 'id_dominio_zonas',
+                'valor' => $lista_zonas->id_dominio,
+                'descripcion' => 'id_dominio_zonas',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro lista de transportes
+            TblParametro::create([
+                'llave' => 'id_dominio_transportes',
+                'valor' => $lista_transportes->id_dominio,
+                'descripcion' => 'id_dominio_transportes',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro lista de accesos
+            TblParametro::create([
+                'llave' => 'id_dominio_accesos',
+                'valor' => $lista_accesos->id_dominio,
+                'descripcion' => 'id_dominio_accesos',
                 'id_usuareg' => $user->id_usuario,
             ]);
         /* Fin creación parametros */

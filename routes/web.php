@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ParametroController;
+use App\Http\Controllers\PuntosInteresController;
 use App\Http\Controllers\TerceroController;
 use App\Http\Controllers\UsuarioController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,10 @@ Route::get('/', function () {
 
 Route::get('home', [HomeController::class, 'index'])->name('home.index');
 Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
+
+// Controlador puntos interes
+Route::resource('sites', PuntosInteresController::class);
+Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
 
 // Controlador Ordenes
 Route::get('orden/export', [OrdenController::class, 'export'])->name('orden.export');

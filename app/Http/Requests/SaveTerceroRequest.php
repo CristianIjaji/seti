@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\TblUsuario;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class SaveTerceroRequest extends FormRequest
