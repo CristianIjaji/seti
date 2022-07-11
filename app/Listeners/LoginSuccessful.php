@@ -118,6 +118,9 @@ class LoginSuccessful
             $id_parametro_accesos = isset(TblParametro::where(['llave' => 'id_dominio_accesos', 'estado' => 1])->first()->valor)
                 ? TblParametro::where(['llave' => 'id_dominio_accesos', 'estado' => 1])->first()->valor
                 : 0;
+            $id_parametro_tipo_items = isset(TblParametro::where(['llave' => 'id_dominio_tipo_items', 'estado' => 1])->first()->valor)
+                ? TblParametro::where(['llave' => 'id_dominio_tipo_items', 'estado' => 1])->first()->valor
+                : 0;
             
             Session::put('perfil', $usuario->tbltercero->tbldominiotercero->nombre);
             Session::put('residencia', $usuario->tbltercero->ciudad);
@@ -142,6 +145,7 @@ class LoginSuccessful
             Session::put('id_dominio_zonas', intval($id_parametro_zonas));
             Session::put('id_dominio_transportes', intval($id_parametro_transportes));
             Session::put('id_dominio_accesos', intval($id_parametro_accesos));
+            Session::put('id_dominio_tipo_items', intval($id_parametro_tipo_items));
 
 
 

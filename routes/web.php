@@ -3,6 +3,7 @@
 use App\Http\Controllers\DominioController;
 use App\Http\Controllers\HabitacionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ParametroController;
@@ -32,6 +33,10 @@ Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
 // Controlador puntos interes
 Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
+
+//Controlador lista de precios 
+Route::resource('price_list', ListaPrecioController::class);
+
 
 // Controlador Ordenes
 Route::get('orden/export', [OrdenController::class, 'export'])->name('orden.export');

@@ -70,6 +70,10 @@
                     <i class="fa-solid fa-house-flag nav_icon"></i>
                     <span class="nav_name">Estaciones</span>
                 </a>
+                <a href="{{ route('price_list.index') }}" class="nav_link {{ setActive('price_list.index') }} rounded my-2">
+                    <i class="fa-solid fa-list-ol nav_icon"></i>
+                    <span class="nav_name">Lista precios</span>
+                </a>
                 @can('view', new App\Models\TblTercero)
                     <a href="{{ route('clients.index') }}" class="nav_link {{ setActive('clients.index') }} rounded my-2">
                         <i class="fa-solid fa-address-book nav_icon"></i>
