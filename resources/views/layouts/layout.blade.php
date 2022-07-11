@@ -25,6 +25,7 @@
 <body id="body-pd" class="bg-white">
     <div id="app">
         @include('partials.dialog')
+        @include('partials.dialog-2')
         @include('partials.loader')
         <main class="pt-4">
             @include('layouts.nav')

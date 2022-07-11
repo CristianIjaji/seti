@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
 use App\Http\Controllers\HabitacionController;
 use App\Http\Controllers\HomeController;
@@ -32,6 +33,9 @@ Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
 // Controlador puntos interes
 Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
+
+// Controlador cotizaciones
+Route::resource('quotes', CotizacionController::class);
 
 // Controlador Ordenes
 Route::get('orden/export', [OrdenController::class, 'export'])->name('orden.export');
