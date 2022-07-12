@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TblConfiguracion;
-use Illuminate\Support\Facades\Auth;
-
 class HomeController extends Controller
 {
     /**
@@ -24,7 +21,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $configuracion = TblConfiguracion::where('id_tercero_cliente', '=', Auth::user()->id_tercero)->first();
-        return view('home', ['configuracion' => $configuracion]);
+        return view('home');
     }
 }

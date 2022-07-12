@@ -105,8 +105,7 @@
                                 {{ isset($header['align']) ? $header['align'] : '' }} {{ isset($header['col']) ?  $header['col'] : '' }}
                                 {{ isset($header['class'])
                                     && isset($status)
-                                    && in_array($model->id_dominio_tipo_orden, [session('id_dominio_domicilio')])
-                                    && in_array($model->estado, [session('id_dominio_orden_aceptada'), session('id_dominio_orden_aceptada_domiciliario')]) ? $header['class'] : ''
+                                    ? $header['class'] : ''
                                 }}">
                             @if (isset($model[$header['name']]))
                                 @if (!isset($header['options']))
@@ -149,31 +148,16 @@
                                             </i>
                                         @endif
                                         @if ($header['actions']['btnOptions']['edit'])
-                                            @if (isset($status))
-                                                @if (in_array($model->estado, [session('id_dominio_orden_cola')]))
-                                                    <i
-                                                        class="fas fa-pencil-alt btn modal-form text-warning fs-5 fw-bold"
-                                                        data-toggle="tooltip"
-                                                        data-placement="top"
-                                                        data-toggle="modal"
-                                                        data-title="{{ $header['actions']['btnOptions']['modal-edit-title'] }}"
-                                                        data-size="{{ $header['actions']['btnOptions']['modal-edit-size'] }}"
-                                                        data-action={{ route("$route.edit", $model) }}
-                                                        title="Editar">
-                                                    </i>
-                                                @endif
-                                            @else
-                                                <i
-                                                    class="fas fa-pencil-alt btn modal-form text-warning fs-5 fw-bold"
-                                                    data-toggle="tooltip"
-                                                    data-placement="top"
-                                                    data-toggle="modal"
-                                                    data-title="{{ $header['actions']['btnOptions']['modal-edit-title'] }}"
-                                                    data-size="{{ $header['actions']['btnOptions']['modal-edit-size'] }}"
-                                                    data-action={{ route("$route.edit", $model) }}
-                                                    title="Editar">
-                                                </i>
-                                            @endif
+                                            <i
+                                                class="fas fa-pencil-alt btn modal-form text-warning fs-5 fw-bold"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                data-toggle="modal"
+                                                data-title="{{ $header['actions']['btnOptions']['modal-edit-title'] }}"
+                                                data-size="{{ $header['actions']['btnOptions']['modal-edit-size'] }}"
+                                                data-action={{ route("$route.edit", $model) }}
+                                                title="Editar">
+                                            </i>
                                         @endif
                                     </div>
                                 @endisset

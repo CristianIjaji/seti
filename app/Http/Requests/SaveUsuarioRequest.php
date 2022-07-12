@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\TblConfiguracion;
 use App\Models\TblTercero;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -61,16 +60,6 @@ class SaveUsuarioRequest extends FormRequest
                 'min:8',
                 'confirmed'
             ],
-            'id_dominio_recibo' => [
-                'required'
-            ],
-            'servicios' => [
-                'required'
-            ],
-            'logo' => [
-                'nullable',
-                'image'
-            ],
             'id_usuareg' => [
                 'required',
             ]
@@ -80,7 +69,6 @@ class SaveUsuarioRequest extends FormRequest
     public function messages()
     {
         return [
-            'id_dominio_recibo.required' => 'El recibo es obligatorio.',
             'id_tercero.required' => 'El tercero es obligatorio.',
             'email.required' => 'El tercero seleccionado no tiene un correo registrado.',
             'email.email' => 'El correo del tercero no es valido',

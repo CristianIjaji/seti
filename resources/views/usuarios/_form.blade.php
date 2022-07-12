@@ -20,9 +20,6 @@
     <li class="nav-item" role="presentation">
         <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">Usuario</button>
     </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Configuración</button>
-    </li>
 </ul>
 <div class="tab-content pt-3" id="usersTabContent">
     <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
@@ -106,37 +103,7 @@
             </div>
         @endif
     </div>
-    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-        <div class="form-group">
-            <label for="recibo" class="required">Recibo</label>
-            <select name="id_dominio_recibo" id="id_dominio_recibo" class="form-contro" style="width: 100%" @if ($create || $edit) required @else disabled @endif>
-                <option value="">Elegir recibo</option>
-                @foreach ($recibos as $recibo)
-                    <option value="{{$recibo->id_dominio}}" {{ old('id_dominio_recibo', $recibo->id_dominio) == $usuario->recibo ? 'selected' : '' }}>
-                        {{$recibo->nombre}}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="servicios" class="required">Servicios ofrecidos</label>
-            <select class="form-control" name="servicios[]" id="valor" multiple style="width: 100%" @if ($create || $edit) required @else disabled @endif>
-                <option value="">Elegir servicios</option>
-                @foreach ($servicios as $servicio)
-                    <option value="{{ $servicio->id_dominio }}" {{ old('valor',  in_array($servicio->id_dominio, explode(',', $usuario->servicios))) ? 'selected' : '' }}>
-                        {{$servicio->nombre}}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="logo" class="required">Logo</label>
-            <div class="file-loading">
-                <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
-            </div>
-        </div>
-    </div>
-
+    
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear usuario' : 'Editar usuario'])
 </div>
 <style>
