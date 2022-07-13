@@ -19,7 +19,6 @@ class EventServiceProvider extends ServiceProvider
             SendEmailVerificationNotification::class,
         ],
         'Illuminate\Auth\Events\Login' => ['App\Listeners\LoginSuccessful'],
-        'ordenCreated' => ['App\Listeners\OrderSuccessfull'],
     ];
 
     /**

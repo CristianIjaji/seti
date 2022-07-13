@@ -32,10 +32,4 @@
     </div>
     <div id="sound"></div>
 </body>
-<script type="application/javascript">
-    document.addEventListener("DOMContentLoaded", function(event) {
-        let user_id = "<?php echo Auth::user()->id_usuario; ?>";
-        listener(user_id);
-    });
-</script>
 </html>
