@@ -45,10 +45,6 @@ class TblTercero extends Model
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
     }
 
-    public function tblconfiguracion() {
-        return $this->belongsTo(TblConfiguracion::class, 'id_tercero');
-    }
-
     public function getFullNameAttribute(){
         return "{$this->attributes['nombres']} {$this->attributes['apellidos']}";
     }
@@ -60,12 +56,5 @@ class TblTercero extends Model
     public function getEstadoAttribute() {
         $status = $this->attributes['estado'] == 1 ? '<i class="fa-solid fa-check fw-bolder fs-4 text-success"></i>' : '<i class="fa-solid fa-xmark fw-bolder fs-4 text-danger"></i>';
         return $status;
-    }
-
-    public function getServiciosAttribute() {
-        return (isset($this->tbluser)
-            ? $this->tbluser->servicios
-            : ""
-        );
     }
 }

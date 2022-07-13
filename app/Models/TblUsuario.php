@@ -30,36 +30,8 @@ class TblUsuario extends Authenticatable
         );
     }
 
-    public function getLogoImageAttribute() {
-        return ((isset($this->tblconfiguracion) && trim($this->tblconfiguracion->logo) !== '')
-            ? "<img src='"."/storage/".$this->tblconfiguracion->logo."' class='rounded img-thumbnail' alt='Logo'/>"
-            : ''
-        );
-    }
-
-    public function getLogoAttribute() {
-        return ((isset($this->tblconfiguracion) && trim($this->tblconfiguracion->logo) !== '')
-            ? "/storage/".$this->tblconfiguracion->logo
-            : ''
-        );
-    }
-
     public function getTitleAttribute() {
         return $this->attributes['usuario'];
-    }
-
-    public function getReciboAttribute() {
-        return (isset($this->tblconfiguracion)
-            ? $this->tblconfiguracion->id_dominio_recibo
-            : session('id_dominio_plantilla_recibo_default')
-        );
-    }
-
-    public function getServiciosAttribute() {
-        return (isset($this->tblconfiguracion)
-            ? $this->tblconfiguracion->servicios
-            : ''
-        );
     }
 
     public function getCorreoAttribute() {
@@ -72,10 +44,6 @@ class TblUsuario extends Authenticatable
 
     public function tblusuario() {
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
-    }
-
-    public function tblconfiguracion() {
-        return $this->belongsTo(TblConfiguracion::class, 'id_tercero');
     }
 
     public function setPasswordAttribute($value) {

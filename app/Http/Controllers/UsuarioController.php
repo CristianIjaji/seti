@@ -6,8 +6,6 @@ use App\Http\Requests\SaveUsuarioRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
 use App\Http\Controllers\MessagesController;
-use App\Models\TblConfiguracion;
-use App\Models\TblDominio;
 use App\Models\TblUsuario;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -106,8 +104,6 @@ class UsuarioController extends Controller
                 ->select('t.id_tercero',
                     DB::raw("CONCAT(t.nombres, ' ', t.apellidos, ' - ', doc.nombre, ': ', t.documento, ' - ', t.correo) as nombre")
             )->whereNotIn('t.id_dominio_tipo_tercero', $this->getAdminRoles())->get(),
-            'recibos' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_plantilla_recibo')])->get(),
-            'servicios' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipo_orden')])->get(),
         ]);
     }
 
@@ -124,16 +120,6 @@ class UsuarioController extends Controller
 
             $user = TblUsuario::create($request->validated());
             $logo = $request->hasFile('logo') ? $request->file('logo')->store('images') : '';
-
-            $configuracion = new TblConfiguracion([
-                'id_tercero_cliente' => $user->id_tercero,
-                'id_dominio_recibo' => $request->id_dominio_recibo,
-                'logo' => $logo,
-                'servicios' => implode(',', $request->servicios),
-                'id_usuareg' => Auth::user()->id_usuario
-            ]);
-
-            $configuracion->save();
 
             (new MessagesController)->newUser($request->email, $request->password);
 
@@ -158,8 +144,6 @@ class UsuarioController extends Controller
         return view('usuarios._form', [
             'edit' => false,
             'usuario' => $user,
-            'recibos' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_plantilla_recibo')])->get(),
-            'servicios' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipo_orden')])->get(),
         ]);
     }
 
@@ -185,8 +169,6 @@ class UsuarioController extends Controller
                 0 => 'Inactivo',
                 1 => 'Activo'
             ],
-            'recibos' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_plantilla_recibo')])->get(),
-            'servicios' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipo_orden')])->get(),
         ]);
     }
 
@@ -206,32 +188,6 @@ class UsuarioController extends Controller
             $password_nueva = trim($request->password);
 
             $user->update($request->validated());
-            $configuracion = TblConfiguracion::where('id_tercero_cliente', '=', $user->id_tercero)->first();
-
-            if(!$configuracion) {
-                $configuracion = new TblConfiguracion([
-                    'id_tercero_cliente' => $user->id_tercero,
-                    'id_dominio_recibo' => $request->id_dominio_recibo,
-                    'servicios' => implode(',', $request->servicios),
-                    'logo' => $request->file('logo')->store('images'),
-                    'id_usuareg' => Auth::user()->id_usuario
-                ]);
-            } else {
-                $logo = $configuracion->logo;
-                if($request->hasFile('logo')) {
-                    try {
-                        Storage::delete($configuracion->logo);
-                    } catch (\Throwable $th) {}
-    
-                    $logo = $request->file('logo')->store('images');
-                }
-                
-                $configuracion->logo = $logo;
-                $configuracion->id_dominio_recibo = $request->id_dominio_recibo;
-                $configuracion->servicios = implode(',', $request->servicios);
-            }
-
-            $configuracion->save();
 
             if($password_nueva !== '' && $password_nueva !== $password_anterior) {
                 (new MessagesController)->changePassword($user->email, $password_nueva);
@@ -277,22 +233,6 @@ class UsuarioController extends Controller
                 'errors' => $e->getMessage()
             ]);
         }
-    }
-
-    public function printer(TblUsuario $user) {
-        return view('configuracion._form', [
-            'configuracion' => $user->tblconfiguracion
-        ]);
-    }
-
-    public function update_printer(TblUsuario $user) {
-        $configuracion = $user->tblconfiguracion;
-        $configuracion->impresora = request()->impresora;
-        $configuracion->save();
-
-        return response()->json([
-            'success' => 'Usuario actualizado exitosamente!',
-        ]);
     }
 
     public function grid() {

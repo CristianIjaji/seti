@@ -209,60 +209,6 @@ class TerceroController extends Controller
         //
     }
 
-    public function search_servicios($id_tercero) {
-        try {
-            $servicios = explode(',', TblTercero::findOrFail($id_tercero)->Servicios);
-            // $model = TblTercero::findOrFail($id_tercero);
-
-            // return $model->Servicios;
-            return response()->json([
-                'servicios' => TblDominio::where('estado', '=', 1)
-                    ->wherein('id_dominio', $servicios)
-                    ->pluck('nombre', 'id_dominio')
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'erros' => 'revise su conexión a Internet'
-            ]);
-        }
-    }
-
-    public function get_habitaciones($id_tercero, $fecha_inicio, $fecha_fin) {
-        try {
-            return response()->json([
-                'habitaciones' => DB::select(
-                    "WITH ordenes AS (
-                        SELECT
-                            h.id_habitacion,
-                            COUNT(o.id_orden) AS habitaciones
-                        FROM tbl_ordenes AS o
-                        INNER JOIN tbl_habitaciones AS h ON(o.id_habitacion = h.id_habitacion)
-                        WHERE o.id_tercero_cliente = $id_tercero
-                        AND o.id_dominio_tipo_orden = ".session('id_dominio_reserva_hotel')."
-                        AND o.estado IN(".session('id_dominio_orden_cola').", ".session('id_dominio_orden_aceptada').")
-                        AND o.fecha_inicio <= '$fecha_fin'
-                        AND o.fecha_fin >= '$fecha_inicio'
-                        GROUP BY 1
-                    )
-    
-                    SELECT
-                        h.id_habitacion,
-                        h.nombre as habitacion,
-                        (h.cantidad - COALESCE(o.habitaciones, 0)) AS disponibles
-                    FROM tbl_habitaciones AS h
-                    LEFT JOIN ordenes AS o ON(h.id_habitacion = o.id_habitacion);
-                    "
-                )
-            ]);
-        } catch (\Throwable $th) {
-            Log::error("Error consultando disponiblidad: ".$th->__toString());
-
-            return response()->json([
-                'erros' => 'revise su conexión a Internet'
-            ]);
-        }
-    }
-
     public function grid() {
         return $this->getView('terceros.grid');
     }

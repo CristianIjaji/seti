@@ -27,16 +27,6 @@ class UpdateUsuarioRequest extends FormRequest
                     'nullable',
                     'integer',
                 ],
-                'id_dominio_recibo' => [
-                    'required'
-                ],
-                'servicios' => [
-                    'required'
-                ],
-                'logo' => [
-                    'nullable',
-                    'image'
-                ],
                 'estado' => 'required'
             ];
         } else {
@@ -57,16 +47,6 @@ class UpdateUsuarioRequest extends FormRequest
                     'min:8',
                     'confirmed'
                 ],
-                'id_dominio_recibo' => [
-                    'required'
-                ],
-                'servicios' => [
-                    'required'
-                ],
-                'logo' => [
-                    'nullable',
-                    'image'
-                ],
                 'estado' => 'required'
             ];
         }
@@ -86,7 +66,6 @@ class UpdateUsuarioRequest extends FormRequest
     public function messages()
     {
         return [
-            'id_dominio_recibo.required' => 'El recibo es obligatorio.',
             'email.required' => 'El campo correo es obligatorio.',
             'email.email' => 'Correo no válido.',
             'password.required' => 'El campo contraseña es obligatorio.',

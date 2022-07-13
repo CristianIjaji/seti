@@ -24,17 +24,6 @@
                 <a
                     class="dropdown-item ps-3 modal-form" href="#"
                     data-toggle="modal-md"
-                    data-title="Configurar impresora"
-                    data-reload="false"
-                    data-action={{ route('users.printer', Auth::user()->id_tercero) }}
-                >
-                    <i class="fa-solid fa-print"></i> Configurar impresora
-                </a>
-            </li>
-            <li>
-                <a
-                    class="dropdown-item ps-3 modal-form" href="#"
-                    data-toggle="modal-md"
                     data-title="Cambiar contraseña"
                     data-reload="false"
                     data-action={{ route('users.password', Auth::user()->id_tercero) }}
@@ -54,18 +43,6 @@
             </a>
             <hr class="bg-white">
             <div class="nav_list">
-                {{-- @can('view', new App\Models\TblOrden)
-                    <a href="{{ route('orden.index') }}" class="nav_link {{ setActive('orden.index') }} rounded my-2">
-                        <i class="fa-solid fa-headset nav_icon"></i>
-                        <span class="nav_name">Ordenes</span>
-                    </a>    
-                @endcan
-                @can('view', new App\Models\TblHabitacion)
-                    <a href="{{ route('rooms.index') }}" class="nav_link {{ setActive('rooms.index') }} rounded my-2">
-                        <i class="fa-solid fa-bed nav_icon"></i>
-                        <span class="nav_name">Habitaciones</span>
-                    </a>
-                @endcan --}}
                 <a href="{{ route('sites.index') }}" class="nav_link {{ setActive('sites.index') }} rounded my-2">
                     <i class="fa-solid fa-tower-cell nav_icon"></i>
                     <span class="nav_name">Estaciones</span>
