@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\SaveCotizacionRequest;
-use App\Models\TblCotizacion;
 use App\Models\TblDominio;
-use App\Models\TblPuntosInteres;
-use App\Models\TblTercero;
+use App\Models\TblListaPrecio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class CotizacionController extends Controller
+class ListaPrecioController extends Controller
 {
     protected $filtros;
 
@@ -18,7 +15,7 @@ class CotizacionController extends Controller
     {
         $this->middleware('auth');
     }
-
+    
     private function dinamyFilters($querybuilder) {
         $operadores = ['>=', '<=', '!=', '=', '>', '<'];
 
@@ -44,7 +41,6 @@ class CotizacionController extends Controller
             }
             $this->filtros[$key] = $value;
         }
-
         return $querybuilder;
     }
 
@@ -55,7 +51,7 @@ class CotizacionController extends Controller
      */
     public function index()
     {
-        return $this->getView('cotizaciones.index');
+        return $this->getView('lista_precios.index');
     }
 
     /**
@@ -65,17 +61,14 @@ class CotizacionController extends Controller
      */
     public function create()
     {
-        return view('cotizaciones._form', [
-            'cotizacion' => new TblCotizacion,
+        return view('lista_precios._form', [
+            'lista_precio' => new TblListaPrecio, //modelo
             'clientes' => DB::table('tbl_terceros', 't')
-                ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
                 ->select('t.id_tercero',
-                    DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
-                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get(),
-            'estaciones' => TblPuntosInteres::where('estado', '=', '1')->pluck('nombre', 'id_punto_interes'),
-            'tipos_trabajo' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipos_trabajo')])->pluck('nombre', 'id_dominio'),
-            'prioridades' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipos_prioridad')])->pluck('nombre', 'id_dominio'),
-            'impuestos' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_impuestos')])->pluck('nombre', 'id_dominio'),
+                    DB::raw("CONCAT(t.nombres,' ', t.apellidos) as nombre")
+                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_asociado'))->get(),
+            'tipo_items' => TblDominio::where('estado', "=", 1)
+                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio')
         ]);
     }
 
@@ -85,23 +78,9 @@ class CotizacionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(SaveCotizacionRequest $request)
+    public function store(Request $request)
     {
-        try {
-            $cotizacion = TblCotizacion::create($request->validated());
-
-            return response()->json([
-                'success' => 'Punto de interes creado exitosamente!',
-                // 'response' => [
-                //     'value' => $cotizacion->id_punto_interes,
-                //     'option' => $cotizacion->nombre,
-                // ],
-            ]);
-        } catch (\Throwable $th) {
-            return response()->json([
-                'errors' => $th->getMessage()
-            ]);
-        }
+        //
     }
 
     /**
@@ -149,25 +128,27 @@ class CotizacionController extends Controller
         //
     }
 
+    public function search($type) {
+        if(empty($type)) {
+            return response()->json(['errors' => 'Error consultando lista de precios.']);
+        }
+        return view('lista_precios._search', [
+            'type' => $type,
+            'items' => TblListaPrecio::where(['estado' => 1, 'id_tipo_item' => $type])->get()
+        ]);
+    }
+
     public function grid() {
-        return $this->getView('terceros.grid');
+        return $this->getView('lista_precios.grid');
     }
 
     private function getView($view) {
-        $cotizacion = new TblCotizacion;
+        $listaPrecios = new TblListaPrecio;
 
         return view($view, [
-            'model' => TblCotizacion::where(function ($q) {
+            'model' => TblListaPrecio::where(function ($q) {
                 $this->dinamyFilters($q);
             })->latest()->paginate(10),
-            'clientes' => DB::table('tbl_terceros', 't')
-                ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
-                ->select('t.id_tercero',
-                    DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
-                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get(),
-            'estaciones' => TblPuntosInteres::where('estado', '=', 1)->pluck('nombre', 'id_punto_interes'),
-            // 'estados' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('')])
-            // TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_zonas')])->pluck('nombre', 'id_dominio'),
             // 'tipo_terceros' => TblDominio::where(['estado' => 1])
             //     ->whereNotIn('id_dominio', $this->getAdminRoles())
             //     ->wherein('id_dominio_padre', [session('id_dominio_tipo_tercero')])

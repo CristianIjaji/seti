@@ -9294,7 +9294,7 @@ var setupDatePicker = function setupDatePicker(element, initialDate, clock, useC
   return picker;
 };
 
-var sendAjaxForm = function sendAjaxForm(action, data, reload, select) {
+var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
   $.ajax({
     url: action,
     method: 'POST',
@@ -9308,7 +9308,7 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select) {
       showLoader(true);
     },
     success: function success(response) {
-      $('#modalForm').modal('hide');
+      $("#".concat(modal)).modal('hide');
       Swal.fire({
         icon: 'success',
         title: 'Cambio realizado',
@@ -9332,11 +9332,121 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select) {
       $.each(response.responseJSON.errors, function (i, item) {
         errors += "<li>".concat(item, "</li>");
       });
-      $('.alert-danger').fadeIn(1000).html("\n                    <p>Por favor corrija los siguientes campos: </p>\n                    <ul>".concat(errors, "</ul>\n                    <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                    </button>\n                "));
+      $("#".concat(modal, " .alert-danger")).fadeIn(1000).html("\n                    <p>Por favor corrija los siguientes campos: </p>\n                    <ul>".concat(errors, "</ul>\n                    <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                    </button>\n                "));
     }
   }).always(function () {
     showLoader(false);
   });
+};
+
+var handleModal = function handleModal(button) {
+  var size = new String(button.data('size')).trim();
+  var title = new String(button.data('title')).trim();
+  var headerClass = new String(button.data('header-class')).trim();
+  var action = new String(button.data('action')).trim();
+  var reload = new String(button.data('reload')).trim();
+  var select = new String(button.data('select')).trim();
+  var callback = new String(button.data('callback')).trim();
+  var modal = new String(button.data('modal')).trim();
+  var btnCancel = new String(button.data('cancel')).trim();
+  var btnSave = new String(button.data('save')).trim();
+  size = size !== 'undefined' ? size : 'modal-md';
+  headerClass = headerClass !== 'undefined' ? headerClass : '';
+  btnCancel = btnCancel !== 'undefined' ? btnCancel : 'Cancelar';
+  btnSave = btnSave !== 'undefined' ? btnSave : 'Guardad';
+  reload = reload !== 'undefined' ? reload : 'true';
+  select = select !== 'undefined' ? select : '';
+  modal = modal !== 'undefined' ? modal : 'modalForm';
+
+  if (action !== 'undefined') {
+    $.ajax({
+      url: action,
+      method: 'GET',
+      beforeSend: function beforeSend() {
+        $("#".concat(modal, " .modal-body")).html('');
+        showLoader(true);
+      }
+    }).done(function (view) {
+      $("#".concat(modal, " .modal-body")).html(view);
+      $("#".concat(modal, " .btn-modal-cancel")).html(btnCancel);
+      $("#".concat(modal, " .btn-modal-save")).html(btnSave);
+      $("#".concat(modal, " #btn-form-action")).data('modal', modal);
+      setupSelect2(modal);
+      $("#".concat(modal)).data('reload', reload);
+
+      if (select !== '') {
+        $("#".concat(modal)).data('select', select);
+      }
+
+      if (callback !== '') {
+        $("#".concat(modal)).data('callback', callback);
+      }
+
+      $('body').tooltip({
+        selector: '[data-toggle="tooltip"]'
+      });
+      setTimeout(function () {
+        $("#".concat(modal, " input:text, #").concat(modal, " textarea")).first().focus();
+      }, 100);
+    }).always(function () {
+      showLoader(false);
+    });
+  }
+
+  $("#".concat(modal, " .modal-dialog")).removeClass('modal-sm modal-md modal-lg modal-xl').addClass(size);
+  $("#".concat(modal, " .modal-title")).html(title);
+  $("#".concat(modal, " .modal-header")).addClass(headerClass);
+  $("#".concat(modal)).modal('handleUpdate');
+  $("#".concat(modal)).modal('show');
+};
+
+var carrito = [];
+
+var drawItems = function drawItems() {
+  // type: tipo de item: mano de obra, transporte o suministro
+  // item: ítem de la lista de precios
+  carrito.map(function (item, type) {
+    var total = 0;
+    $.each(item, function (index, element) {
+      if (typeof element !== 'undefined') {
+        if (!$("#tr_".concat(type, "_").concat(index)).length) {
+          $("\n                        <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion\">\n                            <td>\n                                <input type='hidden' name=\"id_tipo_detalle_cotizacion[]\" value=\"").concat(type, "\" />\n                                <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                <input type=\"text\" class=\"form-control text-center text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                            </td>\n                            <td>\n                                <textarea class=\"form-control border-0\" rows=\"1\" name=\"descripcion[]\" id=\"descripcion_").concat(index, "\" required>").concat(element['descripcion'], "</textarea>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-center border-0\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\" disabled>\n                            </td>\n                            <td>\n                                <input type=\"number\" min=\"0\" class=\"form-control text-center border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                            </td>\n                            <td class=\"text-center\"><i id=\"").concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>\n                        </tr>\n                    ")).insertAfter("#tr_".concat(type));
+          $('.money').inputmask(formatCurrency);
+        } else {
+          $("#tr_".concat(type, "_").concat(index, " #valor_total_").concat(index)).val(element['valor_total']);
+        }
+
+        total += element['valor_total'];
+      }
+    });
+    $("#lbl_".concat(type)).text(Inputmask.format(total, formatCurrency));
+  });
+};
+
+var getItem = function getItem(item) {
+  var cantidad = parseFloat($(item).data('cantidad'));
+  var valor = parseFloat($(item).data('valor_unitario'));
+  return {
+    'item': $(item).data('item'),
+    'descripcion': $(item).data('descripcion'),
+    'cantidad': cantidad,
+    'unidad': $(item).data('unidad'),
+    'valor_unitario': valor,
+    'valor_total': parseFloat(cantidad * valor, 2)
+  };
+};
+
+var addItems = function addItems(items) {
+  $.each(items, function (index, item) {
+    if (typeof carrito[$(item).data('type')] === 'undefined') {
+      carrito[$(item).data('type')] = [];
+    }
+
+    if (typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
+      carrito[$(item).data('type')][$(item).val()] = getItem(item);
+    }
+  });
+  drawItems();
 };
 
 $('body').tooltip({
@@ -9363,6 +9473,22 @@ $(document).ready(function () {
     }
 
     $('.select2-selection').addClass('form-control');
+    $('#lista_items').select2('destroy');
+    $('#lista_items').select2({
+      minimumInputLength: 2,
+      language: {
+        inputTooShort: function inputTooShort(args) {
+          var remainingChars = args.minimum - args.input.length;
+          var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
+          return message;
+        },
+        noResults: function noResults() {
+          return 'No existen resultados';
+        }
+      },
+      closeOnSelect: false
+    });
+    $('#select2-lista_items-container').data('toggle', 'tooltip').data('html', true);
     $('#select2-lista_tipo_movimientos-container, #select2-lista_clientes-container').parent().removeClass('border-left-0 border-top-0 border-right-0').addClass('form-control border');
     $('.select2-selection__rendered').data('toggle', 'tooltip');
   };
@@ -9381,10 +9507,6 @@ $(document).ready(function () {
     $(this).parent().find('i').removeClass('focus');
   });
 
-  if ($('#map').length) {
-    initMap();
-  }
-
   var procesarErrores = function procesarErrores(title, errores) {
     var errors = '';
     $.each(errores, function (i, item) {
@@ -9393,34 +9515,6 @@ $(document).ready(function () {
     $('.alert-danger').fadeIn(1000).html("<p>".concat(title, ": </p>\n                <ul>").concat(errors, "</ul>\n                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n                    <span aria-hidden=\"true\">&times;</span>\n                </button>\n                "));
   };
 
-  $('#contacto-form').submit(function (e) {
-    e.preventDefault();
-    $.ajax({
-      url: 'contact',
-      method: 'POST',
-      data: $(this).serialize(),
-      beforeSend: function beforeSend() {
-        $('.alert-success, .alert-danger').fadeOut().html('');
-        showLoader(true);
-      },
-      success: function success(response) {
-        if (response.success) {
-          $('.alert-success').fadeIn(2000).html(response.success);
-          $('#contacto-form').trigger("reset");
-          setTimeout(function () {
-            $('.alert-success').fadeOut(2000);
-          }, 1000);
-        }
-
-        if (response.errors) {
-          procesarErrores('Error enviando correo!', response.errors);
-        }
-      },
-      error: function error(response) {}
-    }).always(function () {
-      showLoader(false);
-    });
-  });
   $('#login-form').submit(function (e) {
     e.preventDefault();
     $.ajax({
@@ -9450,34 +9544,6 @@ $(document).ready(function () {
 jQuery(window).ready(function () {
   showLoader(false);
 });
-document.addEventListener("DOMContentLoaded", function () {
-  window.addEventListener('scroll', function () {
-    if (window.scrollY > 100) {
-      $('#navbar_top').addClass('bg-white sticky-top shadow-sm');
-    } else {
-      $('#navbar_top').removeClass('bg-white sticky-top shadow-sm');
-    }
-  });
-});
-
-function initMap() {
-  // The location of Uluru
-  var uluru = {
-    lat: -25.344,
-    lng: 131.036
-  }; // The map, centered at Uluru
-
-  var map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 4,
-    center: uluru
-  }); // The marker, positioned at Uluru
-
-  var marker = new google.maps.Marker({
-    position: uluru,
-    map: map
-  });
-}
-
 document.addEventListener("DOMContentLoaded", function (event) {
   var showNavbar = function showNavbar(toggleId, navId, bodyId, headerId) {
     var toggle = document.getElementById(toggleId),
@@ -9504,51 +9570,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 });
 $(document).on('click', '.modal-form', function (e) {
   e.preventDefault();
-  var button = $(this);
-  var size = new String(button.data('size')).trim();
-  var title = new String(button.data('title')).trim();
-  var action = new String(button.data('action')).trim();
-  var reload = new String(button.data('reload')).trim();
-  var select = new String(button.data('select')).trim();
-  var callback = new String(button.data('callback')).trim();
-  var btnCancel = new String(button.data('cancel')).trim();
-  var btnSave = new String(button.data('save')).trim();
-  size = size !== 'undefined' ? size : 'modal-md';
-  btnCancel = btnCancel !== 'undefined' ? btnCancel : 'Cancelar';
-  btnSave = btnSave !== 'undefined' ? btnSave : 'Guardad';
-  reload = reload !== 'undefined' ? reload : 'true';
-  select = select !== 'undefined' ? select : '';
-
-  if (action !== 'undefined') {
-    $.ajax({
-      url: action,
-      method: 'GET',
-      beforeSend: function beforeSend() {
-        $('#modalForm .modal-body').html('');
-        showLoader(true);
-      }
-    }).done(function (view) {
-      $('#modalForm .modal-body').html(view);
-      $('#modalForm .btn-modal-cancel').html(btnCancel);
-      $('#modalForm .btn-modal-save').html(btnSave);
-      $('#modalForm').data('reload', reload);
-
-      if (select !== '') {
-        $('#modalForm').data('select', select);
-      }
-
-      if (callback !== '') {
-        $('#modalForm').data('callback', callback);
-      }
-    }).always(function () {
-      showLoader(false);
-    });
-  }
-
-  $('#modalForm .modal-dialog').removeClass('modal-sm modal-md modal-lg modal-xl').addClass(size);
-  $('#modalForm .modal-title').html(title);
-  $('#modalForm').modal('handleUpdate');
-  $('#modalForm').modal('show');
+  handleModal($(this));
 });
 $(document).on('submit', '.search_form', function (e) {
   e.preventDefault();
@@ -9576,16 +9598,17 @@ $(document).on('click', '#btn-form-action', function (e) {
   e.preventDefault();
   var button = $(this);
   var action = button.closest('form').attr('action');
-  var reload = $('#modalForm').data('reload');
+  var modal = button.data('modal') !== 'undefined' ? button.data('modal') : 'modalForm';
+  var reload = $("#".concat(modal)).data('reload');
   var form = button.closest('form');
-  var select = $('#modalForm').data('select');
+  var select = $("#".concat(modal)).data('select');
 
   if ($('#campos_reporte').length) {
     $('#campos_reporte option').prop('selected', true);
   }
 
   var data = new FormData(form[0]);
-  sendAjaxForm(action, data, reload, select);
+  sendAjaxForm(action, data, reload, select, modal);
 });
 $(document).on('click', 'button.close', function () {
   if ($(this).parent().hasClass('alert')) {
@@ -9667,10 +9690,6 @@ $(document).keydown(function (e) {
 
   specialkeypress = $.inArray(e.which, [1, 16, 17]) ? true : false;
 
-  if (e.which == 27 || e.keyCode == 27) {
-    $('#modalForm').modal('hide');
-  }
-
   if (e.which === 65 && e.ctrlKey) {
     $('.btn-primary.btn-md.modal-form').click();
   }
@@ -9682,8 +9701,46 @@ $(document).keydown(function (e) {
 $(document).on('click', '#kvFileinputModal .btn-kv-close', function (e) {
   $('#kvFileinputModal').modal('hide');
 });
-$(document).on('mousemove', '.blink_me', function () {
-  $(this).removeClass('blink_me');
+$(document).on('click', '#btn_add_items', function () {
+  if ($("#lista_items option:selected").length) {
+    addItems($('#lista_items option:selected'));
+  }
+
+  $("#modalForm-2").modal('hide');
+});
+$(document).on('click', '.btn-delete-item', function () {
+  var id_tr = new String($(this).attr('id'));
+  $("#tr_".concat(id_tr)).remove();
+  id_tr = id_tr.split('_');
+  delete carrito[id_tr[0]][id_tr[1]];
+  drawItems();
+});
+
+var fnc_totales_cot = function fnc_totales_cot(id) {
+  var id_tr = new String(id).split('_');
+
+  if (typeof carrito[id_tr[1]][id_tr[2]] !== 'undefined') {
+    var id_row = "tr_".concat(id_tr[1], "_").concat(id_tr[2]);
+    var descripcion = $("#".concat(id_row, " #descripcion_").concat(id_tr[2])).val();
+    var cantidad = parseFloat($.isNumeric($("#".concat(id_row, " #cantidad_").concat(id_tr[2])).val()) ? $("#".concat(id_row, " #cantidad_").concat(id_tr[2])).val() : 0);
+    var valor_unitario = parseFloat($.isNumeric($("#".concat(id_row, " #valor_unitario_").concat(id_tr[2])).val().replace(regexCurrencyToFloat, "")) ? $("#".concat(id_row, " #valor_unitario_").concat(id_tr[2])).val().replace(regexCurrencyToFloat, "") : 0);
+    var valor_total = cantidad * valor_unitario;
+    carrito[id_tr[1]][id_tr[2]]['descripcion'] = descripcion;
+    carrito[id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
+    carrito[id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
+    carrito[id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
+    drawItems();
+  }
+};
+
+$(document).on('keydown', '.txt-cotizaciones', function () {
+  fnc_totales_cot($(this).parent().parent().attr('id'));
+});
+$(document).on('keyup', '.txt-cotizaciones', function () {
+  fnc_totales_cot($(this).parent().parent().attr('id'));
+});
+$(document).on('change', '.txt-cotizaciones', function () {
+  fnc_totales_cot($(this).parent().parent().attr('id'));
 });
 
 /***/ }),

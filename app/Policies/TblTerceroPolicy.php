@@ -36,7 +36,7 @@ class TblTerceroPolicy
      */
     public function view(TblUsuario $tblUsuario, TblTercero $tblTercero)
     {
-        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador'), session('id_dominio_agente')]);
+        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador')]);
     }
 
     /**
@@ -47,7 +47,7 @@ class TblTerceroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador'), session('id_dominio_agente')]);
+        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador')]);
     }
 
     /**
@@ -59,7 +59,7 @@ class TblTerceroPolicy
      */
     public function update(TblUsuario $tblUsuario, TblTercero $tblTercero)
     {
-        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador'), session('id_dominio_agente')]);
+        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador')]);
     }
 
     /**

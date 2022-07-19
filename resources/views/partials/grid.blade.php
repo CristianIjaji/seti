@@ -32,10 +32,12 @@
                 <button
                     class="btn bg-primary bg-gradient bg-md modal-form text-white rounded-pill px-4 py-2"
                     data-title="{{ $btnOptionsCreate['title'] }}"
+                    data-header-class="{{ isset($btnOptionsCreate['header-class']) ? $btnOptionsCreate['header-class'] : '' }}"
                     data-size="{{ $btnOptionsCreate['modal-size'] }}"
                     data-action={{ $btnOptionsCreate['route'] }}
                     data-toggle="tooltip"
                     data-placement="top"
+                    data-modal='modalForm'
                     title="{{ $btnOptionsCreate['title'] }}"
                 >
                     <i class="fa-solid fa-plus"></i> Crear
@@ -127,7 +129,7 @@
                                         @if (isset($header['html']) && $header['html'])
                                             <?= $model[$header['name']] ?>
                                         @else
-                                            {{ $header['options'][$model[$header['name']]] }}
+                                            {{ isset($header['options'][$model[$header['name']]]) ? $header['options'][$model[$header['name']]] : '' }}
                                         @endif
                                     @endif
                                 @endif

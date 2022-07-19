@@ -64,7 +64,3 @@
     @endif
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear parametro' : 'Editar parametro'])
-
-<script type="application/javascript">
-    setupSelect2('modalForm');
-</script>

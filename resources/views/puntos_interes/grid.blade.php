@@ -1,9 +1,9 @@
 @include('partials.grid', [
-    'title' => 'Puntos interes',
+    'title' => 'Puntos interés',
     'create' => $create,
     'route' => 'sites',
     'btnOptionsCreate' => [
-        "title" => 'Nuevo punto interes',
+        "title" => 'Nuevo punto interés',
         "modal-size" => "modal-xl",
         "route" => route("sites.create"),
     ],
@@ -17,10 +17,10 @@
         ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [
             'btnOptions' => [
                 'view' => $view,
-                'modal-view-title' => 'Ver punto interes',
+                'modal-view-title' => 'Ver punto interés',
                 'modal-view-size' => 'modal-xl',
                 'edit' => $edit,
-                'modal-edit-title' => 'Editar punto interes',
+                'modal-edit-title' => 'Editar punto interés',
                 'modal-edit-size' => 'modal-xl',
             ]
         ]]

@@ -236,7 +236,7 @@ const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
     return picker;
 }
 
-const sendAjaxForm = (action, data, reload, select) => {
+const sendAjaxForm = (action, data, reload, select, modal) => {
     $.ajax({
         url: action,
         method: 'POST',
@@ -250,7 +250,7 @@ const sendAjaxForm = (action, data, reload, select) => {
             showLoader(true);
         },
         success: function(response) {
-            $('#modalForm').modal('hide');
+            $(`#${modal}`).modal('hide');
             Swal.fire({
                 icon: 'success',
                 title: 'Cambio realizado',
@@ -274,7 +274,7 @@ const sendAjaxForm = (action, data, reload, select) => {
             $.each(response.responseJSON.errors, function(i, item){
                 errors += `<li>${item}</li>`;
             });
-            $('.alert-danger')
+            $(`#${modal} .alert-danger`)
                 .fadeIn(1000)
                 .html(`
                     <p>Por favor corrija los siguientes campos: </p>
@@ -287,6 +287,146 @@ const sendAjaxForm = (action, data, reload, select) => {
     }).always(function () {
         showLoader(false);
     });
+}
+
+const handleModal = (button) => {
+    let size = new String(button.data('size')).trim();
+    let title = new String(button.data('title')).trim();
+    let headerClass = new String(button.data('header-class')).trim();
+    let action = new String(button.data('action')).trim();
+    let reload = new String(button.data('reload')).trim();
+    let select = new String(button.data('select')).trim();
+    let callback = new String(button.data('callback')).trim();
+    let modal = new String(button.data('modal')).trim();
+
+    let btnCancel = new String(button.data('cancel')).trim();
+    let btnSave = new String(button.data('save')).trim();
+
+    size = (size !== 'undefined' ? size : 'modal-md');
+    headerClass = (headerClass !== 'undefined' ? headerClass : '');
+    btnCancel = (btnCancel !== 'undefined' ? btnCancel : 'Cancelar');
+    btnSave = (btnSave !== 'undefined' ? btnSave : 'Guardad');
+    reload = (reload !== 'undefined' ? reload : 'true');
+    select = (select !== 'undefined' ? select : '');
+    modal = (modal !== 'undefined' ? modal : 'modalForm');
+
+    if(action !== 'undefined') {
+        $.ajax({
+            url: action,
+            method: 'GET',
+            beforeSend: function() {
+                $(`#${modal} .modal-body`).html('');
+                showLoader(true);
+            }
+        }).done(function(view) {
+            $(`#${modal} .modal-body`).html(view);
+            $(`#${modal} .btn-modal-cancel`).html(btnCancel);
+            $(`#${modal} .btn-modal-save`).html(btnSave);
+
+            $(`#${modal} #btn-form-action`).data('modal', modal);
+            setupSelect2(modal);
+            $(`#${modal}`).data('reload', reload);
+
+            if(select !== '') {
+                $(`#${modal}`).data('select', select);
+            }
+            if(callback !== ''){
+                $(`#${modal}`).data('callback', callback);
+            }
+
+            $('body').tooltip({
+                selector: '[data-toggle="tooltip"]'
+            });
+            setTimeout(() => {
+                $(`#${modal} input:text, #${modal} textarea`).first().focus();
+            }, 100);
+        }).always(function() {
+            showLoader(false);
+        });
+    }
+
+    $(`#${modal} .modal-dialog`).removeClass('modal-sm modal-md modal-lg modal-xl').addClass(size);
+    $(`#${modal} .modal-title`).html(title);
+    $(`#${modal} .modal-header`).addClass(headerClass);
+
+    $(`#${modal}`).modal('handleUpdate');
+    $(`#${modal}`).modal('show');
+}
+
+let carrito = [];
+
+const drawItems = () => {
+    // type: tipo de item: mano de obra, transporte o suministro
+    // item: ítem de la lista de precios
+    carrito.map((item, type) => {
+        let total = 0;
+        $.each(item, (index, element) => {
+            if(typeof element !== 'undefined') {
+                if(!$(`#tr_${type}_${index}`).length) {
+                    $(`
+                        <tr id="tr_${type}_${index}" class="tr_cotizacion">
+                            <td>
+                                <input type='hidden' name="id_tipo_detalle_cotizacion[]" value="${type}" />
+                                <input type='hidden' name="id_lista_precio[]" value="${index}" />
+                                <input type="text" class="form-control text-center text-uppercase border-0" id="item_${index}" value="${element['item']}" disabled>
+                            </td>
+                            <td>
+                                <textarea class="form-control border-0" rows="1" name="descripcion[]" id="descripcion_${index}" required>${element['descripcion']}</textarea>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control text-center border-0" name="unidad[]" id="unidad_${index}" value="${element['unidad']}" disabled>
+                            </td>
+                            <td>
+                                <input type="number" min="0" class="form-control text-center border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required>
+                            </td>
+                            <td>
+                                <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_total[]" id="valor_total_${index}" value="${element['valor_total']}" disabled>
+                            </td>
+                            <td class="text-center"><i id="${type}_${index}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>
+                        </tr>
+                    `).insertAfter(`#tr_${type}`);
+                    $('.money').inputmask(formatCurrency);
+                } else {
+                    $(`#tr_${type}_${index} #valor_total_${index}`).val(element['valor_total']);
+                }
+
+                total += element['valor_total'];
+            }
+        });
+
+        $(`#lbl_${type}`).text(Inputmask.format(total, formatCurrency));
+    });
+}
+
+const getItem = (item) => {
+    let cantidad = parseFloat($(item).data('cantidad'));
+    let valor = parseFloat($(item).data('valor_unitario'));
+
+    return {
+        'item': $(item).data('item'),
+        'descripcion': $(item).data('descripcion'),
+        'cantidad': cantidad,
+        'unidad': $(item).data('unidad'),
+        'valor_unitario': valor,
+        'valor_total': parseFloat(cantidad * valor, 2),
+    };
+};
+
+const addItems = (items) => {
+    $.each(items, (index, item) => {
+        if(typeof carrito[$(item).data('type')] === 'undefined') {
+            carrito[$(item).data('type')] = [];
+        }
+
+        if(typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
+            carrito[$(item).data('type')][$(item).val()] = getItem(item);
+        }
+    });
+
+    drawItems();
 }
 
 $('body').tooltip({
@@ -312,6 +452,25 @@ $(document).ready(function() {
 
         $('.select2-selection').addClass('form-control');
 
+        $('#lista_items').select2('destroy');
+
+        $('#lista_items').select2({
+            minimumInputLength: 2,
+            language: {
+                inputTooShort: function (args) {
+                    var remainingChars = args.minimum - args.input.length;
+                    var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
+                    return message;
+                },
+                noResults: function() {
+                    return 'No existen resultados';
+                },
+            },
+            closeOnSelect: false
+        });
+
+        $('#select2-lista_items-container').data('toggle', 'tooltip').data('html', true);
+
         $('#select2-lista_tipo_movimientos-container, #select2-lista_clientes-container')
             .parent().removeClass('border-left-0 border-top-0 border-right-0').addClass('form-control border');
         
@@ -334,10 +493,6 @@ $(document).ready(function() {
         $(this).parent().find('i').removeClass('focus');
     });
 
-    if($('#map').length) {
-        initMap();
-    }
-
     const procesarErrores = (title, errores) => {
         let errors = '';
         $.each(errores, function(i, item){
@@ -354,38 +509,6 @@ $(document).ready(function() {
                 `
             );
     }
-
-    $('#contacto-form').submit(function(e){
-        e.preventDefault();
-
-        $.ajax({
-            url: 'contact',
-            method: 'POST',
-            data: $(this).serialize(),
-            beforeSend: function() {
-                $('.alert-success, .alert-danger').fadeOut().html('');
-                showLoader(true);
-            },
-            success: function(response) {
-                if(response.success) {
-                    $('.alert-success').fadeIn(2000).html(response.success);
-                    $('#contacto-form').trigger("reset");
-                    setTimeout(() => {
-                        $('.alert-success').fadeOut(2000);
-                    }, 1000);
-                }
-
-                if(response.errors) {
-                    procesarErrores('Error enviando correo!', response.errors);
-                }
-            },
-            error: function(response) {
-                
-            }
-        }).always(function () {
-            showLoader(false);
-        });
-    });
 
     $('#login-form').submit(function(e){
         e.preventDefault();
@@ -420,31 +543,6 @@ jQuery(window).ready(function () {
     showLoader(false);
 });
 
-document.addEventListener("DOMContentLoaded", function(){
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 100) {
-            $('#navbar_top').addClass('bg-white sticky-top shadow-sm');
-        } else {
-            $('#navbar_top').removeClass('bg-white sticky-top shadow-sm');
-        }
-    });
-});
-
-function initMap() {
-    // The location of Uluru
-    const uluru = { lat: -25.344, lng: 131.036 };
-    // The map, centered at Uluru
-    const map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 4,
-        center: uluru,
-    });
-    // The marker, positioned at Uluru
-    const marker = new google.maps.Marker({
-        position: uluru,
-        map: map,
-    });
-}
-
 document.addEventListener("DOMContentLoaded", function(event) {
     const showNavbar = (toggleId, navId, bodyId, headerId) =>{
         const toggle = document.getElementById(toggleId),
@@ -473,56 +571,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 $(document).on('click', '.modal-form', function(e) {
     e.preventDefault();
-
-    const button = $(this);
-
-    let size = new String(button.data('size')).trim();
-    let title = new String(button.data('title')).trim();
-    let action = new String(button.data('action')).trim();
-    let reload = new String(button.data('reload')).trim();
-    let select = new String(button.data('select')).trim();
-    let callback = new String(button.data('callback')).trim();
-
-    let btnCancel = new String(button.data('cancel')).trim();
-    let btnSave = new String(button.data('save')).trim();
-
-    size = (size !== 'undefined' ? size : 'modal-md');
-    btnCancel = (btnCancel !== 'undefined' ? btnCancel : 'Cancelar');
-    btnSave = (btnSave !== 'undefined' ? btnSave : 'Guardad');
-    reload = (reload !== 'undefined' ? reload : 'true');
-    select = (select !== 'undefined' ? select : '');
-
-    if(action !== 'undefined') {
-        $.ajax({
-            url: action,
-            method: 'GET',
-            beforeSend: function() {
-                $('#modalForm .modal-body').html('');
-                showLoader(true);
-            }
-        }).done(function(view) {
-            $('#modalForm .modal-body').html(view);
-            $('#modalForm .btn-modal-cancel').html(btnCancel);
-            $('#modalForm .btn-modal-save').html(btnSave);
-
-            $('#modalForm').data('reload', reload);
-            if(select !== '') {
-                $('#modalForm').data('select', select);
-            }
-            if(callback !== ''){
-                $('#modalForm').data('callback', callback);
-            }
-
-        }).always(function() {
-            showLoader(false);
-        });
-    }
-
-    $('#modalForm .modal-dialog').removeClass('modal-sm modal-md modal-lg modal-xl').addClass(size);
-    $('#modalForm .modal-title').html(title);
-
-    $('#modalForm').modal('handleUpdate');
-    $('#modalForm').modal('show');
+    handleModal($(this));
 });
 
 $(document).on('submit', '.search_form', function(e){
@@ -552,21 +601,20 @@ $(document).on('change', '.search_form', function() {
 
 $(document).on('click', '#btn-form-action', function(e){
     e.preventDefault();
-
     let button = $(this);
 
     let action = button.closest('form').attr('action');
-    let reload = $('#modalForm').data('reload');
+    let modal = (button.data('modal') !== 'undefined' ? button.data('modal') : 'modalForm');
+    let reload = $(`#${modal}`).data('reload');
     let form = button.closest('form');
-    let select = $('#modalForm').data('select');
-
+    let select = $(`#${modal}`).data('select');
+    
     if($('#campos_reporte').length){
         $('#campos_reporte option').prop('selected', true);
     }
     
     let data = new FormData(form[0]);
-    
-    sendAjaxForm(action, data, reload, select);
+    sendAjaxForm(action, data, reload, select, modal);
 });
 
 $(document).on('click', 'button.close', function() {
@@ -659,10 +707,6 @@ $(document).keydown(function (e) {
 
     specialkeypress = ($.inArray(e.which, [1, 16, 17]) ? true : false);
 
-    if(e.which == 27 || e.keyCode == 27) {
-        $('#modalForm').modal('hide');
-    }
-
     if(e.which === 65 && e.ctrlKey){
         $('.btn-primary.btn-md.modal-form').click();
     }
@@ -676,6 +720,49 @@ $(document).on('click', '#kvFileinputModal .btn-kv-close', function(e) {
     $('#kvFileinputModal').modal('hide');
 });
 
-$(document).on('mousemove', '.blink_me', function() {
-    $(this).removeClass('blink_me');
+$(document).on('click', '#btn_add_items', function() {
+    if($("#lista_items option:selected").length) {
+        addItems($('#lista_items option:selected'));
+    }
+    
+    $(`#modalForm-2`).modal('hide');
+});
+
+$(document).on('click', '.btn-delete-item', function() {
+    let id_tr = new String($(this).attr('id'));
+    $(`#tr_${id_tr}`).remove();
+    id_tr = id_tr.split('_');
+
+    delete carrito[id_tr[0]][id_tr[1]];
+    drawItems();
+});
+
+const fnc_totales_cot = (id) => {
+    let id_tr = new String(id).split('_');
+    if(typeof carrito[id_tr[1]][id_tr[2]] !== 'undefined') {
+        let id_row = `tr_${id_tr[1]}_${id_tr[2]}`;
+        let descripcion = $(`#${id_row} #descripcion_${id_tr[2]}`).val();
+        let cantidad = parseFloat($.isNumeric($(`#${id_row} #cantidad_${id_tr[2]}`).val()) ? $(`#${id_row} #cantidad_${id_tr[2]}`).val() : 0);
+        let valor_unitario = parseFloat($.isNumeric($(`#${id_row} #valor_unitario_${id_tr[2]}`).val().replace(regexCurrencyToFloat, "")) ? $(`#${id_row} #valor_unitario_${id_tr[2]}`).val().replace(regexCurrencyToFloat, "") : 0);
+        let valor_total = (cantidad) * (valor_unitario);
+
+        carrito[id_tr[1]][id_tr[2]]['descripcion'] = descripcion;
+        carrito[id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
+        carrito[id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
+        carrito[id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
+
+        drawItems();
+    }
+}
+
+$(document).on('keydown', '.txt-cotizaciones', function() {
+    fnc_totales_cot($(this).parent().parent().attr('id'));
+});
+
+$(document).on('keyup', '.txt-cotizaciones', function() {
+    fnc_totales_cot($(this).parent().parent().attr('id'));
+});
+
+$(document).on('change', '.txt-cotizaciones', function() {
+    fnc_totales_cot($(this).parent().parent().attr('id'));
 });

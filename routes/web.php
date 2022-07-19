@@ -3,6 +3,7 @@
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\ParametroController;
 use App\Http\Controllers\PuntosInteresController;
@@ -31,6 +32,13 @@ Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
 // Controlador puntos interes
 Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
+
+// Controlador lista de precios 
+Route::get('price_list/{type}', [ListaPrecioController::class, 'search'])->name('price_list.search');
+Route::resource('price_list', ListaPrecioController::class);
+
+// Controlador contabilidad
+Route::resource('quotes', CotizacionController::class);
 
 // Controlador terceros
 Route::resource('clients', TerceroController::class);

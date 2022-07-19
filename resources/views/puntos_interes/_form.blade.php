@@ -107,8 +107,3 @@
     </div>
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear punto' : 'Editar punto'])
-
-
-<script type="application/javascript">
-    setupSelect2('modalForm');
-</script>

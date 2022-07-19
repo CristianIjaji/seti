@@ -43,14 +43,6 @@ class PuntosInteresController extends Controller
             $this->filtros[$key] = $value;
         }
 
-        if(Auth::user()->role !== session('id_dominio_super_administrador')) {
-            $querybuilder->where('id_dominio_tipo_tercero', '<>', session('id_dominio_super_administrador'));
-        }
-
-        if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
-            $querybuilder->whereNotIn('id_dominio_tipo_tercero', [session('id_dominio_super_administrador'), session('id_dominio_administrador')]);
-        }
-
         return $querybuilder;
     }
 
@@ -100,7 +92,7 @@ class PuntosInteresController extends Controller
                 'success' => 'Punto de interes creado exitosamente!',
                 'response' => [
                     'value' => $sitio->id_punto_interes,
-                    'option' => $sitio->nombres,
+                    'option' => $sitio->nombre,
                 ],
             ]);
         } catch (\Throwable $th) {

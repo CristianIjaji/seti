@@ -87,16 +87,18 @@ class TerceroController extends Controller
     public function create()
     {
         $this->authorize('create', new TblTercero);
-
         return view('terceros._form', [
             'tercero' => new TblTercero,
             'tipo_documentos' => TblDominio::where('estado', '=', 1)
                 ->wherein('id_dominio_padre', [session('id_dominio_tipo_documento')])
                 ->pluck('nombre', 'id_dominio'),
             'tipo_terceros' => TblDominio::where('estado', '=', 1)
-            ->whereNotIn('id_dominio', $this->getAdminRoles())
-            ->wherein('id_dominio_padre', [session('id_dominio_tipo_tercero')])
-            ->pluck('nombre', 'id_dominio'),
+                ->whereNotIn('id_dominio', $this->getAdminRoles())
+                ->wherein('id_dominio_padre', [session('id_dominio_tipo_tercero')])
+                ->pluck('nombre', 'id_dominio'),
+            'tipo_tercero' => isset(request()->tipo_tercero)
+                ? TblDominio::where('id_dominio', '=', request()->tipo_tercero)->first() :
+                '',
         ]);
     }
 

@@ -14,18 +14,19 @@ class TblCotizacion extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'codigo_cotizacion',
+        'ot_trabajo',
         'id_cliente',
         'id_estacion',
-        'descripcion',
+        'id_tipo_trabajo',
         'fecha_solicitud',
         'fecha_envio',
         'id_prioridad',
+        'estado',
         'id_proceso',
         'id_responsable_cliente',
         'valor',
         'iva',
-        'observaciones',
+        'descripcion',
         'valor_reasignado',
         'id_usuareg',
     ];
