@@ -167,6 +167,14 @@ class SetupSeeder extends Seeder
         ]);
         sleep(1);
 
+        $lista_tipo_items = TblDominio::create([
+            'nombre' => 'Listado de los tipos de items',
+            'descripcion' => 'Listado de los tipos de items',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
+
         /* Creacioón dominios hijos tipo documentos */
             $cedula = TblDominio::create([
                 'nombre' => 'Cédula',
@@ -388,7 +396,29 @@ class SetupSeeder extends Seeder
                 'id_usuareg' => $user->id_usuario,
             ]);
         /* Fin creación dominios hijos accesos */
-
+        /* Creación dominios hijos tipos de items */
+            TblDominio::create([
+                'nombre' => 'Mano de obra',
+                'id_dominio_padre' => $lista_tipo_items->id_dominio,
+                'descripcion' => 'Item tipo mano de obra',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Materiales',
+                'id_dominio_padre' => $lista_tipo_items->id_dominio,
+                'descripcion' => 'Item tipo materiales',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Transporte',
+                'id_dominio_padre' => $lista_tipo_items->id_dominio,
+                'descripcion' => 'Item tipo transporte',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creación dominios hijos tipo de items */
         /* Creación parametros */
             // Creación parametro tipo documentos
             TblParametro::create([
@@ -483,6 +513,14 @@ class SetupSeeder extends Seeder
                 'llave' => 'id_dominio_accesos',
                 'valor' => $lista_accesos->id_dominio,
                 'descripcion' => 'id_dominio_accesos',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro tipo de items
+            TblParametro::create([
+                'llave' => 'id_dominio_tipo_items',
+                'valor' => $lista_tipo_items->id_dominio,
+                'descripcion' => 'id_dominio_tipo_items',
                 'id_usuareg' => $user->id_usuario,
             ]);
         /* Fin creación parametros */

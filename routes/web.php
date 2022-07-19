@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DominioController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\ParametroController;
 use App\Http\Controllers\PuntosInteresController;
@@ -34,6 +35,10 @@ Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites
 // Controlador terceros
 Route::resource('clients', TerceroController::class);
 Route::post('clients/grid', [TerceroController::class, 'grid'])->name('clients.grid');
+
+//controlador de lista de precios
+Route::resource('priceList', ListaPrecioController::class);
+Route::post('priceList/grid',[ListaPrecioController::class, 'grid'])->name('priceList.grid');
 
 // Controlador usuarios
 Route::resource('users', UsuarioController::class);
