@@ -35,7 +35,8 @@ Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
 
 //Controlador lista de precios 
-Route::resource('price_list', ListaPrecioController::class);
+Route::resource('priceList', ListaPrecioController::class);
+Route::post('priceList/grid',[ListaPrecioController::class, 'grid'])->name('priceList.grid');
 
 
 // Controlador Ordenes

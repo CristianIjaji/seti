@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveListaPrecioRequest;
 use App\Models\TblDominio;
 use App\Models\TblListaPrecio;
 use Illuminate\Http\Request;
@@ -35,8 +36,10 @@ class ListaPrecioController extends Controller
                 if(!in_array($key, ['full_name'])){
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->where('nombres', 'like', strtolower("%$value%"));
-                    $querybuilder->orWhere('apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tbltercerocliente', function($q) use($value){
+                        $q->where('nombres', 'like', strtolower("%$value%"));
+                        $q->orwhere('apellidos', 'like', strtolower("%$value%"));
+                    });
                 }
             }
             $this->filtros[$key] = $value;
@@ -78,9 +81,24 @@ class ListaPrecioController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SaveListaPrecioRequest $request)
     {
-        //
+        try {
+            $listaPrecios = TblListaPrecio::create($request->validated());
+            //$this->authorize('create', $listaPrecios);
+
+            return response()->json([
+                'success' => 'Ítem creado exitosamente!',
+                'response' => [
+                    'value' => $listaPrecios->id_lista_precio,  //llave primaria
+                    'option' => $listaPrecios->codigo //Item a mostrar creado
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'errors' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -89,9 +107,12 @@ class ListaPrecioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(TblListaPrecio $priceList)//parametro de la lista de turas
     {
-        //
+        return view('lista_precios._form', [
+            'edit' => false,
+            'lista_precio' => $priceList //llave sale del form y el value la nueva instancia del modelo. 
+        ]);
     }
 
     /**
@@ -100,9 +121,18 @@ class ListaPrecioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(TblListaPrecio $priceList)
     {
-        //
+        return view('lista_precios._form', [
+            'edit' => true,
+            'lista_precio' => $priceList, //modelo
+            'clientes' => DB::table('tbl_terceros', 't')
+                ->select('t.id_tercero',
+                    DB::raw("CONCAT(t.nombres,' ', t.apellidos) as nombre")
+                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_asociado'))->get(),
+            'tipo_items' => TblDominio::where('estado', "=", 1)
+                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio')
+        ]);
     }
 
     /**
@@ -112,9 +142,18 @@ class ListaPrecioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TblListaPrecio $priceList, SaveListaPrecioRequest $request)
     {
-        //
+        try {
+            $priceList->update($request->validated());
+            return response()->json([
+            'success' => 'Ítem actualizado correctamente!'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -140,6 +179,8 @@ class ListaPrecioController extends Controller
             'model' => TblListaPrecio::where(function ($q) {
                 $this->dinamyFilters($q);
             })->latest()->paginate(10),
+            'listaTipoItemPrecio' => TblDominio::where(['estado' => 1, 'id_dominio_padre'=>session('id_dominio_tipo_items')])
+            ->pluck('nombre', 'id_dominio'),
             // 'tipo_terceros' => TblDominio::where(['estado' => 1])
             //     ->whereNotIn('id_dominio', $this->getAdminRoles())
             //     ->wherein('id_dominio_padre', [session('id_dominio_tipo_tercero')])

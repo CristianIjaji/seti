@@ -16,7 +16,7 @@ class TblListaPrecio extends Model
     protected $fillable = [
         'id_cliente',
         'id_tipo_item',
-        'codio',
+        'codigo',
         'descripcion',
         'unidad',
         'cantidad',
@@ -26,7 +26,7 @@ class TblListaPrecio extends Model
     ];
 
     public function tbltercerocliente() {
-        return $this->belongsTo(TblTecero::class, 'id_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_cliente');
     }
    
     public function tbldominioitem() {

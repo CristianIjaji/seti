@@ -7,7 +7,7 @@
     <div class="alert alert-success" role="alert"></div>
     <div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
 
-    <form action="{{ $create ? route('clients.store') : route('clients.update', $lista_precio) }}" method="POST">
+    <form action="{{ $create ? route('priceList.store') : route('priceList.update', $lista_precio) }}" method="POST">
         @csrf
         @if (!$create)
             @method('PATCH')
