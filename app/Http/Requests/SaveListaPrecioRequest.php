@@ -20,6 +20,7 @@ class SaveListaPrecioRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
+            'valor_unitario' => str_replace(',', '', $this->get('valor_unitario')),
             'id_usuareg' => (auth()->guest() ? 1 : auth()->id()),
         ]);
     }

@@ -26,7 +26,7 @@ class TblListaPrecio extends Model
     ];
 
     public function tbltercerocliente() {
-        return $this->belongsTo(TblTecero::class, 'id_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_cliente');
     }
    
     public function tbldominioitem() {
@@ -43,5 +43,14 @@ class TblListaPrecio extends Model
 
     public function getValorUnitarioFormAttribute() {
         return (isset($this->attributes['valor_unitario'])) ? $this->attributes['valor_unitario'] : 0;
+    }
+
+    public function getEstadoFormAttribute() {
+        return $this->attributes['estado'];
+    }
+
+    public function getEstadoAttribute() {
+        $status = $this->attributes['estado'] == 1 ? '<i class="fa-solid fa-check fw-bolder fs-4 text-success"></i>' : '<i class="fa-solid fa-xmark fw-bolder fs-4 text-danger"></i>';
+        return $status;
     }
 }

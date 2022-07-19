@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SaveListaPrecioRequest;
 use App\Models\TblDominio;
 use App\Models\TblListaPrecio;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ListaPrecioController extends Controller
@@ -69,9 +68,10 @@ class ListaPrecioController extends Controller
             'clientes' => DB::table('tbl_terceros', 't')
                 ->select('t.id_tercero',
                     DB::raw("CONCAT(t.nombres,' ', t.apellidos) as nombre")
-                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_asociado'))->get(),
+                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get(),
             'tipo_items' => TblDominio::where('estado', "=", 1)
-                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio')
+                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio'),
+            'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),
         ]);
     }
 
@@ -131,7 +131,12 @@ class ListaPrecioController extends Controller
                     DB::raw("CONCAT(t.nombres,' ', t.apellidos) as nombre")
                 )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get(),
             'tipo_items' => TblDominio::where('estado', "=", 1)
-                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio')
+                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio'),
+            'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),
+            'estados' => [
+                0 => 'Inactivo',
+                1 => 'Activo'
+            ],
         ]);
     }
 
@@ -167,6 +172,15 @@ class ListaPrecioController extends Controller
         //
     }
 
+    public function search($type) {
+        if(empty($type)) {
+            return response()->json(['errors' => 'Error consultando lista de precios.']);
+        }
+        return view('lista_precios._search', [
+            'type' => $type,
+            'items' => TblListaPrecio::where(['estado' => 1, 'id_tipo_item' => $type])->get()
+        ]);
+    }
 
     public function grid() {
         return $this->getView('lista_precios.grid');

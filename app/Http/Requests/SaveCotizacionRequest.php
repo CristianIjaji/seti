@@ -48,7 +48,6 @@ class SaveCotizacionRequest extends FormRequest
             ],
             'descripcion' => [
                 'required',
-                'string',
                 'max:255'
             ],
             'fecha_solicitud' => [
@@ -96,7 +95,6 @@ class SaveCotizacionRequest extends FormRequest
         return [
             'id_cliente.required' => 'El campo cliente es obligatorio.',
             'id_estacion.required' => 'El campo punto de interés es obligatorio.',
-            'descripcion.required' => 'El campo tipo de trabajo es obligatorio.',
             'descripcion.max' => 'El campo tipo de trabajo no puede ser mayor a 255 carácteres.',
             'id_prioridad.required' => 'El campo prioridad es obligatorio.',
             'id_proceso.required' => 'El campo proceso es obligatorio.',

@@ -6,7 +6,6 @@ use App\Http\Requests\SaveCotizacionRequest;
 use App\Models\TblCotizacion;
 use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
-use App\Models\TblTercero;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -92,10 +91,10 @@ class CotizacionController extends Controller
 
             return response()->json([
                 'success' => 'Punto de interes creado exitosamente!',
-                // 'response' => [
-                //     'value' => $cotizacion->id_punto_interes,
-                //     'option' => $cotizacion->nombre,
-                // ],
+                'response' => [
+                    'value' => $cotizacion->id_cotizacion,
+                    'option' => $cotizacion->descripcion,
+                ],
             ]);
         } catch (\Throwable $th) {
             return response()->json([
