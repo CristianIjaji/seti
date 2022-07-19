@@ -44,6 +44,10 @@ Route::resource('quotes', CotizacionController::class);
 Route::resource('clients', TerceroController::class);
 Route::post('clients/grid', [TerceroController::class, 'grid'])->name('clients.grid');
 
+//controlador de lista de precios
+Route::resource('priceList', ListaPrecioController::class);
+Route::post('priceList/grid',[ListaPrecioController::class, 'grid'])->name('priceList.grid');
+
 // Controlador usuarios
 Route::resource('users', UsuarioController::class);
 Route::post('users/grid', [UsuarioController::class, 'grid'])->name('users.grid');

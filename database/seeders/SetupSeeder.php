@@ -195,6 +195,14 @@ class SetupSeeder extends Seeder
         ]);
         sleep(1);
 
+        $lista_tipo_items = TblDominio::create([
+            'nombre' => 'Listado de los tipos de items',
+            'descripcion' => 'Listado de los tipos de items',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
+
         /* Creacioón dominios hijos tipo documentos */
             $cedula = TblDominio::create([
                 'nombre' => 'Cédula',
@@ -639,7 +647,7 @@ class SetupSeeder extends Seeder
             // Creacón parametro tipos de prioridad
             TblParametro::create([
                 'llave' => 'id_dominio_tipos_prioridad',
-                'valor' => $lista_priorida->id_dominio,
+                'valor' => $lista_prioridad->id_dominio,
                 'descripcion' => 'id_dominio_tipos_prioridad',
                 'id_usuareg' => $user->id_usuario,
             ]);
