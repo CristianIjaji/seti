@@ -768,22 +768,24 @@ $(document).on('change', '.txt-cotizaciones', function() {
 });
 
 $(document).on('change', '#id_cliente', function() {
-    $('#id_estacion').empty();
-    $('#id_estacion').append(`<option value=''>Elegir punto ínteres</option>`);
+    if($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+        $('#id_estacion').empty();
+        $('#id_estacion').append(`<option value=''>Elegir punto ínteres</option>`);
 
-    if($(this).val() !== '') {
-        $.ajax({
-            url: `sites/${$(this).val()}/get_puntos_interes_client`,
-            method: 'GET',
-            beforeSend: function() {
-                showLoader(true);
-            }
-        }).done(function(response) {
-            $.each(response.estaciones, (index, item) => {
-                $('#id_estacion').append(`<option value='${index}'>${item}</option>`);
+        if($(this).val() !== '') {
+            $.ajax({
+                url: `sites/${$(this).val()}/get_puntos_interes_client`,
+                method: 'GET',
+                beforeSend: function() {
+                    showLoader(true);
+                }
+            }).done(function(response) {
+                $.each(response.estaciones, (index, item) => {
+                    $('#id_estacion').append(`<option value='${index}'>${item}</option>`);
+                });
+            }).always(function() {
+                showLoader(false);
             });
-        }).always(function() {
-            showLoader(false);
-        });
+        }
     }
 });

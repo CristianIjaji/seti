@@ -38,8 +38,8 @@ class CotizacionController extends Controller
                 if(!in_array($key, ['full_name'])){
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->where('nombres', 'like', strtolower("%$value%"));
-                    $querybuilder->orWhere('apellidos', 'like', strtolower("%$value%"));
+                    // $querybuilder->where('nombres', 'like', strtolower("%$value%"));
+                    // $querybuilder->orWhere('apellidos', 'like', strtolower("%$value%"));
                 }
             }
             $this->filtros[$key] = $value;
@@ -68,10 +68,9 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'cotizacion' => new TblCotizacion,
             'clientes' => TblTercero::getClientes(),
-            // 'estaciones' => TblPuntosInteres::where('estado', '=', '1')->pluck('nombre', 'id_punto_interes'),
-            'tipos_trabajo' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipos_trabajo')])->pluck('nombre', 'id_dominio'),
-            'prioridades' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipos_prioridad')])->pluck('nombre', 'id_dominio'),
-            'impuestos' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_impuestos')])->pluck('nombre', 'id_dominio'),
+            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
+            'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
+            'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
         ]);
     }
 
@@ -158,12 +157,6 @@ class CotizacionController extends Controller
             })->latest()->paginate(10),
             'clientes' => TblTercero::getClientes(),
             'estaciones' => TblPuntosInteres::where('estado', '=', 1)->pluck('nombre', 'id_punto_interes'),
-            // 'estados' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('')])
-            // TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_zonas')])->pluck('nombre', 'id_dominio'),
-            // 'tipo_terceros' => TblDominio::where(['estado' => 1])
-            //     ->whereNotIn('id_dominio', $this->getAdminRoles())
-            //     ->wherein('id_dominio_padre', [session('id_dominio_tipo_tercero')])
-            //     ->pluck('nombre', 'id_dominio'),
             'create' => true,//Gate::allows('create', $tercero),
             'edit' => true,//Gate::allows('update', $tercero),
             'view' => true,//Gate::allows('view', $tercero),

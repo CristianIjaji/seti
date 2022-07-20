@@ -125,8 +125,7 @@ class ListaPrecioController extends Controller
             'edit' => true,
             'lista_precio' => $priceList, //modelo
             'clientes' => TblTercero::getClientes(),
-            'tipo_items' => TblDominio::where('estado', "=", 1)
-                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio'),
+            'tipo_items' => TblDominio::getListaDominios(session('id_dominio_tipo_items')),
             'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),
             'estados' => [
                 0 => 'Inactivo',
@@ -146,8 +145,9 @@ class ListaPrecioController extends Controller
     {
         try {
             $priceList->update($request->validated());
+
             return response()->json([
-            'success' => 'Ítem actualizado correctamente!'
+                'success' => 'Ítem actualizado correctamente!'
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -171,6 +171,7 @@ class ListaPrecioController extends Controller
         if(empty($type)) {
             return response()->json(['errors' => 'Error consultando lista de precios.']);
         }
+
         return view('lista_precios._search', [
             'type' => $type,
             'items' => TblListaPrecio::where(['estado' => 1, 'id_tipo_item' => $type])->get()
@@ -188,8 +189,7 @@ class ListaPrecioController extends Controller
             'model' => TblListaPrecio::where(function ($q) {
                 $this->dinamyFilters($q);
             })->latest()->paginate(10),
-            'listaTipoItemPrecio' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipo_items')])
-                ->pluck('nombre', 'id_dominio'),
+            'listaTipoItemPrecio' => TblDominio::getListaDominios(session('id_dominio_tipo_items')),
             'create' => true,//Gate::allows('create', $tercero),
             'edit' => true,//Gate::allows('update', $tercero),
             'view' => true,//Gate::allows('view', $tercero),

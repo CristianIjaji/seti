@@ -9743,23 +9743,25 @@ $(document).on('change', '.txt-cotizaciones', function () {
   fnc_totales_cot($(this).parent().parent().attr('id'));
 });
 $(document).on('change', '#id_cliente', function () {
-  $('#id_estacion').empty();
-  $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
+  if ($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+    $('#id_estacion').empty();
+    $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
 
-  if ($(this).val() !== '') {
-    $.ajax({
-      url: "sites/".concat($(this).val(), "/get_puntos_interes_client"),
-      method: 'GET',
-      beforeSend: function beforeSend() {
-        showLoader(true);
-      }
-    }).done(function (response) {
-      $.each(response.estaciones, function (index, item) {
-        $('#id_estacion').append("<option value='".concat(index, "'>").concat(item, "</option>"));
+    if ($(this).val() !== '') {
+      $.ajax({
+        url: "sites/".concat($(this).val(), "/get_puntos_interes_client"),
+        method: 'GET',
+        beforeSend: function beforeSend() {
+          showLoader(true);
+        }
+      }).done(function (response) {
+        $.each(response.estaciones, function (index, item) {
+          $('#id_estacion').append("<option value='".concat(index, "'>").concat(item, "</option>"));
+        });
+      }).always(function () {
+        showLoader(false);
       });
-    }).always(function () {
-      showLoader(false);
-    });
+    }
   }
 });
 
