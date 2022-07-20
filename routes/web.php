@@ -30,6 +30,7 @@ Route::get('home', [HomeController::class, 'index'])->name('home.index');
 Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
 
 // Controlador puntos interes
+Route::get('sites/{client}/get_puntos_interes_client', [PuntosInteresController::class, 'get_puntos_interes_client'])->name('sites.get_puntos_interes_client');
 Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
 

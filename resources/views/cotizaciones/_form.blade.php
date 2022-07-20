@@ -57,11 +57,11 @@
                     <div class="col-10">
                         <select class="form-control" name="id_estacion" id="id_estacion" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir punto interés</option>
-                            @foreach ($estaciones as $id => $nombre)
+                            {{-- @foreach ($estaciones as $id => $nombre)
                                 <option value="{{ $id }}" {{ old('id_estacion', $cotizacion->id_estacion) == $id ? 'selected' : '' }}>
                                     {{$nombre}}
                                 </option>
-                            @endforeach
+                            @endforeach --}}
                         </select>
                     </div>
                     <div class="col-2 text-end">

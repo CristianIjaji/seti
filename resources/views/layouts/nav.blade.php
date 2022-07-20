@@ -43,6 +43,12 @@
             </a>
             <hr class="bg-white">
             <div class="nav_list">
+                @can('view', new App\Models\TblTercero)
+                    <a href="{{ route('clients.index') }}" class="nav_link {{ setActive('clients.index') }} rounded my-2">
+                        <i class="fa-solid fa-address-book nav_icon"></i>
+                        <span class="nav_name">Terceros</span>
+                    </a>
+                @endcan
                 <a href="{{ route('sites.index') }}" class="nav_link {{ setActive('sites.index') }} rounded my-2">
                     <i class="fa-solid fa-tower-cell nav_icon"></i>
                     <span class="nav_name">Estaciones</span>
@@ -55,12 +61,7 @@
                     <i class="fa-solid fa-clipboard-list nav_icon"></i>
                     <span class="nav_name">Cotizaciones</span>
                 </a>
-                @can('view', new App\Models\TblTercero)
-                    <a href="{{ route('clients.index') }}" class="nav_link {{ setActive('clients.index') }} rounded my-2">
-                        <i class="fa-solid fa-address-book nav_icon"></i>
-                        <span class="nav_name">Terceros</span>
-                    </a>
-                @endcan
+                
                 @can('view-user')
                     <a href="{{ route('users.index') }}" class="nav_link {{ setActive('users.index') }} rounded my-2">
                         <i class="fa-solid fa-chalkboard-user nav_icon"></i>

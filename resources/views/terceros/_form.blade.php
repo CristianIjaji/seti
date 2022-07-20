@@ -15,7 +15,7 @@
         @endif
 @endif
     <div class="row">
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-4">
             <label for="id_dominio_tipo_documento" class="required">Tipo documento</label>
             @if ($edit)
                 <select class="form-control" name="id_dominio_tipo_documento" id="id_dominio_tipo_documento" style="width: 100%" @if ($edit) required @else disabled @endif>

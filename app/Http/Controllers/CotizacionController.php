@@ -6,6 +6,7 @@ use App\Http\Requests\SaveCotizacionRequest;
 use App\Models\TblCotizacion;
 use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
+use App\Models\TblTercero;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -66,12 +67,8 @@ class CotizacionController extends Controller
     {
         return view('cotizaciones._form', [
             'cotizacion' => new TblCotizacion,
-            'clientes' => DB::table('tbl_terceros', 't')
-                ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
-                ->select('t.id_tercero',
-                    DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
-                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get(),
-            'estaciones' => TblPuntosInteres::where('estado', '=', '1')->pluck('nombre', 'id_punto_interes'),
+            'clientes' => TblTercero::getClientes(),
+            // 'estaciones' => TblPuntosInteres::where('estado', '=', '1')->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipos_trabajo')])->pluck('nombre', 'id_dominio'),
             'prioridades' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_tipos_prioridad')])->pluck('nombre', 'id_dominio'),
             'impuestos' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_impuestos')])->pluck('nombre', 'id_dominio'),
@@ -159,11 +156,7 @@ class CotizacionController extends Controller
             'model' => TblCotizacion::where(function ($q) {
                 $this->dinamyFilters($q);
             })->latest()->paginate(10),
-            'clientes' => DB::table('tbl_terceros', 't')
-                ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
-                ->select('t.id_tercero',
-                    DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
-                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get(),
+            'clientes' => TblTercero::getClientes(),
             'estaciones' => TblPuntosInteres::where('estado', '=', 1)->pluck('nombre', 'id_punto_interes'),
             // 'estados' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('')])
             // TblDominio::where(['estado' => 1, 'id_dominio_padre' => session('id_dominio_zonas')])->pluck('nombre', 'id_dominio'),

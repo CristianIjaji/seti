@@ -33,7 +33,7 @@ class SaveListaPrecioRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_cliente'=> [
+            'id_cliente' => [
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
@@ -69,6 +69,14 @@ class SaveListaPrecioRequest extends FormRequest
                 'required',
                 'exists:tbl_usuarios,id_usuario'
             ]
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'id_cliente.required' => 'El campo cliente es obligatorio.',
+            'id_tipo_item.required' => 'El campo tipo ítem es obligatorio.',
         ];
     }
 }

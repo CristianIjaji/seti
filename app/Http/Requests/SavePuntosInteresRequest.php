@@ -32,6 +32,10 @@ class SavePuntosInteresRequest extends FormRequest
     public function rules()
     {
         return [
+            'id_cliente' => [
+                'required',
+                'exists:tbl_terceros,id_tercero'
+            ],
             'id_zona' => [
                 'required',
                 'exists:tbl_dominios,id_dominio',
@@ -76,6 +80,7 @@ class SavePuntosInteresRequest extends FormRequest
     public function messages()
     {
         return [
+            'id_cliente.required' => 'El campo cliente es obligatorio.',
             'id_zona.required' => 'El campo zona es obligatorio.',
             'id_tipo_transporte.required' => 'El campo transporte es obligatorio.',
             'id_tipo_accesso.required' => 'El campo acceso es obligatorio.',

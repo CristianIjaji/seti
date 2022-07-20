@@ -20,6 +20,7 @@ class SaveCotizacionRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
+            'codigo' => mb_strtoupper($this->get('codigo')),
             'id_usuareg' => (auth()->guest() ? 1 : auth()->id()),
         ]);
     }

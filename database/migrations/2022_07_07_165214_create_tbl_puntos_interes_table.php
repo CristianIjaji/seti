@@ -15,6 +15,7 @@ class CreateTblPuntosInteresTable extends Migration
     {
         Schema::create('tbl_puntos_interes', function (Blueprint $table) {
             $table->bigIncrements('id_punto_interes');
+            $table->unsignedBigInteger('id_cliente');
             $table->unsignedBigInteger('id_zona');
             $table->string('nombre');
             $table->string('latitud')->nullable();
@@ -26,6 +27,7 @@ class CreateTblPuntosInteresTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
+            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros');
             $table->foreign('id_zona')->references('id_dominio')->on('tbl_dominios');
             $table->foreign('id_tipo_transporte')->references('id_dominio')->on('tbl_dominios');
             $table->foreign('id_tipo_accesso')->references('id_dominio')->on('tbl_dominios');

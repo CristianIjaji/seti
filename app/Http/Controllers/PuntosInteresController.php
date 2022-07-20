@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SavePuntosInteresRequest;
 use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use App\Models\TblTercero;
 
 class PuntosInteresController extends Controller
 {
@@ -36,8 +35,10 @@ class PuntosInteresController extends Controller
                 if(!in_array($key, ['full_name'])){
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->where('nombres', 'like', strtolower("%$value%"));
-                    $querybuilder->orWhere('apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblcliente', function($q) use($value){
+                        $q->where('nombres', 'like', strtolower("%$value%"));
+                        $q->orwhere('apellidos', 'like', strtolower("%$value%"));
+                    });
                 }
             }
             $this->filtros[$key] = $value;
@@ -65,15 +66,10 @@ class PuntosInteresController extends Controller
     {
         return view('puntos_interes._form', [
             'site' => new TblPuntosInteres,
-            'zonas' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_zonas')])
-                ->pluck('nombre', 'id_dominio'),
-            'transportes' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_transportes')])
-                ->pluck('nombre', 'id_dominio'),
-            'accesos' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_accesos')])
-                ->pluck('nombre', 'id_dominio'),
+            'clientes' => TblTercero::getClientes(),
+            'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
+            'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
+            'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
         ]);
     }
 
@@ -127,15 +123,10 @@ class PuntosInteresController extends Controller
         return view('puntos_interes._form', [
             'edit' => true,
             'site' => $site,
-            'zonas' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_zonas')])
-                ->pluck('nombre', 'id_dominio'),
-            'transportes' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_transportes')])
-                ->pluck('nombre', 'id_dominio'),
-            'accesos' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_accesos')])
-                ->pluck('nombre', 'id_dominio'),
+            'clientes' => TblTercero::getClientes(),
+            'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
+            'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
+            'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
             'estados' => [
                 0 => 'Inactivo',
                 1 => 'Activo'
@@ -187,19 +178,19 @@ class PuntosInteresController extends Controller
             'model' => TblPuntosInteres::where(function ($q) {
                 $this->dinamyFilters($q);
             })->latest()->paginate(10),
-            'zonas' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_zonas')])
-                ->pluck('nombre', 'id_dominio'),
-            'transportes' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_transportes')])
-                ->pluck('nombre', 'id_dominio'),
-            'accesos' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_accesos')])
-                ->pluck('nombre', 'id_dominio'),
+            'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
+            'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
+            'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
             'create' => true,//Gate::allows('create', $punto),
             'edit' => true,//Gate::allows('update', $punto),
             'view' => true,//Gate::allows('view', $punto),
             'request' => $this->filtros,
+        ]);
+    }
+
+    public function get_puntos_interes_client($client) {
+        return response()->json([
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $client])->pluck('nombre', 'id_punto_interes'),
         ]);
     }
 }

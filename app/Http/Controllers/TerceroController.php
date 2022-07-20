@@ -57,16 +57,6 @@ class TerceroController extends Controller
         return $querybuilder;
     }
 
-    private function getAdminRoles() {
-        return Auth::user()->role == session('id_dominio_super_administrador')
-                ? [0]
-                : (
-                    Auth::user()->role == session('id_dominio_administrador')
-                    ? [session('id_dominio_super_administrador')]
-                    : [session('id_dominio_super_administrador'), session('id_dominio_administrador')]
-                );
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -89,13 +79,8 @@ class TerceroController extends Controller
         $this->authorize('create', new TblTercero);
         return view('terceros._form', [
             'tercero' => new TblTercero,
-            'tipo_documentos' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_tipo_documento')])
-                ->pluck('nombre', 'id_dominio'),
-            'tipo_terceros' => TblDominio::where('estado', '=', 1)
-                ->whereNotIn('id_dominio', $this->getAdminRoles())
-                ->wherein('id_dominio_padre', [session('id_dominio_tipo_tercero')])
-                ->pluck('nombre', 'id_dominio'),
+            'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento')),
+            'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
             'tipo_tercero' => isset(request()->tipo_tercero)
                 ? TblDominio::where('id_dominio', '=', request()->tipo_tercero)->first() :
                 '',
@@ -157,13 +142,8 @@ class TerceroController extends Controller
         return view('terceros._form', [
             'edit' => true,
             'tercero' => $client,
-            'tipo_documentos' => TblDominio::where('estado', '=', 1)
-                ->wherein('id_dominio_padre', [session('id_dominio_tipo_documento')])
-                ->pluck('nombre', 'id_dominio'),
-            'tipo_terceros' => TblDominio::where('estado', '=', 1)
-                ->whereNotIn('id_dominio', $this->getAdminRoles())
-                ->wherein('id_dominio_padre', [session('id_dominio_tipo_tercero')])
-                ->pluck('nombre', 'id_dominio'),
+            'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento')),
+            'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
             'estados' => [
                 0 => 'Inactivo',
                 1 => 'Activo'
@@ -222,10 +202,7 @@ class TerceroController extends Controller
             'model' => TblTercero::where(function ($q) {
                 $this->dinamyFilters($q);
             })->latest()->paginate(10),
-            'tipo_terceros' => TblDominio::where(['estado' => 1])
-                ->whereNotIn('id_dominio', $this->getAdminRoles())
-                ->wherein('id_dominio_padre', [session('id_dominio_tipo_tercero')])
-                ->pluck('nombre', 'id_dominio'),
+            'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
             'create' => Gate::allows('create', $tercero),
             'edit' => Gate::allows('update', $tercero),
             'view' => Gate::allows('view', $tercero),

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SaveListaPrecioRequest;
 use App\Models\TblDominio;
 use App\Models\TblListaPrecio;
+use App\Models\TblTercero;
 use Illuminate\Support\Facades\DB;
 
 class ListaPrecioController extends Controller
@@ -65,10 +66,7 @@ class ListaPrecioController extends Controller
     {
         return view('lista_precios._form', [
             'lista_precio' => new TblListaPrecio, //modelo
-            'clientes' => DB::table('tbl_terceros', 't')
-                ->select('t.id_tercero',
-                    DB::raw("CONCAT(t.nombres,' ', t.apellidos) as nombre")
-                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get(),
+            'clientes' => TblTercero::getClientes(),
             'tipo_items' => TblDominio::where('estado', "=", 1)
                 ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio'),
             'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),
@@ -126,10 +124,7 @@ class ListaPrecioController extends Controller
         return view('lista_precios._form', [
             'edit' => true,
             'lista_precio' => $priceList, //modelo
-            'clientes' => DB::table('tbl_terceros', 't')
-                ->select('t.id_tercero',
-                    DB::raw("CONCAT(t.nombres,' ', t.apellidos) as nombre")
-                )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get(),
+            'clientes' => TblTercero::getClientes(),
             'tipo_items' => TblDominio::where('estado', "=", 1)
                 ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio'),
             'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),

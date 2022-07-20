@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TblTercero extends Model
 {
@@ -56,5 +57,13 @@ class TblTercero extends Model
     public function getEstadoAttribute() {
         $status = $this->attributes['estado'] == 1 ? '<i class="fa-solid fa-check fw-bolder fs-4 text-success"></i>' : '<i class="fa-solid fa-xmark fw-bolder fs-4 text-danger"></i>';
         return $status;
+    }
+
+    public static function getClientes() {
+        return DB::table('tbl_terceros', 't')
+            ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
+            ->select('t.id_tercero',
+                DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
+            )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get();   
     }
 }
