@@ -25,9 +25,9 @@
                     <div class="col-10">
                         <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir cliente</option>
-                            @foreach ($clientes as $cliente)
-                                <option value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $cotizacion->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
-                                    {{$cliente->nombre}}
+                            @foreach ($clientes as $id => $nombre)
+                                <option value="{{ $id }}" {{ old('id_cliente', $cotizacion->id_cliente) == $id ? 'selected' : '' }}>
+                                    {{$nombre}}
                                 </option>
                             @endforeach
                         </select>
@@ -47,7 +47,7 @@
                     </div>
                 </div>
             @else
-                <input type="text" class="form-control" id="id_cliente" value="{{ $cotizacion->tbldominiodocumento->nombre }}" disabled>
+                <input type="text" class="form-control" id="id_cliente" value="{{ $cotizacion->tblCliente->full_name }}" disabled>
             @endif
         </div>
         <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
@@ -57,11 +57,13 @@
                     <div class="col-10">
                         <select class="form-control" name="id_estacion" id="id_estacion" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir punto interés</option>
-                            {{-- @foreach ($estaciones as $id => $nombre)
-                                <option value="{{ $id }}" {{ old('id_estacion', $cotizacion->id_estacion) == $id ? 'selected' : '' }}>
-                                    {{$nombre}}
-                                </option>
-                            @endforeach --}}
+                            @isset($estaciones)
+                                @foreach ($estaciones as $id => $nombre)
+                                    <option value="{{ $id }}" {{ old('id_estacion', $cotizacion->id_estacion) == $id ? 'selected' : '' }}>
+                                        {{ $nombre }}
+                                    </option>
+                                @endforeach
+                            @endisset
                         </select>
                     </div>
                     <div class="col-2 text-end">
@@ -79,19 +81,23 @@
                     </div>
                 </div>
             @else
-                <input type="text" class="form-control" id="id_estacion" value="{{ $cotizacion->tbldominiodocumento->nombre }}" disabled>
+                <input type="text" class="form-control" id="id_estacion" value="{{ $cotizacion->tblEstacion->nombre }}" disabled>
             @endif
         </div>
         <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
             <label for="id_tipo_trabajo" class="required">Tipo trabajo</label>
-            <select class="form-control" name="id_tipo_trabajo" id="id_tipo_trabajo" style="width: 100%" @if ($edit) required @else disabled @endif>
-                <option value="">Elegir tipo trabajo</option>
-                @foreach ($tipos_trabajo as $id => $nombre)
-                    <option value="{{ $id }}" {{ old('id_tipo_trabajo', $cotizacion->id_tipo_trabajo) == $id ? 'selected' : '' }}>
-                        {{$nombre}}
-                    </option>
-                @endforeach
-            </select>
+            @if ($edit)
+                <select class="form-control" name="id_tipo_trabajo" id="id_tipo_trabajo" style="width: 100%" @if ($edit) required @else disabled @endif>
+                    <option value="">Elegir tipo trabajo</option>
+                    @foreach ($tipos_trabajo as $id => $nombre)
+                        <option value="{{ $id }}" {{ old('id_tipo_trabajo', $cotizacion->id_tipo_trabajo) == $id ? 'selected' : '' }}>
+                            {{$nombre}}
+                        </option>
+                    @endforeach
+                </select>
+            @else
+                <input type="text" class="form-control" id="id_tipo_trabajo" value="{{ $cotizacion->tblTipoTrabajo->nombre }}" disabled>
+            @endif
         </div>
         <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-date">
             <label for="fecha_solicitud" class="required">Fecha solicitud</label>
@@ -109,7 +115,7 @@
                     @endforeach
                 </select>
             @else
-                <input type="text" class="form-control" id="id_prioridad" value="{{ $cotizacion->tbldominiodocumento->nombre }}" disabled>
+                <input type="text" class="form-control" id="id_prioridad" value="{{ $cotizacion->tblPrioridad->nombre }}" disabled>
             @endif
         </div>
         <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
@@ -123,17 +129,48 @@
                     @endforeach
                 </select>
             @else
-                <input type="text" class="form-control" id="iva" value="{{ $cotizacion->tbldominiodocumento->nombre }}" disabled>
+                <input type="text" class="form-control" id="iva" value="{{ $cotizacion->tblIva->nombre }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-8">
-            <label for="descripcion">Descripción</label>
-            <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="3" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $cotizacion->descripcion) }}</textarea>
+        <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
+            <label for="id_responsable_cliente" class="required">Responsable</label>
+            @if ($edit)
+                <div class="row">
+                    <div class="col-10">
+                        <select class="form-control" name="id_responsable_cliente" id="id_responsable_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
+                            @foreach ($contratistas as $id => $nombre)
+                                <option value="{{ $id }}" {{ old('id_responsable_cliente', $cotizacion->id_responsable_cliente) == $id ? 'selected' : '' }}>
+                                    {{$nombre}}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-2 text-end">
+                        <i
+                            class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                            data-title="Nuevo contratista"
+                            data-size='modal-xl'
+                            data-reload="false"
+                            data-select="id_responsable_cliente"
+                            data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_contratista').'') }}'
+                            data-modal="modalForm-2"
+                            data-toggle="tooltip"
+                            title="Crear contratista"
+                        ></i>
+                    </div>
+                </div>
+            @else
+                <input type="text" class="form-control" id="id_responsable_cliente" value="{{ $cotizacion->tblContratista->full_name }}" disabled>
+            @endif
+        </div>
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6">
+            <label for="descripcion" class="required">Descripción orden</label>
+            <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $cotizacion->descripcion) }}</textarea>
         </div>
         
         <div class="clearfix"><hr></div>
 
-        <div class="col-12">
+        <div class="col-12 d-none" id="table-cotizaciones">
             <div class="table-responsive">
                 <table id="table_items" class="table table-sm table-bordered align-middle">
                     <thead class="col-12">
@@ -149,12 +186,12 @@
                         <tr id="tr_{{ session('id_dominio_materiales') }}">
                             <td colspan="7">
                                 <span
-                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white"
+                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white tr_cotizacion"
                                     data-toggle="tooltip"
                                     title="Agregar ítem"
                                     data-title="Buscar ítems suministro materiales"
                                     data-size='modal-xl'
-                                    data-action='{{ route('price_list.search', session('id_dominio_materiales')) }}'
+                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_materiales'), 'client' => 1]) }}'
                                     data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear"
@@ -167,12 +204,12 @@
                         <tr id="tr_{{ session('id_dominio_mano_obra') }}">
                             <td colspan="7">
                                 <span
-                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white"
+                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white tr_cotizacion"
                                     data-toggle="tooltip"
                                     title="Agregar ítem"
                                     data-title="Buscar ítems mano obra"
                                     data-size='modal-xl'
-                                    data-action='{{ route('price_list.search', session('id_dominio_mano_obra')) }}'
+                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_mano_obra'), 'client' => 1]) }}'
                                     data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear"
@@ -185,12 +222,12 @@
                         <tr id="tr_{{ session('id_dominio_transporte') }}">
                             <td colspan="7">
                                 <span
-                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white"
+                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white tr_cotizacion"
                                     data-toggle="tooltip"
                                     title="Agregar ítem"
                                     data-title="Buscar ítem transporte y peajes"
                                     data-size='modal-xl'
-                                    data-action='{{ route('price_list.search', session('id_dominio_transporte')) }}'
+                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_transporte'), 'client' => 1]) }}'
                                     data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear"

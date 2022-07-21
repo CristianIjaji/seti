@@ -35,11 +35,12 @@ Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
 
 // Controlador lista de precios 
-Route::get('price_list/{type}', [ListaPrecioController::class, 'search'])->name('price_list.search');
+Route::get('price_list/{type}/{client}', [ListaPrecioController::class, 'search'])->name('price_list.search');
 Route::resource('price_list', ListaPrecioController::class);
 
 // Controlador contabilidad
 Route::resource('quotes', CotizacionController::class);
+Route::post('quotes/grid', [CotizacionController::class, 'grid'])->name('quotes.grid');
 
 // Controlador terceros
 Route::resource('clients', TerceroController::class);

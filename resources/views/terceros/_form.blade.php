@@ -53,7 +53,14 @@
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="ciudad" class="required">Ciudad</label>
-            <input type="text" class="form-control" @if ($edit) name="ciudad" @endif id="ciudad" value="{{ old('ciudad', $tercero->ciudad) }}" @if ($edit) required @else disabled @endif>
+            <input type="text" class="form-control" list="list-ciudades" @if ($edit) name="ciudad" @endif id="ciudad" value="{{ old('ciudad', $tercero->ciudad) }}" @if ($edit) required @else disabled @endif>
+            @if ($edit)
+                <datalist id="list-ciudades">
+                    @foreach ($ciudades as $ciudad)
+                        <option value="{{ $ciudad }}">{{ $ciudad }}</option>
+                    @endforeach
+                </datalist>
+            @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="direccion" class="required">Dirección</label>

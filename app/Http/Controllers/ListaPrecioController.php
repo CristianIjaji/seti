@@ -66,7 +66,7 @@ class ListaPrecioController extends Controller
     {
         return view('lista_precios._form', [
             'lista_precio' => new TblListaPrecio, //modelo
-            'clientes' => TblTercero::getClientes(),
+            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'tipo_items' => TblDominio::where('estado', "=", 1)
                 ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio'),
             'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),
@@ -124,7 +124,7 @@ class ListaPrecioController extends Controller
         return view('lista_precios._form', [
             'edit' => true,
             'lista_precio' => $priceList, //modelo
-            'clientes' => TblTercero::getClientes(),
+            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'tipo_items' => TblDominio::getListaDominios(session('id_dominio_tipo_items')),
             'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),
             'estados' => [
@@ -167,14 +167,14 @@ class ListaPrecioController extends Controller
         //
     }
 
-    public function search($type) {
-        if(empty($type)) {
+    public function search($type, $client) {
+        if(empty($type) || empty($client)) {
             return response()->json(['errors' => 'Error consultando lista de precios.']);
         }
 
         return view('lista_precios._search', [
             'type' => $type,
-            'items' => TblListaPrecio::where(['estado' => 1, 'id_tipo_item' => $type])->get()
+            'items' => TblListaPrecio::where(['estado' => 1, 'id_tipo_item' => $type, 'id_cliente' => $client])->get()
         ]);
     }
 

@@ -19,9 +19,9 @@
             @if ($edit)
                 <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
                     <option value="">Elegir cliente</option>
-                    @foreach ($clientes as $cliente)
-                        <option value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $lista_precio->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
-                            {{ $cliente->nombre }}
+                    @foreach ($clientes as $id => $nombre)
+                        <option value="{{ $id }}" {{ old('id_cliente', $lista_precio->id_cliente) == $id ? 'selected' : '' }}>
+                            {{ $nombre }}
                         </option>
                     @endforeach
                 </select>
@@ -67,6 +67,10 @@
             <label for="valor_unitario" class="required">Valor unitario</label>
             <input type="text" class="form-control money" @if ($edit) name="valor_unitario" @endif id="valor_unitario" value="{{ old('valor_unitario', $lista_precio->valor_unitario) }}" @if ($edit) required @else disabled @endif>
         </div>
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
+            <label for="descripcion">Descripción</label>
+            <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $lista_precio->descripcion) }}</textarea>
+        </div>
         @if(!$create)
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2">
                 <label for="estado" class="required">Estado</label>
@@ -95,10 +99,6 @@
                 </div>
             @endif
         @endif
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-12">
-            <label for="descripcion">Descripción</label>
-            <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="4" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $lista_precio->descripcion) }}</textarea>
-        </div>
     </div>
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear Lista Precio' : 'Editar Lista Precio'])

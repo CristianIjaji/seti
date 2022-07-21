@@ -66,7 +66,7 @@ class PuntosInteresController extends Controller
     {
         return view('puntos_interes._form', [
             'site' => new TblPuntosInteres,
-            'clientes' => TblTercero::getClientes(),
+            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
@@ -85,7 +85,7 @@ class PuntosInteresController extends Controller
             $sitio = TblPuntosInteres::create($request->validated());
 
             return response()->json([
-                'success' => 'Punto de interes creado exitosamente!',
+                'success' => 'Punto de interés creado exitosamente!',
                 'response' => [
                     'value' => $sitio->id_punto_interes,
                     'option' => $sitio->nombre,
@@ -123,7 +123,7 @@ class PuntosInteresController extends Controller
         return view('puntos_interes._form', [
             'edit' => true,
             'site' => $site,
-            'clientes' => TblTercero::getClientes(),
+            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
@@ -147,7 +147,7 @@ class PuntosInteresController extends Controller
             $site->update($request->validated());
 
             return response()->json([
-                'success' => 'Punto de interes actualizado correctamente!'
+                'success' => 'Punto de interés actualizado correctamente!'
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -188,7 +188,7 @@ class PuntosInteresController extends Controller
         ]);
     }
 
-    public function get_puntos_interes_client($client) {
+    public static function get_puntos_interes_client($client) {
         return response()->json([
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $client])->pluck('nombre', 'id_punto_interes'),
         ]);

@@ -22,7 +22,6 @@ class TblCotizacion extends Model
         'fecha_envio',
         'id_prioridad',
         'estado',
-        'id_proceso',
         'id_responsable_cliente',
         'valor',
         'iva',
@@ -30,4 +29,28 @@ class TblCotizacion extends Model
         'valor_reasignado',
         'id_usuareg',
     ];
+
+    public function tblCliente() {
+        return $this->belongsTo(TblTercero::class, 'id_cliente');
+    }
+
+    public function tblEstacion() {
+        return $this->belongsTo(TblPuntosInteres::class, 'id_estacion');
+    }
+
+    public function tblTipoTrabajo() {
+        return $this->belongsTo(TblDominio::class, 'id_tipo_trabajo');
+    }
+
+    public function tblPrioridad() {
+        return $this->belongsTo(TblDominio::class, 'id_prioridad');
+    }
+
+    public function tblIva() {
+        return $this->belongsTo(TblDominio::class, 'iva');
+    }
+
+    public function tblContratista() {
+        return $this->belongsTo(TblTercero::class, 'id_responsable_cliente');
+    }
 }

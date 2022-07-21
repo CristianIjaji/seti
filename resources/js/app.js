@@ -347,6 +347,7 @@ const handleModal = (button) => {
 
     $(`#${modal} .modal-dialog`).removeClass('modal-sm modal-md modal-lg modal-xl').addClass(size);
     $(`#${modal} .modal-title`).html(title);
+    $(`#${modal} .modal-header`).attr('class', 'modal-header border-bottom border-2');
     $(`#${modal} .modal-header`).addClass(headerClass);
 
     $(`#${modal}`).modal('handleUpdate');
@@ -371,16 +372,16 @@ const drawItems = () => {
                                 <input type="text" class="form-control text-center text-uppercase border-0" id="item_${index}" value="${element['item']}" disabled>
                             </td>
                             <td>
-                                <textarea class="form-control border-0" rows="1" name="descripcion[]" id="descripcion_${index}" required>${element['descripcion']}</textarea>
+                                <textarea class="form-control border-0" rows="2" data-toggle="tooltip" title="${element['descripcion']}" name="descripcion_item[]" id="descripcion_item_${index}" required>${element['descripcion']}</textarea>
                             </td>
                             <td>
-                                <input type="text" class="form-control text-center border-0" name="unidad[]" id="unidad_${index}" value="${element['unidad']}" disabled>
+                                <input type="text" class="form-control text-center border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${index}" value="${element['unidad']}">
                             </td>
                             <td>
                                 <input type="number" min="0" class="form-control text-center border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required>
                             </td>
                             <td>
-                                <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required>
+                                <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required>
                             </td>
                             <td>
                                 <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_total[]" id="valor_total_${index}" value="${element['valor_total']}" disabled>
@@ -452,9 +453,9 @@ $(document).ready(function() {
 
         $('.select2-selection').addClass('form-control');
 
-        $('#lista_items').select2('destroy');
+        $('#lista_items, #id_tercero_dependencia').select2('destroy');
 
-        $('#lista_items').select2({
+        $('#lista_items, #id_tercero_dependencia').select2({
             minimumInputLength: 2,
             language: {
                 inputTooShort: function (args) {
@@ -469,9 +470,9 @@ $(document).ready(function() {
             closeOnSelect: false
         });
 
-        $('#select2-lista_items-container').data('toggle', 'tooltip').data('html', true);
+        $('#select2-lista_items-container, #select2-id_tercero_dependencia-container').data('toggle', 'tooltip').data('html', true);
 
-        $('#select2-lista_tipo_movimientos-container, #select2-lista_clientes-container')
+        $('#select2-lista_items-container, #select2-id_tercero_dependencia-container')
             .parent().removeClass('border-left-0 border-top-0 border-right-0').addClass('form-control border');
         
         $('.select2-selection__rendered').data('toggle', 'tooltip');
@@ -582,7 +583,7 @@ $(document).on('change', '.search_form', function() {
     let form = $(this).closest('form').attr('id');
     let url = form.split('_'); 
 
-    $('.search_form select').each(function() {
+    // $('.search_form select').each(function() {
         $.ajax({
             url: `${url[1]}/grid`,
             method: 'POST',
@@ -596,7 +597,7 @@ $(document).on('change', '.search_form', function() {
             showLoader(false);
             setupSelect2();
         });
-    });
+    // });
 });
 
 $(document).on('click', '#btn-form-action', function(e){
@@ -768,11 +769,23 @@ $(document).on('change', '.txt-cotizaciones', function() {
 });
 
 $(document).on('change', '#id_cliente', function() {
+    $('#table-cotizaciones').addClass('d-none');
+
     if($(this).closest('form').attr('action').indexOf('quotes') > -1) {
         $('#id_estacion').empty();
         $('#id_estacion').append(`<option value=''>Elegir punto ínteres</option>`);
 
         if($(this).val() !== '') {
+            $('#table-cotizaciones').removeClass('d-none');
+
+            $(`.tr_cotizacion`).each((index, item) => {
+                let action = new String($(item).data('action')).split('/');
+                action[action.length - 1] = $(this).val();
+
+                action = action.join('/');
+                $(item).data('action', action);
+            });
+
             $.ajax({
                 url: `sites/${$(this).val()}/get_puntos_interes_client`,
                 method: 'GET',

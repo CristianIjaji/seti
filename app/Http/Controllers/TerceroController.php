@@ -7,9 +7,7 @@ use App\Models\TblDominio;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 
 class TerceroController extends Controller
 {
@@ -84,6 +82,7 @@ class TerceroController extends Controller
             'tipo_tercero' => isset(request()->tipo_tercero)
                 ? TblDominio::where('id_dominio', '=', request()->tipo_tercero)->first() :
                 '',
+            'ciudades' => TblTercero::pluck('ciudad', 'ciudad'),
         ]);
     }
 
@@ -148,6 +147,7 @@ class TerceroController extends Controller
                 0 => 'Inactivo',
                 1 => 'Activo'
             ],
+            'ciudades' => TblTercero::pluck('ciudad', 'ciudad'),
         ]);
     }
 

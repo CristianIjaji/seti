@@ -59,11 +59,11 @@ class TblTercero extends Model
         return $status;
     }
 
-    public static function getClientes() {
+    public static function getClientesTipo($type) {
         return DB::table('tbl_terceros', 't')
             ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
             ->select('t.id_tercero',
                 DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
-            )->where('t.id_dominio_tipo_tercero', '=', session('id_dominio_cliente'))->get();   
+            )->where('t.id_dominio_tipo_tercero', '=', $type)->pluck('nombre', 'id_tercero');   
     }
 }

@@ -9395,6 +9395,7 @@ var handleModal = function handleModal(button) {
 
   $("#".concat(modal, " .modal-dialog")).removeClass('modal-sm modal-md modal-lg modal-xl').addClass(size);
   $("#".concat(modal, " .modal-title")).html(title);
+  $("#".concat(modal, " .modal-header")).attr('class', 'modal-header border-bottom border-2');
   $("#".concat(modal, " .modal-header")).addClass(headerClass);
   $("#".concat(modal)).modal('handleUpdate');
   $("#".concat(modal)).modal('show');
@@ -9410,7 +9411,7 @@ var drawItems = function drawItems() {
     $.each(item, function (index, element) {
       if (typeof element !== 'undefined') {
         if (!$("#tr_".concat(type, "_").concat(index)).length) {
-          $("\n                        <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion\">\n                            <td>\n                                <input type='hidden' name=\"id_tipo_detalle_cotizacion[]\" value=\"").concat(type, "\" />\n                                <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                <input type=\"text\" class=\"form-control text-center text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                            </td>\n                            <td>\n                                <textarea class=\"form-control border-0\" rows=\"1\" name=\"descripcion[]\" id=\"descripcion_").concat(index, "\" required>").concat(element['descripcion'], "</textarea>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-center border-0\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\" disabled>\n                            </td>\n                            <td>\n                                <input type=\"number\" min=\"0\" class=\"form-control text-center border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                            </td>\n                            <td class=\"text-center\"><i id=\"").concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>\n                        </tr>\n                    ")).insertAfter("#tr_".concat(type));
+          $("\n                        <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion\">\n                            <td>\n                                <input type='hidden' name=\"id_tipo_detalle_cotizacion[]\" value=\"").concat(type, "\" />\n                                <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                <input type=\"text\" class=\"form-control text-center text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                            </td>\n                            <td>\n                                <textarea class=\"form-control border-0\" rows=\"2\" data-toggle=\"tooltip\" title=\"").concat(element['descripcion'], "\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(index, "\" required>").concat(element['descripcion'], "</textarea>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-center border-0\" data-toggle=\"tooltip\" title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\">\n                            </td>\n                            <td>\n                                <input type=\"number\" min=\"0\" class=\"form-control text-center border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" data-toggle=\"tooltip\" title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                            </td>\n                            <td class=\"text-center\"><i id=\"").concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>\n                        </tr>\n                    ")).insertAfter("#tr_".concat(type));
           $('.money').inputmask(formatCurrency);
         } else {
           $("#tr_".concat(type, "_").concat(index, " #valor_total_").concat(index)).val(element['valor_total']);
@@ -9473,8 +9474,8 @@ $(document).ready(function () {
     }
 
     $('.select2-selection').addClass('form-control');
-    $('#lista_items').select2('destroy');
-    $('#lista_items').select2({
+    $('#lista_items, #id_tercero_dependencia').select2('destroy');
+    $('#lista_items, #id_tercero_dependencia').select2({
       minimumInputLength: 2,
       language: {
         inputTooShort: function inputTooShort(args) {
@@ -9488,8 +9489,8 @@ $(document).ready(function () {
       },
       closeOnSelect: false
     });
-    $('#select2-lista_items-container').data('toggle', 'tooltip').data('html', true);
-    $('#select2-lista_tipo_movimientos-container, #select2-lista_clientes-container').parent().removeClass('border-left-0 border-top-0 border-right-0').addClass('form-control border');
+    $('#select2-lista_items-container, #select2-id_tercero_dependencia-container').data('toggle', 'tooltip').data('html', true);
+    $('#select2-lista_items-container, #select2-id_tercero_dependencia-container').parent().removeClass('border-left-0 border-top-0 border-right-0').addClass('form-control border');
     $('.select2-selection__rendered').data('toggle', 'tooltip');
   };
 
@@ -9577,22 +9578,21 @@ $(document).on('submit', '.search_form', function (e) {
 });
 $(document).on('change', '.search_form', function () {
   var form = $(this).closest('form').attr('id');
-  var url = form.split('_');
-  $('.search_form select').each(function () {
-    $.ajax({
-      url: "".concat(url[1], "/grid"),
-      method: 'POST',
-      data: $("#".concat(form)).serialize(),
-      beforeSend: function beforeSend() {
-        showLoader(true);
-      }
-    }).done(function (view) {
-      $('#container').html(view);
-    }).always(function () {
-      showLoader(false);
-      setupSelect2();
-    });
-  });
+  var url = form.split('_'); // $('.search_form select').each(function() {
+
+  $.ajax({
+    url: "".concat(url[1], "/grid"),
+    method: 'POST',
+    data: $("#".concat(form)).serialize(),
+    beforeSend: function beforeSend() {
+      showLoader(true);
+    }
+  }).done(function (view) {
+    $('#container').html(view);
+  }).always(function () {
+    showLoader(false);
+    setupSelect2();
+  }); // });
 });
 $(document).on('click', '#btn-form-action', function (e) {
   e.preventDefault();
@@ -9743,11 +9743,22 @@ $(document).on('change', '.txt-cotizaciones', function () {
   fnc_totales_cot($(this).parent().parent().attr('id'));
 });
 $(document).on('change', '#id_cliente', function () {
+  var _this = this;
+
+  $('#table-cotizaciones').addClass('d-none');
+
   if ($(this).closest('form').attr('action').indexOf('quotes') > -1) {
     $('#id_estacion').empty();
     $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
 
     if ($(this).val() !== '') {
+      $('#table-cotizaciones').removeClass('d-none');
+      $(".tr_cotizacion").each(function (index, item) {
+        var action = new String($(item).data('action')).split('/');
+        action[action.length - 1] = $(_this).val();
+        action = action.join('/');
+        $(item).data('action', action);
+      });
       $.ajax({
         url: "sites/".concat($(this).val(), "/get_puntos_interes_client"),
         method: 'GET',
