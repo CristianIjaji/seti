@@ -12,7 +12,7 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
-    <script src="{{ asset('js/ConectorPlugin.js') }}"></script>
+    {{-- <script src="{{ asset('js/ConectorPlugin.js') }}"></script> --}}
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -25,11 +25,12 @@
 <body id="body-pd" class="bg-white">
     <div id="app">
         @include('partials.dialog')
+        @include('partials.dialog-2')
         @include('partials.loader')
+
         <main class="pt-4">
             @include('layouts.nav')
         </main>
     </div>
-    <div id="sound"></div>
 </body>
 </html>

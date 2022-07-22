@@ -20,6 +20,8 @@ class SaveListaPrecioRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
+            'codigo' => mb_strtoupper($this->get('codigo')),
+            'valor_unitario' => str_replace(',', '', $this->get('valor_unitario')),
             'id_usuareg' => (auth()->guest() ? 1 : auth()->id()),
         ]);
     }
@@ -32,7 +34,7 @@ class SaveListaPrecioRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_cliente'=> [
+            'id_cliente' => [
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
@@ -68,6 +70,14 @@ class SaveListaPrecioRequest extends FormRequest
                 'required',
                 'exists:tbl_usuarios,id_usuario'
             ]
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'id_cliente.required' => 'El campo cliente es obligatorio.',
+            'id_tipo_item.required' => 'El campo tipo ítem es obligatorio.',
         ];
     }
 }

@@ -10,7 +10,7 @@
     'headers' => [
         ['name' => 'id_lista_precio', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'tbltercerocliente', 'label' => 'Cliente', 'col' => 'col-1','foreign' => 'full_name'],// Nombre de la llave
-        ['name' => 'id_tipo_item', 'label' => 'Tipo ítem', 'col' => 'col-1', 'options'=>$listaTipoItemPrecio],
+        ['name' => 'id_tipo_item', 'label' => 'Tipo ítem', 'col' => 'col-1', 'options' => $listaTipoItemPrecio],
         ['name' => 'codigo', 'label' => 'Código', 'col' => 'col-1'],
         ['name' => 'unidad', 'label' => 'Unidad', 'col' => 'col-1'],
         ['name' => 'cantidad', 'label' => 'Cantidad', 'col' => 'col-1','align'=>'text-end'],

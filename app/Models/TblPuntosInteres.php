@@ -14,6 +14,7 @@ class TblPuntosInteres extends Model
     protected $guarded = [];
 
     protected $filable = [
+        'id_cliente',
         'id_zona',
         'nombre',
         'latitud',
@@ -24,6 +25,10 @@ class TblPuntosInteres extends Model
         'id_tipo_accesso',
         'id_usuareg'
     ];
+
+    public function tblcliente() {
+        return $this->belongsTo(TblTercero::class, 'id_cliente');
+    }
 
     public function tbldominiozona() {
         return $this->belongsTo(TblDominio::class, 'id_zona');

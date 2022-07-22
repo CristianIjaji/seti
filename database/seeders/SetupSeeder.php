@@ -2,8 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\TblCotizacion;
 use App\Models\TblDominio;
+use App\Models\TblListaPrecio;
 use App\Models\TblParametro;
+use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Database\Seeder;
@@ -97,6 +100,9 @@ class SetupSeeder extends Seeder
             </html>
         ';
 
+        TblPuntosInteres::truncate();
+        TblListaPrecio::truncate();
+        TblCotizacion::truncate();
         TblTercero::truncate();
         TblParametro::truncate();
         TblDominio::truncate();
@@ -138,11 +144,11 @@ class SetupSeeder extends Seeder
             'id_usuareg' => $user->id_usuario,
         ]);
         sleep(1);
-        $tipo_tiempos_domicilio = TblDominio::create([
-            'nombre' => 'Tipo tiempos domicilio',
-            'descripcion' => 'Lista con los tipos de tiempos del domiciliario',
+        $tipos_impuestos = TblDominio::create([
+            'nombre' => 'Listado de impuestos',
+            'descripcion' => 'Listado de impuestos',
             'estado' => 1,
-            'id_usuareg' => $user->id_usuario,
+            'id_usuareg' => $user->id_usuario
         ]);
         sleep(1);
         $lista_zonas = TblDominio::create([
@@ -166,7 +172,34 @@ class SetupSeeder extends Seeder
             'id_usuareg' => $user->id_usuario
         ]);
         sleep(1);
-
+        $lista_tipo_items = TblDominio::create([
+            'nombre' => 'Listado de los tipos de items',
+            'descripcion' => 'Listado de los tipos de items',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
+        $lista_tipo_trabajo = TblDominio::create([
+            'nombre' => 'Listado de los tipos de trabajo',
+            'descripcion' => 'Listado de los tipos de trabajo',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
+        $lista_prioridad = TblDominio::create([
+            'nombre' => 'Listado de los tipos de prioridades',
+            'descripcion' => 'Listado de los tipos de prioridades',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
+        $lista_procesos = TblDominio::create([
+            'nombre' => 'Listado de los estados de la cotización',
+            'descripcion' => 'Listado de los estados de la cotización',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        sleep(1);
         $lista_tipo_items = TblDominio::create([
             'nombre' => 'Listado de los tipos de items',
             'descripcion' => 'Listado de los tipos de items',
@@ -227,18 +260,26 @@ class SetupSeeder extends Seeder
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
-            $agente = TblDominio::create([
-                'nombre' => 'Agente',
+            $proveedor = TblDominio::create([
+                'nombre' => 'Proveedor',
                 'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario agente',
+                'descripcion' => 'Tipo usuario proveedor',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
-            $asociado = TblDominio::create([
-                'nombre' => 'Asociado',
+            $cliente = TblDominio::create([
+                'nombre' => 'Cliente',
                 'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario asociado',
+                'descripcion' => 'Tipo usuario cliente',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            $contratista = TblDominio::create([
+                'nombre' => 'Contratista',
+                'id_dominio_padre' => $tipo_terceros->id_dominio,
+                'descripcion' => 'Tipo usuario contratista',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -254,58 +295,26 @@ class SetupSeeder extends Seeder
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
-        /* Fin creación dominios hijos tipo plantllas*/
+        /* Fin creación dominios hijos tipo plantllas */
 
-        /* Creación dominios hijos tipo tiempos domiciliario */
+        /* Creación dominios hijos tipo de impuestos */
             TblDominio::create([
-                'nombre' => '5 minutos',
-                'id_dominio_padre' => $tipo_tiempos_domicilio->id_dominio,
-                'descripcion' => 'Tiempo llegada 5 minutos',
+                'nombre' => 'IVA 19%',
+                'id_dominio_padre' => $tipos_impuestos->id_dominio,
+                'descripcion' => '19%',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
             TblDominio::create([
-                'nombre' => '10 minutos',
-                'id_dominio_padre' => $tipo_tiempos_domicilio->id_dominio,
-                'descripcion' => 'Tiempo llegada 10 minutos',
+                'nombre' => 'IVA 0%',
+                'id_dominio_padre' => $tipos_impuestos->id_dominio,
+                'descripcion' => '0%',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
-            TblDominio::create([
-                'nombre' => '15 minutos',
-                'id_dominio_padre' => $tipo_tiempos_domicilio->id_dominio,
-                'descripcion' => 'Tiempo llegada 15 minutos',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            sleep(1);
-            TblDominio::create([
-                'nombre' => '20 minutos',
-                'id_dominio_padre' => $tipo_tiempos_domicilio->id_dominio,
-                'descripcion' => 'Tiempo llegada 20 minutos',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            sleep(1);
-            TblDominio::create([
-                'nombre' => '25 minutos',
-                'id_dominio_padre' => $tipo_tiempos_domicilio->id_dominio,
-                'descripcion' => 'Tiempo llegada 25 minutos',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            sleep(1);
-            TblDominio::create([
-                'nombre' => '30 minutos',
-                'id_dominio_padre' => $tipo_tiempos_domicilio->id_dominio,
-                'descripcion' => 'Tiempo llegada 30 minutos',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            sleep(1);
-        /* Fin creación dominios hijos tipo tiempos domiciliario */
+        /* Fin creacipon dominios hijos tipo de impuestos */
 
         /* Creación dominios hijos zonas */
             TblDominio::create([
@@ -315,7 +324,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
-
+            sleep(1);
             TblDominio::create([
                 'nombre' => 'Suroccidente',
                 'id_dominio_padre' => $lista_zonas->id_dominio,
@@ -323,7 +332,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
-
+            sleep(1);
             TblDominio::create([
                 'nombre' => 'Centro',
                 'id_dominio_padre' => $lista_zonas->id_dominio,
@@ -331,7 +340,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
-
+            sleep(1);
             TblDominio::create([
                 'nombre' => 'Noroccidente',
                 'id_dominio_padre' => $lista_zonas->id_dominio,
@@ -339,7 +348,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
-
+            sleep(1);
         /* Fin creación dominios hijos zonas */
 
         /* Creación dominios hijos transportes */
@@ -350,6 +359,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            sleep(1);
             TblDominio::create([
                 'nombre' => 'Aéreo',
                 'id_dominio_padre' => $lista_transportes->id_dominio,
@@ -357,6 +367,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            sleep(1);
             TblDominio::create([
                 'nombre' => 'Marítimo',
                 'id_dominio_padre' => $lista_transportes->id_dominio,
@@ -364,6 +375,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            sleep(1);
             TblDominio::create([
                 'nombre' => 'Fluvial',
                 'id_dominio_padre' => $lista_transportes->id_dominio,
@@ -371,6 +383,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            sleep(1);
             TblDominio::create([
                 'nombre' => 'No convencional',
                 'id_dominio_padre' => $lista_transportes->id_dominio,
@@ -378,6 +391,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            sleep(1);
         /* Fin creación dominios hijos transportes */
 
         /* Creación dominios hijos accesos */
@@ -388,6 +402,7 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            sleep(1);
             TblDominio::create([
                 'nombre' => 'Fácil acceso',
                 'id_dominio_padre' => $lista_accesos->id_dominio,
@@ -395,30 +410,164 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            sleep(1);
         /* Fin creación dominios hijos accesos */
+
         /* Creación dominios hijos tipos de items */
-            TblDominio::create([
+            $manoObra = TblDominio::create([
                 'nombre' => 'Mano de obra',
                 'id_dominio_padre' => $lista_tipo_items->id_dominio,
                 'descripcion' => 'Item tipo mano de obra',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
-            TblDominio::create([
+            sleep(1);
+            $materiales = TblDominio::create([
                 'nombre' => 'Materiales',
                 'id_dominio_padre' => $lista_tipo_items->id_dominio,
                 'descripcion' => 'Item tipo materiales',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
-            TblDominio::create([
+            sleep(1);
+            $transporte = TblDominio::create([
                 'nombre' => 'Transporte',
                 'id_dominio_padre' => $lista_tipo_items->id_dominio,
                 'descripcion' => 'Item tipo transporte',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            sleep(1);
         /* Fin creación dominios hijos tipo de items */
+
+        /* Creación dominios hijos tipos de trabajo */
+            TblDominio::create([
+                'nombre' => 'Preventivo',
+                'id_dominio_padre' => $lista_tipo_trabajo->id_dominio,
+                'descripcion' => 'Tipo de trabajo preventivo',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            TblDominio::create([
+                'nombre' => 'Correctivo',
+                'id_dominio_padre' => $lista_tipo_trabajo->id_dominio,
+                'descripcion' => 'Tipo de trabajo correctivo',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            TblDominio::create([
+                'nombre' => 'Emergencia',
+                'id_dominio_padre' => $lista_tipo_trabajo->id_dominio,
+                'descripcion' => 'Tipo de trabajo emergencia',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+        /* Fin creación dominios hijos tipo de trabajo */
+
+        /* Creación dominios hijos tipos de prioridad */
+            TblDominio::create([
+                'nombre' => 'Urgente',
+                'id_dominio_padre' => $lista_prioridad->id_dominio,
+                'descripcion' => 'Tipo de prioridad urgente',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            TblDominio::create([
+                'nombre' => 'Alta',
+                'id_dominio_padre' => $lista_prioridad->id_dominio,
+                'descripcion' => 'Tipo de prioridad alta',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            TblDominio::create([
+                'nombre' => 'Media',
+                'id_dominio_padre' => $lista_prioridad->id_dominio,
+                'descripcion' => 'Tipo de prioridad media',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            TblDominio::create([
+                'nombre' => 'Baja',
+                'id_dominio_padre' => $lista_prioridad->id_dominio,
+                'descripcion' => 'Tipo de prioridad baja',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+        /* Fin creación dominios hijos tipo de prioridad */
+
+        /* Creación dominios hijos tipos de procesos */
+            $cotizacion_creada = TblDominio::create([
+                'nombre' => 'Cotización creada',
+                'id_dominio_padre' => $lista_procesos->id_dominio,
+                'descripcion' => 'Cotización creada',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            $cotizacion_devuelta = TblDominio::create([
+                'nombre' => 'Cotización devuelta',
+                'id_dominio_padre' => $lista_procesos->id_dominio,
+                'descripcion' => 'Cotización devuelta',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            $cotizacion_revisada = TblDominio::create([
+                'nombre' => 'Cotización revisada',
+                'id_dominio_padre' => $lista_procesos->id_dominio,
+                'descripcion' => 'Cotización revisada',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            $cotizacion_enviada = TblDominio::create([
+                'nombre' => 'Cotización enviada',
+                'id_dominio_padre' => $lista_procesos->id_dominio,
+                'descripcion' => 'Cotización enviada',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            $cotizacion_pendiente_aprobacion = TblDominio::create([
+                'nombre' => 'Cotización pendiente aprobación',
+                'id_dominio_padre' => $lista_procesos->id_dominio,
+                'descripcion' => 'Cotización pendiente aprobación',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            $cotizacion_rechazada = TblDominio::create([
+                'nombre' => 'Cotización rechazada',
+                'id_dominio_padre' => $lista_procesos->id_dominio,
+                'descripcion' => 'Cotización rechazada',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            $cotizacion_cancelada = TblDominio::create([
+                'nombre' => 'Cotización cancelada',
+                'id_dominio_padre' => $lista_procesos->id_dominio,
+                'descripcion' => 'Cotización cancelada',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            $cotizacion_aprobada = TblDominio::create([
+                'nombre' => 'Cotización aprobada',
+                'id_dominio_padre' => $lista_procesos->id_dominio,
+                'descripcion' => 'Cotización aprobada',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creación dominios hijos tipo de prioridad */
+
         /* Creación parametros */
             // Creación parametro tipo documentos
             TblParametro::create([
@@ -452,22 +601,29 @@ class SetupSeeder extends Seeder
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
-            // Creación parametro usuario agente
+            // Creación parametro usuario proveedor
             TblParametro::create([
-                'llave' => 'id_dominio_agente',
-                'valor' => $agente->id_dominio,
-                'descripcion' => 'id_dominio_agente',
+                'llave' => 'id_dominio_proveedor',
+                'valor' => $proveedor->id_dominio,
+                'descripcion' => 'id_dominio_proveedor',
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
-            // Creación parametro usuario asociado
+            // Creación parametro usuario cliente
             TblParametro::create([
-                'llave' => 'id_dominio_asociado',
-                'valor' => $asociado->id_dominio,
-                'descripcion' => 'id_dominio_asociado',
+                'llave' => 'id_dominio_cliente',
+                'valor' => $cliente->id_dominio,
+                'descripcion' => 'id_dominio_cliente',
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
+            // Creación parametro usuario contratista
+            TblParametro::create([
+                'llave' => 'id_dominio_contratista',
+                'valor' => $contratista->id_dominio,
+                'descripcion' => 'id_dominio_contratista',
+                'id_usuareg' => $user->id_usuario,
+            ]);
             // Creacion parametros tipos plantillas correo
             TblParametro::create([
                 'llave' => 'id_dominio_plantilla_correo',
@@ -476,19 +632,19 @@ class SetupSeeder extends Seeder
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
+            // Creacion parametros tipos de impuestos
+            TblParametro::create([
+                'llave' => 'id_dominio_impuestos',
+                'valor' => $tipos_impuestos->id_dominio,
+                'descripcion' => 'id_dominio_impuestos',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
             // Creación parametro plantilla correo
             TblParametro::create([
                 'llave' => 'id_dominio_plantilla_correo_default',
                 'valor' => $correo->id_dominio,
                 'descripcion' => 'id_dominio_plantilla_correo_default',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            sleep(1);
-            // Creacón parametro tiempos domiciliario
-            TblParametro::create([
-                'llave' => 'id_dominio_tiempos_domicilio',
-                'valor' => $tipo_tiempos_domicilio->id_dominio,
-                'descripcion' => 'id_dominio_tiempos_domicilio',
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
@@ -516,11 +672,122 @@ class SetupSeeder extends Seeder
                 'id_usuareg' => $user->id_usuario,
             ]);
             sleep(1);
-            // Creacón parametro tipo de items
             TblParametro::create([
                 'llave' => 'id_dominio_tipo_items',
                 'valor' => $lista_tipo_items->id_dominio,
                 'descripcion' => 'id_dominio_tipo_items',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            sleep(1);
+            // Creacón parametro mano de obra
+            TblParametro::create([
+                'llave' => 'id_dominio_mano_obra',
+                'valor' => $manoObra->id_dominio,
+                'descripcion' => 'id_dominio_mano_obra',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro materiales
+            TblParametro::create([
+                'llave' => 'id_dominio_materiales',
+                'valor' => $materiales->id_dominio,
+                'descripcion' => 'id_dominio_materiales',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro materiales
+            TblParametro::create([
+                'llave' => 'id_dominio_transporte',
+                'valor' => $transporte->id_dominio,
+                'descripcion' => 'id_dominio_transporte',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro tipos de trabajo
+            TblParametro::create([
+                'llave' => 'id_dominio_tipos_trabajo',
+                'valor' => $lista_tipo_trabajo->id_dominio,
+                'descripcion' => 'id_dominio_tipos_trabajo',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro tipos de proceso
+            TblParametro::create([
+                'llave' => 'id_dominio_tipos_proceso',
+                'valor' => $lista_procesos->id_dominio,
+                'descripcion' => 'id_dominio_tipos_proceso',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro tipos de prioridad
+            TblParametro::create([
+                'llave' => 'id_dominio_tipos_prioridad',
+                'valor' => $lista_prioridad->id_dominio,
+                'descripcion' => 'id_dominio_tipos_prioridad',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro cotización creada
+            TblParametro::create([
+                'llave' => 'id_dominio_cotizacion_creada',
+                'valor' => $cotizacion_creada->id_dominio,
+                'descripcion' => 'id_dominio_cotizacion_creada',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro cotización devuelta
+            TblParametro::create([
+                'llave' => 'id_dominio_cotizacion_devuelta',
+                'valor' => $cotizacion_devuelta->id_dominio,
+                'descripcion' => 'id_dominio_cotizacion_devuelta',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro cotización revisada
+            TblParametro::create([
+                'llave' => 'id_dominio_cotizacion_revisada',
+                'valor' => $cotizacion_revisada->id_dominio,
+                'descripcion' => 'id_dominio_cotizacion_revisada',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro cotización enviada
+            TblParametro::create([
+                'llave' => 'id_dominio_cotizacion_enviada',
+                'valor' => $cotizacion_enviada->id_dominio,
+                'descripcion' => 'id_dominio_cotizacion_enviada',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro cotización pendiente aprobación
+            TblParametro::create([
+                'llave' => 'id_dominio_cotizacion_pendiente_aprobacion',
+                'valor' => $cotizacion_pendiente_aprobacion->id_dominio,
+                'descripcion' => 'id_dominio_cotizacion_pendiente_aprobacion',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro cotización rechazada
+            TblParametro::create([
+                'llave' => 'id_dominio_cotizacion_rechazada',
+                'valor' => $cotizacion_rechazada->id_dominio,
+                'descripcion' => 'id_dominio_cotizacion_rechazada',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro cotización cancelada
+            TblParametro::create([
+                'llave' => 'id_dominio_cotizacion_cancelada',
+                'valor' => $cotizacion_cancelada->id_dominio,
+                'descripcion' => 'id_dominio_cotizacion_cancelada',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            sleep(1);
+            // Creacón parametro cotización cancelada
+            TblParametro::create([
+                'llave' => 'id_dominio_cotizacion_aprobada',
+                'valor' => $cotizacion_aprobada->id_dominio,
+                'descripcion' => 'id_dominio_cotizacion_aprobada',
                 'id_usuareg' => $user->id_usuario,
             ]);
         /* Fin creación parametros */

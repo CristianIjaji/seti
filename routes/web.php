@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ListaPrecioController;
@@ -29,8 +30,17 @@ Route::get('home', [HomeController::class, 'index'])->name('home.index');
 Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
 
 // Controlador puntos interes
+Route::get('sites/{client}/get_puntos_interes_client', [PuntosInteresController::class, 'get_puntos_interes_client'])->name('sites.get_puntos_interes_client');
 Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
+
+// Controlador lista de precios 
+Route::get('price_list/{type}/{client}', [ListaPrecioController::class, 'search'])->name('price_list.search');
+Route::resource('price_list', ListaPrecioController::class);
+
+// Controlador contabilidad
+Route::resource('quotes', CotizacionController::class);
+Route::post('quotes/grid', [CotizacionController::class, 'grid'])->name('quotes.grid');
 
 // Controlador terceros
 Route::resource('clients', TerceroController::class);

@@ -33,6 +33,7 @@ class DominioController extends Controller
 
                 $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
             }
+
             $this->filtros[$key] = $value;
         }
 

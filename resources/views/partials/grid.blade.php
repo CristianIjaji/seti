@@ -12,9 +12,9 @@
                 </a>
             @endif
         @endisset
-        {{-- <a href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn bg-info text-white font-weight-bolder bg-update">
+        <a href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-light text-info font-weight-bolder fs-3 bg-update">
             <i class="fas fa-sync-alt"></i>
-        </a> --}}
+        </a>
         @isset($upload)
             @if ($upload)
                 <form class="btn px-0" action="{{ route("$route.import") }}" method="POST" enctype="multipart/form-data">
@@ -32,10 +32,12 @@
                 <button
                     class="btn bg-primary bg-gradient bg-md modal-form text-white rounded-pill px-4 py-2"
                     data-title="{{ $btnOptionsCreate['title'] }}"
+                    data-header-class="{{ isset($btnOptionsCreate['header-class']) ? $btnOptionsCreate['header-class'] : '' }}"
                     data-size="{{ $btnOptionsCreate['modal-size'] }}"
                     data-action={{ $btnOptionsCreate['route'] }}
                     data-toggle="tooltip"
                     data-placement="top"
+                    data-modal='modalForm'
                     title="{{ $btnOptionsCreate['title'] }}"
                 >
                     <i class="fa-solid fa-plus"></i> Crear
@@ -69,7 +71,7 @@
                                             <select class="form-control" name="{{ $header['name'] }}" style="width: 100%">
                                                 <option value="">&nbsp;</option>
                                                 @foreach ($header['options'] as $id => $name)
-                                                    <option value="{{$id}}" @if (isset($request[$header['name']])) {{ $request[$header['name']] == $id ? 'selected' : '' }} @endif>
+                                                    <option value="={{$id}}" @if (isset($request[$header['name']])) {{ $request[$header['name']] == "=$id" ? 'selected' : '' }} @endif>
                                                         {{$name}}
                                                     </option>
                                                 @endforeach
@@ -127,7 +129,7 @@
                                         @if (isset($header['html']) && $header['html'])
                                             <?= $model[$header['name']] ?>
                                         @else
-                                            {{ $header['options'][$model[$header['name']]] }}
+                                            {{ isset($header['options'][$model[$header['name']]]) ? $header['options'][$model[$header['name']]] : '' }}
                                         @endif
                                     @endif
                                 @endif
@@ -142,6 +144,7 @@
                                                 data-toggle="modal"
                                                 data-title="{{ $header['actions']['btnOptions']['modal-view-title'] }}"
                                                 data-size="{{ $header['actions']['btnOptions']['modal-view-size'] }}"
+                                                data-header-class="{{ isset($header['actions']['btnOptions']['header-view-class']) ? $header['actions']['btnOptions']['header-view-class'] : '' }}"
                                                 data-reload="false"
                                                 data-action={{ route("$route.show", $model) }}
                                                 title="Ver">
@@ -155,6 +158,7 @@
                                                 data-toggle="modal"
                                                 data-title="{{ $header['actions']['btnOptions']['modal-edit-title'] }}"
                                                 data-size="{{ $header['actions']['btnOptions']['modal-edit-size'] }}"
+                                                data-header-class="{{ isset($header['actions']['btnOptions']['header-edit-class']) ? $header['actions']['btnOptions']['header-edit-class'] : '' }}"
                                                 data-action={{ route("$route.edit", $model) }}
                                                 title="Editar">
                                             </i>

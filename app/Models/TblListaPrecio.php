@@ -37,4 +37,20 @@ class TblListaPrecio extends Model
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
     }
 
+    public function getValorUnitarioAttribute() {
+        return (isset($this->attributes['valor_unitario'])) ? number_format($this->attributes['valor_unitario'], 2) : 0;
+    }
+
+    public function getValorUnitarioFormAttribute() {
+        return (isset($this->attributes['valor_unitario'])) ? $this->attributes['valor_unitario'] : 0;
+    }
+
+    public function getEstadoFormAttribute() {
+        return $this->attributes['estado'];
+    }
+
+    public function getEstadoAttribute() {
+        $status = $this->attributes['estado'] == 1 ? '<i class="fa-solid fa-check fw-bolder fs-4 text-success"></i>' : '<i class="fa-solid fa-xmark fw-bolder fs-4 text-danger"></i>';
+        return $status;
+    }
 }

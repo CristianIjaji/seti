@@ -1,6 +1,7 @@
 <?php
     $create = isset($tercero->id_tercero) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
+    $tipo_tercero = (isset($tipo_tercero) && $tipo_tercero != '') ? $tipo_tercero : false;
 ?>
 
 @if ($create || $edit)
@@ -14,7 +15,7 @@
         @endif
 @endif
     <div class="row">
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-4">
             <label for="id_dominio_tipo_documento" class="required">Tipo documento</label>
             @if ($edit)
                 <select class="form-control" name="id_dominio_tipo_documento" id="id_dominio_tipo_documento" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -52,7 +53,14 @@
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="ciudad" class="required">Ciudad</label>
-            <input type="text" class="form-control" @if ($edit) name="ciudad" @endif id="ciudad" value="{{ old('ciudad', $tercero->ciudad) }}" @if ($edit) required @else disabled @endif>
+            <input type="text" class="form-control" list="list-ciudades" @if ($edit) name="ciudad" @endif id="ciudad" value="{{ old('ciudad', $tercero->ciudad) }}" @if ($edit) required @else disabled @endif>
+            @if ($edit)
+                <datalist id="list-ciudades">
+                    @foreach ($ciudades as $ciudad)
+                        <option value="{{ $ciudad }}">{{ $ciudad }}</option>
+                    @endforeach
+                </datalist>
+            @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="direccion" class="required">Dirección</label>
@@ -70,18 +78,24 @@
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="id_dominio_tipo_tercero" class="required">Tipo tercero</label>
             @if ($edit)
-                <select class="form-control" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" style="width: 100%" @if ($edit) required @else disabled @endif>
-                    <option value="">Elegir tipo tercero</option>
-                    @foreach ($tipo_terceros as $id => $nombre)
-                        <option value="{{ $id }}" {{ old('id_dominio_tipo_tercero', $tercero->id_dominio_tipo_tercero) == $id ? 'selected' : '' }}>
-                            {{$nombre}}
-                        </option>
-                    @endforeach
-                </select>
+                @if ($tipo_tercero == '')
+                    <select class="form-control" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" style="width: 100%" @if ($edit) required @else disabled @endif>
+                        <option value="">Elegir tipo tercero</option>
+                        @foreach ($tipo_terceros as $id => $nombre)
+                            <option value="{{ $id }}" {{ old('id_dominio_tipo_tercero', $tercero->id_dominio_tipo_tercero) == $id ? 'selected' : '' }}>
+                                {{$nombre}}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="text" class="form-control" value="{{ $tipo_tercero->nombre }}" disabled readonly>
+                    <input type="hidden" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" value="{{ $tipo_tercero->id_dominio }}">
+                @endif
             @else
                 <input type="text" class="form-control" id="id_dominio_tipo_tercero" value="{{ $tercero->tbldominiotercero->nombre }}" disabled>
             @endif
         </div>
+        
         @if(!$create)
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
                 <label for="estado" class="required">Estado</label>
@@ -113,8 +127,3 @@
     </div>
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear tercero' : 'Editar tercero'])
-
-
-<script type="application/javascript">
-    setupSelect2('modalForm');
-</script>
