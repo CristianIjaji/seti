@@ -3,7 +3,8 @@
         <div class="modal-content shadow-lg">
             <div class="modal-header">
                 <h5 class="modal-title fw-bold" id="modalTitle"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <i class="fa-solid fa-xmark fs-3 px-2" data-bs-dismiss="modal" style="cursor: pointer"></i>
+                {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
             </div>
             <div class="modal-body"></div>
         </div>

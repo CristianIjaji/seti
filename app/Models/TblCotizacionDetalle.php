@@ -9,15 +9,17 @@ class TblCotizacionDetalle extends Model
 {
     use HasFactory;
     
-    protected $table = 'tbl_cotizacion_detalles';
+    protected $table = 'tbl_cotizaciones_detalle';
     protected $primaryKey = 'id_cotizacion_detalle';
     protected $guarded = [];
 
     protected $fillable = [
+        'id_cotizacion',
         'id_tipo_item',
         'id_lista_precio',
         'descripcion',
         'unidad',
+        'cantidad',
         'valor_unitario',
         'valor_total',
     ];

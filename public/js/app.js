@@ -9063,6 +9063,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var push_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(push_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -9284,7 +9286,6 @@ var setupDatePicker = function setupDatePicker(element, initialDate, clock, useC
   };
 
   if (initialDate !== '') {
-    console.log(446);
     picker.dates.setValue(new tempusDominus.DateTime(moment__WEBPACK_IMPORTED_MODULE_1___default()(initialDate).add(1, 'days').format('YYYY-MM-DD')));
   }
 
@@ -9401,17 +9402,23 @@ var handleModal = function handleModal(button) {
   $("#".concat(modal)).modal('show');
 };
 
-var carrito = [];
+window.carrito = [];
 
-var drawItems = function drawItems() {
+window.drawItems = function () {
+  var edit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
   // type: tipo de item: mano de obra, transporte o suministro
   // item: ítem de la lista de precios
-  carrito.map(function (item, type) {
+  if (!edit) {
+    $('#th-delete').remove();
+  }
+
+  $.each(carrito, function (type, item) {
     var total = 0;
     $.each(item, function (index, element) {
       if (typeof element !== 'undefined') {
         if (!$("#tr_".concat(type, "_").concat(index)).length) {
-          $("\n                        <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion\">\n                            <td>\n                                <input type='hidden' name=\"id_tipo_detalle_cotizacion[]\" value=\"").concat(type, "\" />\n                                <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                <input type=\"text\" class=\"form-control text-center text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                            </td>\n                            <td>\n                                <textarea class=\"form-control border-0\" rows=\"2\" data-toggle=\"tooltip\" title=\"").concat(element['descripcion'], "\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(index, "\" required>").concat(element['descripcion'], "</textarea>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-center border-0\" data-toggle=\"tooltip\" title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\">\n                            </td>\n                            <td>\n                                <input type=\"number\" min=\"0\" class=\"form-control text-center border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" data-toggle=\"tooltip\" title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                            </td>\n                            <td class=\"text-center\"><i id=\"").concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>\n                        </tr>\n                    ")).insertAfter("#tr_".concat(type));
+          $("\n                        <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion\">\n                            <td>\n                                <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type, "\" />\n                                <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                <input type=\"text\" class=\"form-control text-center text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                            </td>\n                            <td>\n                                <textarea class=\"form-control border-0\" rows=\"2\" data-toggle=\"tooltip\" title=\"").concat(element['descripcion'], "\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(index, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-center border-0\" data-toggle=\"tooltip\" title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            <td>\n                                <input type=\"number\" min=\"0\" class=\"form-control text-center border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" data-toggle=\"tooltip\" title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                            </td>\n                            ").concat(edit == true ? "<td class=\"text-center\"><i id=\"".concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>") : "", "\n                        </tr>\n                    ")).insertAfter("#tr_".concat(type));
           $('.money').inputmask(formatCurrency);
         } else {
           $("#tr_".concat(type, "_").concat(index, " #valor_total_").concat(index)).val(element['valor_total']);
@@ -9440,13 +9447,14 @@ var getItem = function getItem(item) {
 var addItems = function addItems(items) {
   $.each(items, function (index, item) {
     if (typeof carrito[$(item).data('type')] === 'undefined') {
-      carrito[$(item).data('type')] = [];
+      carrito[$(item).data('type')] = {};
     }
 
     if (typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
       carrito[$(item).data('type')][$(item).val()] = getItem(item);
     }
   });
+  console.log(typeof carrito === "undefined" ? "undefined" : _typeof(carrito), carrito);
   drawItems();
 };
 

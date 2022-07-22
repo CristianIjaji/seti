@@ -180,18 +180,18 @@
                         <th class="col-1 text-center">Cant.</th>
                         <th class="col-2 text-center">VR UNIT</th>
                         <th class="col-2 text-center">VR TOTAL</th>
-                        <th class="col-1 text-center">Eliminar</th>
+                        <th id="th-delete" class="col-1 text-center">Eliminar</th>
                     </thead>
                     <tbody>
                         <tr id="tr_{{ session('id_dominio_materiales') }}">
                             <td colspan="7">
                                 <span
-                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white tr_cotizacion"
+                                    class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-between text-white tr_cotizacion"
                                     data-toggle="tooltip"
                                     title="Agregar ítem"
                                     data-title="Buscar ítems suministro materiales"
                                     data-size='modal-xl'
-                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_materiales'), 'client' => 1]) }}'
+                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_materiales'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
                                     data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear"
@@ -204,12 +204,12 @@
                         <tr id="tr_{{ session('id_dominio_mano_obra') }}">
                             <td colspan="7">
                                 <span
-                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white tr_cotizacion"
+                                    class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-between text-white tr_cotizacion"
                                     data-toggle="tooltip"
                                     title="Agregar ítem"
                                     data-title="Buscar ítems mano obra"
                                     data-size='modal-xl'
-                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_mano_obra'), 'client' => 1]) }}'
+                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
                                     data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear"
@@ -222,12 +222,12 @@
                         <tr id="tr_{{ session('id_dominio_transporte') }}">
                             <td colspan="7">
                                 <span
-                                    class="btn w-100 bg-gray fw-bold modal-form d-flex justify-content-between text-white tr_cotizacion"
+                                    class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-between text-white tr_cotizacion"
                                     data-toggle="tooltip"
                                     title="Agregar ítem"
                                     data-title="Buscar ítem transporte y peajes"
                                     data-size='modal-xl'
-                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_transporte'), 'client' => 1]) }}'
+                                    data-action='{{ route('price_list.search', ['type' => session('id_dominio_transporte'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
                                     data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear"
@@ -247,4 +247,11 @@
 
 <script type="application/javascript">
     datePicker();
+
+    carrito = <?= json_encode($carrito) ?>;
+
+    if(Object.keys(carrito).length) {
+        drawItems(<?= $edit ? 'true' : 'false' ?>);
+        $('#table-cotizaciones').removeClass('d-none');
+    }
 </script>

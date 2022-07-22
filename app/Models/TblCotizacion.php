@@ -53,4 +53,17 @@ class TblCotizacion extends Model
     public function tblContratista() {
         return $this->belongsTo(TblTercero::class, 'id_responsable_cliente');
     }
+
+    public function getStatusAttribute() {
+        return [
+            session('id_dominio_cotizacion_creada') => 'bg-gradient',
+            session('id_dominio_cotizacion_devuelta') => 'bg-table-warning bg-gradient text-white fw-bold',
+            session('id_dominio_cotizacion_revisada') => 'bg-table-info bg-gradient text-white fw-bold',
+            session('id_dominio_cotizacion_enviada') => 'bg-table-success bg-gradient',
+            session('id_dominio_cotizacion_pendiente_aprobacion') => 'bg-table-success bg-gradient',
+            session('id_dominio_cotizacion_rechazada') => 'bg-gradient text-danger',
+            session('id_dominio_cotizacion_cancelada') => 'bg-gradient text-danger',
+            session('id_dominio_cotizacion_aprobada') => 'bg-gradient text-success',
+        ];
+    }
 }

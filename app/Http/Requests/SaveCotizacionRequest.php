@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\TblDominio;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -24,6 +23,7 @@ class SaveCotizacionRequest extends FormRequest
             'estado' => session('id_dominio_cotizacion_creada'),
             'codigo' => mb_strtoupper($this->get('codigo')),
             'valor' => 0,
+            'valor_total' => 0,
             'id_usuareg' => (auth()->guest() ? 1 : auth()->id()),
         ]);
     }
@@ -92,12 +92,29 @@ class SaveCotizacionRequest extends FormRequest
                 'required',
                 'exists:tbl_usuarios,id_usuario'
             ],
-            // 'item' => [
-            //     'required'
-            // ],
-            // 'descripcion_item' => [
-            //     'required'
-            // ]
+            'id_tipo_item' => [
+                'required',
+                'exists:tbl_dominios,id_dominio'
+            ],
+            'id_lista_precio' => [
+                'required',
+                'exists:tbl_dominios,id_dominio'
+            ],
+            'descripcion' => [
+                'required'
+            ],
+            'unidad' => [
+                'required'
+            ],
+            'cantidad' => [
+                'required'
+            ],
+            'valor_unitario' => [
+                'required'
+            ],
+            'valor_total' => [
+                'required'
+            ]
         ];
     }
 
@@ -112,6 +129,10 @@ class SaveCotizacionRequest extends FormRequest
             'id_prioridad.required' => 'El campo prioridad es obligatorio.',
             'id_proceso.required' => 'El campo proceso es obligatorio.',
             'id_responsable_cliente.required' => 'El campo contratista es obligatorio.',
+            'id_tipo_item.required' => 'Debe agregar un ítem a la cotización.',
+            'id_lista_precio.required' => 'Debe agregar un ítem a la cotización.',
+            'descripcion_item.required' => 'El campo descripción es obligarorio.',
+            // 'unidad.required' => 'El campo unidad es obli',
         ];
     }
 }

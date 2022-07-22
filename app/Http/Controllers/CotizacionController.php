@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveCotizacionRequest;
 use App\Models\TblCotizacion;
+use App\Models\TblCotizacionDetalle;
 use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
+use Illuminate\Support\Facades\Log;
 
 class CotizacionController extends Controller
 {
@@ -65,6 +67,7 @@ class CotizacionController extends Controller
     {
         return view('cotizaciones._form', [
             'cotizacion' => new TblCotizacion,
+            'carrito' => [],
             'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
@@ -83,6 +86,23 @@ class CotizacionController extends Controller
     {
         try {
             $cotizacion = TblCotizacion::create($request->validated());
+            $total = 0;
+            foreach (request()->id_tipo_item as $index => $valor) {
+                $detalle = new TblCotizacionDetalle;
+                $detalle->id_cotizacion = $cotizacion->id_cotizacion;
+                $detalle->id_tipo_item = request()->id_tipo_item[$index];
+                $detalle->id_lista_precio = request()->id_lista_precio[$index];
+                $detalle->unidad = request()->unidad[$index];
+                $detalle->cantidad = request()->cantidad[$index];
+                $detalle->valor_unitario = str_replace(',', '', $this->get('valor_unitario'));
+                $detalle->valor_total = $detalle->cantidad * $detalle->valor_unitario;
+
+                $detalle->save();
+                $total += $detalle->valor_total;
+            }
+
+            $cotizacion->valor = $total;
+            $cotizacion->save();
 
             return response()->json([
                 'success' => 'Cotización creada exitosamente!',
@@ -106,9 +126,24 @@ class CotizacionController extends Controller
      */
     public function show(TblCotizacion $quote)
     {
+        $carrito = [];
+        $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $quote->id_cotizacion])->get();
+
+        foreach ($items as $item) {
+            $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
+                'item' => $item->tblListaprecio->codigo,
+                'descripcion' => $item->descripcion,
+                'cantidad' => $item->cantidad,
+                'unidad' => $item->unidad,
+                'valor_unitario' => $item->valor_unitario,
+                'valor_total' => $item->valor_total,
+            ];
+        }
+
         return view('cotizaciones._form', [
             'edit' => false,
-            'cotizacion' => $quote
+            'cotizacion' => $quote,
+            'carrito' => $carrito,
         ]);
     }
 
@@ -120,9 +155,24 @@ class CotizacionController extends Controller
      */
     public function edit(TblCotizacion $quote)
     {
+        $carrito = [];
+        $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $quote->id_cotizacion])->get();
+
+        foreach ($items as $item) {
+            $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
+                'item' => $item->tblListaprecio->codigo,
+                'descripcion' => $item->descripcion,
+                'cantidad' => $item->cantidad,
+                'unidad' => $item->unidad,
+                'valor_unitario' => $item->valor_unitario,
+                'valor_total' => $item->valor_total,
+            ];
+        }
+
         return view('cotizaciones._form', [
             'edit' => true,
             'cotizacion' => $quote,
+            'carrito' => $carrito,
             'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $quote->id_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
@@ -143,6 +193,27 @@ class CotizacionController extends Controller
     {
         try {
             $quote->update($request->validated());
+
+            TblCotizacionDetalle::where('id_cotizacion', '=', $quote->id_cotizacion)->delete();
+
+            $total = 0;
+            foreach (request()->id_tipo_item as $index => $valor) {
+                $detalle = new TblCotizacionDetalle;
+                $detalle->id_cotizacion = $quote->id_cotizacion;
+                $detalle->id_tipo_item = request()->id_tipo_item[$index];
+                $detalle->id_lista_precio = request()->id_lista_precio[$index];
+                $detalle->descripcion = request()->descripcion_item[$index];
+                $detalle->unidad = request()->unidad[$index];
+                $detalle->cantidad = request()->cantidad[$index];
+                $detalle->valor_unitario = str_replace(',', '', request()->valor_unitario[$index]);
+                $detalle->valor_total = $detalle->cantidad * $detalle->valor_unitario;
+
+                $detalle->save();
+                $total += $detalle->valor_total;
+            }
+            
+            $quote->valor = $total;
+            $quote->save();
 
             return response()->json([
                 'success' => 'Cotización actualizada correctamente!'
@@ -181,6 +252,7 @@ class CotizacionController extends Controller
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'procesos' => TblDominio::getListaDominios(session('id_dominio_tipos_proceso')),
             'contratistas' => TblTercero::getClientesTipo(session('id_dominio_contratista')),
+            'status' => $cotizacion->status,
             'create' => true,//Gate::allows('create', $tercero),
             'edit' => true,//Gate::allows('update', $tercero),
             'view' => true,//Gate::allows('view', $tercero),

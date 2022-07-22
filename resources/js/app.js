@@ -225,7 +225,7 @@ const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
         );
     };
 
-    if(initialDate !== '') {console.log(446);
+    if(initialDate !== '') {
         picker.dates.setValue(new tempusDominus.DateTime(moment(initialDate).add(1, 'days').format('YYYY-MM-DD')))
     }
 
@@ -354,12 +354,16 @@ const handleModal = (button) => {
     $(`#${modal}`).modal('show');
 }
 
-let carrito = [];
+window.carrito = [];
 
-const drawItems = () => {
+window.drawItems = (edit = true) => {
     // type: tipo de item: mano de obra, transporte o suministro
     // item: ítem de la lista de precios
-    carrito.map((item, type) => {
+    if(!edit) {
+        $('#th-delete').remove();
+    }
+
+    $.each(carrito, (type, item) => {
         let total = 0;
         $.each(item, (index, element) => {
             if(typeof element !== 'undefined') {
@@ -367,26 +371,29 @@ const drawItems = () => {
                     $(`
                         <tr id="tr_${type}_${index}" class="tr_cotizacion">
                             <td>
-                                <input type='hidden' name="id_tipo_detalle_cotizacion[]" value="${type}" />
+                                <input type='hidden' name="id_tipo_item[]" value="${type}" />
                                 <input type='hidden' name="id_lista_precio[]" value="${index}" />
                                 <input type="text" class="form-control text-center text-uppercase border-0" id="item_${index}" value="${element['item']}" disabled>
                             </td>
                             <td>
-                                <textarea class="form-control border-0" rows="2" data-toggle="tooltip" title="${element['descripcion']}" name="descripcion_item[]" id="descripcion_item_${index}" required>${element['descripcion']}</textarea>
+                                <textarea class="form-control border-0" rows="2" data-toggle="tooltip" title="${element['descripcion']}" name="descripcion_item[]" id="descripcion_item_${index}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
                             </td>
                             <td>
-                                <input type="text" class="form-control text-center border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${index}" value="${element['unidad']}">
+                                <input type="text" class="form-control text-center border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${index}" value="${element['unidad']}" ${edit ? '' : 'disabled'}>
                             </td>
                             <td>
-                                <input type="number" min="0" class="form-control text-center border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required>
+                                <input type="number" min="0" class="form-control text-center border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
                             </td>
                             <td>
-                                <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required>
+                                <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required ${edit ? '' : 'disabled'}>
                             </td>
                             <td>
                                 <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_total[]" id="valor_total_${index}" value="${element['valor_total']}" disabled>
                             </td>
-                            <td class="text-center"><i id="${type}_${index}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>
+                            ${edit == true
+                                ? `<td class="text-center"><i id="${type}_${index}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>`
+                                : ``
+                            }
                         </tr>
                     `).insertAfter(`#tr_${type}`);
                     $('.money').inputmask(formatCurrency);
@@ -419,7 +426,7 @@ const getItem = (item) => {
 const addItems = (items) => {
     $.each(items, (index, item) => {
         if(typeof carrito[$(item).data('type')] === 'undefined') {
-            carrito[$(item).data('type')] = [];
+            carrito[$(item).data('type')] = {};
         }
 
         if(typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
@@ -427,6 +434,7 @@ const addItems = (items) => {
         }
     });
 
+    console.log(typeof carrito, carrito);
     drawItems();
 }
 
