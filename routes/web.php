@@ -1,10 +1,10 @@
 <?php
 
+use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ListaPrecioController;
-use App\Http\Controllers\MenuTipoTercero;
 use App\Http\Controllers\MenuTipoTerceroController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\ParametroController;
@@ -43,6 +43,10 @@ Route::resource('price_list', ListaPrecioController::class);
 // Controlador contabilidad
 Route::resource('quotes', CotizacionController::class);
 Route::post('quotes/grid', [CotizacionController::class, 'grid'])->name('quotes.grid');
+
+// Controlador de actividades
+Route::resource('activities', ActividadController::class);
+Route::post('activities/grid', [ActividadController::class, 'grid'])->name('activities.grid');
 
 // Controlador terceros
 Route::resource('clients', TerceroController::class);

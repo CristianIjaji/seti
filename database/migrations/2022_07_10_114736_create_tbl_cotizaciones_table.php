@@ -24,10 +24,10 @@ class CreateTblCotizacionesTable extends Migration
             $table->unsignedBigInteger('id_prioridad');
             $table->unsignedBigInteger('estado');
             $table->unsignedBigInteger('id_responsable_cliente');
-            $table->string('valor');
+            $table->decimal('valor', 20, 2);
             $table->unsignedBigInteger('iva');
             $table->text('descripcion');
-            $table->string('valor_reasignado')->nullable();
+            $table->decimal('valor_reasignado', 20, 2)->nullable();
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 

@@ -21,8 +21,8 @@ class TblCotizacionDetalles extends Migration
             $table->string('descripcion');
             $table->string('unidad');
             $table->decimal('cantidad', 5, 2);
-            $table->string('valor_unitario');
-            $table->string('valor_total');
+            $table->decimal('valor_unitario', 20, 2);
+            $table->decimal('valor_total', 20, 2);
             $table->timestamps();
 
             $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones');

@@ -10,7 +10,6 @@ use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 
 class CotizacionController extends Controller
 {

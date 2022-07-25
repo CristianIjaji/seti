@@ -46,6 +46,11 @@
         @endisset
     </div>
 </div>
+
+<p>
+    Mostrando {{ $models->firstItem() > 0 ? $models->firstItem() : 0 }} - {{ $models->lastItem() > 0 ? $models->lastItem() : 0 }} de {{$models->total()}} resultado{{$models->total() > 1 || $models->total() == 0 ? 's' : ''}}.
+</p>
+
 <form class="search_form table-responsive" id="form_{{$route}}">
     <table class="table table-hover table-sm">
         <thead class="col-12">

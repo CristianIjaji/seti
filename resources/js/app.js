@@ -645,9 +645,10 @@ $(document).on('click', '.page-item', function(e) {
         $(this).addClass('active');
         let form = $(this).closest('form').attr('id');
         let page = $.urlParam('page', $(this).children().attr('href'));
-
-        $(`#${form} > #page`).val(page);
-        $('.search_form').change();
+        if(typeof page === 'string') {
+            $(`#${form} > #page`).val(page);
+            $('.search_form').change();
+        }
     }
 });
 

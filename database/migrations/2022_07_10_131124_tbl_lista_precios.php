@@ -21,7 +21,7 @@ class TblListaPrecios extends Migration
             $table->string('descripcion');
             $table->string('unidad');
             $table->decimal('cantidad', 5, 2);
-            $table->string('valor_unitario');
+            $table->decimal('valor_unitario', 20, 2);
             $table->smallInteger('estado')->default(1);
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
