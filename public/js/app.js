@@ -9757,9 +9757,8 @@ $(document).on('change', '.txt-cotizaciones', function () {
 $(document).on('change', '#id_cliente', function () {
   var _this = this;
 
-  $('#table-cotizaciones').addClass('d-none');
-
   if ($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+    $('#table-cotizaciones').addClass('d-none');
     $('#id_estacion').empty();
     $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
 

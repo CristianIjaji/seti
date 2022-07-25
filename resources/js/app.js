@@ -781,10 +781,10 @@ $(document).on('change', '.txt-cotizaciones', function() {
     fnc_totales_cot($(this).parent().parent().attr('id'));
 });
 
-$(document).on('change', '#id_cliente', function() {
-    $('#table-cotizaciones').addClass('d-none');
-
+$(document).on('change', '#id_cliente', function() {    
     if($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+        $('#table-cotizaciones').addClass('d-none');
+
         $('#id_estacion').empty();
         $('#id_estacion').append(`<option value=''>Elegir punto ínteres</option>`);
 

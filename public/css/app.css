@@ -20872,8 +20872,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 1px;
+  height: 1px;
 }
 
 /* Track */
@@ -20884,7 +20884,7 @@ body {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.3490196078);
+  background: transparent;
 }
 
 /* Handle on hover */
@@ -21247,7 +21247,7 @@ button.close {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  overflow: hidden;
+  overflow-x: hidden;
   padding: 0px 1px;
 }
 

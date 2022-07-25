@@ -102,9 +102,10 @@ class CotizacionController extends Controller
                 $detalle->id_cotizacion = $cotizacion->id_cotizacion;
                 $detalle->id_tipo_item = request()->id_tipo_item[$index];
                 $detalle->id_lista_precio = request()->id_lista_precio[$index];
+                $detalle->descripcion = request()->descripcion;
                 $detalle->unidad = request()->unidad[$index];
                 $detalle->cantidad = request()->cantidad[$index];
-                $detalle->valor_unitario = str_replace(',', '', $this->get('valor_unitario'));
+                $detalle->valor_unitario = str_replace(',', '', request()->valor_unitario[$index]);
                 $detalle->valor_total = $detalle->cantidad * $detalle->valor_unitario;
 
                 $detalle->save();
@@ -165,6 +166,8 @@ class CotizacionController extends Controller
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
             'contratistas' => TblTercero::getClientesTipo(session('id_dominio_contratista')),
+            'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
+            'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
         ]);
     }
 
