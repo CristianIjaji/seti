@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\TblParametro;
+use App\Models\TblListaPrecio;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class TblParametroPolicy
+class TblListaPrecioPolicy
 {
     use HandlesAuthorization;
 
@@ -25,12 +25,12 @@ class TblParametroPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblListaPrecio  $tblListaPrecio
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function view(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->view) ? $tblUsuario->getPermisosMenu('params.index')->view : false;
+        return isset($tblUsuario->getPermisosMenu('priceList.index')->view) ? $tblUsuario->getPermisosMenu('priceList.index')->view : false;
     }
 
     /**
@@ -41,29 +41,29 @@ class TblParametroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->create) ? $tblUsuario->getPermisosMenu('params.index')->create : false;
+        return isset($tblUsuario->getPermisosMenu('priceList.index')->create) ? $tblUsuario->getPermisosMenu('priceList.index')->create : false;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblListaPrecio  $tblListaPrecio
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function update(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->update) ? $tblUsuario->getPermisosMenu('params.index')->update : false;
+        return isset($tblUsuario->getPermisosMenu('priceList.index')->update) ? $tblUsuario->getPermisosMenu('priceList.index')->update : false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblListaPrecio  $tblListaPrecio
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function delete(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio)
     {
         //
     }
@@ -72,10 +72,10 @@ class TblParametroPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblListaPrecio  $tblListaPrecio
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function restore(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio)
     {
         //
     }
@@ -84,10 +84,10 @@ class TblParametroPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblListaPrecio  $tblListaPrecio
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function forceDelete(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio)
     {
         //
     }

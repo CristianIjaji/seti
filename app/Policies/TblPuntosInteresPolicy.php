@@ -2,11 +2,12 @@
 
 namespace App\Policies;
 
-use App\Models\TblParametro;
+use App\Models\TblPuntosInteres;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Log;
 
-class TblParametroPolicy
+class TblPuntosInteresPolicy
 {
     use HandlesAuthorization;
 
@@ -25,12 +26,12 @@ class TblParametroPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblPuntosInteres  $tblPuntosInteres
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function view(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->view) ? $tblUsuario->getPermisosMenu('params.index')->view : false;
+        return isset($tblUsuario->getPermisosMenu('sites.index')->view) ? $tblUsuario->getPermisosMenu('sites.index')->view : false;
     }
 
     /**
@@ -41,29 +42,29 @@ class TblParametroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->create) ? $tblUsuario->getPermisosMenu('params.index')->create : false;
+        return isset($tblUsuario->getPermisosMenu('sites.index')->create) ? $tblUsuario->getPermisosMenu('sites.index')->create : false;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblPuntosInteres  $tblPuntosInteres
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function update(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->update) ? $tblUsuario->getPermisosMenu('params.index')->update : false;
+        return isset($tblUsuario->getPermisosMenu('sites.index')->update) ? $tblUsuario->getPermisosMenu('sites.index')->update : false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblPuntosInteres  $tblPuntosInteres
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function delete(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres)
     {
         //
     }
@@ -72,10 +73,10 @@ class TblParametroPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblPuntosInteres  $tblPuntosInteres
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function restore(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres)
     {
         //
     }
@@ -84,10 +85,10 @@ class TblParametroPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblPuntosInteres  $tblPuntosInteres
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function forceDelete(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres)
     {
         //
     }

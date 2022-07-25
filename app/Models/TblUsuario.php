@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -15,6 +17,39 @@ class TblUsuario extends Authenticatable
     protected $table = "tbl_usuarios";
     protected $primaryKey = "id_usuario";
     protected $guarded = [];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+    protected $fillable = [
+        'usuario',
+        'email',
+        'id_tercero',
+        'password',
+        'estado',
+        'id_usuareg'
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
     
     public function getNombreAttribute() {
         return (isset($this->tbltercero)
@@ -59,40 +94,19 @@ class TblUsuario extends Authenticatable
         return $status;
     }
 
+    public function getMenusPerfil() {
+        return DB::table('tbl_menu_tipo_tercero', 't')
+            ->join('tbl_menus as m', 't.id_menu', '=', 'm.id_menu')
+            ->select('m.url', 'm.icon', 'm.nombre')
+            ->where(['m.estado' => 1, 't.id_tipo_tercero' => Auth::user()->role])
+            ->get();
+    }
+
+    public static function getPermisosMenu($menu) {
+        return TblMenuTipoTercero::where(['id_menu' => TblMenu::where(['url' => $menu])->first()->id_menu, 'id_tipo_tercero' => Auth::user()->role])->first();
+    }
+
     public function getMimesTypeAttribute() {
         return ['.jpe', '.jpg', '.jpeg', '.png'];
     }
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var string[]
-     */
-    protected $fillable = [
-        'usuario',
-        'email',
-        'id_tercero',
-        'password',
-        'estado',
-        'id_usuareg'
-    ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-    ];
 }

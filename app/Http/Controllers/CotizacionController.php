@@ -8,6 +8,8 @@ use App\Models\TblCotizacionDetalle;
 use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
+use App\Models\TblUsuario;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class CotizacionController extends Controller
@@ -55,6 +57,8 @@ class CotizacionController extends Controller
      */
     public function index()
     {
+        $this->authorize('view', new TblCotizacion);
+
         return $this->getView('cotizaciones.index');
     }
 
@@ -65,6 +69,8 @@ class CotizacionController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', new TblCotizacion);
+
         return view('cotizaciones._form', [
             'cotizacion' => new TblCotizacion,
             'carrito' => [],
@@ -73,6 +79,8 @@ class CotizacionController extends Controller
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
             'contratistas' => TblTercero::getClientesTipo(session('id_dominio_contratista')),
+            'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
+            'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
         ]);
     }
 
@@ -86,6 +94,8 @@ class CotizacionController extends Controller
     {
         try {
             $cotizacion = TblCotizacion::create($request->validated());
+            $this->authorize('create', $cotizacion);
+
             $total = 0;
             foreach (request()->id_tipo_item as $index => $valor) {
                 $detalle = new TblCotizacionDetalle;
@@ -126,24 +136,12 @@ class CotizacionController extends Controller
      */
     public function show(TblCotizacion $quote)
     {
-        $carrito = [];
-        $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $quote->id_cotizacion])->get();
-
-        foreach ($items as $item) {
-            $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
-                'item' => $item->tblListaprecio->codigo,
-                'descripcion' => $item->descripcion,
-                'cantidad' => $item->cantidad,
-                'unidad' => $item->unidad,
-                'valor_unitario' => $item->valor_unitario,
-                'valor_total' => $item->valor_total,
-            ];
-        }
+        $this->authorize('view', $quote);
 
         return view('cotizaciones._form', [
             'edit' => false,
             'cotizacion' => $quote,
-            'carrito' => $carrito,
+            'carrito' => $this->getDetalleCotizacion($quote),
         ]);
     }
 
@@ -155,24 +153,12 @@ class CotizacionController extends Controller
      */
     public function edit(TblCotizacion $quote)
     {
-        $carrito = [];
-        $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $quote->id_cotizacion])->get();
-
-        foreach ($items as $item) {
-            $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
-                'item' => $item->tblListaprecio->codigo,
-                'descripcion' => $item->descripcion,
-                'cantidad' => $item->cantidad,
-                'unidad' => $item->unidad,
-                'valor_unitario' => $item->valor_unitario,
-                'valor_total' => $item->valor_total,
-            ];
-        }
+        $this->authorize('update', $quote);
 
         return view('cotizaciones._form', [
             'edit' => true,
             'cotizacion' => $quote,
-            'carrito' => $carrito,
+            'carrito' => $this->getDetalleCotizacion($quote),
             'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $quote->id_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
@@ -192,8 +178,9 @@ class CotizacionController extends Controller
     public function update(SaveCotizacionRequest $request, TblCotizacion $quote)
     {
         try {
-            $quote->update($request->validated());
+            $this->authorize('update', $quote);
 
+            $quote->update($request->validated());
             TblCotizacionDetalle::where('id_cotizacion', '=', $quote->id_cotizacion)->delete();
 
             $total = 0;
@@ -236,6 +223,24 @@ class CotizacionController extends Controller
         //
     }
 
+    private function getDetalleCotizacion($quote) {
+        $carrito = [];
+        $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $quote->id_cotizacion])->get();
+
+        foreach ($items as $item) {
+            $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
+                'item' => $item->tblListaprecio->codigo,
+                'descripcion' => $item->descripcion,
+                'cantidad' => $item->cantidad,
+                'unidad' => $item->unidad,
+                'valor_unitario' => $item->valor_unitario,
+                'valor_total' => $item->valor_total,
+            ];
+        }
+
+        return $carrito;
+    }
+
     public function grid() {
         return $this->getView('cotizaciones.grid');
     }
@@ -244,18 +249,19 @@ class CotizacionController extends Controller
         $cotizacion = new TblCotizacion;
 
         return view($view, [
-            'model' => TblCotizacion::where(function ($q) {
-                $this->dinamyFilters($q);
-            })->latest()->paginate(10),
+            'model' => TblCotizacion::with(['tblCliente', 'tblEstacion', 'tblTipoTrabajo', 'tblPrioridad', 'tblContratista'])
+                ->where(function ($q) {
+                    $this->dinamyFilters($q);
+                })->latest()->paginate(10),
             'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'estaciones' => TblPuntosInteres::where('estado', '=', 1)->pluck('nombre', 'id_punto_interes'),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'procesos' => TblDominio::getListaDominios(session('id_dominio_tipos_proceso')),
             'contratistas' => TblTercero::getClientesTipo(session('id_dominio_contratista')),
             'status' => $cotizacion->status,
-            'create' => true,//Gate::allows('create', $tercero),
-            'edit' => true,//Gate::allows('update', $tercero),
-            'view' => true,//Gate::allows('view', $tercero),
+            'create' => Gate::allows('create', $cotizacion),
+            'edit' => Gate::allows('update', $cotizacion),
+            'view' => Gate::allows('view', $cotizacion),
             'request' => $this->filtros,
         ]);
     }

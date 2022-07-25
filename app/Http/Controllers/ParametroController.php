@@ -84,8 +84,8 @@ class ParametroController extends Controller
     public function store(SaveParametroRequest $request)
     {
         try {
+            $this->authorize('create', new TblParametro);
             $parametro = TblParametro::create($request->validated());
-            $this->authorize('create', $parametro);
 
             return response()->json(([
                 'success' => 'Parametro creado exitosamente!',
@@ -175,7 +175,7 @@ class ParametroController extends Controller
 
     private function getView($view) {
         return view($view, [
-            'model' => TblParametro::with('tbldominio')->where(function ($q) {
+            'model' => TblParametro::with(['tblusuario', 'tbldominio'])->where(function ($q) {
                 $this->dinamyFilters($q);
             })->latest()->paginate(10),
             'create' => Gate::allows('create', new TblParametro),

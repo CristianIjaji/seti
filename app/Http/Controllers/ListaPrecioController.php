@@ -6,7 +6,10 @@ use App\Http\Requests\SaveListaPrecioRequest;
 use App\Models\TblDominio;
 use App\Models\TblListaPrecio;
 use App\Models\TblTercero;
+use App\Models\TblUsuario;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class ListaPrecioController extends Controller
 {
@@ -54,6 +57,8 @@ class ListaPrecioController extends Controller
      */
     public function index()
     {
+        $this->authorize('view', new TblListaPrecio);
+
         return $this->getView('lista_precios.index');
     }
 
@@ -64,12 +69,16 @@ class ListaPrecioController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', new TblListaPrecio);
+
         return view('lista_precios._form', [
             'lista_precio' => new TblListaPrecio, //modelo
             'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'tipo_items' => TblDominio::where('estado', "=", 1)
-                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))->pluck('nombre', 'id_dominio'),
+                ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))
+                ->pluck('nombre', 'id_dominio'),
             'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),
+            'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
         ]);
     }
 
@@ -83,7 +92,7 @@ class ListaPrecioController extends Controller
     {
         try {
             $listaPrecios = TblListaPrecio::create($request->validated());
-            //$this->authorize('create', $listaPrecios);
+            $this->authorize('create', $listaPrecios);
 
             return response()->json([
                 'success' => 'Ítem creado exitosamente!',
@@ -107,6 +116,8 @@ class ListaPrecioController extends Controller
      */
     public function show(TblListaPrecio $priceList)//parametro de la lista de turas
     {
+        $this->authorize('view', $priceList);
+
         return view('lista_precios._form', [
             'edit' => false,
             'lista_precio' => $priceList //llave sale del form y el value la nueva instancia del modelo. 
@@ -121,6 +132,8 @@ class ListaPrecioController extends Controller
      */
     public function edit(TblListaPrecio $priceList)
     {
+        $this->authorize('update', $priceList);
+
         return view('lista_precios._form', [
             'edit' => true,
             'lista_precio' => $priceList, //modelo
@@ -131,6 +144,7 @@ class ListaPrecioController extends Controller
                 0 => 'Inactivo',
                 1 => 'Activo'
             ],
+            'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
         ]);
     }
 
@@ -145,6 +159,7 @@ class ListaPrecioController extends Controller
     {
         try {
             $priceList->update($request->validated());
+            $this->authorize('update', $priceList);
 
             return response()->json([
                 'success' => 'Ítem actualizado correctamente!'
@@ -186,13 +201,14 @@ class ListaPrecioController extends Controller
         $listaPrecios = new TblListaPrecio;
 
         return view($view, [
-            'model' => TblListaPrecio::where(function ($q) {
-                $this->dinamyFilters($q);
-            })->latest()->paginate(10),
+            'model' => TblListaPrecio::with(['tbltercerocliente', 'tbldominioitem', 'tblusuario'])
+                ->where(function ($q) {
+                    $this->dinamyFilters($q);
+                })->latest()->paginate(10),
             'listaTipoItemPrecio' => TblDominio::getListaDominios(session('id_dominio_tipo_items')),
-            'create' => true,//Gate::allows('create', $tercero),
-            'edit' => true,//Gate::allows('update', $tercero),
-            'view' => true,//Gate::allows('view', $tercero),
+            'create' => Gate::allows('create', $listaPrecios),
+            'edit' => Gate::allows('update', $listaPrecios),
+            'view' => Gate::allows('view', $listaPrecios),
             'request' => $this->filtros,
         ]);
     }

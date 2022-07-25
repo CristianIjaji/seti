@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\TblParametro;
+use App\Models\TblCotizacion;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class TblParametroPolicy
+class TblCotizacionPolicy
 {
     use HandlesAuthorization;
 
@@ -25,12 +25,12 @@ class TblParametroPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblCotizacion  $tblCotizacion
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function view(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->view) ? $tblUsuario->getPermisosMenu('params.index')->view : false;
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->view) ? $tblUsuario->getPermisosMenu('quotes.index')->view : false;
     }
 
     /**
@@ -41,29 +41,29 @@ class TblParametroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->create) ? $tblUsuario->getPermisosMenu('params.index')->create : false;
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->create) ? $tblUsuario->getPermisosMenu('quotes.index')->create : false;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblCotizacion  $tblCotizacion
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function update(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->update) ? $tblUsuario->getPermisosMenu('params.index')->update : false;
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->update) ? $tblUsuario->getPermisosMenu('quotes.index')->update : false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblCotizacion  $tblCotizacion
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function delete(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
         //
     }
@@ -72,10 +72,10 @@ class TblParametroPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblCotizacion  $tblCotizacion
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function restore(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
         //
     }
@@ -84,10 +84,10 @@ class TblParametroPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblCotizacion  $tblCotizacion
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function forceDelete(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
         //
     }

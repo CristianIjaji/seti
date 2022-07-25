@@ -2,19 +2,15 @@
 
 namespace App\Policies;
 
+use App\Models\TblMenu;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Log;
 
 class TblTerceroPolicy
 {
     use HandlesAuthorization;
-
-    public function before($tblUsuario, $ability) {
-        if($tblUsuario->tbltercero->id_dominio_tipo_tercero == session('id_dominio_super_administrador')) {
-            return true;
-        }
-    }
 
     /**
      * Determine whether the user can view any models.
@@ -36,7 +32,7 @@ class TblTerceroPolicy
      */
     public function view(TblUsuario $tblUsuario, TblTercero $tblTercero)
     {
-        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador')]);
+        return $tblUsuario->getPermisosMenu('clients.index')->view;
     }
 
     /**
@@ -47,7 +43,7 @@ class TblTerceroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador')]);
+        return $tblUsuario->getPermisosMenu('clients.index')->create;
     }
 
     /**
@@ -59,7 +55,7 @@ class TblTerceroPolicy
      */
     public function update(TblUsuario $tblUsuario, TblTercero $tblTercero)
     {
-        return in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_administrador')]);
+        return $tblUsuario->getPermisosMenu('clients.index')->update;
     }
 
     /**

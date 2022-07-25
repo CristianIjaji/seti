@@ -6,6 +6,8 @@ use App\Http\Requests\SavePuntosInteresRequest;
 use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
+use App\Models\TblUsuario;
+use Illuminate\Support\Facades\Gate;
 
 class PuntosInteresController extends Controller
 {
@@ -54,6 +56,8 @@ class PuntosInteresController extends Controller
      */
     public function index()
     {
+        $this->authorize('view', new TblPuntosInteres);
+
         return $this->getView('puntos_interes.index');
     }
 
@@ -64,12 +68,15 @@ class PuntosInteresController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', new TblPuntosInteres);
+
         return view('puntos_interes._form', [
             'site' => new TblPuntosInteres,
             'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
+            'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
         ]);
     }
 
@@ -83,6 +90,7 @@ class PuntosInteresController extends Controller
     {
         try {
             $sitio = TblPuntosInteres::create($request->validated());
+            $this->authorize('create', $sitio);
 
             return response()->json([
                 'success' => 'Punto de interés creado exitosamente!',
@@ -106,6 +114,8 @@ class PuntosInteresController extends Controller
      */
     public function show(TblPuntosInteres $site)
     {
+        $this->authorize('view', $site);
+
         return view('puntos_interes._form', [
             'edit' => false,
             'site' => $site
@@ -120,6 +130,8 @@ class PuntosInteresController extends Controller
      */
     public function edit(TblPuntosInteres $site)
     {
+        $this->authorize('update', $site);
+
         return view('puntos_interes._form', [
             'edit' => true,
             'site' => $site,
@@ -131,6 +143,7 @@ class PuntosInteresController extends Controller
                 0 => 'Inactivo',
                 1 => 'Activo'
             ],
+            'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
         ]);
     }
 
@@ -145,6 +158,7 @@ class PuntosInteresController extends Controller
     {
         try {
             $site->update($request->validated());
+            $this->authorize('update', $site);
 
             return response()->json([
                 'success' => 'Punto de interés actualizado correctamente!'
@@ -175,15 +189,16 @@ class PuntosInteresController extends Controller
         $punto = new TblPuntosInteres;
 
         return view($view, [
-            'model' => TblPuntosInteres::where(function ($q) {
-                $this->dinamyFilters($q);
-            })->latest()->paginate(10),
+            'model' => TblPuntosInteres::with(['tblcliente', 'tbldominiozona', 'tbldominiotransporte', 'tbldominioacceso', 'tblusuario'])
+                ->where(function ($q) {
+                    $this->dinamyFilters($q);
+                })->latest()->paginate(10),
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
-            'create' => true,//Gate::allows('create', $punto),
-            'edit' => true,//Gate::allows('update', $punto),
-            'view' => true,//Gate::allows('view', $punto),
+            'create' => Gate::allows('create', $punto),
+            'edit' => Gate::allows('update', $punto),
+            'view' => Gate::allows('view', $punto),
             'request' => $this->filtros,
         ]);
     }

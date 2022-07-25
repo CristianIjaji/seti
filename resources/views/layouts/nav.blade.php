@@ -43,43 +43,12 @@
             </a>
             <hr class="bg-white">
             <div class="nav_list">
-                @can('view', new App\Models\TblTercero)
-                    <a href="{{ route('clients.index') }}" class="nav_link {{ setActive('clients.index') }} rounded my-2">
-                        <i class="fa-solid fa-address-book nav_icon"></i>
-                        <span class="nav_name">Terceros</span>
+                @foreach (Auth::user()->getMenusPerfil() as $menu)
+                    <a href="{{ route($menu->url) }}" class="nav_link {{ setActive($menu->url) }} rounded my-2">
+                        <i class="{{ $menu->icon }}"></i>
+                        <span class="nav_name">{{$menu->nombre}}</span>
                     </a>
-                @endcan
-                <a href="{{ route('sites.index') }}" class="nav_link {{ setActive('sites.index') }} rounded my-2">
-                    <i class="fa-solid fa-tower-cell nav_icon"></i>
-                    <span class="nav_name">Estaciones</span>
-                </a>
-                <a href="{{ route('priceList.index') }}" class="nav_link {{ setActive('priceList.index') }} rounded my-2">
-                    <i class="fa-solid fa-list-ol nav_icon"></i>
-                    <span class="nav_name">Lista precios</span>
-                </a>
-                <a href="{{ route('quotes.index') }}" class="nav_link {{ setActive('quotes.index') }} rounded my-2">
-                    <i class="fa-solid fa-clipboard-list nav_icon"></i>
-                    <span class="nav_name">Cotizaciones</span>
-                </a>
-                
-                @can('view-user')
-                    <a href="{{ route('users.index') }}" class="nav_link {{ setActive('users.index') }} rounded my-2">
-                        <i class="fa-solid fa-chalkboard-user nav_icon"></i>
-                        <span class="nav_name">Usuarios</span>
-                    </a>
-                @endcan
-                @can('view', new App\Models\TblDominio)
-                    <a href="{{ route('domains.index') }}" class="nav_link {{ setActive('domains.index') }} rounded my-2">
-                        <i class="fa-solid fa-screwdriver nav_icon"></i>
-                        <span class="nav_name">Dominios</span>
-                    </a>
-                @endcan
-                @can('view', new App\Models\TblParametro)
-                    <a href="{{ route('params.index') }}" class="nav_link {{ setActive('params.index') }} rounded my-2">
-                        <i class="fa-solid fa-sliders nav_icon"></i>
-                        <span class="nav_name">Parámetros</span>
-                    </a>
-                @endcan
+                @endforeach
             </div>
         </div>
     </nav>

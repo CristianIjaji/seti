@@ -199,9 +199,10 @@ class TerceroController extends Controller
         $tercero = new TblTercero;
 
         return view($view, [
-            'model' => TblTercero::where(function ($q) {
-                $this->dinamyFilters($q);
-            })->latest()->paginate(10),
+            'model' => TblTercero::with(['tbldominiodocumento', 'tbldominiotercero', 'tbluser', 'tblusuario'])
+                ->where(function ($q) {
+                    $this->dinamyFilters($q);
+                })->latest()->paginate(10),
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
             'create' => Gate::allows('create', $tercero),
             'edit' => Gate::allows('update', $tercero),

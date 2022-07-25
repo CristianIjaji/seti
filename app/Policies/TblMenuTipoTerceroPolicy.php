@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\TblParametro;
+use App\Models\TblMenuTipoTercero;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class TblParametroPolicy
+class TblMenuTipoTerceroPolicy
 {
     use HandlesAuthorization;
 
@@ -25,12 +25,12 @@ class TblParametroPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function view(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->view) ? $tblUsuario->getPermisosMenu('params.index')->view : false;
+        return isset($tblUsuario->getPermisosMenu('profiles.index')->view) ? $tblUsuario->getPermisosMenu('profiles.index')->view : false;
     }
 
     /**
@@ -41,29 +41,29 @@ class TblParametroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->create) ? $tblUsuario->getPermisosMenu('params.index')->create : false;
+        return isset($tblUsuario->getPermisosMenu('profiles.index')->create) ? $tblUsuario->getPermisosMenu('profiles.index')->create : false;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function update(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->update) ? $tblUsuario->getPermisosMenu('params.index')->update : false;
+        return isset($tblUsuario->getPermisosMenu('profiles.index')->update) ? $tblUsuario->getPermisosMenu('profiles.index')->update : false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function delete(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
     {
         //
     }
@@ -72,10 +72,10 @@ class TblParametroPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function restore(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
     {
         //
     }
@@ -84,10 +84,10 @@ class TblParametroPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblParametro  $tblParametro
+     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(TblUsuario $tblUsuario, TblParametro $tblParametro)
+    public function forceDelete(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
     {
         //
     }

@@ -4,6 +4,8 @@ use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ListaPrecioController;
+use App\Http\Controllers\MenuTipoTercero;
+use App\Http\Controllers\MenuTipoTerceroController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\ParametroController;
 use App\Http\Controllers\PuntosInteresController;
@@ -55,6 +57,10 @@ Route::resource('users', UsuarioController::class);
 Route::post('users/grid', [UsuarioController::class, 'grid'])->name('users.grid');
 Route::post('users/{user}/update_password', [UsuarioController::class, 'update_password'])->name('users.update_password');
 Route::get('users/{user}/password', [UsuarioController::class, 'password'])->name('users.password');
+
+// Controlador menu tipo tercero
+Route::resource('profiles', MenuTipoTerceroController::class);
+Route::post('profiles/grid', [MenuTipoTerceroController::class, 'grid'])->name('profiles.grid');
 
 // Controlador dominios
 Route::resource('domains', DominioController::class);

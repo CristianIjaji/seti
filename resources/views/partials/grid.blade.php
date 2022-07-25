@@ -122,7 +122,11 @@
                                             @endif
                                         @endif
                                     @else
-                                        {{ $model[$header['name']][$header['foreign']] }}
+                                        @if (isset($header['html']) && $header['html'])
+                                            {!! $model[$header['name']][$header['foreign']] !!}
+                                        @else
+                                            {{ $model[$header['name']][$header['foreign']] }}
+                                        @endif
                                     @endif
                                 @else
                                     @if (count($header['options']))
