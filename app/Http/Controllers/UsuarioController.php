@@ -243,9 +243,10 @@ class UsuarioController extends Controller
 
     private function getView($view) {
         return view($view, [
-            'model' => TblUsuario::where(function ($q) {
-                $this->dinamyFilters($q);
-            })->latest()->paginate(10),
+            'model' => TblUsuario::with(['tbltercero', 'tblusuario'])
+                ->where(function ($q) {
+                    $this->dinamyFilters($q);
+                })->latest()->paginate(10),
             'create' => Gate::allows('create-user', TblUsuario::class),
             'edit' => Gate::allows('update-user', TblUsuario::class),
             'view' => Gate::allows('view-user', TblUsuario::class),

@@ -22,7 +22,7 @@
             <label for="id_cliente" class="required">Cliente</label>
             @if ($edit)
                 <div class="row">
-                    <div class="col-10">
+                    <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
                         <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir cliente</option>
                             @foreach ($clientes as $id => $nombre)
@@ -32,19 +32,21 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-2 text-end">
-                        <i
-                            class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
-                            data-title="Nuevo cliente"
-                            data-size='modal-xl'
-                            data-reload="false"
-                            data-select="id_cliente"
-                            data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_cliente').'') }}'
-                            data-modal="modalForm-2"
-                            data-toggle="tooltip"
-                            title="Crear cliente"
-                        ></i>
-                    </div>
+                    @if ($create_client)
+                        <div class="col-2 text-end">
+                            <i
+                                class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                                data-title="Nuevo cliente"
+                                data-size='modal-xl'
+                                data-reload="false"
+                                data-select="id_cliente"
+                                data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_cliente').'') }}'
+                                data-modal="modalForm-2"
+                                data-toggle="tooltip"
+                                title="Crear cliente"
+                            ></i>
+                        </div>
+                    @endif
                 </div>
             @else
                 <input type="text" class="form-control" id="id_cliente" value="{{ $cotizacion->tblCliente->full_name }}" disabled>
@@ -54,7 +56,7 @@
             <label for="id_estacion" class="required">Punto interés</label>
             @if ($edit)
                 <div class="row">
-                    <div class="col-10">
+                    <div class="{{ $create_site ? 'col-10' : 'col-12' }}">
                         <select class="form-control" name="id_estacion" id="id_estacion" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir punto interés</option>
                             @isset($estaciones)
@@ -66,19 +68,21 @@
                             @endisset
                         </select>
                     </div>
-                    <div class="col-2 text-end">
-                        <i
-                            class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
-                            data-title="Nuevo punto interés"
-                            data-size='modal-xl'
-                            data-reload="false"
-                            data-select="id_estacion"
-                            data-action='{{ route('sites.create')}}'
-                            data-modal="modalForm-2"
-                            data-toggle="tooltip"
-                            title="Crear punto de interés"
-                        ></i>
-                    </div>
+                    @if ($create_site)
+                        <div class="col-2 text-end">
+                            <i
+                                class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                                data-title="Nuevo punto interés"
+                                data-size='modal-xl'
+                                data-reload="false"
+                                data-select="id_estacion"
+                                data-action='{{ route('sites.create')}}'
+                                data-modal="modalForm-2"
+                                data-toggle="tooltip"
+                                title="Crear punto de interés"
+                            ></i>
+                        </div>
+                    @endif
                 </div>
             @else
                 <input type="text" class="form-control" id="id_estacion" value="{{ $cotizacion->tblEstacion->nombre }}" disabled>
@@ -136,28 +140,37 @@
             <label for="id_responsable_cliente" class="required">Responsable</label>
             @if ($edit)
                 <div class="row">
-                    <div class="col-10">
+                    <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
                         <select class="form-control" name="id_responsable_cliente" id="id_responsable_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
-                            @foreach ($contratistas as $id => $nombre)
+                            @forelse ($contratistas as $id => $nombre)
                                 <option value="{{ $id }}" {{ old('id_responsable_cliente', $cotizacion->id_responsable_cliente) == $id ? 'selected' : '' }}>
                                     {{$nombre}}
                                 </option>
-                            @endforeach
+                            @empty
+                                <option value="">Elegir contratista</option>
+                            @endforelse
+                            {{-- @foreach ($contratistas as $id => $nombre)
+                                <option value="{{ $id }}" {{ old('id_responsable_cliente', $cotizacion->id_responsable_cliente) == $id ? 'selected' : '' }}>
+                                    {{$nombre}}
+                                </option>
+                            @endforeach --}}
                         </select>
                     </div>
-                    <div class="col-2 text-end">
-                        <i
-                            class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
-                            data-title="Nuevo contratista"
-                            data-size='modal-xl'
-                            data-reload="false"
-                            data-select="id_responsable_cliente"
-                            data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_contratista').'') }}'
-                            data-modal="modalForm-2"
-                            data-toggle="tooltip"
-                            title="Crear contratista"
-                        ></i>
-                    </div>
+                    @if ($create_client)
+                        <div class="col-2 text-end">
+                            <i
+                                class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                                data-title="Nuevo contratista"
+                                data-size='modal-xl'
+                                data-reload="false"
+                                data-select="id_responsable_cliente"
+                                data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_contratista').'') }}'
+                                data-modal="modalForm-2"
+                                data-toggle="tooltip"
+                                title="Crear contratista"
+                            ></i>
+                        </div>
+                    @endif
                 </div>
             @else
                 <input type="text" class="form-control" id="id_responsable_cliente" value="{{ $cotizacion->tblContratista->full_name }}" disabled>

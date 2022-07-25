@@ -27,15 +27,15 @@ class AuthServiceProvider extends ServiceProvider
 
         //
         Gate::define('create-user', function($user) {
-            return in_array($user->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_super_administrador'), session('id_dominio_administrador')]);
+            return $user->getPermisosMenu('users.index')->create;
         });
 
         Gate::define('update-user', function($user) {
-            return in_array($user->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_super_administrador'), session('id_dominio_administrador')]);
+            return $user->getPermisosMenu('users.index')->update;
         });
 
         Gate::define('view-user', function($user) {
-            return in_array($user->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_super_administrador'), session('id_dominio_administrador')]);
+            return $user->getPermisosMenu('users.index')->view;
         });
     }
 }

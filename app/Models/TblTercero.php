@@ -38,6 +38,10 @@ class TblTercero extends Model
         return $this->belongsTo(TblDominio::class, 'id_dominio_tipo_tercero');
     }
 
+    public function tblmenutipotercero() {
+        return $this->belongsTo(TblMenuTipoTercero::class, 'id_dominio_tipo_tercero');
+    }
+
     public function tbluser() {
         return $this->belongsTo(TblUsuario::class, 'id_tercero');
     }
@@ -64,6 +68,6 @@ class TblTercero extends Model
             ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
             ->select('t.id_tercero',
                 DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
-            )->where('t.id_dominio_tipo_tercero', '=', $type)->pluck('nombre', 'id_tercero');   
+            )->where('t.id_dominio_tipo_tercero', '=', $type)->pluck('nombre', 'id_tercero');
     }
 }

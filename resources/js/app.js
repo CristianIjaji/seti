@@ -5,6 +5,7 @@
  */
 
 require('./bootstrap');
+require('./multiselect.min');
 
 import Push from 'push.js';
 window.Pusher = require('pusher-js');
@@ -250,21 +251,26 @@ const sendAjaxForm = (action, data, reload, select, modal) => {
             showLoader(true);
         },
         success: function(response) {
-            $(`#${modal}`).modal('hide');
+            if(typeof response.errors === 'undefined') {
+                $(`#${modal}`).modal('hide');
+            }
+            
             Swal.fire({
-                icon: 'success',
-                title: 'Cambio realizado',
-                text: response.success,
+                icon: `${typeof response.errors === 'undefined' ? 'success' : 'error'}`,
+                title: `${typeof response.errors === 'undefined' ? 'Cambio realizado' : 'No se pudo completar la acción'}`,
+                text: `${typeof response.errors === 'undefined' ? response.success : response.errors}`,
                 confirmButtonColor: 'var(--bs-primary)',
             }).then(function() {
-                if(reload.toString() !== 'false') {
-                    location.reload();
-                } else {
-                    if($(`#${select}`).length && typeof response.response !== 'undefined') {
-                        var record = response.response;
-                        var option = `<option selected value="${record.value}">${record.option}</option>`;
-                        $(`#${select}`).append(option);
-                        $(`#${select}`).trigger('change');
+                if(typeof response.errors === 'undefined') {
+                    if(reload.toString() !== 'false') {
+                        location.reload();
+                    } else {
+                        if($(`#${select}`).length && typeof response.response !== 'undefined') {
+                            var record = response.response;
+                            var option = `<option selected value="${record.value}">${record.option}</option>`;
+                            $(`#${select}`).append(option);
+                            $(`#${select}`).trigger('change');
+                        }
                     }
                 }
             });
@@ -434,7 +440,6 @@ const addItems = (items) => {
         }
     });
 
-    console.log(typeof carrito, carrito);
     drawItems();
 }
 

@@ -6,8 +6,7 @@ use App\Models\TblParametro;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Session;
+use Illuminate\Support\Facades\Session;
 
 class LoginSuccessful
 {

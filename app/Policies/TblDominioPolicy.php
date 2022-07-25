@@ -10,12 +10,6 @@ class TblDominioPolicy
 {
     use HandlesAuthorization;
 
-    public function before($tblUsuario, $ability) {
-        if($tblUsuario->tbltercero->id_dominio_tipo_tercero == session('id_dominio_super_administrador')) {
-            return true;
-        }
-    }
-
     /**
      * Determine whether the user can view any models.
      *
@@ -36,7 +30,7 @@ class TblDominioPolicy
      */
     public function view(TblUsuario $tblUsuario, TblDominio $tblDominio)
     {
-        //
+        return isset($tblUsuario->getPermisosMenu('domains.index')->view) ? $tblUsuario->getPermisosMenu('domains.index')->view : false;
     }
 
     /**
@@ -47,7 +41,7 @@ class TblDominioPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        //
+        return isset($tblUsuario->getPermisosMenu('domains.index')->create) ? $tblUsuario->getPermisosMenu('domains.index')->create : false;
     }
 
     /**
@@ -59,7 +53,7 @@ class TblDominioPolicy
      */
     public function update(TblUsuario $tblUsuario, TblDominio $tblDominio)
     {
-        //
+        return isset($tblUsuario->getPermisosMenu('domains.index')->update) ? $tblUsuario->getPermisosMenu('domains.index')->update : false;
     }
 
     /**

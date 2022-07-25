@@ -17,14 +17,33 @@
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
             <label for="id_cliente" class="required">Cliente</label>
             @if ($edit)
-                <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
-                    <option value="">Elegir cliente</option>
-                    @foreach ($clientes as $id => $nombre)
-                        <option value="{{ $id }}" {{ old('id_cliente', $lista_precio->id_cliente) == $id ? 'selected' : '' }}>
-                            {{ $nombre }}
-                        </option>
-                    @endforeach
-                </select>
+                <div class="row">
+                    <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
+                        <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
+                            <option value="">Elegir cliente</option>
+                            @foreach ($clientes as $id => $nombre)
+                                <option value="{{ $id }}" {{ old('id_cliente', $lista_precio->id_cliente) == $id ? 'selected' : '' }}>
+                                    {{$nombre}}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @if ($create_client)
+                        <div class="col-2 text-end">
+                            <i
+                                class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                                data-title="Nuevo cliente"
+                                data-size='modal-xl'
+                                data-reload="false"
+                                data-select="id_cliente"
+                                data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_cliente').'') }}'
+                                data-modal="modalForm-2"
+                                data-toggle="tooltip"
+                                title="Crear cliente"
+                            ></i>
+                        </div>
+                    @endif
+                </div>
             @else
                 <input type="text" class="form-control" id="id_cliente" value="{{ $lista_precio->tbltercerocliente->full_name }}" disabled>
             @endif

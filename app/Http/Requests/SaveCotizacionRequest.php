@@ -100,7 +100,7 @@ class SaveCotizacionRequest extends FormRequest
                 'required',
                 'exists:tbl_dominios,id_dominio'
             ],
-            'descripcion' => [
+            'descripcion_item' => [
                 'required'
             ],
             'unidad' => [
