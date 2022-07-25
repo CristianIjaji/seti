@@ -9635,8 +9635,11 @@ $(document).on('click', '.page-item', function (e) {
     $(this).addClass('active');
     var form = $(this).closest('form').attr('id');
     var page = $.urlParam('page', $(this).children().attr('href'));
-    $("#".concat(form, " > #page")).val(page);
-    $('.search_form').change();
+
+    if (typeof page === 'string') {
+      $("#".concat(form, " > #page")).val(page);
+      $('.search_form').change();
+    }
   }
 });
 

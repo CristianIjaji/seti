@@ -1,0 +1,56 @@
+@include('partials.grid', [
+    'title' => 'Actividades',
+    'create' => $create,
+    'route' => 'activities',
+    'status' => $status,
+    'btnOptionsCreate' => [
+        "title" => 'Nueva actividad',
+        'header-class' => 'bg-primary text-white',
+        "modal-size" => "modal-fullscreen",
+        "route" => route("activities.create"),
+    ],
+    'headers' => [
+        ['name' => 'id_encargado', 'label' => 'Encargado'],
+        // ['name' => 'id_orden_compra', 'label' => 'OT'],
+        ['name' => 'id_tipo_actividad', 'label' => 'Tipo'],
+        ['name' => 'id_mes', 'label' => 'Mes'],
+        ['name' => 'id_estacion', 'label' => 'Estación'],
+        ['name' => 'descripción', 'label' => 'Descripción'],
+        ['name' => 'id_permiso', 'label' => 'Permiso'],
+        ['name' => 'fecha_solicitud', 'label' => 'Solicitud'],
+        ['name' => 'fecha_ejecucion', 'label' => 'Ejecuión'],
+        ['name' => 'fecha_finalizacion', 'label' => 'Finalización'],
+        ['name' => 'id_cotizacion', 'label' => 'Cotización'],
+        ['name' => 'id_orden_compra', 'label' => 'OC'],
+        ['name' => 'id_informe', 'label' => 'Informe'],
+        ['name' => 'liquidado', 'label' => 'Liquidación'],
+        ['name' => 'id_mes_consolidado', 'label' => 'Consolidado'],
+        ['name' => 'valor', 'label' => 'Valor'],
+        ['name' => 'observaciones', 'label' => 'Observación'],
+
+        // ['name' => 'id_actividad', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
+        // ['name' => 'ot_trabajo', 'label' => 'OT trabajo', 'col' => 'col-1'],
+        // ['name' => 'tblCliente', 'label' => 'Cliente', 'col' => 'col-1', 'foreign' => 'full_name'],
+        // ['name' => 'tblEstacion', 'label' => 'Estación', 'col' => 'col-1', 'foreign' => 'nombre'],
+        // ['name' => 'fecha_solicitud', 'label' => 'Fecha solicitud', 'col' => 'col-1', 'class' => 'input-date'],
+        // ['name' => 'fecha_envio', 'label' => 'Fecha envió', 'col' => 'col-1', 'class' => 'input-date'],
+        // ['name' => 'id_prioridad', 'label' => 'Prioridad', 'col' => 'col-1', 'options' => $prioridades],
+        // ['name' => 'estado', 'label' => 'Proceso', 'col' => 'col-1', 'options' => $procesos],
+        // ['name' => 'id_responsable_cliente', 'label' => 'Responsable', 'col' => 'col-1', 'options' => $contratistas],
+        // ['name' => 'estado', 'label' => 'Proceso', 'col' => 1, 'options' => $estados],
+        ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [
+            'btnOptions' => [
+                'view' => $view,
+                'modal-view-title' => 'Ver actividad',
+                'modal-view-size' => 'modal-fullscreen',
+                'header-view-class' => 'bg-info text-white',
+                'edit' => $edit,
+                'modal-edit-title' => 'Editar actividad',
+                'modal-edit-size' => 'modal-fullscreen',
+                'header-edit-class' => 'bg-warning text-white',
+            ]
+        ]]
+    ],
+    'filters' => true,
+    'models' => $model
+])
