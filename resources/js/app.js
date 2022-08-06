@@ -6,11 +6,13 @@
 
 require('./bootstrap');
 require('./multiselect.min');
+// require('typeahead.js');
 
 import Push from 'push.js';
 window.Pusher = require('pusher-js');
 
 import moment from 'moment';
+// import typeaheadBundle from 'typeahead.js';
 
 const Swal = require('sweetalert2');
 const tempusDominus = require('@eonasdan/tempus-dominus');
@@ -51,6 +53,22 @@ window.formatCurrency = { alias : "currency", prefix: '', min: 0 };
 var pusher = new Pusher('c27a0f7fb7b0efd70263', {
     cluster: 'us2'
 });
+
+const updateQuoteGrid = () => {
+    $.ajax({
+        url: `quotes/grid`,
+        method: 'POST',
+        data: $(`#form_quotes`).serialize(),
+        beforeSend: function() {
+            showLoader(true);
+        }
+    }).done(function(view) {
+        $('#container').html(view);
+    }).always(function() {
+        showLoader(false);
+        setupSelect2();
+    });
+}
 
 window.timer = () => {
     let date_time_now = moment(new Date(), 'YYYY-MM-DD HH:mm:ss');
@@ -345,6 +363,16 @@ const handleModal = (button) => {
             });
             setTimeout(() => {
                 $(`#${modal} input:text, #${modal} textarea`).first().focus();
+                $('.money').inputmask(formatCurrency);
+                // $('.typeahead').typeahead({
+                //     source: function (query, process) {
+                //         return $.get('clients/search', {
+                //             query: query
+                //         }, function (data) {
+                //             return process(data);
+                //         });
+                //     }
+                // });
             }, 100);
         }).always(function() {
             showLoader(false);
@@ -361,6 +389,12 @@ const handleModal = (button) => {
 }
 
 window.carrito = [];
+const updateTextAreaSize = () => {
+    $('#table_items textarea').each(function(index, element){
+        element.style.height = "1px";
+        element.style.height = `${25 + element.scrollHeight}px`;
+    });
+}
 
 window.drawItems = (edit = true) => {
     // type: tipo de item: mano de obra, transporte o suministro
@@ -370,49 +404,76 @@ window.drawItems = (edit = true) => {
     }
 
     $.each(carrito, (type, item) => {
-        let total = 0;
-        $.each(item, (index, element) => {
-            if(typeof element !== 'undefined') {
-                if(!$(`#tr_${type}_${index}`).length) {
-                    $(`
-                        <tr id="tr_${type}_${index}" class="tr_cotizacion">
-                            <td>
-                                <input type='hidden' name="id_tipo_item[]" value="${type}" />
-                                <input type='hidden' name="id_lista_precio[]" value="${index}" />
-                                <input type="text" class="form-control text-center text-uppercase border-0" id="item_${index}" value="${element['item']}" disabled>
-                            </td>
-                            <td>
-                                <textarea class="form-control border-0" rows="2" data-toggle="tooltip" title="${element['descripcion']}" name="descripcion_item[]" id="descripcion_item_${index}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control text-center border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${index}" value="${element['unidad']}" ${edit ? '' : 'disabled'}>
-                            </td>
-                            <td>
-                                <input type="number" min="0" class="form-control text-center border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required ${edit ? '' : 'disabled'}>
-                            </td>
-                            <td>
-                                <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_total[]" id="valor_total_${index}" value="${element['valor_total']}" disabled>
-                            </td>
-                            ${edit == true
-                                ? `<td class="text-center"><i id="${type}_${index}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>`
-                                : ``
-                            }
-                        </tr>
-                    `).insertAfter(`#tr_${type}`);
-                    $('.money').inputmask(formatCurrency);
-                } else {
-                    $(`#tr_${type}_${index} #valor_total_${index}`).val(element['valor_total']);
+        if(typeof item !== 'undefined' && carrito[type]['update'] === false) {
+            let total = 0;
+
+            $.each(item, (index, element) => {
+                if(typeof element !== 'undefined' && typeof element === 'object') {
+                    if(!$(`#tr_${type}_${index}`).length) {
+                        let classname = `${$(`#caret_${type}`).hasClass(showIcon) ? 'show' : ''}`;
+                        $(`
+                            <tr id="tr_${type}_${index}" class="tr_cotizacion collapse ${classname} item_${type}">
+                                <td>
+                                    <input type='hidden' name="id_tipo_item[]" value="${type}" />
+                                    <input type='hidden' name="id_lista_precio[]" value="${index}" />
+                                    <input type="text" class="form-control text-center text-uppercase border-0" id="item_${index}" value="${element['item']}" disabled>
+                                </td>
+                                <td>
+                                    <textarea class="form-control border-0" rows="2" name="descripcion_item[]" id="descripcion_item_${index}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control text-center border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${index}" value="${element['unidad']}" ${edit ? '' : 'disabled'}>
+                                </td>
+                                <td>
+                                    <input type="number" min="0" class="form-control text-center border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required ${edit ? '' : 'disabled'}>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_total[]" id="valor_total_${index}" value="${element['valor_total']}" disabled>
+                                </td>
+                                ${edit == true
+                                    ? `<td class="text-center"><i id="${type}_${index}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>`
+                                    : ``
+                                }
+                            </tr>
+                        `).insertAfter(`#tr_${type}`);
+                        $('.money').inputmask(formatCurrency);
+                    } else {
+                        $(`#tr_${type}_${index} #valor_total_${index}`).val(element['valor_total']);
+                    }
+    
+                    total += parseFloat(element['valor_total'], 2);
                 }
+                carrito[type]['update'] = true;
+            });
 
-                total += element['valor_total'];
-            }
-        });
-
-        $(`#lbl_${type}`).text(Inputmask.format(total, formatCurrency));
+            $(`#lbl_${type}`).text(Inputmask.format(total, formatCurrency));
+        }
     });
+
+    let iva = parseFloat(
+        $('#iva option:selected').length > 0
+            ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '')
+            : $('#iva').val().replace('IVA ', '').replace('%', '')
+        , 0
+    );
+    let total_material = parseFloat($('.lbl_total_material').text().replace(regexCurrencyToFloat, ""), 2);
+    let total_suministro = parseFloat($('.lbl_total_mano_obra').text().replace(regexCurrencyToFloat, ""), 2);
+    let total_transporte = parseFloat($('.lbl_total_transporte').text().replace(regexCurrencyToFloat, ""), 2);
+
+    let total_sin_iva = (total_material + total_suministro + total_transporte);
+    let total_iva = ((total_sin_iva * iva) / 100);
+    let total_con_iva = (total_sin_iva + total_iva);
+
+    $('#lbl_total_sin_iva').text(Inputmask.format(total_sin_iva, formatCurrency));
+    $('#lbl_total_iva').text(Inputmask.format(total_iva, formatCurrency));
+    $('#lbl_total_con_iva').text(Inputmask.format(total_con_iva, formatCurrency));
+
+    setTimeout(() => {
+        updateTextAreaSize();
+    }, 100);
 }
 
 const getItem = (item) => {
@@ -436,11 +497,11 @@ const addItems = (items) => {
         }
 
         if(typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
+            carrito[$(item).data('type')]['update'] = false;
             carrito[$(item).data('type')][$(item).val()] = getItem(item);
+            drawItems();
         }
     });
-
-    drawItems();
 }
 
 $('body').tooltip({
@@ -455,39 +516,39 @@ $(document).ready(function() {
     }
 
     window.setupSelect2 = function(modal = '') {
-        if(modal !== '') {
-            $(`#${modal} select`).select2({
-                dropdownParent: $(`#${modal}`)
+        modal = (modal !== '' ? `#${modal} ` : '');
+
+        $(`${modal}select`).each((index, element) => {
+            let minimumInputLength = $(element).data('minimuminputlength');
+            let maximumSelectionLength = $(element).data('maximumselectionlength');
+            let closeOnSelect = $(element).data('closeonselect');
+
+            closeOnSelect = (typeof closeOnSelect !== 'undefined' ? (closeOnSelect === 'true' ? true : false) : true);
+
+            $(element).select2({
+                dropdownParent: modal,
+                minimumInputLength,
+                maximumSelectionLength,
+                closeOnSelect,
+                language: {
+                    inputTooShort: function (args) {
+                        var remainingChars = args.minimum - args.input.length;
+                        var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
+                        return message;
+                    },
+                    noResults: function() {
+                        return 'No existen resultados';
+                    },
+                    maximumSelected: function (args) {
+                        var t = `Puedes seleccionar hasta ${args.maximum} ítem`;
+                        args.maximum != 1 && (t += "s");
+                        return t;
+                    }
+                },
             });
-            $('.money').inputmask(formatCurrency);
-        } else {
-            $('select').select2();
-        }
-
-        $('.select2-selection').addClass('form-control');
-
-        $('#lista_items, #id_tercero_dependencia').select2('destroy');
-
-        $('#lista_items, #id_tercero_dependencia').select2({
-            minimumInputLength: 2,
-            language: {
-                inputTooShort: function (args) {
-                    var remainingChars = args.minimum - args.input.length;
-                    var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
-                    return message;
-                },
-                noResults: function() {
-                    return 'No existen resultados';
-                },
-            },
-            closeOnSelect: false
         });
 
-        $('#select2-lista_items-container, #select2-id_tercero_dependencia-container').data('toggle', 'tooltip').data('html', true);
-
-        $('#select2-lista_items-container, #select2-id_tercero_dependencia-container')
-            .parent().removeClass('border-left-0 border-top-0 border-right-0').addClass('form-control border');
-        
+        $('.select2-selection').addClass('form-control');
         $('.select2-selection__rendered').data('toggle', 'tooltip');
     }
 
@@ -545,6 +606,38 @@ $(document).ready(function() {
         }).always(function () {
             showLoader(false);
         });
+    });
+
+    $('#btn_upload').click(function(){
+        $('#input_file').trigger('click');
+    });
+
+    $('#input_file').change(function(e){
+        $('#lbl_input_file')
+            .text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
+        
+        if(typeof e.target.files[0] !== 'undefined') {
+            $('#lbl_input_file').addClass('file_selected');
+
+            Swal.fire({
+                icon: 'question',
+                title: 'Subir archivo al servidor?',
+                text: e.target.files[0].name,
+                showCancelButton: true,
+                confirmButtonText: 'Continuar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true,
+                confirmButtonColor: '#fe0115c4',
+                cancelButtonColor: '#6e7d88',
+            }).then((result) => {
+                if(result.isConfirmed) {
+                    showLoader(true);
+                    $('#input_file').parent().submit();
+                }
+            });
+        } else {
+            $('#lbl_input_file').removeClass('file_selected');
+        }
     });
 
     $('[data-toggle="tooltip"]').tooltip();
@@ -748,6 +841,7 @@ $(document).on('click', '.btn-delete-item', function() {
     $(`#tr_${id_tr}`).remove();
     id_tr = id_tr.split('_');
 
+    carrito[id_tr[0]]['update'] = false;
     delete carrito[id_tr[0]][id_tr[1]];
     drawItems();
 });
@@ -765,6 +859,8 @@ const fnc_totales_cot = (id) => {
         carrito[id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
         carrito[id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
         carrito[id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
+
+        carrito[id_tr[1]]['update'] = false;
 
         drawItems();
     }
@@ -815,4 +911,166 @@ $(document).on('change', '#id_cliente', function() {
             });
         }
     }
+});
+
+$(document).on('change', '#iva', function() {
+    if($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+        $.each(carrito, (type, item) => {
+            if(typeof item !== 'undefined' && carrito[type]['update'] === false) {
+                carrito[type]['update'] = true;
+            }
+        });
+
+        drawItems();
+    }
+});
+
+let showIcon = 'fa-caret-down';
+let hideIcon = 'fa-caret-up';
+
+$(document).on('click', '.show-more', function() {    
+    setTimeout(() => {
+        $(this).toggleClass(`${showIcon} ${hideIcon}`);
+    }, 100);
+});
+
+$(document).on('click', '.btn-quote', function(e) {
+    e.preventDefault();
+
+    let action = '';
+    let title = '';
+    let text = '';
+    let buttonColor = '';
+    let confirmButtonColor = '';
+    let confirmButtonText = '';
+
+    let button = $(this);
+    let form = button.closest('form');
+
+    let data = new FormData(form[0]);
+
+    switch ($(this).attr('id')) {
+        case 'btn-aprove-quote':
+            action = 'aprove';
+            title = `<h2 class='fw-bold text-success'>Aprobar cotización</h2>`;
+            text = `¿Seguro quiere aprobar está cotización?`;
+            confirmButtonColor = `var(--bs-success)`;
+            confirmButtonText = `Sí, aprobar cotización`;
+            break;
+        case 'btn-deny-quote':
+            action = 'deny';
+            title = `<h2 class='fw-bold text-danger'>Regresar cotización</h2>`;
+            text = `¿Seguro quiere regresar está cotización?`;
+            confirmButtonColor = `var(--bs-danger)`;
+            confirmButtonText = `Sí, regresar cotización`;
+            break;
+        case 'btn-send-quote':
+            action = 'send';
+            title = `<h2 class='fw-bold text-info'>Enviar cotización</h2>`;
+            text = `¿Seguro quiere enviar la cotización?`;
+            confirmButtonColor = `var(--bs-info)`;
+            confirmButtonText = `Sí, enviar cotización`;
+            break;
+        default:
+            break;
+    }
+
+    if (action === '') return false;
+
+    data.append('action', action);
+    data.delete('_method');
+
+    Swal.fire({
+        icon: 'question',
+        title,
+        text,
+        reverseButtons: true,
+        showCancelButton: true,
+        confirmButtonColor,
+        confirmButtonText,
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if(result.isConfirmed) {
+            $.ajax({
+                url: `quotes/${$('#id_cotizacion').val()}/handleQuote`,
+                method: 'POST',
+                data,
+                processData: false,
+                contentType: false,
+                cache: false,
+                beforeSend: function() {
+                    $('.alert-success, .alert-danger').fadeOut().html('');
+                    showLoader(true);
+                },
+                success: function(response, status, xhr) {
+                    if(response.success) {
+                        // $('#modalForm').modal('hide');
+                        window.open(`quotes/exportQuote?quote=${$('#id_cotizacion').val()}`, '_blank');  
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Cambio realizado',
+                            text: response.success,
+                            confirmButtonColor: 'var(--bs-primary)'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: response.error,
+                            confirmButtonColor: 'var(--bs-primary)'
+                        });
+                    }
+                },
+                error: function(response) {
+                    let errors = '';
+                    $.each(response.responseJSON.errors, function(i, item){
+                        errors += `<li>${item}</li>`;
+                    });
+                    $('.alert-danger')
+                        .fadeIn(1000)
+                        .html(`<p>Por favor corrija los siguientes campos: </p> <ul>${errors}</ul>`);
+                }
+            }).always(function () {
+                updateQuoteGrid();
+                showLoader(false);
+            });
+
+            return false;
+        }
+    });
+
+    /*
+        $.ajax({
+            xhrFields: {
+                responseType: 'blob',
+            },
+            type: 'POST',
+            url: '/downloadPayroll',
+            data: {
+                salaryMonth: month,
+                salaryYear: year,
+                is_employee_salary: 1,
+                department: department.val()
+            },
+            success: function(result, status, xhr) {
+
+                var disposition = xhr.getResponseHeader('content-disposition');
+                var matches = /"([^"]*)"/.exec(disposition);
+                var filename = (matches != null && matches[1] ? matches[1] : 'salary.xlsx');
+
+                // The actual download
+                var blob = new Blob([result], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+
+                document.body.appendChild(link);
+
+                link.click();
+                document.body.removeChild(link);
+            }
+        });
+    */
 });

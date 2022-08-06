@@ -22,7 +22,7 @@ class CreateTblActividadesTable extends Migration
             $table->unsignedBigInteger('id_mes');
             $table->unsignedBigInteger('id_estacion');
             $table->text('descripcion');
-            $table->unsignedBigInteger('id_permiso')->nullable();
+            // $table->unsignedBigInteger('id_permiso')->nullable();
             $table->date('fecha_solicitud');
             $table->date('fecha_ejecucion')->nullable();
             $table->date('fecha_finalizacion')->nullable();
@@ -45,7 +45,7 @@ class CreateTblActividadesTable extends Migration
             $table->foreign('id_tipo_actividad')->references('id_dominio')->on('tbl_dominios');
             $table->foreign('id_mes')->references('id_dominio')->on('tbl_dominios');
             $table->foreign('id_estacion')->references('id_punto_interes')->on('tbl_puntos_interes');
-            $table->foreign('id_permiso')->references('id_permiso')->on('tbl_permisos');
+            // $table->foreign('id_permiso')->references('id_permiso')->on('tbl_permisos');
             $table->foreign('id_estado_actividad')->references('id_dominio')->on('tbl_dominios');
             $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones');
             $table->foreign('id_orden_compra')->references('id_orden_compra')->on('tbl_ordenes_compra');

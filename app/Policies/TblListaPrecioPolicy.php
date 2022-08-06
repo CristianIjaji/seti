@@ -91,4 +91,12 @@ class TblListaPrecioPolicy
     {
         //
     }
+
+    public function export(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio) {
+        return isset($tblUsuario->getPermisosMenu('sites.index')->export) ? $tblUsuario->getPermisosMenu('sites.index')->export : false;        
+    }
+
+    public function import(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio) {
+        return isset($tblUsuario->getPermisosMenu('sites.index')->import) ? $tblUsuario->getPermisosMenu('sites.index')->import : false;        
+    }
 }

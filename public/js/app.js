@@ -9063,6 +9063,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var push_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(push_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -9070,11 +9072,12 @@ __webpack_require__.r(__webpack_exports__);
  */
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
-__webpack_require__(/*! ./multiselect.min */ "./resources/js/multiselect.min.js");
+__webpack_require__(/*! ./multiselect.min */ "./resources/js/multiselect.min.js"); // require('typeahead.js');
+
 
 
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
-
+ // import typeaheadBundle from 'typeahead.js';
 
 var Swal = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
 
@@ -9118,6 +9121,22 @@ window.formatCurrency = {
 var pusher = new Pusher('c27a0f7fb7b0efd70263', {
   cluster: 'us2'
 });
+
+var updateQuoteGrid = function updateQuoteGrid() {
+  $.ajax({
+    url: "quotes/grid",
+    method: 'POST',
+    data: $("#form_quotes").serialize(),
+    beforeSend: function beforeSend() {
+      showLoader(true);
+    }
+  }).done(function (view) {
+    $('#container').html(view);
+  }).always(function () {
+    showLoader(false);
+    setupSelect2();
+  });
+};
 
 window.timer = function () {
   var date_time_now = moment__WEBPACK_IMPORTED_MODULE_1___default()(new Date(), 'YYYY-MM-DD HH:mm:ss');
@@ -9393,6 +9412,15 @@ var handleModal = function handleModal(button) {
       });
       setTimeout(function () {
         $("#".concat(modal, " input:text, #").concat(modal, " textarea")).first().focus();
+        $('.money').inputmask(formatCurrency); // $('.typeahead').typeahead({
+        //     source: function (query, process) {
+        //         return $.get('clients/search', {
+        //             query: query
+        //         }, function (data) {
+        //             return process(data);
+        //         });
+        //     }
+        // });
       }, 100);
     }).always(function () {
       showLoader(false);
@@ -9409,6 +9437,13 @@ var handleModal = function handleModal(button) {
 
 window.carrito = [];
 
+var updateTextAreaSize = function updateTextAreaSize() {
+  $('#table_items textarea').each(function (index, element) {
+    element.style.height = "1px";
+    element.style.height = "".concat(25 + element.scrollHeight, "px");
+  });
+};
+
 window.drawItems = function () {
   var edit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
@@ -9419,21 +9454,39 @@ window.drawItems = function () {
   }
 
   $.each(carrito, function (type, item) {
-    var total = 0;
-    $.each(item, function (index, element) {
-      if (typeof element !== 'undefined') {
-        if (!$("#tr_".concat(type, "_").concat(index)).length) {
-          $("\n                        <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion\">\n                            <td>\n                                <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type, "\" />\n                                <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                <input type=\"text\" class=\"form-control text-center text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                            </td>\n                            <td>\n                                <textarea class=\"form-control border-0\" rows=\"2\" data-toggle=\"tooltip\" title=\"").concat(element['descripcion'], "\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(index, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-center border-0\" data-toggle=\"tooltip\" title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            <td>\n                                <input type=\"number\" min=\"0\" class=\"form-control text-center border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" data-toggle=\"tooltip\" title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            <td>\n                                <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                            </td>\n                            ").concat(edit == true ? "<td class=\"text-center\"><i id=\"".concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>") : "", "\n                        </tr>\n                    ")).insertAfter("#tr_".concat(type));
-          $('.money').inputmask(formatCurrency);
-        } else {
-          $("#tr_".concat(type, "_").concat(index, " #valor_total_").concat(index)).val(element['valor_total']);
+    if (typeof item !== 'undefined' && carrito[type]['update'] === false) {
+      var total = 0;
+      $.each(item, function (index, element) {
+        if (typeof element !== 'undefined' && _typeof(element) === 'object') {
+          if (!$("#tr_".concat(type, "_").concat(index)).length) {
+            var classname = "".concat($("#caret_".concat(type)).hasClass(showIcon) ? 'show' : '');
+            $("\n                            <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion collapse ").concat(classname, " item_").concat(type, "\">\n                                <td>\n                                    <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type, "\" />\n                                    <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                    <input type=\"text\" class=\"form-control text-center text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                                </td>\n                                <td>\n                                    <textarea class=\"form-control border-0\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(index, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                                </td>\n                                <td>\n                                    <input type=\"text\" class=\"form-control text-center border-0\" data-toggle=\"tooltip\" title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td>\n                                    <input type=\"number\" min=\"0\" class=\"form-control text-center border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td>\n                                    <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" data-toggle=\"tooltip\" title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td>\n                                    <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                                </td>\n                                ").concat(edit == true ? "<td class=\"text-center\"><i id=\"".concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>") : "", "\n                            </tr>\n                        ")).insertAfter("#tr_".concat(type));
+            $('.money').inputmask(formatCurrency);
+          } else {
+            $("#tr_".concat(type, "_").concat(index, " #valor_total_").concat(index)).val(element['valor_total']);
+          }
+
+          total += parseFloat(element['valor_total'], 2);
         }
 
-        total += element['valor_total'];
-      }
-    });
-    $("#lbl_".concat(type)).text(Inputmask.format(total, formatCurrency));
+        carrito[type]['update'] = true;
+      });
+      $("#lbl_".concat(type)).text(Inputmask.format(total, formatCurrency));
+    }
   });
+  var iva = parseFloat($('#iva option:selected').length > 0 ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '') : $('#iva').val().replace('IVA ', '').replace('%', ''), 0);
+  var total_material = parseFloat($('.lbl_total_material').text().replace(regexCurrencyToFloat, ""), 2);
+  var total_suministro = parseFloat($('.lbl_total_mano_obra').text().replace(regexCurrencyToFloat, ""), 2);
+  var total_transporte = parseFloat($('.lbl_total_transporte').text().replace(regexCurrencyToFloat, ""), 2);
+  var total_sin_iva = total_material + total_suministro + total_transporte;
+  var total_iva = total_sin_iva * iva / 100;
+  var total_con_iva = total_sin_iva + total_iva;
+  $('#lbl_total_sin_iva').text(Inputmask.format(total_sin_iva, formatCurrency));
+  $('#lbl_total_iva').text(Inputmask.format(total_iva, formatCurrency));
+  $('#lbl_total_con_iva').text(Inputmask.format(total_con_iva, formatCurrency));
+  setTimeout(function () {
+    updateTextAreaSize();
+  }, 100);
 };
 
 var getItem = function getItem(item) {
@@ -9456,10 +9509,11 @@ var addItems = function addItems(items) {
     }
 
     if (typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
+      carrito[$(item).data('type')]['update'] = false;
       carrito[$(item).data('type')][$(item).val()] = getItem(item);
+      drawItems();
     }
   });
-  drawItems();
 };
 
 $('body').tooltip({
@@ -9475,34 +9529,35 @@ $(document).ready(function () {
 
   window.setupSelect2 = function () {
     var modal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-    if (modal !== '') {
-      $("#".concat(modal, " select")).select2({
-        dropdownParent: $("#".concat(modal))
-      });
-      $('.money').inputmask(formatCurrency);
-    } else {
-      $('select').select2();
-    }
-
-    $('.select2-selection').addClass('form-control');
-    $('#lista_items, #id_tercero_dependencia').select2('destroy');
-    $('#lista_items, #id_tercero_dependencia').select2({
-      minimumInputLength: 2,
-      language: {
-        inputTooShort: function inputTooShort(args) {
-          var remainingChars = args.minimum - args.input.length;
-          var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
-          return message;
-        },
-        noResults: function noResults() {
-          return 'No existen resultados';
+    modal = modal !== '' ? "#".concat(modal, " ") : '';
+    $("".concat(modal, "select")).each(function (index, element) {
+      var minimumInputLength = $(element).data('minimuminputlength');
+      var maximumSelectionLength = $(element).data('maximumselectionlength');
+      var closeOnSelect = $(element).data('closeonselect');
+      closeOnSelect = typeof closeOnSelect !== 'undefined' ? closeOnSelect === 'true' ? true : false : true;
+      $(element).select2({
+        dropdownParent: modal,
+        minimumInputLength: minimumInputLength,
+        maximumSelectionLength: maximumSelectionLength,
+        closeOnSelect: closeOnSelect,
+        language: {
+          inputTooShort: function inputTooShort(args) {
+            var remainingChars = args.minimum - args.input.length;
+            var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
+            return message;
+          },
+          noResults: function noResults() {
+            return 'No existen resultados';
+          },
+          maximumSelected: function maximumSelected(args) {
+            var t = "Puedes seleccionar hasta ".concat(args.maximum, " \xEDtem");
+            args.maximum != 1 && (t += "s");
+            return t;
+          }
         }
-      },
-      closeOnSelect: false
+      });
     });
-    $('#select2-lista_items-container, #select2-id_tercero_dependencia-container').data('toggle', 'tooltip').data('html', true);
-    $('#select2-lista_items-container, #select2-id_tercero_dependencia-container').parent().removeClass('border-left-0 border-top-0 border-right-0').addClass('form-control border');
+    $('.select2-selection').addClass('form-control');
     $('.select2-selection__rendered').data('toggle', 'tooltip');
   };
 
@@ -9548,6 +9603,34 @@ $(document).ready(function () {
     }).always(function () {
       showLoader(false);
     });
+  });
+  $('#btn_upload').click(function () {
+    $('#input_file').trigger('click');
+  });
+  $('#input_file').change(function (e) {
+    $('#lbl_input_file').text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
+
+    if (typeof e.target.files[0] !== 'undefined') {
+      $('#lbl_input_file').addClass('file_selected');
+      Swal.fire({
+        icon: 'question',
+        title: 'Subir archivo al servidor?',
+        text: e.target.files[0].name,
+        showCancelButton: true,
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        confirmButtonColor: '#fe0115c4',
+        cancelButtonColor: '#6e7d88'
+      }).then(function (result) {
+        if (result.isConfirmed) {
+          showLoader(true);
+          $('#input_file').parent().submit();
+        }
+      });
+    } else {
+      $('#lbl_input_file').removeClass('file_selected');
+    }
   });
   $('[data-toggle="tooltip"]').tooltip();
   setupSelect2();
@@ -9727,6 +9810,7 @@ $(document).on('click', '.btn-delete-item', function () {
   var id_tr = new String($(this).attr('id'));
   $("#tr_".concat(id_tr)).remove();
   id_tr = id_tr.split('_');
+  carrito[id_tr[0]]['update'] = false;
   delete carrito[id_tr[0]][id_tr[1]];
   drawItems();
 });
@@ -9744,6 +9828,7 @@ var fnc_totales_cot = function fnc_totales_cot(id) {
     carrito[id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
     carrito[id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
     carrito[id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
+    carrito[id_tr[1]]['update'] = false;
     drawItems();
   }
 };
@@ -9788,6 +9873,154 @@ $(document).on('change', '#id_cliente', function () {
       });
     }
   }
+});
+$(document).on('change', '#iva', function () {
+  if ($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+    $.each(carrito, function (type, item) {
+      if (typeof item !== 'undefined' && carrito[type]['update'] === false) {
+        carrito[type]['update'] = true;
+      }
+    });
+    drawItems();
+  }
+});
+var showIcon = 'fa-caret-down';
+var hideIcon = 'fa-caret-up';
+$(document).on('click', '.show-more', function () {
+  var _this2 = this;
+
+  setTimeout(function () {
+    $(_this2).toggleClass("".concat(showIcon, " ").concat(hideIcon));
+  }, 100);
+});
+$(document).on('click', '.btn-quote', function (e) {
+  e.preventDefault();
+  var action = '';
+  var title = '';
+  var text = '';
+  var buttonColor = '';
+  var confirmButtonColor = '';
+  var confirmButtonText = '';
+  var button = $(this);
+  var form = button.closest('form');
+  var data = new FormData(form[0]);
+
+  switch ($(this).attr('id')) {
+    case 'btn-aprove-quote':
+      action = 'aprove';
+      title = "<h2 class='fw-bold text-success'>Aprobar cotizaci\xF3n</h2>";
+      text = "\xBFSeguro quiere aprobar est\xE1 cotizaci\xF3n?";
+      confirmButtonColor = "var(--bs-success)";
+      confirmButtonText = "S\xED, aprobar cotizaci\xF3n";
+      break;
+
+    case 'btn-deny-quote':
+      action = 'deny';
+      title = "<h2 class='fw-bold text-danger'>Regresar cotizaci\xF3n</h2>";
+      text = "\xBFSeguro quiere regresar est\xE1 cotizaci\xF3n?";
+      confirmButtonColor = "var(--bs-danger)";
+      confirmButtonText = "S\xED, regresar cotizaci\xF3n";
+      break;
+
+    case 'btn-send-quote':
+      action = 'send';
+      title = "<h2 class='fw-bold text-info'>Enviar cotizaci\xF3n</h2>";
+      text = "\xBFSeguro quiere enviar la cotizaci\xF3n?";
+      confirmButtonColor = "var(--bs-info)";
+      confirmButtonText = "S\xED, enviar cotizaci\xF3n";
+      break;
+
+    default:
+      break;
+  }
+
+  if (action === '') return false;
+  data.append('action', action);
+  data["delete"]('_method');
+  Swal.fire({
+    icon: 'question',
+    title: title,
+    text: text,
+    reverseButtons: true,
+    showCancelButton: true,
+    confirmButtonColor: confirmButtonColor,
+    confirmButtonText: confirmButtonText,
+    cancelButtonText: 'Cancelar'
+  }).then(function (result) {
+    if (result.isConfirmed) {
+      $.ajax({
+        url: "quotes/".concat($('#id_cotizacion').val(), "/handleQuote"),
+        method: 'POST',
+        data: data,
+        processData: false,
+        contentType: false,
+        cache: false,
+        beforeSend: function beforeSend() {
+          $('.alert-success, .alert-danger').fadeOut().html('');
+          showLoader(true);
+        },
+        success: function success(response, status, xhr) {
+          if (response.success) {
+            // $('#modalForm').modal('hide');
+            window.open("quotes/exportQuote?quote=".concat($('#id_cotizacion').val()), '_blank');
+            Swal.fire({
+              icon: 'success',
+              title: 'Cambio realizado',
+              text: response.success,
+              confirmButtonColor: 'var(--bs-primary)'
+            });
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: response.error,
+              confirmButtonColor: 'var(--bs-primary)'
+            });
+          }
+        },
+        error: function error(response) {
+          var errors = '';
+          $.each(response.responseJSON.errors, function (i, item) {
+            errors += "<li>".concat(item, "</li>");
+          });
+          $('.alert-danger').fadeIn(1000).html("<p>Por favor corrija los siguientes campos: </p> <ul>".concat(errors, "</ul>"));
+        }
+      }).always(function () {
+        updateQuoteGrid();
+        showLoader(false);
+      });
+      return false;
+    }
+  });
+  /*
+      $.ajax({
+          xhrFields: {
+              responseType: 'blob',
+          },
+          type: 'POST',
+          url: '/downloadPayroll',
+          data: {
+              salaryMonth: month,
+              salaryYear: year,
+              is_employee_salary: 1,
+              department: department.val()
+          },
+          success: function(result, status, xhr) {
+                var disposition = xhr.getResponseHeader('content-disposition');
+              var matches = /"([^"]*)"/.exec(disposition);
+              var filename = (matches != null && matches[1] ? matches[1] : 'salary.xlsx');
+                // The actual download
+              var blob = new Blob([result], {
+                  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+              });
+              var link = document.createElement('a');
+              link.href = window.URL.createObjectURL(blob);
+              link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+              document.body.removeChild(link);
+          }
+      });
+  */
 });
 
 /***/ }),
@@ -62319,7 +62552,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
 
 /* module decorator */ module = __webpack_require__.nmd(module);
 //! moment.js
-//! version : 2.29.3
+//! version : 2.29.4
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -64773,7 +65006,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
     function preprocessRFC2822(s) {
         // Remove comments and folding whitespace and replace multiple-spaces with a single space
         return s
-            .replace(/\([^)]*\)|[\n\t]/g, ' ')
+            .replace(/\([^()]*\)|[\n\t]/g, ' ')
             .replace(/(\s\s+)/g, ' ')
             .replace(/^\s\s*/, '')
             .replace(/\s\s*$/, '');
@@ -67954,7 +68187,7 @@ webpackContext.id = "./node_modules/moment/locale sync recursive ^\\.\\/.*$";
 
     //! moment.js
 
-    hooks.version = '2.29.3';
+    hooks.version = '2.29.4';
 
     setHookCallback(createLocal);
 

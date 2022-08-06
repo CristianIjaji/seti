@@ -18,7 +18,7 @@ class TblListaPrecios extends Migration
             $table->unsignedBigInteger('id_cliente');
             $table->unsignedBigInteger('id_tipo_item');
             $table->string('codigo');
-            $table->string('descripcion');
+            $table->text('descripcion');
             $table->string('unidad');
             $table->decimal('cantidad', 5, 2);
             $table->decimal('valor_unitario', 20, 2);

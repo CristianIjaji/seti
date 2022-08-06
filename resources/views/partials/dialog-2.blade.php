@@ -6,7 +6,7 @@
                 <i class="fa-solid fa-xmark fs-3 px-2" data-bs-dismiss="modal" style="cursor: pointer"></i>
                 {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body px-4 pt-4"></div>
         </div>
     </div>
 </div>

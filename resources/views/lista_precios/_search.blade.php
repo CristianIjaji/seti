@@ -1,6 +1,6 @@
 <div class="row py-3">
     <div class="col-12 py-1">
-        <select class="form-control" id="lista_items" multiple style="width: 100%">
+        <select class="form-control" id="lista_items" data-minimuminputlength="2" data-maximumselectionlength="10" data-closeonselect="false" multiple style="width: 100%">
             <option value="">Elegir ítem</option>
             @foreach ($items as $item)
                 <option

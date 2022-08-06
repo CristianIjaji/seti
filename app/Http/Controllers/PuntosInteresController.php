@@ -2,23 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ReportsExport;
 use App\Http\Requests\SavePuntosInteresRequest;
+use App\Imports\DataImport;
 use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Maatwebsite\Excel\Excel;
 
 class PuntosInteresController extends Controller
 {
     protected $filtros;
+    protected $excel;
 
-    public function __construct()
+    public function __construct(Excel $excel)
     {
         $this->middleware('auth');
+        $this->excel = $excel;
     }
 
-    private function dinamyFilters($querybuilder) {
+    private function dinamyFilters($querybuilder, $fields = []) {
         $operadores = ['>=', '<=', '!=', '=', '>', '<'];
 
         foreach (request()->all() as $key => $value) {
@@ -33,6 +39,8 @@ class PuntosInteresController extends Controller
                         break;
                     }
                 }
+
+                $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
                 if(!in_array($key, ['full_name'])){
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
@@ -196,6 +204,8 @@ class PuntosInteresController extends Controller
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
+            'export' => Gate::allows('export', $punto),
+            'import' => Gate::allows('import', $punto),
             'create' => Gate::allows('create', $punto),
             'edit' => Gate::allows('update', $punto),
             'view' => Gate::allows('view', $punto),
@@ -207,5 +217,44 @@ class PuntosInteresController extends Controller
         return response()->json([
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $client])->pluck('nombre', 'id_punto_interes'),
         ]);
+    }
+
+    public function export() {
+        $sitios = TblPuntosInteres::select(
+            DB::raw("
+                tbl_puntos_interes.id_punto_interes,
+                CONCAT(t.nombres, ' ', t.apellidos) as full_name,
+                z.nombre as zona,
+                tbl_puntos_interes.nombre,
+                tbl_puntos_interes.latitud,
+                tbl_puntos_interes.longitud,
+                tbl_puntos_interes.descripcion,
+                tt.nombre as tipo_transporte,
+                ta.nombre as tipo_acceso,
+                CASE WHEN tbl_puntos_interes.estado = 1 THEN 'Activo' ELSE 'Inactivo' END as estado_sitio
+            ")
+        )
+        ->join('tbl_terceros as t', 'tbl_puntos_interes.id_cliente',  '=', 't.id_tercero')
+        ->join('tbl_dominios as z', 'tbl_puntos_interes.id_zona', '=', 'z.id_dominio')
+        ->join('tbl_dominios as tt', 'tbl_puntos_interes.id_tipo_transporte', '=', 'tt.id_dominio')
+        ->join('tbl_dominios as ta', 'tbl_puntos_interes.id_tipo_accesso', '=', 'ta.id_dominio')
+        ->where(function ($q) {
+            $this->dinamyFilters($q, [
+                'tbl_puntos_interes.id_punto_interes' => 'id_punto_interes',
+                'tbl_puntos_interes.nombre' => 'nombre',
+                'tbl_puntos_interes.estado' => 'estado'
+            ]);
+        })
+        ->get();
+
+        $headers = ['#', 'Cliente', 'Zona', 'Sitio', 'Latitud', 'Longitud', 'Descripción', 'Tipo transporte',
+            'Tipo acceso', 'Estado'
+        ];
+        return $this->excel->download(new ReportsExport($headers, $sitios), 'Reporte sitios.xlsx');
+    }
+
+    public function import() {
+        (new DataImport(new TblPuntosInteres))->import(request()->file('input_file'));
+        return back();
     }
 }

@@ -98,7 +98,7 @@ class SaveCotizacionRequest extends FormRequest
             ],
             'id_lista_precio' => [
                 'required',
-                'exists:tbl_dominios,id_dominio'
+                'exists:tbl_lista_precios,id_lista_precio'
             ],
             'descripcion_item' => [
                 'required'

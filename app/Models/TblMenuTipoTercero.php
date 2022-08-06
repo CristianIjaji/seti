@@ -63,4 +63,12 @@ class TblMenuTipoTercero extends Model
     public function getUpdateAttribute() {
         return $this->attributes['editar'];
     }
+
+    public function getImportAttribute() {
+        return $this->attributes['importar'];
+    }
+
+    public function getExportAttribute() {
+        return $this->attributes['exportar'];
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\TblCotizacion;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Support\Facades\Log;
 
 class TblCotizacionPolicy
 {
@@ -90,5 +91,29 @@ class TblCotizacionPolicy
     public function forceDelete(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
         //
+    }
+
+    public function aproveQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function rejectQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function sendQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if($tblCotizacion->estado == NULL || in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta')])) {
+            return false;
+        }
+
+        return true;
     }
 }

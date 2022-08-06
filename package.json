@@ -32,10 +32,11 @@
         "bootstrap-icons": "^1.8.1",
         "inputmask": "^5.0.7",
         "laravel-echo": "^1.11.5",
-        "moment": "^2.29.3",
+        "moment": "^2.29.4",
         "push.js": "^1.0.12",
         "pusher-js": "^7.0.6",
         "select2": "^4.1.0-rc.0",
-        "sweetalert2": "^11.4.8"
+        "sweetalert2": "^11.4.8",
+        "typeahead.js": "^0.11.1"
     }
 }

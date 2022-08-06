@@ -29,7 +29,7 @@ class SavePuntosInteresRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public static function rules()
     {
         return [
             'id_cliente' => [
@@ -60,7 +60,7 @@ class SavePuntosInteresRequest extends FormRequest
             ],
             'descripcion' => [
                 'required',
-                'max:255'
+                'string'
             ],
             'id_tipo_transporte' => [
                 'required',

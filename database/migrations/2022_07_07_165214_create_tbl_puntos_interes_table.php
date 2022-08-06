@@ -21,7 +21,7 @@ class CreateTblPuntosInteresTable extends Migration
             $table->string('latitud')->nullable();
             $table->string('longitud')->nullable();
             $table->smallInteger('estado')->default(1);
-            $table->string('descripcion');
+            $table->text('descripcion');
             $table->unsignedBigInteger('id_tipo_transporte');
             $table->unsignedBigInteger('id_tipo_accesso');
             $table->unsignedBigInteger('id_usuareg');

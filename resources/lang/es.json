@@ -710,5 +710,6 @@
     "Zambia": "Zambia",
     "Zimbabwe": "Zimbabwe",
     "Zip \/ Postal Code": "Zip / Código postal",
-    "Åland Islands": "Islas Åland"
+    "Åland Islands": "Islas Åland",
+    "There was an error on row :row. :message": "Hubo un error en la fila :row. :message"
     }

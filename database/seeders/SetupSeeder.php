@@ -273,6 +273,20 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            $coordinador = TblDominio::create([
+                'nombre' => 'Coordinador',
+                'id_dominio_padre' => $tipo_terceros->id_dominio,
+                'descripcion' => 'Tipo usuario coordinador',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $analista = TblDominio::create([
+                'nombre' => 'Analista',
+                'id_dominio_padre' => $tipo_terceros->id_dominio,
+                'descripcion' => 'Tipo usuario analista',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
         /* Fin creación dominios hijos tipo terceros */
 
         /* Creación dominios hijos tipo plantllas*/
@@ -576,6 +590,20 @@ class SetupSeeder extends Seeder
                 'descripcion' => 'id_dominio_contratista',
                 'id_usuareg' => $user->id_usuario,
             ]);
+            // Creación parametro usuario coordinador
+            TblParametro::create([
+                'llave' => 'id_dominio_coordinador',
+                'valor' => $coordinador->id_dominio,
+                'descripcion' => 'id_dominio_coordinador',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            // Creación parametro usuario contratista
+            TblParametro::create([
+                'llave' => 'id_dominio_analista',
+                'valor' => $analista->id_dominio,
+                'descripcion' => 'id_dominio_analista',
+                'id_usuareg' => $user->id_usuario,
+            ]);
             // Creacion parametros tipos plantillas correo
             TblParametro::create([
                 'llave' => 'id_dominio_plantilla_correo',
@@ -721,6 +749,34 @@ class SetupSeeder extends Seeder
                 'valor' => $cotizacion_aprobada->id_dominio,
                 'descripcion' => 'id_dominio_cotizacion_aprobada',
                 'id_usuareg' => $user->id_usuario,
+            ]);
+            // Creación parametro cédula
+            TblParametro::create([
+                'llave' => 'id_dominio_cedula',
+                'valor' => $cedula->id_dominio,
+                'descripcion' => 'id_dominio_cedula',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro cédula extrangeria
+            TblParametro::create([
+                'llave' => 'id_dominio_cedula_extrangeria',
+                'valor' => $cedula_extranjeria->id_dominio,
+                'descripcion' => 'id_dominio_cedula_extrangeria',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro pasaporte
+            TblParametro::create([
+                'llave' => 'id_dominio_pasaporte',
+                'valor' => $pasaporte->id_dominio,
+                'descripcion' => 'id_dominio_pasaporte',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro nit
+            TblParametro::create([
+                'llave' => 'id_dominio_nit',
+                'valor' => $nit->id_dominio,
+                'descripcion' => 'id_dominio_nit',
+                'id_usuareg' => $user->id_usuario
             ]);
         /* Fin creación parametros */
 

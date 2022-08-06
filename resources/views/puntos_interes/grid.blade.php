@@ -1,6 +1,8 @@
 @include('partials.grid', [
     'title' => 'Puntos interés',
     'create' => $create,
+    'export' => $export,
+    'import' => $import,
     'route' => 'sites',
     'btnOptionsCreate' => [
         "title" => 'Nuevo punto interés',

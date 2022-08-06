@@ -18,7 +18,7 @@ class TblCotizacionDetalles extends Migration
             $table->unsignedBigInteger('id_cotizacion');
             $table->unsignedBigInteger('id_tipo_item');
             $table->unsignedBigInteger('id_lista_precio');
-            $table->string('descripcion');
+            $table->text('descripcion');
             $table->string('unidad');
             $table->decimal('cantidad', 5, 2);
             $table->decimal('valor_unitario', 20, 2);

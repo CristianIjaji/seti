@@ -1,3 +1,7 @@
+<head>
+    {{-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> --}}
+    <script type="text/javascript" src="https://www.tutorialrepublic.com/examples/js/typeahead/0.11.1/typeahead.bundle.js"></script>
+</head>
 <?php
     $create = isset($tercero->id_tercero) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
@@ -95,6 +99,21 @@
                 <input type="text" class="form-control" id="id_dominio_tipo_tercero" value="{{ $tercero->tbldominiotercero->nombre }}" disabled>
             @endif
         </div>
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+            <label for="id_responsable_cliente" class="required">Dependencia</label>
+            @if ($edit)
+                <select class="form-control" name="id_responsable_cliente" id="id_responsable_cliente" data-minimuminputlength="3" style="width: 100%" @if ($edit) required @else disabled @endif>
+                    <option value="">Elegir dependencia</option>
+                    @foreach ($terceros as $dependencia)
+                        <option value="{{ $dependencia->id_tercero }}" {{ old('id_responsable_cliente', $tercero->id_responsable_cliente) == $dependencia->id_tercero ? 'selected' : '' }}>
+                            {{$dependencia->full_name}}
+                        </option>
+                    @endforeach
+                </select>
+            @else
+                <input type="text" class="form-control" id="id_responsable_cliente" value="{{ isset($tercero->tblterceroresponsable->nombres) ? $tercero->tblterceroresponsable->nombres.' '.$tercero->tblterceroresponsable->apellidos : 'Sin dependencia' }}" disabled>
+            @endif
+        </div>
         
         @if(!$create)
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
@@ -124,6 +143,79 @@
                 </div>
             @endif
         @endif
+
+        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-6 col-lg-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente'), session('id_dominio_proveedor')]) ? '' : 'd-none' }} ">
+            <label for="logo" class="required col-12">Logo cotización</label>
+            @if ($edit)
+                <div class="file-loading">
+                    <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
+                </div>
+            @else
+                <img src="/storage/{{ $tercero->logo }}" class="img-thumbnail" alt="Logo cotizaciones">
+            @endif
+        </div>
     </div>
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear tercero' : 'Editar tercero'])
+
+    <style>
+        .file-preview{
+            padding: 0px !important;
+        }
+        .file-drop-zone-title {
+            padding: 0px !important;
+            margin: 30px 0px;
+        }
+        .file-drop-zone {
+            margin: 0px !important;
+            padding: 0px !important;
+            min-height: 100px !important;
+        }
+    </style>
+    <script type="application/javascript">
+        var previewImage = null;
+    
+        if("{!! $tercero->logo !!}" !== '') {
+            previewImage = "storage/{!! $tercero->logo !!}"
+            console.log(previewImage);
+        }
+    
+        var show = (!"{!! $create !!}" && !"{!! $edit !!}") ? false : true;
+    
+        $("#logo").fileinput({
+            language: 'es',
+            theme: "explorer",
+            showCaption: show,
+            showBrowse: show,
+            showRemove: show,
+            showUpload: false,
+            showCancel: false,
+            showClose: false,
+            showDescriptionClose: false,
+            // allowedPreviewTypes : [ 'image' ],
+            allowedFileExtensions : ['jpg', 'jpeg', 'png'],
+            initialPreviewShowDelete: false,
+            fileActionSettings: {
+                showRemove: false,
+                showDrag: false
+            },
+            initialPreview: [
+                previewImage
+            ],
+            initialPreviewAsData: true,
+            initialPreviewConfig: {}
+        });
+
+        $('#id_dominio_tipo_tercero').change(function () {
+            $('#div_logo').addClass('d-none');
+            let valor = parseInt($(this).val());
+            let cliente = parseInt({!! session('id_dominio_cliente') !!});
+            let proveedor = parseInt({!! session('id_dominio_proveedor') !!});
+
+            if($.inArray(valor, [cliente, proveedor]) > -1) {
+                $('#div_logo').removeClass('d-none');
+            }
+        });
+
+        // $('#id_dominio_tipo_tercero').change();
+    </script>

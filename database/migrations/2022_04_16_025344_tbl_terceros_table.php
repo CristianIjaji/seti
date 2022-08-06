@@ -26,12 +26,15 @@ class TblTercerosTable extends Migration
             $table->string('correo');
             $table->string('telefono');
             $table->unsignedBigInteger('id_dominio_tipo_tercero');
+            $table->unsignedBigInteger('id_responsable_cliente')->nullable();
+            $table->string('logo')->default('');
             $table->integer('estado')->default(1);
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
             $table->foreign('id_dominio_tipo_documento')->references('id_dominio')->on('tbl_dominios');
             $table->foreign('id_dominio_tipo_tercero')->references('id_dominio')->on('tbl_dominios');
+            $table->foreign('id_responsable_cliente')->references('id_tercero')->on('tbl_terceros');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
         });
     }

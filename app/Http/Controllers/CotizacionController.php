@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\CotizacionExport;
 use App\Http\Requests\SaveCotizacionRequest;
 use App\Models\TblCotizacion;
 use App\Models\TblCotizacionDetalle;
@@ -9,15 +10,20 @@ use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
+use Exception;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Excel;
 
 class CotizacionController extends Controller
 {
     protected $filtros;
+    protected $excel;
 
-    public function __construct()
+    public function __construct(Excel $excel)
     {
         $this->middleware('auth');
+        $this->excel = $excel;
     }
 
     private function dinamyFilters($querybuilder) {
@@ -36,11 +42,17 @@ class CotizacionController extends Controller
                     }
                 }
 
-                if(!in_array($key, ['full_name'])){
+                if(!in_array($key, ['full_name', 'nombre'])){
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
                 } else if($key == 'full_name' && $value) {
-                    // $querybuilder->where('nombres', 'like', strtolower("%$value%"));
-                    // $querybuilder->orWhere('apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblCliente', function($q) use($value) {
+                        $q->where('nombres', 'like', strtolower("%$value%"));
+                        $q->orwhere('apellidos', 'like', strtolower("%$value%"));
+                    });
+                } else if($key == 'nombre' && $value) {
+                    $querybuilder->whereHas('tblEstacion', function($q) use($value) {
+                        $q->where('nombre', 'like', strtolower("%$value%"));
+                    });
                 }
             }
             $this->filtros[$key] = $value;
@@ -101,7 +113,7 @@ class CotizacionController extends Controller
                 $detalle->id_cotizacion = $cotizacion->id_cotizacion;
                 $detalle->id_tipo_item = request()->id_tipo_item[$index];
                 $detalle->id_lista_precio = request()->id_lista_precio[$index];
-                $detalle->descripcion = request()->descripcion;
+                $detalle->descripcion = request()->descripcion_item[$index];
                 $detalle->unidad = request()->unidad[$index];
                 $detalle->cantidad = request()->cantidad[$index];
                 $detalle->valor_unitario = str_replace(',', '', request()->valor_unitario[$index]);
@@ -225,11 +237,63 @@ class CotizacionController extends Controller
         //
     }
 
+    public function handleQuote(TblCotizacion $quote) {
+        try {
+            $response = '';
+            switch (request()->action) {
+                case 'aprove':
+                    $response = $this->updateQuote(
+                        $quote,
+                        [session('id_dominio_cotizacion_creada')],
+                        session('id_dominio_cotizacion_revisada'),
+                        'Cotización aprobada!',
+                        'quote-aprove'
+                    );
+
+                    break;
+                case 'deny':
+                    $response = $this->updateQuote(
+                        $quote,
+                        [session('id_dominio_cotizacion_creada')],
+                        session('id_dominio_cotizacion_devuelta'),
+                        'Cotización devuelta!',
+                        'quote-deny'
+                    );
+                    break;
+                case 'send':
+                    $response = $this->updateQuote(
+                        $quote,
+                        [session('id_dominio_cotizacion_revisada')],
+                        session('id_dominio_cotizacion_enviada'),
+                        'Cotización descargada!',
+                        ''
+                    );
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+
+            if(!isset($response['success'])) {
+                throw new Exception($response['error']);
+            }
+
+            return response()->json([
+                'success' => $response['success']
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage()
+            ]);
+        }
+    }
+
     private function getDetalleCotizacion($quote) {
         $carrito = [];
         $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $quote->id_cotizacion])->get();
 
         foreach ($items as $item) {
+            $carrito[$item->id_tipo_item]['update'] = false;
             $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
                 'item' => $item->tblListaprecio->codigo,
                 'descripcion' => $item->descripcion,
@@ -266,5 +330,35 @@ class CotizacionController extends Controller
             'view' => Gate::allows('view', $cotizacion),
             'request' => $this->filtros,
         ]);
+    }
+    
+    private function updateQuote($quote, $estados, $nuevoEstado, $msg, $notification, $usuarioFinal = '') {
+        try {
+            if(in_array($quote->estado, $estados)) {
+                $quote->estado = $nuevoEstado;
+                
+                $this->createTrack($quote, $nuevoEstado);
+                $quote->save();
+            }
+    
+            // if($notification !== '') {
+            //     $channel = 'user-';
+            // }
+
+            Log::info("Msg: $msg");
+            return ['success' => $msg];
+        } catch (\Throwable $th) {
+            Log::error($th->__toString());
+            return ['error' => $th->getMessage()];
+        }
+    }
+
+    private function createTrack($quote, $action) {
+        
+    }
+
+    public function exportQuote() {
+        $cotizacion = TblCotizacion::with(['tblEstacion'])->where(['id_cotizacion' => request()->quote])->get();
+        return $this->excel->download(new CotizacionExport($cotizacion), "Cotizacion.xlsx");
     }
 }

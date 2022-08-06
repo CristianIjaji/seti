@@ -3,24 +3,35 @@
         @isset($title)
             <div class="h1">{{ $title }}</div class="h1">
         @endisset
+
+        @if ($errors->any())
+            <div class="alert-danger alert-dismissible text-start p-4 rounded">
+                <h6 class="text-danger fw-bold">Se encontraron errores en el archivo.</h5>
+                <ol>
+                    @foreach ($errors->all() as $error)
+                        <li>{{__($error)}}</li>
+                    @endforeach
+                </ol>
+            </div>
+        @endif
     </div>
     <div class="col-sm-12 col-md-6 text-end">
+        <a href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-light border-white text-info font-weight-bolder fs-3 bg-update">
+            <i class="fas fa-sync-alt"></i>
+        </a>
         @isset($export)
             @if ($export)
-                <a href="#" data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn bg-outline-info bg-success bg-gradient text-white font-weight-bolder btn-export">
+                <a href="#" data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn btn-outline-light border-white text-success font-weight-bolder fs-3 btn-export">
                     <i class="fas fa-file-excel"></i>
                 </a>
             @endif
         @endisset
-        <a href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-light text-info font-weight-bolder fs-3 bg-update">
-            <i class="fas fa-sync-alt"></i>
-        </a>
-        @isset($upload)
-            @if ($upload)
+        @isset($import)
+            @if ($import)
                 <form class="btn px-0" action="{{ route("$route.import") }}" method="POST" enctype="multipart/form-data">
                     @csrf
-                    <span id="btn_upload" class="btn bg-success bg-gradient">
-                        {{ $btnOptionsUpload['title'] }}
+                    <span id="btn_upload" data-toggle="tooltip" title="Importar" class="btn btn-outline-light border-white text-primary font-weight-bolder fs-3">
+                        <i class="fa-solid fa-upload"></i>
                     </span>
                     <input type="file" name="input_file" id="input_file" accept=".xlsx,.xls" class="d-none">
                     <button class="d-none">Enviar</button>

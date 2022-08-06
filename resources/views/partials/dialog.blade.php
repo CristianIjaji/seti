@@ -8,7 +8,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button> --}}
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body px-4 pt-4"></div>
         </div>
     </div>
 </div>

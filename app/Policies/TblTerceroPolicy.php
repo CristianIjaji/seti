@@ -93,4 +93,12 @@ class TblTerceroPolicy
     {
         //
     }
+
+    public function export(TblUsuario $tblUsuario, TblTercero $tblTercero) {
+        return isset($tblUsuario->getPermisosMenu('clients.index')->export) ? $tblUsuario->getPermisosMenu('clients.index')->export : false;        
+    }
+
+    public function import(TblUsuario $tblUsuario, TblTercero $tblTercero) {
+        return isset($tblUsuario->getPermisosMenu('clients.index')->import) ? $tblUsuario->getPermisosMenu('clients.index')->import : false;        
+    }
 }

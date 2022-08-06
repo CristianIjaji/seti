@@ -2,23 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ReportsExport;
 use App\Http\Requests\SaveTerceroRequest;
+use App\Imports\DataImport;
 use App\Models\TblDominio;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Excel;
 
 class TerceroController extends Controller
 {
     protected $filtros;
+    protected $excel;
 
-    public function __construct()
+    public function __construct(Excel $excel)
     {
         $this->middleware('auth');
+        $this->excel = $excel;
     }
 
-    private function dinamyFilters($querybuilder) {
+    private function dinamyFilters($querybuilder, $fields = []) {
         $operadores = ['>=', '<=', '!=', '=', '>', '<'];
 
         foreach (request()->all() as $key => $value) {
@@ -34,11 +42,13 @@ class TerceroController extends Controller
                     }
                 }
 
+                $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
+
                 if(!in_array($key, ['full_name'])){
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->where('nombres', 'like', strtolower("%$value%"));
-                    $querybuilder->orWhere('apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->where('tbl_terceros.nombres', 'like', strtolower("%$value%"));
+                    $querybuilder->orWhere('tbl_terceros.apellidos', 'like', strtolower("%$value%"));
                 }
             }
             $this->filtros[$key] = $value;
@@ -82,6 +92,7 @@ class TerceroController extends Controller
             'tipo_tercero' => isset(request()->tipo_tercero)
                 ? TblDominio::where('id_dominio', '=', request()->tipo_tercero)->first() :
                 '',
+            'terceros' => TblTercero::where(['estado' => 1])->get(),
             'ciudades' => TblTercero::pluck('ciudad', 'ciudad'),
         ]);
     }
@@ -95,8 +106,10 @@ class TerceroController extends Controller
     public function store(SaveTerceroRequest $request)
     {
         try {
-            $tercero = TblTercero::create($request->validated());
+            $tercero = new TblTercero($request->validated());
             $this->authorize('create', $tercero);
+            $tercero->logo = $request->hasFile('logo') ? $request->file('logo')->store('images') : '';
+            $tercero->save();
 
             return response()->json([
                 'success' => 'Tercero creado exitosamente!',
@@ -143,6 +156,7 @@ class TerceroController extends Controller
             'tercero' => $client,
             'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento')),
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
+            'terceros' => TblTercero::where(['estado' => 1])->where('id_tercero', '<>', $client->id_tercero)->get(),
             'estados' => [
                 0 => 'Inactivo',
                 1 => 'Activo'
@@ -161,8 +175,20 @@ class TerceroController extends Controller
     public function update(TblTercero $client, SaveTerceroRequest $request)
     {
         try {
-            $client->update($request->validated());
             $this->authorize('update', $client);
+
+            if($request->hasFile('logo')) {
+                Storage::delete($client->logo);
+
+                $client->fill($request->validated());
+                $client->logo = $request->file('logo')->store('images');
+                $client->save();
+            } else {
+                // if($request->logo == '' && $client->logo !== ''){
+                //     Storage::delete($client->logo);
+                // }
+                $client->update(array_filter($request->validated()));
+            }
 
             $usuario = TblUsuario::where('id_tercero', '=', $client->id_tercero)->get()->first();
             if($usuario) {
@@ -191,6 +217,15 @@ class TerceroController extends Controller
         //
     }
 
+    public function search(Request $request) {
+        $data = TblTercero::select('name')
+            ->where("documento", 'LIKE', "%{$request->query}%")
+            ->get();
+        // $query = $request->get('query');
+        // $filterResult = TblTercero::where('documento', 'LIKE', '%'. $query. '%')->get();
+        return response()->json($data);
+    }
+
     public function grid() {
         return $this->getView('terceros.grid');
     }
@@ -204,10 +239,57 @@ class TerceroController extends Controller
                     $this->dinamyFilters($q);
                 })->latest()->paginate(10),
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
+            'export' => Gate::allows('export', $tercero),
+            'import' => Gate::allows('import', $tercero),
             'create' => Gate::allows('create', $tercero),
             'edit' => Gate::allows('update', $tercero),
             'view' => Gate::allows('view', $tercero),
             'request' => $this->filtros,
         ]);
+    }
+
+    public function export() {
+        $terceros = TblTercero::select(
+            DB::raw("
+                tbl_terceros.id_tercero,
+                td.nombre as id_dominio_tipo_documento,
+                tbl_terceros.documento,
+                tbl_terceros.dv,
+                tbl_terceros.razon_social,
+                CONCAT(tbl_terceros.nombres, ' ', tbl_terceros.apellidos) as nombres,
+                tbl_terceros.ciudad,
+                tbl_terceros.direccion,
+                tbl_terceros.correo,
+                tbl_terceros.telefono,
+                tt.nombre as id_dominio_tipo_tercero,
+                CASE WHEN tbl_terceros.estado = 1 THEN 'Activo' ELSE 'Inactivo' END estado_tercero,
+                CONCAT(t.nombres, ' ', t.apellidos) as dependencia
+            ")
+        )
+        ->join('tbl_dominios as td', 'tbl_terceros.id_dominio_tipo_documento', '=', 'td.id_dominio')
+        ->join('tbl_dominios as tt', 'tbl_terceros.id_dominio_tipo_tercero', '=', 'tt.id_dominio')
+        ->leftjoin('tbl_terceros as t', 'tbl_terceros.id_responsable_cliente', '=', 't.id_tercero')
+        ->where(function ($q) {
+            $this->dinamyFilters($q, [
+                'tbl_terceros.id_dominio_tipo_documento' => 'id_dominio_tipo_documento',
+                'tbl_terceros.documento' => 'documento',
+                'tbl_terceros.nombres' => 'nombres',
+                'tbl_terceros.apellidos' => 'apellidos',
+                'tbl_terceros.ciudad' => 'ciudad',
+                'tbl_terceros.id_dominio_tipo_tercero' => 'id_dominio_tipo_tercero',
+                'tbl_terceros.estado' => 'estado'
+            ]);
+        })
+        ->get();
+
+        $headers = ['#', 'Tipo documento', 'Documento', 'DV', 'Razón social', 'Nombre', 'Ciudad', 'Dirección',
+            'Correo', 'Teléfono', 'Tipo tercero', 'Estado', 'Dependencia'
+        ];
+        return $this->excel->download(new ReportsExport($headers, $terceros), 'Reporte terceros.xlsx');
+    }
+
+    public function import() {
+        (new DataImport(new TblTercero))->import(request()->file('input_file'));
+        return back();
     }
 }

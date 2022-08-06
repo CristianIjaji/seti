@@ -41,23 +41,18 @@ class ReportsExport implements FromCollection, ShouldAutoSize, WithStrictNullCom
     public function properties(): array
     {
         return [
-            'creator'        => 'Customer Connection',
-            'lastModifiedBy' => 'Customer Connection',
+            'creator'        => 'SETI LTDA',
+            'lastModifiedBy' => 'SETI LTDA',
             'title'          => 'Reporte',
-            'description'    => 'Reporte almacén Castañeda',
+            'description'    => 'Reporte seti',
             'subject'        => 'Reporte',
             'keywords'       => 'Reportes,export,spreadsheet',
             'category'       => 'Reportes',
-            'manager'        => 'Customer Connection',
-            'company'        => 'Customer Connection',
+            'manager'        => 'SETI LTDA',
+            'company'        => 'SETI LTDA',
         ];
     }
 
-    /**
-     * Write code on Method
-     *
-     * @return response()
-     */
     public function registerEvents(): array
     {
         return [

@@ -2,25 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ReportsExport;
 use App\Http\Requests\SaveListaPrecioRequest;
+use App\Imports\DataImport;
 use App\Models\TblDominio;
 use App\Models\TblListaPrecio;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Maatwebsite\Excel\Excel;
 
 class ListaPrecioController extends Controller
 {
     protected $filtros;
+    protected $excel;
 
-    public function __construct()
+    public function __construct(Excel $excel)
     {
         $this->middleware('auth');
+        $this->excel = $excel;
     }
     
-    private function dinamyFilters($querybuilder) {
+    private function dinamyFilters($querybuilder, $fields = []) {
         $operadores = ['>=', '<=', '!=', '=', '>', '<'];
 
         foreach (request()->all() as $key => $value) {
@@ -35,6 +39,8 @@ class ListaPrecioController extends Controller
                         break;
                     }
                 }
+
+                $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
                 if(!in_array($key, ['full_name'])){
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
@@ -206,10 +212,44 @@ class ListaPrecioController extends Controller
                     $this->dinamyFilters($q);
                 })->latest()->paginate(10),
             'listaTipoItemPrecio' => TblDominio::getListaDominios(session('id_dominio_tipo_items')),
+            'export' => Gate::allows('export', $listaPrecios),
+            'import' => Gate::allows('import', $listaPrecios),
             'create' => Gate::allows('create', $listaPrecios),
             'edit' => Gate::allows('update', $listaPrecios),
             'view' => Gate::allows('view', $listaPrecios),
             'request' => $this->filtros,
         ]);
+    }
+
+    public function export() {
+        $precios = TblListaPrecio::select(
+            DB::raw("
+                tbl_lista_precios.id_lista_precio,
+                CONCAT(t.nombres, ' ', t.apellidos) as nombre,
+                ti.nombre as tipo_item,
+                tbl_lista_precios.codigo,
+                tbl_lista_precios.descripcion,
+                tbl_lista_precios.unidad,
+                tbl_lista_precios.cantidad,
+                tbl_lista_precios.valor_unitario,
+                CASE WHEN tbl_lista_precios.estado = 1 THEN 'Activo' ELSE 'Inactivo' END estado_lista
+            ")
+        )
+        ->join('tbl_terceros as t', 'tbl_lista_precios.id_cliente', '=', 't.id_tercero')
+        ->join('tbl_dominios as ti', 'tbl_lista_precios.id_tipo_item', '=', 'ti.id_dominio')
+        ->where(function ($q) {
+            $this->dinamyFilters($q, [
+                'tbl_lista_precios.estado' => 'estado'
+            ]);
+        })
+        ->get();
+
+        $headers = ['#', 'Cliente', 'Tipo ítem', 'Código', 'Descripción', 'Unidad', 'Cantidad', 'Valor unitario', 'Estado'];
+        return $this->excel->download(new ReportsExport($headers, $precios), 'Reporte lista precios.xlsx');
+    }
+
+    public function import() {
+        (new DataImport(new TblListaPrecio))->import(request()->file('input_file'));
+        return back();
     }
 }
