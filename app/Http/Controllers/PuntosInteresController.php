@@ -200,7 +200,8 @@ class PuntosInteresController extends Controller
             'model' => TblPuntosInteres::with(['tblcliente', 'tbldominiozona', 'tbldominiotransporte', 'tbldominioacceso', 'tblusuario'])
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
-                })->latest()->paginate(10),
+                })->orderBy('id_punto_interes', 'desc')->paginate(10),
+            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),

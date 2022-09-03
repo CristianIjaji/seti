@@ -4,13 +4,13 @@
     <div id="carouselExampleSlidesOnly" class="carousel slide carousel-fade" data-bs-ride="carousel">
         <div class="carousel-inner vh-100">
             <div class="carousel-item active">
-                <img src="../images/bg-1.jpg" class="d-block w-100 vh-100 img-carousel" alt="...">
+                <img src="../images/bg-1.jpg" class="d-block w-100 vh-100 img-carousel" alt="carrousel">
             </div>
             <div class="carousel-item">
-                <img src="../images/bg-2.jpg" class="d-block w-100 vh-100 img-carousel" alt="...">
+                <img src="../images/bg-2.jpg" class="d-block w-100 vh-100 img-carousel" alt="carrousel">
             </div>
             <div class="carousel-item">
-                <img src="https://www.ecosiete.com/wp-content/uploads/2020/10/ADFSDVS-2048x1400.jpg" class="d-block w-100 vh-100 img-carousel" alt="...">
+                <img src="../images/bg-3.jpg" class="d-block w-100 vh-100 img-carousel" alt="carrousel">
             </div>
         </div>
     </div>

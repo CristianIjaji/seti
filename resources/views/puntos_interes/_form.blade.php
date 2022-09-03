@@ -36,7 +36,7 @@
                                 data-size='modal-xl'
                                 data-reload="false"
                                 data-select="id_cliente"
-                                data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_cliente').'') }}'
+                                data-action='{{ route('clients.create', 'tipo_documento='.session('id_dominio_nit').'&tipo_tercero='.session('id_dominio_cliente').'') }}'
                                 data-modal="modalForm-2"
                                 data-toggle="tooltip"
                                 title="Crear cliente"

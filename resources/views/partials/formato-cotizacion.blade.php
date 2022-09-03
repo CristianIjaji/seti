@@ -227,9 +227,9 @@
     <tr>
         <td></td>
         <td style="{{ $bordernone.$borderleft }}"></td>
-        <td colspan="6" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold }}">IVA 19%</td>
+        <td colspan="6" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold }}">{{ $quote[0]->tblIva->nombre }}</td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            =I{{ ( $items_material + $items_mano_obra + 11 + $items_transporte) }}*0.19
+            =I{{ ( $items_material + $items_mano_obra + 11 + $items_transporte) }}*{{ doubleval($quote[0]->tblIva->descripcion) / 100 }}
         </td>
     </tr>
     <tr>

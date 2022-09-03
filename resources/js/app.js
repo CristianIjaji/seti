@@ -54,12 +54,12 @@ var pusher = new Pusher('c27a0f7fb7b0efd70263', {
     cluster: 'us2'
 });
 
-const updateQuoteGrid = () => {
+const updateGrid = (url, data) => {
     $.ajax({
-        url: `quotes/grid`,
+        url: url,
         method: 'POST',
-        data: $(`#form_quotes`).serialize(),
-        beforeSend: function() {
+        data: data,
+        beforeSend: () => {
             showLoader(true);
         }
     }).done(function(view) {
@@ -68,6 +68,40 @@ const updateQuoteGrid = () => {
         showLoader(false);
         setupSelect2();
     });
+}
+
+const createChannel = (evento, canal, text, location, urlGrid, formData, audio = '') => {
+    var channel = pusher.subscribe(`user-${canal}`);
+    channel.bind(evento, function(data) {
+        if(audio !== '') {
+            var sound = new Audio(audio);
+            sound.play();
+        }
+
+        if(window.location.pathname === `/${location}`) {
+            updateGrid(urlGrid, formData);
+        }
+
+        Push.create(text, {
+            body: data.descripcion,
+            icon: 'images/icon.png',
+            vibrate: true,
+            timeout: 10000,
+            onClick: function() {
+                if(window.location.pathname !== `/${location}`) {
+                    window.location.href = location;
+                    console.log(window.location.href, location);
+                }
+
+                window.focus();
+                this.close();
+            }
+        });
+    });
+}
+
+window.listener = (canal) => {
+    createChannel('quote-created', canal, "Cotización creada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), 'sounds/notification1.mp3');
 }
 
 window.timer = () => {
@@ -91,7 +125,9 @@ window.datePicker = (minDate = null) => {
             ? setupDatePicker(element, initialDate, false, false, minDate)
             : setupDatePicker(element, initialDate, false, false)
         );
+
         $(element).val(initialDate);
+        // $(element).addClass('datetimepicker-input');
     });
 
     let picker1, picker2;
@@ -222,17 +258,17 @@ const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
         display: {
             components: {
                 clock: clock,
-
             },
             buttons: {
                 clear: true,
-                today: true
+                today: true,
             },
             keepOpen: false,
         },
         restrictions: {
             minDate
-        }
+        },
+        // allowInputToggle: true
     });
 
     picker.clear();
@@ -299,14 +335,17 @@ const sendAjaxForm = (action, data, reload, select, modal) => {
                 errors += `<li>${item}</li>`;
             });
             $(`#${modal} .alert-danger`)
-                .fadeIn(1000)
                 .html(`
-                    <p>Por favor corrija los siguientes campos: </p>
-                    <ul>${errors}</ul>
+                    <h6 class="alert-heading fw-bold">Por favor corrija los siguientes campos:</h6>
+                    <ol>${errors}</ol>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                `);
+                `)
+                .fadeTo(10000, 1000)
+                .slideUp(1000, function(){
+                    $(`#${modal} .alert-danger`).slideUp(1000);
+                });
         }
     }).always(function () {
         showLoader(false);
@@ -364,15 +403,6 @@ const handleModal = (button) => {
             setTimeout(() => {
                 $(`#${modal} input:text, #${modal} textarea`).first().focus();
                 $('.money').inputmask(formatCurrency);
-                // $('.typeahead').typeahead({
-                //     source: function (query, process) {
-                //         return $.get('clients/search', {
-                //             query: query
-                //         }, function (data) {
-                //             return process(data);
-                //         });
-                //     }
-                // });
             }, 100);
         }).always(function() {
             showLoader(false);
@@ -574,15 +604,18 @@ $(document).ready(function() {
             errors += `<li>${item}</li>`;
         });
         $('.alert-danger')
-            .fadeIn(1000)
             .html(
-                `<p>${title}: </p>
+                `<h6 class="alert-heading fw-bold">${title}: </h6>
                 <ul>${errors}</ul>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
                 `
-            );
+            )
+            .fadeTo(10000, 1000)
+            .slideUp(1000, function(){
+                $(`.alert-danger`).slideUp(1000);
+            });;
     }
 
     $('#login-form').submit(function(e){
@@ -608,9 +641,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#btn_upload').click(function(){
-        $('#input_file').trigger('click');
-    });
+    
 
     $('#input_file').change(function(e){
         $('#lbl_input_file')
@@ -796,6 +827,10 @@ $(document).on("click", ".btn-export", function(e) {
 
 });
 
+$(document).on('click', '#btn_upload', function() {
+    $('#input_file').trigger('click');
+});
+
 $(document).on('select2:open', () => {
     document.querySelector('.select2-search__field').focus();
 });
@@ -878,26 +913,27 @@ $(document).on('change', '.txt-cotizaciones', function() {
     fnc_totales_cot($(this).parent().parent().attr('id'));
 });
 
-$(document).on('change', '#id_cliente', function() {    
+$(document).on('change', '#id_cliente_cotizacion', function() {    
     if($(this).closest('form').attr('action').indexOf('quotes') > -1) {
         $('#table-cotizaciones').addClass('d-none');
 
         $('#id_estacion').empty();
         $('#id_estacion').append(`<option value=''>Elegir punto ínteres</option>`);
+        let id_cliente = $(this).find(':selected').data('id_cliente');
 
-        if($(this).val() !== '') {
+        if(id_cliente !== '') {
             $('#table-cotizaciones').removeClass('d-none');
 
             $(`.tr_cotizacion`).each((index, item) => {
                 let action = new String($(item).data('action')).split('/');
-                action[action.length - 1] = $(this).val();
+                action[action.length - 1] = id_cliente;
 
                 action = action.join('/');
                 $(item).data('action', action);
             });
 
             $.ajax({
-                url: `sites/${$(this).val()}/get_puntos_interes_client`,
+                url: `sites/${id_cliente}/get_puntos_interes_client`,
                 method: 'GET',
                 beforeSend: function() {
                     showLoader(true);
@@ -1004,8 +1040,10 @@ $(document).on('click', '.btn-quote', function(e) {
                 },
                 success: function(response, status, xhr) {
                     if(response.success) {
-                        // $('#modalForm').modal('hide');
-                        window.open(`quotes/exportQuote?quote=${$('#id_cotizacion').val()}`, '_blank');  
+                        $('#modalForm').modal('hide');
+                        if(action === 'send') {
+                            window.open(`quotes/exportQuote?quote=${$('#id_cotizacion').val()}`, '_blank');  
+                        }
 
                         Swal.fire({
                             icon: 'success',
@@ -1027,11 +1065,14 @@ $(document).on('click', '.btn-quote', function(e) {
                         errors += `<li>${item}</li>`;
                     });
                     $('.alert-danger')
-                        .fadeIn(1000)
-                        .html(`<p>Por favor corrija los siguientes campos: </p> <ul>${errors}</ul>`);
+                        .html(`<h6 class="alert-heading fw-bold">Por favor corrija los siguientes campos:</h6> <ol>${errors}</ol>`)
+                        .fadeTo(10000, 1000)
+                        .slideUp(1000, function(){
+                            $(`.alert-danger`).slideUp(1000);
+                        });
                 }
             }).always(function () {
-                updateQuoteGrid();
+                // updateQuoteGrid();
                 showLoader(false);
             });
 

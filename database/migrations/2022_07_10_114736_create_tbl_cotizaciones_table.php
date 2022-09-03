@@ -31,14 +31,22 @@ class CreateTblCotizacionesTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('id_estacion')->references('id_punto_interes')->on('tbl_puntos_interes');
-            $table->foreign('id_tipo_trabajo')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_prioridad')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('estado')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_responsable_cliente')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('iva')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
+            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_estacion')->references('id_punto_interes')->on('tbl_puntos_interes')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_tipo_trabajo')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_prioridad')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('estado')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_responsable_cliente')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('iva')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

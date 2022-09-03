@@ -26,7 +26,8 @@ class TblUsuariosTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onUpdate('cascade')->onDelete('cascade');
         });
     }
 

@@ -266,6 +266,13 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            $representante_cliente = TblDominio::create([
+                'nombre' => 'Representante cliente',
+                'id_dominio_padre' => $tipo_terceros->id_dominio,
+                'descripcion' => 'Tipo usuario representante cliente',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
             $contratista = TblDominio::create([
                 'nombre' => 'Contratista',
                 'id_dominio_padre' => $tipo_terceros->id_dominio,
@@ -304,13 +311,6 @@ class SetupSeeder extends Seeder
                 'nombre' => 'IVA 19%',
                 'id_dominio_padre' => $tipos_impuestos->id_dominio,
                 'descripcion' => '19%',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'IVA 0%',
-                'id_dominio_padre' => $tipos_impuestos->id_dominio,
-                'descripcion' => '0%',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -583,6 +583,13 @@ class SetupSeeder extends Seeder
                 'descripcion' => 'id_dominio_cliente',
                 'id_usuareg' => $user->id_usuario,
             ]);
+            TblParametro::create([
+                'llave' => 'id_dominio_representante_cliente',
+                'valor' => $representante_cliente->id_dominio,
+                'descripcion' => 'id_dominio_representante_cliente',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            // Creación parametro usuario representante cliente
             // Creación parametro usuario contratista
             TblParametro::create([
                 'llave' => 'id_dominio_contratista',

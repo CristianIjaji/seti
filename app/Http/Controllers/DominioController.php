@@ -171,7 +171,7 @@ class DominioController extends Controller
             'model' => TblDominio::with(['tblusuario', 'tbldominio'])
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
-                })->latest()->paginate(10),
+                })->orderBy('id_dominio', 'desc')->paginate(10),
             'dominios_padre' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => null])->orderby('nombre')->pluck('nombre', 'id_dominio'),
             'create' => Gate::allows('create', new TblDominio),
             'edit' => Gate::allows('update', new TblDominio),

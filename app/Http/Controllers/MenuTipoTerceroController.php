@@ -6,6 +6,7 @@ use App\Http\Requests\SaveMenuTipoTerceroRequest;
 use App\Models\TblDominio;
 use App\Models\TblMenu;
 use App\Models\TblMenuTipoTercero;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -40,6 +41,10 @@ class MenuTipoTerceroController extends Controller
             $this->filtros[$key] = $value;
         }
 
+        if(Auth::user()->role !== session('id_dominio_super_administrador')) {
+            $querybuilder->where('id_tipo_tercero', '<>', session('id_dominio_super_administrador'));
+        }
+
         return $querybuilder;
     }
 
@@ -67,7 +72,8 @@ class MenuTipoTerceroController extends Controller
         return view('menus._form', [
             'profile' => new TblMenuTipoTercero,
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
-            'menus_disponibles' => TblMenu::where('estado', '=', 1)->orderBy('orden')->get(),
+            'menus_disponibles' => TblMenu::where('estado', '=', 1)
+            ->wherenotin('id_menu', (Auth::user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))->orderBy('orden')->get(),
             'menus_asignados' => []
         ]);
     }
@@ -124,7 +130,8 @@ class MenuTipoTerceroController extends Controller
             'edit' => false,
             'profile' => $profile,
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
-            'menus_disponibles' => TblMenu::where('estado', '=', 1)->orderBy('orden')->get(),
+            'menus_disponibles' => TblMenu::where('estado', '=', 1)
+            ->wherenotin('id_menu', (Auth::user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))->orderBy('orden')->get(),
             'menus_asignados' => $this->getPermisosMenu($profile),
         ]);
     }
@@ -143,7 +150,8 @@ class MenuTipoTerceroController extends Controller
             'edit' => true,
             'profile' => $profile,
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
-            'menus_disponibles' => TblMenu::where('estado', '=', 1)->orderBy('orden')->get(),
+            'menus_disponibles' => TblMenu::where('estado', '=', 1)
+            ->wherenotin('id_menu', (Auth::user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))->orderBy('orden')->get(),
             'menus_asignados' => $this->getPermisosMenu($profile),
         ]);
     }
@@ -216,7 +224,6 @@ class MenuTipoTerceroController extends Controller
         ->wherein('tbl_menus.id_menu', TblMenuTipoTercero::select('id_menu')->where(['id_tipo_tercero' => $profile->id_tipo_tercero])->get())
         ->orderBy('tbl_menus.orden')->get();
 
-        // Log::info(print_r($menus, 1));
         foreach ($menus as $menu) {
             $menus_asignados[$menu->id_menu] = [
                 'nombre' => $menu->nombre_form,

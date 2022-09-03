@@ -174,7 +174,6 @@
                 `;
             }
         });
-        // console.log(inputs)
         $('#div-permisos').html(inputs);
     }
 </script>

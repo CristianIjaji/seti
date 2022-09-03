@@ -12,7 +12,7 @@
     'headers' => [
         ['name' => 'id_cotizacion', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'ot_trabajo', 'label' => 'OT trabajo', 'col' => 'col-1'],
-        ['name' => 'tblCliente', 'label' => 'Cliente', 'col' => 'col-1', 'foreign' => 'full_name'],
+        ['name' => 'id_cliente', 'label' => 'Cliente', 'col' => 'col-1', 'options' => $clientes],
         ['name' => 'tblEstacion', 'label' => 'Estación', 'col' => 'col-1', 'foreign' => 'nombre'],
         ['name' => 'fecha_solicitud', 'label' => 'Fecha solicitud', 'col' => 'col-1', 'class' => 'input-date'],
         ['name' => 'fecha_envio', 'label' => 'Fecha envió', 'col' => 'col-1', 'class' => 'input-date'],

@@ -25,9 +25,12 @@ class TblCotizacionDetalles extends Migration
             $table->decimal('valor_total', 20, 2);
             $table->timestamps();
 
-            $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones');
-            $table->foreign('id_tipo_item')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_lista_precio')->references('id_lista_precio')->on('tbl_lista_precios');
+            $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_tipo_item')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_lista_precio')->references('id_lista_precio')->on('tbl_lista_precios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

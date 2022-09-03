@@ -115,6 +115,8 @@ class TblPuntosInteres extends Model
                 'id_tipo_accesso' => (isset($acceso->id_dominio) ? $acceso->id_dominio : null),
                 'id_usuareg' => auth()->id()
             ]);
+        } else {
+            return null;
         }
     }
 }

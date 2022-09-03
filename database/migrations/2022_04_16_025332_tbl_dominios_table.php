@@ -22,8 +22,10 @@ class TblDominiosTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_dominio_padre')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
+            $table->foreign('id_dominio_padre')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

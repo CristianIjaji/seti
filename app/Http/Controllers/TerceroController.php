@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 
@@ -65,6 +66,21 @@ class TerceroController extends Controller
         return $querybuilder;
     }
 
+    private function getTipoTerceros() {
+        $tipo_terceros = TblDominio::getListaDominios(session('id_dominio_tipo_tercero'));
+        if(Auth::user()->role !== session('id_dominio_super_administrador')) {
+            $tipo_terceros = $tipo_terceros->filter(function($value, $key) {
+                return $key != session('id_dominio_super_administrador');
+            });
+        } else if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
+            $tipo_terceros = $tipo_terceros->filter(function($value, $key) {
+                return $key != session('id_dominio_administrador');
+            });
+        }
+
+        return $tipo_terceros;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -88,11 +104,14 @@ class TerceroController extends Controller
         return view('terceros._form', [
             'tercero' => new TblTercero,
             'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento')),
-            'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
+            'tipo_terceros' => $this->getTipoTerceros(),
+            'tipo_documento' => isset(request()->tipo_documento)
+                ? TblDominio::where('id_dominio', '=', request()->tipo_documento)->first() 
+                : '',
             'tipo_tercero' => isset(request()->tipo_tercero)
-                ? TblDominio::where('id_dominio', '=', request()->tipo_tercero)->first() :
-                '',
-            'terceros' => TblTercero::where(['estado' => 1])->get(),
+                ? TblDominio::where('id_dominio', '=', request()->tipo_tercero)->first()
+                : '',
+            'terceros' => TblTercero::where(['estado' => 1])->wherein('id_dominio_tipo_tercero', [session('id_dominio_cliente'), session('id_dominio_contratista')])->get(),
             'ciudades' => TblTercero::pluck('ciudad', 'ciudad'),
         ]);
     }
@@ -155,8 +174,8 @@ class TerceroController extends Controller
             'edit' => true,
             'tercero' => $client,
             'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento')),
-            'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
-            'terceros' => TblTercero::where(['estado' => 1])->where('id_tercero', '<>', $client->id_tercero)->get(),
+            'tipo_terceros' => $this->getTipoTerceros(),
+            'terceros' => TblTercero::where(['estado' => 1])->where('id_tercero', '<>', $client->id_tercero)->wherein('id_dominio_tipo_tercero', [session('id_dominio_cliente'), session('id_dominio_contratista')])->get(),
             'estados' => [
                 0 => 'Inactivo',
                 1 => 'Activo'
@@ -176,17 +195,12 @@ class TerceroController extends Controller
     {
         try {
             $this->authorize('update', $client);
-
             if($request->hasFile('logo')) {
                 Storage::delete($client->logo);
-
                 $client->fill($request->validated());
                 $client->logo = $request->file('logo')->store('images');
                 $client->save();
             } else {
-                // if($request->logo == '' && $client->logo !== ''){
-                //     Storage::delete($client->logo);
-                // }
                 $client->update(array_filter($request->validated()));
             }
 
@@ -238,7 +252,7 @@ class TerceroController extends Controller
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->latest()->paginate(10),
-            'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
+            'tipo_terceros' => $this->getTipoTerceros(),
             'export' => Gate::allows('export', $tercero),
             'import' => Gate::allows('import', $tercero),
             'create' => Gate::allows('create', $tercero),

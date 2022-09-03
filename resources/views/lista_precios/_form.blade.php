@@ -14,7 +14,7 @@
         @endif
 @endif
     <div class="row">
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6">
             <label for="id_cliente" class="required">Cliente</label>
             @if ($edit)
                 <div class="row">
@@ -36,7 +36,7 @@
                                 data-size='modal-xl'
                                 data-reload="false"
                                 data-select="id_cliente"
-                                data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_cliente').'') }}'
+                                data-action='{{ route('clients.create', "tipo_documento=".session('id_dominio_nit')."&tipo_tercero=".session('id_dominio_cliente')."") }}'
                                 data-modal="modalForm-2"
                                 data-toggle="tooltip"
                                 title="Crear cliente"
@@ -48,7 +48,7 @@
                 <input type="text" class="form-control" id="id_cliente" value="{{ $lista_precio->tbltercerocliente->full_name }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
             <label for="id_tipo_item" class="required">Tipo ítem</label>
             @if ($edit)
                 <select class="form-control" name="id_tipo_item" id="id_tipo_item" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -63,11 +63,11 @@
                 <input type="text" class="form-control" id="id_cliente" value="{{ $lista_precio->tbldominioitem->nombre }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
             <label for="codigo" class="required">Código</label>
             <input type="text" class="form-control text-uppercase" @if ($edit) name="codigo" @endif id="codigo" value="{{ old('codigo', $lista_precio->codigo) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
             <label for="unidad" class="required">Unidad</label>
             <input type="text" class="form-control" list="list_unidades" @if ($edit) name="unidad" @endif id="unidad" value="{{ old('unidad', $lista_precio->unidad) }}" @if ($edit) required @else disabled @endif>
             @if ($edit)
@@ -78,15 +78,15 @@
                 </datalist>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
             <label for="cantidad" class="required">Cantidad</label>
             <input type="number" min="0" class="form-control" @if ($edit) name="cantidad" @endif id="cantidad" value="{{ old('cantidad', $lista_precio->cantidad) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
             <label for="valor_unitario" class="required">Valor unitario</label>
             <input type="text" class="form-control money" @if ($edit) name="valor_unitario" @endif id="valor_unitario" value="{{ old('valor_unitario', $lista_precio->valor_unitario) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-12">
             <label for="descripcion">Descripción</label>
             <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $lista_precio->descripcion) }}</textarea>
         </div>

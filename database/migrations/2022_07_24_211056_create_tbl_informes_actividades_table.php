@@ -21,9 +21,12 @@ class CreateTblInformesActividadesTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_encargado')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('id_estado_informe')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
+            $table->foreign('id_encargado')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_estado_informe')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

@@ -24,8 +24,10 @@ class CreateTblMenuTipoTerceroTable extends Migration
             $table->boolean('exportar');
             $table->timestamps();
 
-            $table->foreign('id_menu')->references('id_menu')->on('tbl_menus');
-            $table->foreign('id_tipo_tercero')->references('id_dominio')->on('tbl_dominios');
+            $table->foreign('id_menu')->references('id_menu')->on('tbl_menus')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_tipo_tercero')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

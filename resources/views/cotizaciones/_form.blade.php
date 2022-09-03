@@ -13,7 +13,7 @@
             @method('PATCH')
         @endif
 @endif
-    @if (!$create && !$edit)
+    @if (!$create)
         <ul class="nav nav-tabs" id="quotesTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="quotes-tab" data-bs-toggle="tab" data-bs-target="#quotes" type="button" role="tab" aria-controls="quotes" aria-selected="true">Cotización</button>
@@ -23,7 +23,7 @@
             </li>
         </ul>
     @endif
-    @if (!$create && !$edit)
+    @if (!$create)
         <div class="tab-content pt-3" id="quotesTab">
             <div class="tab-pane fade show active" id="quotes" role="tabpanel" aria-labelledby="quotes-tab">    
     @endif
@@ -35,15 +35,17 @@
                     <input type="text" class="form-control" @if ($edit) name="ot_trabajo" @endif id="ot_trabajo" value="{{ old('ot_trabajo', $cotizacion->ot_trabajo) }}" @if ($edit) required @else disabled @endif>
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
-                    <label for="id_cliente" class="required">Cliente</label>
+                    <label for="id_cliente_cotizacion" class="required">Cliente</label>
                     @if ($edit)
                         <div class="row">
                             <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
-                                <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
+                                <select class="form-control" name="id_cliente" id="id_cliente_cotizacion" style="width: 100%" @if ($edit) required @else disabled @endif>
                                     <option value="">Elegir cliente</option>
-                                    @foreach ($clientes as $id => $nombre)
-                                        <option value="{{ $id }}" {{ old('id_cliente', $cotizacion->id_cliente) == $id ? 'selected' : '' }}>
-                                            {{$nombre}}
+                                    @foreach ($clientes as $cliente)
+                                        <option
+                                            data-id_cliente="{{ (isset($cliente->tblterceroresponsable) ? $cliente->tblterceroresponsable->id_tercero : $cliente->id_tercero ) }}"
+                                            value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $cotizacion->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
+                                            {{ $cliente->full_name }} {{ (isset($cliente->tblterceroresponsable) ? ' - '.$cliente->tblterceroresponsable->razon_social : '' ) }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -56,7 +58,7 @@
                                         data-size='modal-xl'
                                         data-reload="false"
                                         data-select="id_cliente"
-                                        data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_cliente').'') }}'
+                                        data-action='{{ route('clients.create', "tipo_tercero=".session('id_dominio_representante_cliente')."") }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
                                         title="Crear cliente"
@@ -65,7 +67,7 @@
                             @endif
                         </div>
                     @else
-                        <input type="text" class="form-control" id="id_cliente" value="{{ $cotizacion->tblCliente->full_name }}" disabled>
+                        <input type="text" class="form-control" id="id_cliente_cotizacion" value="{{ $cotizacion->tblCliente->full_name }} {{ (isset($cotizacion->tblCliente->tblterceroresponsable) ? ' - '.$cotizacion->tblCliente->tblterceroresponsable->razon_social : '') }}" disabled>
                     @endif
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
@@ -154,14 +156,16 @@
                     @endif
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
-                    <label for="id_responsable_cliente" class="required">Responsable</label>
+                    <label for="id_responsable" class="required">Encargado</label>
                     @if ($edit)
                         <div class="row">
                             <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
-                                <select class="form-control" name="id_responsable_cliente" id="id_responsable_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
-                                    @forelse ($contratistas as $id => $nombre)
-                                        <option value="{{ $id }}" {{ old('id_responsable_cliente', $cotizacion->id_responsable_cliente) == $id ? 'selected' : '' }}>
-                                            {{$nombre}}
+                                <select class="form-control" name="id_responsable_cliente" id="id_responsable" style="width: 100%" @if ($edit) required @else disabled @endif>
+                                    @forelse ($contratistas as $contratista)
+                                        <option
+                                            data-id_contratista="{{ (isset($contratista->tblterceroresponsable) ? $contratista->tblterceroresponsable->id_tercero : $contratista->id_tercero ) }}"
+                                            value="{{ $contratista->id_tercero }}" {{ old('id_responsable', $cotizacion->id_responsable_cliente) == $contratista->id_tercero ? 'selected' : '' }}>
+                                            {{ $contratista->full_name }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
                                         </option>
                                     @empty
                                         <option value="">Elegir contratista</option>
@@ -175,8 +179,8 @@
                                         data-title="Nuevo contratista"
                                         data-size='modal-xl'
                                         data-reload="false"
-                                        data-select="id_responsable_cliente"
-                                        data-action='{{ route('clients.create', 'tipo_tercero='.session('id_dominio_contratista').'') }}'
+                                        data-select="id_responsable"
+                                        data-action='{{ route('clients.create', "tipo_tercero=".session('id_dominio_coordinador')."") }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
                                         title="Crear contratista"
@@ -185,7 +189,8 @@
                             @endif
                         </div>
                     @else
-                        <input type="text" class="form-control" id="id_responsable_cliente" value="{{ $cotizacion->tblContratista->full_name }}" disabled>
+                        {{-- <input type="text" class="form-control" id="id_responsable" value="{{ $cotizacion->tblContratista->full_name }}" disabled> --}}
+                        <input type="text" class="form-control" id="id_cliente_cotizacion" value="{{ $cotizacion->tblContratista->full_name }} {{ (isset($cotizacion->tblContratista->tblterceroresponsable) ? ' - '.$cotizacion->tblContratista->tblterceroresponsable->razon_social : '') }}" disabled>
                     @endif
                 </div>
                 <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6">
@@ -215,6 +220,7 @@
                                         title="Agregar ítem"
                                         data-title="Buscar ítems suministro materiales"
                                         data-size='modal-xl'
+                                        data-header-class='bg-gray text-white'
                                         data-action='{{ route('priceList.search', ['type' => session('id_dominio_materiales'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
@@ -244,6 +250,7 @@
                                         title="Agregar ítem"
                                         data-title="Buscar ítems mano obra"
                                         data-size='modal-xl'
+                                        data-header-class='bg-gray text-white'
                                         data-action='{{ route('priceList.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
@@ -271,8 +278,9 @@
                                         class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
                                         title="Agregar ítem"
-                                        data-title="Buscar ítem transporte y peajes"
+                                        data-title="Buscar ítems transporte y peajes"
                                         data-size='modal-xl'
+                                        data-header-class='bg-gray text-white'
                                         data-action='{{ route('priceList.search', ['type' => session('id_dominio_transporte'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
@@ -331,7 +339,7 @@
             </div>
 
             @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear cotización' : 'Editar cotización', 'modal' => 'modalForm'])
-    @if (!$create && !$edit)
+    @if (!$create)
         </div>
         <div class="tab-pane" id="track" role="tabpanel" aria-labelledby="track-tab">
         </div>

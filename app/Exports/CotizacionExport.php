@@ -78,19 +78,35 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings
 
     public function drawings()
     {
-        $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
-        $logo_cliente = ($this->model[0]->tblCliente->logo != '' ? "/storage/".$this->model[0]->tblCliente->logo : '');
-        $logo_contratista = '';
+        $seti = "/images/seti.png";
+        $logo_cliente = (isset($this->model[0]->tblCliente->tblterceroresponsable)
+            ? ($this->model[0]->tblCliente->tblterceroresponsable->logo != '' ? "/storage/".$this->model[0]->tblCliente->tblterceroresponsable->logo : $seti)
+            : ($this->model[0]->tblCliente->logo != '' ? "/storage/".$this->model[0]->tblCliente->logo : $seti)
+        );
+        $logo_contratista = (isset($this->model[0]->tblContratista->tblterceroresponsable)
+            ? ($this->model[0]->tblContratista->tblterceroresponsable->logo != '' ? "/storage/".$this->model[0]->tblContratista->tblterceroresponsable->logo : $seti)
+            : ($this->model[0]->tblContratista->logo != '' ? "/storage/".$this->model[0]->tblContratista->logo : $seti)
+        );
 
-        if($logo_cliente !== '') {
-            $drawing->setName('logo');
-            $drawing->setDescription('Logo cliente');
-            $drawing->setPath(public_path($logo_cliente));
-            $drawing->setHeight(52);
-            $drawing->setCoordinates('B2');
-        }
+        $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+        $drawing->setName('Logo cliente');
+        $drawing->setDescription('Logo cliente');
+        $drawing->setPath(public_path($logo_cliente));
+        $drawing->setHeight(54);
+        $drawing->setOffsetX(20);
+        $drawing->setOffsetY(1);
+        $drawing->setCoordinates('B2');
         
-        return $drawing;
+        $drawing2 = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+        $drawing2->setName('Logo contratista');
+        $drawing2->setDescription('Logo contratista');
+        $drawing2->setPath(public_path($logo_contratista));
+        $drawing2->setHeight(54);
+        $drawing2->setOffsetX(30);
+        $drawing2->setOffsetY(1);
+        $drawing2->setCoordinates('G2');
+        
+        return [$drawing, $drawing2];
     }
 
     public function registerEvents(): array

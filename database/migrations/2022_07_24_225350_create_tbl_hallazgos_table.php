@@ -22,10 +22,14 @@ class CreateTblHallazgosTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_actividad')->references('id_actividad')->on('tbl_actividades');
-            $table->foreign('id_supervisor')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('id_estado_hallazgo')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
+            $table->foreign('id_actividad')->references('id_actividad')->on('tbl_actividades')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_supervisor')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_estado_hallazgo')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

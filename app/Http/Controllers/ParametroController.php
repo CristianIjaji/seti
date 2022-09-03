@@ -177,7 +177,7 @@ class ParametroController extends Controller
         return view($view, [
             'model' => TblParametro::with(['tblusuario', 'tbldominio'])->where(function ($q) {
                 $this->dinamyFilters($q);
-            })->latest()->paginate(10),
+            })->orderby('id_parametro_aplicacion', 'desc')->paginate(10),
             'create' => Gate::allows('create', new TblParametro),
             'edit' => Gate::allows('update', new TblParametro),
             'view' => Gate::allows('view', new TblParametro),

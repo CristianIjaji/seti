@@ -27,12 +27,18 @@ class CreateTblOrdenesCompraTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_tipo')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_proveedor')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('id_modalidad_pago')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_estado')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_asesor')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
+            $table->foreign('id_tipo')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_proveedor')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_modalidad_pago')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_estado')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_asesor')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

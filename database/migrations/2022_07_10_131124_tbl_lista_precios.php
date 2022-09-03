@@ -26,9 +26,12 @@ class TblListaPrecios extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('id_tipo_item')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
+            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_tipo_item')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

@@ -5,6 +5,7 @@
 <?php
     $create = isset($tercero->id_tercero) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
+    $tipo_documento = (isset($tipo_documento) && $tipo_documento != '') ? $tipo_documento : false;
     $tipo_tercero = (isset($tipo_tercero) && $tipo_tercero != '') ? $tipo_tercero : false;
 ?>
 
@@ -22,27 +23,33 @@
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-4">
             <label for="id_dominio_tipo_documento" class="required">Tipo documento</label>
             @if ($edit)
-                <select class="form-control" name="id_dominio_tipo_documento" id="id_dominio_tipo_documento" style="width: 100%" @if ($edit) required @else disabled @endif>
-                    <option value="">Elegir tipo documento</option>
-                    @foreach ($tipo_documentos as $id => $nombre)
-                        <option value="{{ $id }}" {{ old('id_dominio_tipo_documento', $tercero->id_dominio_tipo_documento) == $id ? 'selected' : '' }}>
-                            {{$nombre}}
-                        </option>
-                    @endforeach
-                </select>
+                @if (!$tipo_documento)
+                    <select class="form-control" name="id_dominio_tipo_documento" id="id_dominio_tipo_documento" style="width: 100%" @if ($edit) required @else disabled @endif>
+                        <option value="">Elegir tipo documento</option>
+                        @foreach ($tipo_documentos as $id => $nombre)
+                            <option value="{{ $id }}" {{ old('id_dominio_tipo_documento', $tercero->id_dominio_tipo_documento) == $id ? 'selected' : '' }}>
+                                {{$nombre}}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="text" class="form-control" value="{{ $tipo_documento->nombre }}" disabled readonly>
+                    <input type="hidden" name="id_dominio_tipo_documento" id="id_dominio_tipo_documento" value="{{ $tipo_documento->id_dominio }}">
+                @endif
             @else
-                <input type="text" class="form-control" id="id_dominio_tipo_documento" value="{{ $tercero->tbldominiodocumento->nombre }}" disabled>
+                <input type="text" class="form-control" value="{{ $tercero->tbldominiodocumento->nombre }}" disabled>
+                <input type="hidden" id="id_dominio_tipo_documento" value="{{ $tercero->id_dominio_tipo_documento }}">
             @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="documento" class="required">Documento</label>
             <input type="text" class="form-control" @if ($edit) name="documento" @endif id="documento" value="{{ old('documento', $tercero->documento) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div id="div_dv" class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="dv">DV</label>
             <input type="text" class="form-control" @if ($edit) name="dv" @endif id="dv" value="{{ old('dv', $tercero->dv) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div id="div_razon_social" class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="razon_social">Razón social</label>
             <input type="text" class="form-control" @if ($edit) name="razon_social" @endif id="razon_social" value="{{ old('dv', $tercero->razon_social) }}" @if ($edit) required @else disabled @endif>
         </div>
@@ -79,10 +86,10 @@
             <label for="telefono" class="required">Teléfono / Celular</label>
             <input type="tel" class="form-control" @if ($edit) name="telefono" @endif id="telefono" value="{{ old('telefono', $tercero->telefono) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 {{ $tipo_tercero ? 'd-none' : '' }}">
             <label for="id_dominio_tipo_tercero" class="required">Tipo tercero</label>
             @if ($edit)
-                @if ($tipo_tercero == '')
+                @if (!$tipo_tercero)
                     <select class="form-control" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" style="width: 100%" @if ($edit) required @else disabled @endif>
                         <option value="">Elegir tipo tercero</option>
                         @foreach ($tipo_terceros as $id => $nombre)
@@ -96,10 +103,11 @@
                     <input type="hidden" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" value="{{ $tipo_tercero->id_dominio }}">
                 @endif
             @else
-                <input type="text" class="form-control" id="id_dominio_tipo_tercero" value="{{ $tercero->tbldominiotercero->nombre }}" disabled>
+                <input type="text" class="form-control" value="{{ $tercero->tbldominiotercero->nombre }}" disabled>
+                <input type="hidden" id="id_dominio_tipo_tercero" value="{{ $tercero->id_dominio_tipo_tercero }}">
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div id="div_dependencia" class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
             <label for="id_responsable_cliente" class="required">Dependencia</label>
             @if ($edit)
                 <select class="form-control" name="id_responsable_cliente" id="id_responsable_cliente" data-minimuminputlength="3" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -115,6 +123,19 @@
             @endif
         </div>
         
+        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-6 col-lg-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente'), session('id_dominio_proveedor')]) ? '' : 'd-none' }} ">
+            <label for="logo" class="required col-12">Logo cotización</label>
+            @if ($edit)
+                <div class="file-loading">
+                    <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
+                </div>
+            @else
+                @if ($tercero->logo != '')
+                    <img src="/storage/{{ $tercero->logo }}" class="img-thumbnail" alt="Logo cotizaciones">
+                @endif
+            @endif
+        </div>
+
         @if(!$create)
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
                 <label for="estado" class="required">Estado</label>
@@ -143,17 +164,6 @@
                 </div>
             @endif
         @endif
-
-        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-6 col-lg-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente'), session('id_dominio_proveedor')]) ? '' : 'd-none' }} ">
-            <label for="logo" class="required col-12">Logo cotización</label>
-            @if ($edit)
-                <div class="file-loading">
-                    <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
-                </div>
-            @else
-                <img src="/storage/{{ $tercero->logo }}" class="img-thumbnail" alt="Logo cotizaciones">
-            @endif
-        </div>
     </div>
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear tercero' : 'Editar tercero'])
@@ -173,49 +183,72 @@
         }
     </style>
     <script type="application/javascript">
-        var previewImage = null;
-    
-        if("{!! $tercero->logo !!}" !== '') {
-            previewImage = "storage/{!! $tercero->logo !!}"
-            console.log(previewImage);
-        }
-    
-        var show = (!"{!! $create !!}" && !"{!! $edit !!}") ? false : true;
-    
-        $("#logo").fileinput({
-            language: 'es',
-            theme: "explorer",
-            showCaption: show,
-            showBrowse: show,
-            showRemove: show,
-            showUpload: false,
-            showCancel: false,
-            showClose: false,
-            showDescriptionClose: false,
-            // allowedPreviewTypes : [ 'image' ],
-            allowedFileExtensions : ['jpg', 'jpeg', 'png'],
-            initialPreviewShowDelete: false,
-            fileActionSettings: {
-                showRemove: false,
-                showDrag: false
-            },
-            initialPreview: [
-                previewImage
-            ],
-            initialPreviewAsData: true,
-            initialPreviewConfig: {}
+        $('#id_dominio_tipo_documento').change(function() {
+            $('#div_dv, #div_razon_social').addClass('d-none');
+            let valor = parseInt($(this).val());
+            let nit = {!! session('id_dominio_nit') !!};
+
+            if($.inArray(valor, [nit]) > -1) {
+                $('#div_dv, #div_razon_social').removeClass('d-none');
+            }
         });
 
-        $('#id_dominio_tipo_tercero').change(function () {
-            $('#div_logo').addClass('d-none');
+        $('#id_dominio_tipo_tercero').change(function() {
+            $('#div_logo, #div_dependencia').addClass('d-none');
             let valor = parseInt($(this).val());
             let cliente = parseInt({!! session('id_dominio_cliente') !!});
-            let proveedor = parseInt({!! session('id_dominio_proveedor') !!});
+            let representante_cliente = parseInt({!! session('id_dominio_representante_cliente') !!});
+            let coordinador = parseInt({!! session('id_dominio_coordinador') !!});
+            let proveedor = parseInt({!! session('id_dominio_contratista') !!});
 
             if($.inArray(valor, [cliente, proveedor]) > -1) {
                 $('#div_logo').removeClass('d-none');
             }
+
+            if($.inArray(valor, [representante_cliente, coordinador]) > -1) {
+                $('#div_dependencia').removeClass('d-none');
+            }
         });
 
-        // $('#id_dominio_tipo_tercero').change();
+        if($('#id_dominio_tipo_documento').length) {
+            $('#id_dominio_tipo_documento').change();
+        }
+
+        if($('#id_dominio_tipo_tercero').length) {
+            $('#id_dominio_tipo_tercero').change();
+        }
+
+        var previewImage = null;
+    
+        if("{!! $tercero->logo !!}" !== '') {
+            previewImage = "storage/{!! $tercero->logo !!}"
+        }
+    
+        var show = (!"{!! $create !!}" && !"{!! $edit !!}") ? false : true;
+    
+        if(show) {
+            $("#logo").fileinput({
+                language: 'es',
+                theme: "explorer",
+                showCaption: show,
+                showBrowse: show,
+                showRemove: false,
+                showUpload: false,
+                showCancel: false,
+                showClose: false,
+                showDescriptionClose: false,
+                // allowedPreviewTypes : [ 'image' ],
+                allowedFileExtensions : ['jpg', 'jpeg', 'png'],
+                initialPreviewShowDelete: false,
+                fileActionSettings: {
+                    showRemove: false,
+                    showDrag: false
+                },
+                initialPreview: [
+                    previewImage
+                ],
+                initialPreviewAsData: true,
+                initialPreviewConfig: {}
+            });
+        }
     </script>

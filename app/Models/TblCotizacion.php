@@ -49,7 +49,6 @@ class TblCotizacion extends Model
 
     public function tblIva() {
         return $this->belongsTo(TblDominio::class, 'iva');
-        // return $this->belongsTo(TblDominio::class, 'iva');
     }
 
     public function tblContratista() {
@@ -144,7 +143,7 @@ class TblCotizacion extends Model
     }
 
     public function getFechaCotizacionAttribute() {
-        $fecha_solicitud = $this->attributes['fecha_solicitud'];Log::info("fecha: $fecha_solicitud");
+        $fecha_solicitud = $this->attributes['fecha_solicitud'];
         $months = $this->getMesesAttribute();
         $day = date('d', strtotime($fecha_solicitud));
         $month = substr($months[intval(date('m', strtotime($fecha_solicitud)))], 0, 3);

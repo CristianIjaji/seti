@@ -40,20 +40,34 @@ class CreateTblActividadesTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_encargado')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros');
-            $table->foreign('id_tipo_actividad')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_mes')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_estacion')->references('id_punto_interes')->on('tbl_puntos_interes');
-            // $table->foreign('id_permiso')->references('id_permiso')->on('tbl_permisos');
-            $table->foreign('id_estado_actividad')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones');
-            $table->foreign('id_orden_compra')->references('id_orden_compra')->on('tbl_ordenes_compra');
-            $table->foreign('id_informe')->references('id_informe_actividad')->on('tbl_informes_actividades');
-            $table->foreign('id_responsable_cliente')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_mes_consolidado')->references('id_dominio')->on('tbl_dominios');
-            $table->foreign('id_factura')->references('id_factura')->on('tbl_facturas');
-            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios');
+            $table->foreign('id_encargado')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_tipo_actividad')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_mes')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_estacion')->references('id_punto_interes')->on('tbl_puntos_interes')
+                ->onDelete('cascade')->onUpdate('cascade');
+            // $table->foreign('id_permiso')->references('id_permiso')->on('tbl_permisos')
+                // ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_estado_actividad')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_orden_compra')->references('id_orden_compra')->on('tbl_ordenes_compra')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_informe')->references('id_informe_actividad')->on('tbl_informes_actividades')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_responsable_cliente')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_mes_consolidado')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_factura')->references('id_factura')->on('tbl_facturas')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

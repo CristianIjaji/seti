@@ -3,7 +3,7 @@
     'create' => $create,
     'route' => 'priceList',
     'btnOptionsCreate' => [
-        "title" => 'Nueva Lista precio',
+        "title" => 'Nueva lista precio',
         "modal-size" => "modal-xl",
         "route" => route("priceList.create"),
     ],

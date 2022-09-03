@@ -11,9 +11,11 @@ use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
+use Pusher\Pusher;
 
 class CotizacionController extends Controller
 {
@@ -58,7 +60,32 @@ class CotizacionController extends Controller
             $this->filtros[$key] = $value;
         }
 
+        if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])){
+            $querybuilder->where('id_responsable_cliente', '=', Auth::user()->id_tercero);
+            $querybuilder->orwhere('id_usuareg', '=', Auth::user()->id_tercero);
+        }
+
         return $querybuilder;
+    }
+
+    private function sendNotification($cotizacion, $channel, $event) {
+        $options = [
+            'cluster' => 'us2',
+            'useTLS' => true
+        ];
+
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            $options
+        );
+
+        $pusher->trigger(
+            $channel,
+            $event,
+            $cotizacion
+        );
     }
 
     /**
@@ -85,11 +112,17 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'cotizacion' => new TblCotizacion,
             'carrito' => [],
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
+            'clientes' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
-            'contratistas' => TblTercero::getClientesTipo(session('id_dominio_contratista')),
+            'contratistas' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
         ]);
@@ -125,6 +158,10 @@ class CotizacionController extends Controller
 
             $cotizacion->valor = $total;
             $cotizacion->save();
+
+            $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'));
+            $cotizacion->descripcion = $cotizacion->tblEstacion->nombre."\nFecha solicitud: ".$cotizacion->fecha_solicitud."\nAlcance: ".$cotizacion->descripcion;
+            $this->sendNotification($cotizacion, 'user-2', 'quote-created');
 
             return response()->json([
                 'success' => 'Cotización creada exitosamente!',
@@ -171,12 +208,18 @@ class CotizacionController extends Controller
             'edit' => true,
             'cotizacion' => $quote,
             'carrito' => $this->getDetalleCotizacion($quote),
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
+            'clientes' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $quote->id_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
-            'contratistas' => TblTercero::getClientesTipo(session('id_dominio_contratista')),
+            'contratistas' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
         ]);
@@ -318,12 +361,12 @@ class CotizacionController extends Controller
             'model' => TblCotizacion::with(['tblCliente', 'tblEstacion', 'tblTipoTrabajo', 'tblPrioridad', 'tblContratista'])
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
-                })->latest()->paginate(10),
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
+                })->orderBy('id_cotizacion', 'desc')->paginate(10),
+            'clientes' => TblTercero::getClientesTipo(session('id_dominio_representante_cliente')),
             'estaciones' => TblPuntosInteres::where('estado', '=', 1)->pluck('nombre', 'id_punto_interes'),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'procesos' => TblDominio::getListaDominios(session('id_dominio_tipos_proceso')),
-            'contratistas' => TblTercero::getClientesTipo(session('id_dominio_contratista')),
+            'contratistas' => TblTercero::getClientesTipo(session('id_dominio_coordinador')),
             'status' => $cotizacion->status,
             'create' => Gate::allows('create', $cotizacion),
             'edit' => Gate::allows('update', $cotizacion),
@@ -341,11 +384,16 @@ class CotizacionController extends Controller
                 $quote->save();
             }
     
-            // if($notification !== '') {
-            //     $channel = 'user-';
-            // }
+            if($notification !== '') {
+                $channel = 'user-'.(Auth::user()->id_usuario == $quote->id_usuareg
+                    ? $quote->tbltercero->tbluser->id_usuario
+                    : $quote->id_usuareg
+                );
 
-            Log::info("Msg: $msg");
+                $this->sendNotification($quote, $channel, $notification);
+            }
+
+            // Log::info("Msg: $msg");
             return ['success' => $msg];
         } catch (\Throwable $th) {
             Log::error($th->__toString());

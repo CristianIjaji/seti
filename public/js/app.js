@@ -9122,11 +9122,11 @@ var pusher = new Pusher('c27a0f7fb7b0efd70263', {
   cluster: 'us2'
 });
 
-var updateQuoteGrid = function updateQuoteGrid() {
+var updateGrid = function updateGrid(url, data) {
   $.ajax({
-    url: "quotes/grid",
+    url: url,
     method: 'POST',
-    data: $("#form_quotes").serialize(),
+    data: data,
     beforeSend: function beforeSend() {
       showLoader(true);
     }
@@ -9136,6 +9136,41 @@ var updateQuoteGrid = function updateQuoteGrid() {
     showLoader(false);
     setupSelect2();
   });
+};
+
+var createChannel = function createChannel(evento, canal, text, location, urlGrid, formData) {
+  var audio = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : '';
+  var channel = pusher.subscribe("user-".concat(canal));
+  channel.bind(evento, function (data) {
+    if (audio !== '') {
+      var sound = new Audio(audio);
+      sound.play();
+    }
+
+    if (window.location.pathname === "/".concat(location)) {
+      updateGrid(urlGrid, formData);
+    }
+
+    push_js__WEBPACK_IMPORTED_MODULE_0___default().create(text, {
+      body: data.descripcion,
+      icon: 'images/icon.png',
+      vibrate: true,
+      timeout: 10000,
+      onClick: function onClick() {
+        if (window.location.pathname !== "/".concat(location)) {
+          window.location.href = location;
+          console.log(window.location.href, location);
+        }
+
+        window.focus();
+        this.close();
+      }
+    });
+  });
+};
+
+window.listener = function (canal) {
+  createChannel('quote-created', canal, "Cotización creada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), 'sounds/notification1.mp3');
 };
 
 window.timer = function () {
@@ -9155,7 +9190,7 @@ window.datePicker = function () {
   $('.input-date input').each(function (i, element) {
     var initialDate = $(element).val();
     minDate !== null ? setupDatePicker(element, initialDate, false, false, minDate) : setupDatePicker(element, initialDate, false, false);
-    $(element).val(initialDate);
+    $(element).val(initialDate); // $(element).addClass('datetimepicker-input');
   });
   var picker1, picker2;
   $('.input-daterange input').each(function (i, element) {
@@ -9296,7 +9331,8 @@ var setupDatePicker = function setupDatePicker(element, initialDate, clock, useC
     },
     restrictions: {
       minDate: minDate
-    }
+    } // allowInputToggle: true
+
   });
   picker.clear();
 
@@ -9357,7 +9393,9 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
       $.each(response.responseJSON.errors, function (i, item) {
         errors += "<li>".concat(item, "</li>");
       });
-      $("#".concat(modal, " .alert-danger")).fadeIn(1000).html("\n                    <p>Por favor corrija los siguientes campos: </p>\n                    <ul>".concat(errors, "</ul>\n                    <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                    </button>\n                "));
+      $("#".concat(modal, " .alert-danger")).html("\n                    <h6 class=\"alert-heading fw-bold\">Por favor corrija los siguientes campos:</h6>\n                    <ol>".concat(errors, "</ol>\n                    <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n                        <span aria-hidden=\"true\">&times;</span>\n                    </button>\n                ")).fadeTo(10000, 1000).slideUp(1000, function () {
+        $("#".concat(modal, " .alert-danger")).slideUp(1000);
+      });
     }
   }).always(function () {
     showLoader(false);
@@ -9412,15 +9450,7 @@ var handleModal = function handleModal(button) {
       });
       setTimeout(function () {
         $("#".concat(modal, " input:text, #").concat(modal, " textarea")).first().focus();
-        $('.money').inputmask(formatCurrency); // $('.typeahead').typeahead({
-        //     source: function (query, process) {
-        //         return $.get('clients/search', {
-        //             query: query
-        //         }, function (data) {
-        //             return process(data);
-        //         });
-        //     }
-        // });
+        $('.money').inputmask(formatCurrency);
       }, 100);
     }).always(function () {
       showLoader(false);
@@ -9580,7 +9610,10 @@ $(document).ready(function () {
     $.each(errores, function (i, item) {
       errors += "<li>".concat(item, "</li>");
     });
-    $('.alert-danger').fadeIn(1000).html("<p>".concat(title, ": </p>\n                <ul>").concat(errors, "</ul>\n                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n                    <span aria-hidden=\"true\">&times;</span>\n                </button>\n                "));
+    $('.alert-danger').html("<h6 class=\"alert-heading fw-bold\">".concat(title, ": </h6>\n                <ul>").concat(errors, "</ul>\n                <button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">\n                    <span aria-hidden=\"true\">&times;</span>\n                </button>\n                ")).fadeTo(10000, 1000).slideUp(1000, function () {
+      $(".alert-danger").slideUp(1000);
+    });
+    ;
   };
 
   $('#login-form').submit(function (e) {
@@ -9603,9 +9636,6 @@ $(document).ready(function () {
     }).always(function () {
       showLoader(false);
     });
-  });
-  $('#btn_upload').click(function () {
-    $('#input_file').trigger('click');
   });
   $('#input_file').change(function (e) {
     $('#lbl_input_file').text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
@@ -9770,6 +9800,9 @@ $(document).on("click", ".btn-export", function (e) {
     showLoader(false);
   });
 });
+$(document).on('click', '#btn_upload', function () {
+  $('#input_file').trigger('click');
+});
 $(document).on('select2:open', function () {
   document.querySelector('.select2-search__field').focus();
 });
@@ -9842,24 +9875,23 @@ $(document).on('keyup', '.txt-cotizaciones', function () {
 $(document).on('change', '.txt-cotizaciones', function () {
   fnc_totales_cot($(this).parent().parent().attr('id'));
 });
-$(document).on('change', '#id_cliente', function () {
-  var _this = this;
-
+$(document).on('change', '#id_cliente_cotizacion', function () {
   if ($(this).closest('form').attr('action').indexOf('quotes') > -1) {
     $('#table-cotizaciones').addClass('d-none');
     $('#id_estacion').empty();
     $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
+    var id_cliente = $(this).find(':selected').data('id_cliente');
 
-    if ($(this).val() !== '') {
+    if (id_cliente !== '') {
       $('#table-cotizaciones').removeClass('d-none');
       $(".tr_cotizacion").each(function (index, item) {
         var action = new String($(item).data('action')).split('/');
-        action[action.length - 1] = $(_this).val();
+        action[action.length - 1] = id_cliente;
         action = action.join('/');
         $(item).data('action', action);
       });
       $.ajax({
-        url: "sites/".concat($(this).val(), "/get_puntos_interes_client"),
+        url: "sites/".concat(id_cliente, "/get_puntos_interes_client"),
         method: 'GET',
         beforeSend: function beforeSend() {
           showLoader(true);
@@ -9887,10 +9919,10 @@ $(document).on('change', '#iva', function () {
 var showIcon = 'fa-caret-down';
 var hideIcon = 'fa-caret-up';
 $(document).on('click', '.show-more', function () {
-  var _this2 = this;
+  var _this = this;
 
   setTimeout(function () {
-    $(_this2).toggleClass("".concat(showIcon, " ").concat(hideIcon));
+    $(_this).toggleClass("".concat(showIcon, " ").concat(hideIcon));
   }, 100);
 });
 $(document).on('click', '.btn-quote', function (e) {
@@ -9961,8 +9993,12 @@ $(document).on('click', '.btn-quote', function (e) {
         },
         success: function success(response, status, xhr) {
           if (response.success) {
-            // $('#modalForm').modal('hide');
-            window.open("quotes/exportQuote?quote=".concat($('#id_cotizacion').val()), '_blank');
+            $('#modalForm').modal('hide');
+
+            if (action === 'send') {
+              window.open("quotes/exportQuote?quote=".concat($('#id_cotizacion').val()), '_blank');
+            }
+
             Swal.fire({
               icon: 'success',
               title: 'Cambio realizado',
@@ -9982,10 +10018,12 @@ $(document).on('click', '.btn-quote', function (e) {
           $.each(response.responseJSON.errors, function (i, item) {
             errors += "<li>".concat(item, "</li>");
           });
-          $('.alert-danger').fadeIn(1000).html("<p>Por favor corrija los siguientes campos: </p> <ul>".concat(errors, "</ul>"));
+          $('.alert-danger').html("<h6 class=\"alert-heading fw-bold\">Por favor corrija los siguientes campos:</h6> <ol>".concat(errors, "</ol>")).fadeTo(10000, 1000).slideUp(1000, function () {
+            $(".alert-danger").slideUp(1000);
+          });
         }
       }).always(function () {
-        updateQuoteGrid();
+        // updateQuoteGrid();
         showLoader(false);
       });
       return false;

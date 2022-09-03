@@ -75,7 +75,7 @@ class TblTercero extends Model
             ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
             ->select('t.id_tercero',
                 DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
-            )->where('t.id_dominio_tipo_tercero', '=', $type)->pluck('nombre', 'id_tercero');
+            )->where(['t.estado' => 1, 't.id_dominio_tipo_tercero' => $type])->pluck('nombre', 'id_tercero');
     }
 
     public static function getRules() {

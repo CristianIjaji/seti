@@ -210,7 +210,7 @@ class ListaPrecioController extends Controller
             'model' => TblListaPrecio::with(['tbltercerocliente', 'tbldominioitem', 'tblusuario'])
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
-                })->latest()->paginate(10),
+                })->orderBy('id_lista_precio', 'desc')->paginate(10),
             'listaTipoItemPrecio' => TblDominio::getListaDominios(session('id_dominio_tipo_items')),
             'export' => Gate::allows('export', $listaPrecios),
             'import' => Gate::allows('import', $listaPrecios),
