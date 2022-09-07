@@ -9118,6 +9118,7 @@ window.formatCurrency = {
   prefix: '',
   min: 0
 };
+Pusher.logToConsole = true;
 var pusher = new Pusher('c27a0f7fb7b0efd70263', {
   cluster: 'us2'
 });
@@ -9171,6 +9172,11 @@ var createChannel = function createChannel(evento, canal, text, location, urlGri
 
 window.listener = function (canal) {
   createChannel('quote-created', canal, "Cotización creada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), 'sounds/notification1.mp3');
+  createChannel('quote-deny', canal, "Cotización devuelta!", "quotes", "quotes/grid", $('#form_quotes').serialize(), '');
+};
+
+window.closeConnection = function () {
+  pusher.disconnect();
 };
 
 window.timer = function () {
@@ -9876,7 +9882,7 @@ $(document).on('change', '.txt-cotizaciones', function () {
   fnc_totales_cot($(this).parent().parent().attr('id'));
 });
 $(document).on('change', '#id_cliente_cotizacion', function () {
-  if ($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+  if (typeof $(this).closest('form').attr('action') !== 'undefined' && $(this).closest('form').attr('action').indexOf('quotes') > -1) {
     $('#table-cotizaciones').addClass('d-none');
     $('#id_estacion').empty();
     $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");

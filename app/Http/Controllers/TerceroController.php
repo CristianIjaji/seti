@@ -56,11 +56,11 @@ class TerceroController extends Controller
         }
 
         if(Auth::user()->role !== session('id_dominio_super_administrador')) {
-            $querybuilder->where('id_dominio_tipo_tercero', '<>', session('id_dominio_super_administrador'));
+            $querybuilder->where('tbl_terceros.id_dominio_tipo_tercero', '<>', session('id_dominio_super_administrador'));
         }
 
         if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
-            $querybuilder->whereNotIn('id_dominio_tipo_tercero', [session('id_dominio_super_administrador'), session('id_dominio_administrador')]);
+            $querybuilder->whereNotIn('tbl_terceros.id_dominio_tipo_tercero', [session('id_dominio_super_administrador'), session('id_dominio_administrador')]);
         }
 
         return $querybuilder;

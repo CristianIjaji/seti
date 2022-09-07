@@ -119,7 +119,7 @@
                     @endforeach
                 </select>
             @else
-                <input type="text" class="form-control" id="id_responsable_cliente" value="{{ isset($tercero->tblterceroresponsable->nombres) ? $tercero->tblterceroresponsable->nombres.' '.$tercero->tblterceroresponsable->apellidos : 'Sin dependencia' }}" disabled>
+                <input type="text" class="form-control" id="id_responsable_cliente" value="{{ isset($tercero->tblterceroresponsable->full_name) ? $tercero->tblterceroresponsable->full_name : 'Sin dependencia' }}" disabled>
             @endif
         </div>
         

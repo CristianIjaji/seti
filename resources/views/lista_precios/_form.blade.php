@@ -21,9 +21,9 @@
                     <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
                         <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir cliente</option>
-                            @foreach ($clientes as $id => $nombre)
-                                <option value="{{ $id }}" {{ old('id_cliente', $lista_precio->id_cliente) == $id ? 'selected' : '' }}>
-                                    {{$nombre}}
+                            @foreach ($clientes as $cliente)
+                                <option value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $lista_precio->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
+                                    {{$cliente->full_name}}
                                 </option>
                             @endforeach
                         </select>

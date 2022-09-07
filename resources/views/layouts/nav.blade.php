@@ -12,6 +12,7 @@
         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li>
                 <a class="dropdown-item pl-3" href="{{ route('logout') }}" onclick="event.preventDefault();
+                    closeConnection();
                     document.getElementById('logout-form').submit();">
                     <i class="fas fa-power-off"></i> {{ __('Logout') }}
                 </a>

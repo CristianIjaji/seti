@@ -46,7 +46,8 @@ class PuntosInteresController extends Controller
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
                 } else if($key == 'full_name' && $value) {
                     $querybuilder->whereHas('tblcliente', function($q) use($value){
-                        $q->where('nombres', 'like', strtolower("%$value%"));
+                        $q->where('razon_social', 'like', strtolower("%$value%"));
+                        $q->orwhere('nombres', 'like', strtolower("%$value%"));
                         $q->orwhere('apellidos', 'like', strtolower("%$value%"));
                     });
                 }
@@ -80,7 +81,7 @@ class PuntosInteresController extends Controller
 
         return view('puntos_interes._form', [
             'site' => new TblPuntosInteres,
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
+            'clientes' => TblTercero::where(['estado' => 1, 'id_dominio_tipo_tercero' => session('id_dominio_cliente')])->get(),
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
@@ -143,7 +144,7 @@ class PuntosInteresController extends Controller
         return view('puntos_interes._form', [
             'edit' => true,
             'site' => $site,
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
+            'clientes' => TblTercero::where(['estado' => 1, 'id_dominio_tipo_tercero' => session('id_dominio_cliente')])->get(),
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
@@ -201,7 +202,7 @@ class PuntosInteresController extends Controller
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('id_punto_interes', 'desc')->paginate(10),
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
+            'clientes' => TblTercero::where(['estado' => 1, 'id_dominio_tipo_tercero' => session('id_dominio_cliente')])->pluck('nombres', 'id_tercero'),
             'zonas' => TblDominio::getListaDominios(session('id_dominio_zonas')),
             'transportes' => TblDominio::getListaDominios(session('id_dominio_transportes')),
             'accesos' => TblDominio::getListaDominios(session('id_dominio_accesos')),
@@ -224,7 +225,7 @@ class PuntosInteresController extends Controller
         $sitios = TblPuntosInteres::select(
             DB::raw("
                 tbl_puntos_interes.id_punto_interes,
-                CONCAT(t.nombres, ' ', t.apellidos) as full_name,
+                COALESCE(t.razon_social, CONCAT(t.nombres, ' ', t.apellidos)) as full_name,
                 z.nombre as zona,
                 tbl_puntos_interes.nombre,
                 tbl_puntos_interes.latitud,

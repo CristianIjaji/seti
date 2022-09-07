@@ -156,7 +156,7 @@
                     @endif
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
-                    <label for="id_responsable" class="required">Encargado</label>
+                    <label for="id_responsable" class="required">Aprobador</label>
                     @if ($edit)
                         <div class="row">
                             <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
@@ -189,7 +189,6 @@
                             @endif
                         </div>
                     @else
-                        {{-- <input type="text" class="form-control" id="id_responsable" value="{{ $cotizacion->tblContratista->full_name }}" disabled> --}}
                         <input type="text" class="form-control" id="id_cliente_cotizacion" value="{{ $cotizacion->tblContratista->full_name }} {{ (isset($cotizacion->tblContratista->tblterceroresponsable) ? ' - '.$cotizacion->tblContratista->tblterceroresponsable->razon_social : '') }}" disabled>
                     @endif
                 </div>
@@ -221,7 +220,7 @@
                                         data-title="Buscar ítems suministro materiales"
                                         data-size='modal-xl'
                                         data-header-class='bg-gray text-white'
-                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_materiales'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
+                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_materiales'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
                                         title="Crear"
@@ -251,7 +250,7 @@
                                         data-title="Buscar ítems mano obra"
                                         data-size='modal-xl'
                                         data-header-class='bg-gray text-white'
-                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
+                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
                                         title="Crear"
@@ -281,7 +280,7 @@
                                         data-title="Buscar ítems transporte y peajes"
                                         data-size='modal-xl'
                                         data-header-class='bg-gray text-white'
-                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_transporte'), 'client' => isset($cotizacion->id_cliente) ? $cotizacion->id_cliente : 1]) }}'
+                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_transporte'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
                                         title="Crear"
@@ -342,6 +341,7 @@
     @if (!$create)
         </div>
         <div class="tab-pane" id="track" role="tabpanel" aria-labelledby="track-tab">
+            @include('cotizaciones._track')
         </div>
     @endif
         

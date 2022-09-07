@@ -7,6 +7,7 @@ use App\Http\Requests\SaveCotizacionRequest;
 use App\Models\TblCotizacion;
 use App\Models\TblCotizacionDetalle;
 use App\Models\TblDominio;
+use App\Models\TblEstadoCotizacion;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
@@ -69,6 +70,8 @@ class CotizacionController extends Controller
     }
 
     private function sendNotification($cotizacion, $channel, $event) {
+        $cotizacion->descripcion = $cotizacion->tblEstacion->nombre."\nFecha solicitud: ".$cotizacion->fecha_solicitud."\nAlcance: ".$cotizacion->descripcion;
+
         $options = [
             'cluster' => 'us2',
             'useTLS' => true
@@ -159,9 +162,10 @@ class CotizacionController extends Controller
             $cotizacion->valor = $total;
             $cotizacion->save();
 
-            $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'));
-            $cotizacion->descripcion = $cotizacion->tblEstacion->nombre."\nFecha solicitud: ".$cotizacion->fecha_solicitud."\nAlcance: ".$cotizacion->descripcion;
-            $this->sendNotification($cotizacion, 'user-2', 'quote-created');
+            $cotizacion->comentario = "Creación cotización # ".$cotizacion->id_cotizacion;
+
+            $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'), "Cotización creada # $cotizacion->id_cotizacion.");
+            $this->sendNotification($cotizacion, 'user-'.$cotizacion->tblCliente->tblusuario->id_usuario, 'quote-created');
 
             return response()->json([
                 'success' => 'Cotización creada exitosamente!',
@@ -204,6 +208,11 @@ class CotizacionController extends Controller
     {
         $this->authorize('update', $quote);
 
+        $id_cliente = (isset($quote->tblCliente->id_responsable_cliente)
+            ? $quote->tblCliente->id_responsable_cliente
+            : $quote->cliente
+        );
+
         return view('cotizaciones._form', [
             'edit' => true,
             'cotizacion' => $quote,
@@ -212,7 +221,7 @@ class CotizacionController extends Controller
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
             ])->where('id_responsable_cliente', '>', 0)->get(),
-            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $quote->id_cliente])->pluck('nombre', 'id_punto_interes'),
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
@@ -289,6 +298,7 @@ class CotizacionController extends Controller
                         $quote,
                         [session('id_dominio_cotizacion_creada')],
                         session('id_dominio_cotizacion_revisada'),
+                        "Cotización aprobada.",
                         'Cotización aprobada!',
                         'quote-aprove'
                     );
@@ -299,6 +309,7 @@ class CotizacionController extends Controller
                         $quote,
                         [session('id_dominio_cotizacion_creada')],
                         session('id_dominio_cotizacion_devuelta'),
+                        "",
                         'Cotización devuelta!',
                         'quote-deny'
                     );
@@ -308,6 +319,7 @@ class CotizacionController extends Controller
                         $quote,
                         [session('id_dominio_cotizacion_revisada')],
                         session('id_dominio_cotizacion_enviada'),
+                        "Cotización descargada para enviar al cliente.",
                         'Cotización descargada!',
                         ''
                     );
@@ -375,25 +387,24 @@ class CotizacionController extends Controller
         ]);
     }
     
-    private function updateQuote($quote, $estados, $nuevoEstado, $msg, $notification, $usuarioFinal = '') {
+    private function updateQuote($quote, $estados, $nuevoEstado, $comentario, $msg, $notification, $usuarioFinal = '') {
         try {
             if(in_array($quote->estado, $estados)) {
                 $quote->estado = $nuevoEstado;
                 
-                $this->createTrack($quote, $nuevoEstado);
+                $this->createTrack($quote, $nuevoEstado, $comentario);
                 $quote->save();
             }
     
             if($notification !== '') {
                 $channel = 'user-'.(Auth::user()->id_usuario == $quote->id_usuareg
-                    ? $quote->tbltercero->tbluser->id_usuario
+                    ? $quote->tblCliente->tblusuario->id_usuario
                     : $quote->id_usuareg
                 );
 
                 $this->sendNotification($quote, $channel, $notification);
             }
 
-            // Log::info("Msg: $msg");
             return ['success' => $msg];
         } catch (\Throwable $th) {
             Log::error($th->__toString());
@@ -401,8 +412,17 @@ class CotizacionController extends Controller
         }
     }
 
-    private function createTrack($quote, $action) {
-        
+    private function createTrack($quote, $action, $comentario) {
+        try {
+            TblEstadoCotizacion::create([
+                'id_cotizacion' => $quote->id_cotizacion,
+                'estado' => $action,
+                'comentario' => $comentario,
+                'id_usuareg' => Auth::id()
+            ]);
+        } catch (\Throwable $th) {
+            Log::error("Error creando track cotización: ".$th->getMessage());
+        }
     }
 
     public function exportQuote() {

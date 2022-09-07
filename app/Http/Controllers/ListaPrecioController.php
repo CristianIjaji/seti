@@ -79,7 +79,7 @@ class ListaPrecioController extends Controller
 
         return view('lista_precios._form', [
             'lista_precio' => new TblListaPrecio, //modelo
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
+            'clientes' => TblTercero::where(['estado' => 1, 'id_dominio_tipo_tercero' => session('id_dominio_cliente')])->get(),
             'tipo_items' => TblDominio::where('estado', "=", 1)
                 ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))
                 ->pluck('nombre', 'id_dominio'),
@@ -143,7 +143,7 @@ class ListaPrecioController extends Controller
         return view('lista_precios._form', [
             'edit' => true,
             'lista_precio' => $priceList, //modelo
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_cliente')),
+            'clientes' => TblTercero::where(['estado' => 1, 'id_dominio_tipo_tercero' => session('id_dominio_cliente')])->get(),
             'tipo_items' => TblDominio::getListaDominios(session('id_dominio_tipo_items')),
             'unidades' => TblListaPrecio::pluck('unidad', 'unidad'),
             'estados' => [

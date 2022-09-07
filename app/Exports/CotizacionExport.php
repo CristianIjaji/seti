@@ -153,7 +153,6 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings
 
                     if($items > 0 && $suma > 0) {
                         // Se aplica formato a la lista de Ítems
-                        // $event->sheet->getDelegate()->getStyleByColumnAndRow(2, $row, 9, ($row + ($items - 1)))->applyFromArray($stylesArray);
                         $event->sheet->getDelegate()->getStyleByColumnAndRow($column, $row, 9, ($row + $suma))->applyFromArray($stylesArray);
                     }
 
@@ -194,7 +193,7 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings
                 $row = aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
                 // Transporte y peaje
                 $items = count($this->model[0]->gettransportecotizacion($this->model[0]->id_cotizacion));
-                $row = aplicarFormato($event, 3, $row, 0, $items, $stylesArray);
+                $row = aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
 
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(3, $row, 8, $row)->applyFromArray($stylesArray);
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(9, $row, 9, $row)->applyFromArray($stylesArray);

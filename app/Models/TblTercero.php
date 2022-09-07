@@ -57,8 +57,15 @@ class TblTercero extends Model
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
     }
 
-    public function getFullNameAttribute(){
+    public function getFullNameFormAttribute() {
         return "{$this->attributes['nombres']} {$this->attributes['apellidos']}";
+    }
+
+    public function getFullNameAttribute(){
+        return ($this->attributes['razon_social'] != ''
+            ? $this->attributes['razon_social']
+            : "{$this->attributes['nombres']} {$this->attributes['apellidos']}"
+        );
     }
 
     public function getEstadoFormAttribute() {

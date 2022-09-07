@@ -34,7 +34,7 @@
                     <option value="">Elegir tercero</option>
                     @foreach ($terceros as $tercero)
                         <option value="{{$tercero->id_tercero}}" {{ old('id_tercero', $tercero->id_tercero) == $usuario->id_tercero ? 'selected' : '' }}>
-                            {{$tercero->nombre}}
+                            {{$tercero->full_name.' '.$tercero->tbldominiodocumento->nombre.': '.$tercero->documento}}
                         </option>
                     @endforeach
                 </select>

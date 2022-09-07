@@ -50,6 +50,7 @@ const app = new Vue({
 window.regexCurrencyToFloat = /[^0-9.-]+/g;
 window.formatCurrency = { alias : "currency", prefix: '', min: 0 };
 
+Pusher.logToConsole = true;
 var pusher = new Pusher('c27a0f7fb7b0efd70263', {
     cluster: 'us2'
 });
@@ -102,6 +103,11 @@ const createChannel = (evento, canal, text, location, urlGrid, formData, audio =
 
 window.listener = (canal) => {
     createChannel('quote-created', canal, "Cotización creada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), 'sounds/notification1.mp3');
+    createChannel('quote-deny', canal, "Cotización devuelta!", "quotes", "quotes/grid", $('#form_quotes').serialize(), '');
+}
+
+window.closeConnection = () => {
+    pusher.disconnect();
 }
 
 window.timer = () => {
@@ -914,7 +920,7 @@ $(document).on('change', '.txt-cotizaciones', function() {
 });
 
 $(document).on('change', '#id_cliente_cotizacion', function() {    
-    if($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+    if(typeof $(this).closest('form').attr('action') !== 'undefined' && $(this).closest('form').attr('action').indexOf('quotes') > -1) {
         $('#table-cotizaciones').addClass('d-none');
 
         $('#id_estacion').empty();

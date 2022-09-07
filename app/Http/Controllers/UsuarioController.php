@@ -6,6 +6,7 @@ use App\Http\Requests\SaveUsuarioRequest;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateUsuarioRequest;
 use App\Http\Controllers\MessagesController;
+use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -99,11 +100,8 @@ class UsuarioController extends Controller
 
         return view('usuarios._form', [
             'usuario' => new TblUsuario,
-            'terceros' => DB::table('tbl_terceros', 't')
-                ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
-                ->select('t.id_tercero',
-                    DB::raw("CONCAT(t.nombres, ' ', t.apellidos, ' - ', doc.nombre, ': ', t.documento, ' - ', t.correo) as nombre")
-            )->whereNotIn('t.id_dominio_tipo_tercero', $this->getAdminRoles())->get(),
+            'terceros' => TblTercero::where(['estado' => '1'])
+                ->whereNotIn('id_dominio_tipo_tercero', $this->getAdminRoles())->get()
         ]);
     }
 
@@ -160,11 +158,8 @@ class UsuarioController extends Controller
         return view('usuarios._form', [
             'edit' => true,
             'usuario' => $user,
-            'terceros' => DB::table('tbl_terceros', 't')
-                ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
-                ->select('t.id_tercero',
-                    DB::raw("CONCAT(t.nombres, ' ', t.apellidos, ' - ', doc.nombre, ': ', t.documento, ' - ', t.correo) as nombre")
-            )->whereNotIn('t.id_dominio_tipo_tercero', $this->getAdminRoles())->get(),
+            'terceros' => TblTercero::where(['estado' => '1'])
+                ->whereNotIn('id_dominio_tipo_tercero', $this->getAdminRoles())->get(),
             'estados' => [
                 0 => 'Inactivo',
                 1 => 'Activo'

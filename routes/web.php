@@ -47,8 +47,8 @@ Route::post('sites/import', [PuntosInteresController::class, 'import'])->name('s
 
 // Controlador lista de precios
 Route::get('priceList/export', [ListaPrecioController::class, 'export'])->name('priceList.export');
-Route::get('priceList/{type}/{client}', [ListaPrecioController::class, 'search'])->name('priceList.search');
 Route::resource('priceList', ListaPrecioController::class);
+Route::get('priceList/{type}/{client}', [ListaPrecioController::class, 'search'])->name('priceList.search');
 Route::post('priceList/grid',[ListaPrecioController::class, 'grid'])->name('priceList.grid');
 Route::post('priceList/import', [ListaPrecioController::class, 'import'])->name('priceList.import');
 
