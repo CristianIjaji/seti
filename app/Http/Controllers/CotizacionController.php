@@ -321,7 +321,7 @@ class CotizacionController extends Controller
                         session('id_dominio_cotizacion_enviada'),
                         "Cotización descargada para enviar al cliente.",
                         'Cotización descargada!',
-                        ''
+                        'quote-aprove'
                     );
                     break;
                 default:

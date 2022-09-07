@@ -104,6 +104,7 @@ const createChannel = (evento, canal, text, location, urlGrid, formData, audio =
 window.listener = (canal) => {
     createChannel('quote-created', canal, "Cotización creada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), 'sounds/notification1.mp3');
     createChannel('quote-deny', canal, "Cotización devuelta!", "quotes", "quotes/grid", $('#form_quotes').serialize(), '');
+    createChannel('quote-aprove', canal, "Cotización aprobada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), '');
 }
 
 window.closeConnection = () => {
