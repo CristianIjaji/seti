@@ -13,53 +13,48 @@ class TblActividad extends Model
     protected $primaryKey = 'id_actividad';
 
     protected $fillable = [
-        'codigo_actividad',
-        'id_encargado',
-        'id_cliente',
+        'ot',
         'id_tipo_actividad',
-        'id_mes',
-        'id_estacion',
+        'id_subsistema',
         'descripcion',
-        'id_permiso',
+        'id_encargado_cliente',
+        'id_resposable_contratista',
+        'id_estacion',
+        'permiso_acceso',
         'fecha_solicitud',
+        'fecha_programacion',
+        'fecha_reprogramacion',
         'fecha_ejecucion',
-        'fecha_finalizacion',
         'id_estado_actividad',
         'id_cotizacion',
         'id_orden_compra',
         'id_informe',
+        'fecha_liquidado',
         'liquidado',
-        'id_responsable_cliente',
         'id_mes_consolidado',
         'valor',
         'observaciones',
-        'inf_financiera',
-        'id_factura',
         'id_usuareg'
     ];
-
-    public function tblencargado() {
-        return $this->belongsTo(TblTercero::class, 'id_encargado');
-    }
-
-    public function tblcliente() {
-        return $this->belongsTo(TblTercero::class, 'id_cliente');
-    }
 
     public function tbltipoactividad() {
         return $this->belongsTo(TblDominio::class, 'id_tipo_actividad');
     }
 
-    public function tblmes() {
-        return $this->belongsTo(TblDominio::class, 'id_mes');
+    public function tblsubsistema() {
+        return $this->belongsTo(TblDominio::class, 'id_subsistema');
+    }
+
+    public function tblencargadocliente() {
+        return $this->belongsTo(TblTercero::class, 'id_encargado_cliente');
+    }
+
+    public function tblresposablecontratista() {
+        return $this->belongsTo(TblTercero::class, 'id_resposable_contratista');
     }
 
     public function tblestacion() {
         return $this->belongsTo(TblPuntosInteres::class, 'id_estacion');
-    }
-
-    public function tblpermiso() {
-        return $this->belongsTo(TblPermiso::class, 'id_permiso');
     }
 
     public function tblestadoactividad() {
@@ -69,7 +64,7 @@ class TblActividad extends Model
     public function tblcotizacion() {
         return $this->belongsTo(TblCotizacion::class, 'id_cotizacion');
     }
-
+    
     public function tblordencompra() {
         return $this->belongsTo(TblOrdenCompra::class, 'id_orden_compra');
     }
@@ -78,16 +73,8 @@ class TblActividad extends Model
         return $this->belongsTo(tblinforme::class, 'id_informe');
     }
 
-    public function tblreponsablecliente() {
-        return $this->belongsTo(TblTercero::class, 'id_responsable_cliente');
-    }
-
     public function tblmesconsolidado() {
-        return $this->belongsTo(TblDominio::class, 'id_mes_consolidado');
-    }
-
-    public function tblfactura() {
-        return $this->belongsTo(TblFactura::class, 'id_factura');
+        return $this->belongsTo(TblConsolidado::class, 'id_mes_consolidado');
     }
 
     public function tblusuario() {
