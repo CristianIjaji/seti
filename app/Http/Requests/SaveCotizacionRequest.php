@@ -40,7 +40,7 @@ class SaveCotizacionRequest extends FormRequest
                 'string',
                 'nullable',
                 'max:255',
-                Rule::unique('tbl_cotizaciones')->ignore($this->route('quotes'))
+                Rule::unique('tbl_cotizaciones')->ignore($this->route('quote'))
             ],
             'id_cliente' => [
                 'required',
