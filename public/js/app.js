@@ -9117,27 +9117,13 @@ window.formatCurrency = {
   alias: "currency",
   prefix: '',
   min: 0
-};
-Pusher.logToConsole = true;
+}; // Pusher.logToConsole = true;
+
 var pusher = new Pusher('c27a0f7fb7b0efd70263', {
   cluster: 'us2'
 });
-
-var updateGrid = function updateGrid(url, data) {
-  $.ajax({
-    url: url,
-    method: 'POST',
-    data: data,
-    beforeSend: function beforeSend() {
-      showLoader(true);
-    }
-  }).done(function (view) {
-    $('#container').html(view);
-  }).always(function () {
-    showLoader(false);
-    setupSelect2();
-  });
-};
+var url_cotizacion = 'quotes';
+var form_cotizacion = 'form_quotes';
 
 var createChannel = function createChannel(evento, canal, text, location, urlGrid, formData) {
   var audio = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : '';
@@ -9149,7 +9135,7 @@ var createChannel = function createChannel(evento, canal, text, location, urlGri
     }
 
     if (window.location.pathname === "/".concat(location)) {
-      updateGrid(urlGrid, formData);
+      getGrid(urlGrid, formData);
     }
 
     push_js__WEBPACK_IMPORTED_MODULE_0___default().create(text, {
@@ -9160,7 +9146,6 @@ var createChannel = function createChannel(evento, canal, text, location, urlGri
       onClick: function onClick() {
         if (window.location.pathname !== "/".concat(location)) {
           window.location.href = location;
-          console.log(window.location.href, location);
         }
 
         window.focus();
@@ -9171,9 +9156,9 @@ var createChannel = function createChannel(evento, canal, text, location, urlGri
 };
 
 window.listener = function (canal) {
-  createChannel('quote-created', canal, "Cotización creada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), 'sounds/notification1.mp3');
-  createChannel('quote-deny', canal, "Cotización devuelta!", "quotes", "quotes/grid", $('#form_quotes').serialize(), '');
-  createChannel('quote-aprove', canal, "Cotización aprobada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), '');
+  createChannel('quote-created', canal, "Revisar cotización!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+  createChannel('quote-deny', canal, "Cotización devuelta!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+  createChannel('quote-aprove', canal, "Cotización aprobada!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
 };
 
 window.closeConnection = function () {
@@ -9338,10 +9323,8 @@ var setupDatePicker = function setupDatePicker(element, initialDate, clock, useC
     },
     restrictions: {
       minDate: minDate
-    } // allowInputToggle: true
-
-  });
-  picker.clear();
+    }
+  }); // picker.clear();
 
   picker.dates.formatInput = function (date) {
     return date !== undefined && date !== null ? clock ? moment__WEBPACK_IMPORTED_MODULE_1___default()(date, 'h:mm:ss A').format('YYYY-MM-DD HH:mm') : moment__WEBPACK_IMPORTED_MODULE_1___default()(date).format('YYYY-MM-DD') : null;
@@ -9352,7 +9335,16 @@ var setupDatePicker = function setupDatePicker(element, initialDate, clock, useC
   }
 
   picker.subscribe(tempusDominus.Namespace.events.hide, function (event) {
-    $(element).trigger('change');
+    if (picker.dates.lastPicked !== undefined) {
+      $(element).trigger('change');
+    }
+  });
+  $(element).focus(function () {
+    // picker.dispose();
+    picker.show();
+  });
+  $(element).blur(function () {// $(element).trigger('change');
+    // picker.hide();
   });
   return picker;
 };
@@ -9634,6 +9626,7 @@ $(document).ready(function () {
         showLoader(true);
       },
       success: function success(response) {
+        closeConnection();
         window.location.href = "home";
       },
       error: function error(response) {
@@ -9687,14 +9680,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
     if (toggle && nav && bodypd && headerpd) {
       toggle.addEventListener('click', function () {
         // show navbar
-        nav.classList.toggle('show-panel'); // change icon
+        nav.classList.toggle('show-panel');
+        $('.nav_list *[title]').tooltip("".concat($('#nav-bar').hasClass('show-panel') ? 'disable' : 'enable')); // change icon
 
         toggle.classList.toggle('fa-xmark'); // add padding to body
 
         bodypd.classList.toggle('body-pd'); // add padding to header
 
         headerpd.classList.toggle('body-pd');
-        $('.customer, .connection').toggleClass('d-none');
       });
     }
   };
@@ -9705,17 +9698,12 @@ $(document).on('click', '.modal-form', function (e) {
   e.preventDefault();
   handleModal($(this));
 });
-$(document).on('submit', '.search_form', function (e) {
-  e.preventDefault();
-});
-$(document).on('change', '.search_form', function () {
-  var form = $(this).closest('form').attr('id');
-  var url = form.split('_'); // $('.search_form select').each(function() {
 
+var updateGrid = function updateGrid(url, data) {
   $.ajax({
-    url: "".concat(url[1], "/grid"),
+    url: url,
     method: 'POST',
-    data: $("#".concat(form)).serialize(),
+    data: data,
     beforeSend: function beforeSend() {
       showLoader(true);
     }
@@ -9724,7 +9712,48 @@ $(document).on('change', '.search_form', function () {
   }).always(function () {
     showLoader(false);
     setupSelect2();
-  }); // });
+  });
+};
+
+var getGrid = function getGrid(url, id_form) {
+  $.ajax({
+    url: "".concat(url, "/grid"),
+    method: 'POST',
+    data: $("#".concat(id_form)).serialize(),
+    beforeSend: function beforeSend() {
+      showLoader(true);
+    }
+  }).done(function (view) {
+    $("#".concat(id_form)).parent().html(view);
+  }).always(function () {
+    showLoader(false);
+    setupSelect2();
+  });
+};
+
+$(document).on('submit', ".search_form", function (e) {
+  e.preventDefault();
+});
+$(document).on('change', '.search_form', function () {
+  var id_form = $(this).closest('form').attr('id');
+  var url = id_form.split('_');
+  getGrid(url[1], id_form);
+});
+$(document).on('click', '.page-item', function (e) {
+  e.preventDefault();
+
+  if (!$(this).hasClass('disabled')) {
+    $('.page-item').removeClass('active');
+    $(this).addClass('active');
+    var id_form = $(this).closest('form').attr('id');
+    var page = $.urlParam('page', $(this).children().attr('href'));
+    var url = id_form.split('_');
+
+    if (typeof page === 'string') {
+      $("#".concat(id_form, " > #page")).val(page);
+      getGrid(url[1], id_form);
+    }
+  }
 });
 $(document).on('click', '#btn-form-action', function (e) {
   e.preventDefault();
@@ -9745,21 +9774,6 @@ $(document).on('click', '#btn-form-action', function (e) {
 $(document).on('click', 'button.close', function () {
   if ($(this).parent().hasClass('alert')) {
     $(this).parent().fadeOut().html('');
-  }
-});
-$(document).on('click', '.page-item', function (e) {
-  e.preventDefault();
-
-  if (!$(this).hasClass('disabled')) {
-    $('.page-item').removeClass('active');
-    $(this).addClass('active');
-    var form = $(this).closest('form').attr('id');
-    var page = $.urlParam('page', $(this).children().attr('href'));
-
-    if (typeof page === 'string') {
-      $("#".concat(form, " > #page")).val(page);
-      $('.search_form').change();
-    }
   }
 });
 
@@ -9791,6 +9805,38 @@ $(document).on("click", ".btn-export", function (e) {
       var disposition = xhr.getResponseHeader('content-disposition');
       var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
       var filename = (matches != null && matches[1] ? matches[1] : 'Reporte.xlsx').replace(/"/g, ''); // The actual download
+
+      var blob = new Blob([result], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      var link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = filename;
+      link.text = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  }).always(function () {
+    showLoader(false);
+  });
+});
+$(document).on("click", ".btn-download", function (e) {
+  e.preventDefault();
+  var action = $(this).data('route');
+  $.ajax({
+    xhrFields: {
+      responseType: 'blob'
+    },
+    type: 'GET',
+    url: "".concat(action, "/template"),
+    beforeSend: function beforeSend() {
+      showLoader(true);
+    },
+    success: function success(result, status, xhr) {
+      var disposition = xhr.getResponseHeader('content-disposition');
+      var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+      var filename = (matches != null && matches[1] ? matches[1] : 'Template.xlsx').replace(/"/g, ''); // The actual download
 
       var blob = new Blob([result], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -9883,7 +9929,7 @@ $(document).on('change', '.txt-cotizaciones', function () {
   fnc_totales_cot($(this).parent().parent().attr('id'));
 });
 $(document).on('change', '#id_cliente_cotizacion', function () {
-  if (typeof $(this).closest('form').attr('action') !== 'undefined' && $(this).closest('form').attr('action').indexOf('quotes') > -1) {
+  if (typeof $(this).closest('form').attr('action') !== 'undefined' && $(this).closest('form').attr('action').indexOf(url_cotizacion) > -1) {
     $('#table-cotizaciones').addClass('d-none');
     $('#id_estacion').empty();
     $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
@@ -9914,7 +9960,7 @@ $(document).on('change', '#id_cliente_cotizacion', function () {
   }
 });
 $(document).on('change', '#iva', function () {
-  if ($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+  if ($(this).closest('form').attr('action').indexOf(url_cotizacion) > -1) {
     $.each(carrito, function (type, item) {
       if (typeof item !== 'undefined' && carrito[type]['update'] === false) {
         carrito[type]['update'] = true;
@@ -9988,7 +10034,7 @@ $(document).on('click', '.btn-quote', function (e) {
   }).then(function (result) {
     if (result.isConfirmed) {
       $.ajax({
-        url: "quotes/".concat($('#id_cotizacion').val(), "/handleQuote"),
+        url: "".concat(url_cotizacion, "/").concat($('#id_cotizacion').val(), "/handleQuote"),
         method: 'POST',
         data: data,
         processData: false,
@@ -10003,7 +10049,7 @@ $(document).on('click', '.btn-quote', function (e) {
             $('#modalForm').modal('hide');
 
             if (action === 'send') {
-              window.open("quotes/exportQuote?quote=".concat($('#id_cotizacion').val()), '_blank');
+              window.open("".concat(url_cotizacion, "/exportQuote?quote=").concat($('#id_cotizacion').val()), '_blank');
             }
 
             Swal.fire({
@@ -10030,42 +10076,12 @@ $(document).on('click', '.btn-quote', function (e) {
           });
         }
       }).always(function () {
-        // updateQuoteGrid();
+        getGrid(url_cotizacion, form_cotizacion);
         showLoader(false);
       });
       return false;
     }
   });
-  /*
-      $.ajax({
-          xhrFields: {
-              responseType: 'blob',
-          },
-          type: 'POST',
-          url: '/downloadPayroll',
-          data: {
-              salaryMonth: month,
-              salaryYear: year,
-              is_employee_salary: 1,
-              department: department.val()
-          },
-          success: function(result, status, xhr) {
-                var disposition = xhr.getResponseHeader('content-disposition');
-              var matches = /"([^"]*)"/.exec(disposition);
-              var filename = (matches != null && matches[1] ? matches[1] : 'salary.xlsx');
-                // The actual download
-              var blob = new Blob([result], {
-                  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-              });
-              var link = document.createElement('a');
-              link.href = window.URL.createObjectURL(blob);
-              link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-              document.body.removeChild(link);
-          }
-      });
-  */
 });
 
 /***/ }),

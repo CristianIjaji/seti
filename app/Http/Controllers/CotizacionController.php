@@ -61,9 +61,25 @@ class CotizacionController extends Controller
             $this->filtros[$key] = $value;
         }
 
-        if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])){
-            $querybuilder->where('id_responsable_cliente', '=', Auth::user()->id_tercero);
-            $querybuilder->orwhere('id_usuareg', '=', Auth::user()->id_tercero);
+        if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
+            if(Auth::user()->role == session('id_dominio_analista')) {
+                $querybuilder->where('tbl_cotizaciones.id_usuareg', '=', Auth::user()->id_usuario);
+            }
+            if(Auth::user()->role == session('id_dominio_coordinador')) {
+                $querybuilder->where([
+                    'tbl_cotizaciones.id_responsable_cliente' => Auth::user()->id_tercero,
+                    'tbl_cotizaciones.estado' => session('id_dominio_cotizacion_creada'),
+                ]);
+                $querybuilder->orwhere([
+                    'tbl_cotizaciones.id_usuareg' => Auth::user()->id_usuario
+                ]);
+            }
+            // $querybuilder->where('id_responsable_cliente', '=', Auth::user()->id_tercero);
+            // $querybuilder->orwhere('id_usuareg', '=', Auth::user()->id_tercero);
+
+            // $querybuilder->where('tbl_cotizaciones.estado', '=', session('id_dominio_cotizacion_creada'));
+            // if(Auth::user()->role == session('id_dominio_coordinador')) {
+                // }
         }
 
         return $querybuilder;
@@ -164,7 +180,8 @@ class CotizacionController extends Controller
 
             $cotizacion->comentario = "Creación cotización # ".$cotizacion->id_cotizacion;
 
-            $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'), "Cotización creada # $cotizacion->id_cotizacion.");
+            $cotizacion->comentario = "Cotización creada # $cotizacion->id_cotizacion.";
+            $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'));
             $this->sendNotification($cotizacion, 'user-'.$cotizacion->tblCliente->tblusuario->id_usuario, 'quote-created');
 
             return response()->json([
@@ -194,6 +211,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => false,
             'cotizacion' => $quote,
+            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('created_at', 'desc')->paginate(10),
             'carrito' => $this->getDetalleCotizacion($quote),
         ]);
     }
@@ -216,6 +234,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => true,
             'cotizacion' => $quote,
+            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('created_at', 'desc')->paginate(10),
             'carrito' => $this->getDetalleCotizacion($quote),
             'clientes' => TblTercero::where([
                 'estado' => 1,
@@ -246,6 +265,7 @@ class CotizacionController extends Controller
         try {
             $this->authorize('update', $quote);
 
+            $estado = $quote->estado;
             $quote->update($request->validated());
             TblCotizacionDetalle::where('id_cotizacion', '=', $quote->id_cotizacion)->delete();
 
@@ -267,6 +287,27 @@ class CotizacionController extends Controller
             
             $quote->valor = $total;
             $quote->save();
+
+            if($estado !== session('id_dominio_cotizacion_creada')) {
+                $quote->comentario = (
+                    isset(request()->comentario) && trim(request()->comentario) != ''
+                    ? request()->comentario
+                    : "Cotización editada."
+                );
+
+                $this->createTrack($quote, session('id_dominio_cotizacion_creada'));
+
+                $id_usuario = (isset($quote->tblContratista->tbluser->id_usuario)
+                    ? $quote->tblContratista->tbluser->id_usuario
+                    : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
+                );
+                $channel = 'user-'.(intval(Auth::user()->id_usuario) != intval($id_usuario)
+                    ? $id_usuario
+                    : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
+                );
+
+                $this->sendNotification($quote, $channel, 'quote-created');
+            }
 
             return response()->json([
                 'success' => 'Cotización actualizada correctamente!'
@@ -294,32 +335,44 @@ class CotizacionController extends Controller
             $response = '';
             switch (request()->action) {
                 case 'aprove':
+                    $quote->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                        ? request()->comentario
+                        : "Cotización aprobada."
+                    );
                     $response = $this->updateQuote(
                         $quote,
                         [session('id_dominio_cotizacion_creada')],
                         session('id_dominio_cotizacion_revisada'),
-                        "Cotización aprobada.",
                         'Cotización aprobada!',
                         'quote-aprove'
                     );
 
                     break;
                 case 'deny':
+                    $quote->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                        ? request()->comentario
+                        : "Cotización devuelta."
+                    );
                     $response = $this->updateQuote(
                         $quote,
                         [session('id_dominio_cotizacion_creada')],
                         session('id_dominio_cotizacion_devuelta'),
-                        "",
                         'Cotización devuelta!',
                         'quote-deny'
                     );
                     break;
                 case 'send':
+                    $quote->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                        ? request()->comentario
+                        : "Cotización descargada."
+                    );
                     $response = $this->updateQuote(
                         $quote,
                         [session('id_dominio_cotizacion_revisada')],
                         session('id_dominio_cotizacion_enviada'),
-                        "Cotización descargada para enviar al cliente.",
                         'Cotización descargada!',
                         'quote-aprove'
                     );
@@ -328,7 +381,7 @@ class CotizacionController extends Controller
                     # code...
                     break;
             }
-
+            return $response;
             if(!isset($response['success'])) {
                 throw new Exception($response['error']);
             }
@@ -387,21 +440,26 @@ class CotizacionController extends Controller
         ]);
     }
     
-    private function updateQuote($quote, $estados, $nuevoEstado, $comentario, $msg, $notification, $usuarioFinal = '') {
+    private function updateQuote($quote, $estados, $nuevoEstado, $msg, $notification, $usuarioFinal = '') {
         try {
             if(in_array($quote->estado, $estados)) {
                 $quote->estado = $nuevoEstado;
                 
-                $this->createTrack($quote, $nuevoEstado, $comentario);
+                $this->createTrack($quote, $nuevoEstado);
+                unset($quote->comentario);
                 $quote->save();
             }
-    
-            if($notification !== '') {
-                $channel = 'user-'.(Auth::user()->id_usuario == $quote->id_usuareg
-                    ? $quote->tblCliente->tblusuario->id_usuario
-                    : $quote->id_usuareg
-                );
 
+            $id_usuario = (isset($quote->tblContratista->tbluser->id_usuario)
+                ? $quote->tblContratista->tbluser->id_usuario
+                : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
+            );
+
+            if($notification !== '') {
+                $channel = 'user-'.(intval(Auth::user()->id_usuario) != intval($id_usuario)
+                    ? $id_usuario
+                    : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
+                );
                 $this->sendNotification($quote, $channel, $notification);
             }
 
@@ -412,12 +470,12 @@ class CotizacionController extends Controller
         }
     }
 
-    private function createTrack($quote, $action, $comentario) {
+    private function createTrack($quote, $action) {
         try {
             TblEstadoCotizacion::create([
                 'id_cotizacion' => $quote->id_cotizacion,
                 'estado' => $action,
-                'comentario' => $comentario,
+                'comentario' => $quote->comentario,
                 'id_usuareg' => Auth::id()
             ]);
         } catch (\Throwable $th) {

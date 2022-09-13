@@ -23,7 +23,16 @@ class TblEstadoCotizacion extends Model
     public function tblCotizacion(){
         return $this->belongsTo(tblCotizacion::class, 'id_cotizacion');
     }
+
+    public function tblestado() {
+        return $this->belongsTo(TblDominio::class, 'estado');
+    }
+
     public function tblusuario() {
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
+    }
+
+    public function getFullNameAttribute() {
+        return $this->tblusuario->tbltercero->full_name;
     }
 }

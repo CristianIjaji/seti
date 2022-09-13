@@ -21302,13 +21302,17 @@ button.close {
   padding-left: calc(var(--nav-width) + 1rem);
 }
 
-#nav-bar.l-navbar .active {
+#nav-bar.l-navbar .nav_list {
   width: 49px;
+  transition: width 0.5s ease-in-out;
+}
+
+#nav-bar.l-navbar .active {
   color: var(--bs-primary) !important;
   background-color: var(--bs-white) !important;
 }
 
-#nav-bar.l-navbar.show-panel .active {
+#nav-bar.l-navbar.show-panel .nav_list {
   width: 100%;
 }
 
@@ -21375,6 +21379,10 @@ label.required::after {
   min-height: 180px !important;
 }
 
+#div-submenus .dropdown-toggle::after {
+  content: none;
+}
+
 @media screen and (min-width: 768px) {
   #body-pd {
     margin: calc(var(--header-height) + 1rem) 0 0 0;
@@ -21399,32 +21407,32 @@ label.required::after {
   }
 }
 .bg-table-primary {
-  --bs-bg-opacity: 0.6;
+  --bs-bg-opacity: 0.4;
   background: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity));
 }
 
 .bg-table-secondary {
-  --bs-bg-opacity: 0.6;
+  --bs-bg-opacity: 0.4;
   background: rgba(var(--bs-secondary-rgb), var(--bs-bg-opacity));
 }
 
 .bg-table-success {
-  --bs-bg-opacity: 0.6;
+  --bs-bg-opacity: 0.4;
   background: rgba(var(--bs-success-rgb), var(--bs-bg-opacity));
 }
 
 .bg-table-danger {
-  --bs-bg-opacity: 0.6;
+  --bs-bg-opacity: 0.4;
   background: rgba(var(--bs-danger-rgb), var(--bs-bg-opacity));
 }
 
 .bg-table-warning {
-  --bs-bg-opacity: 0.6;
+  --bs-bg-opacity: 0.4;
   background: rgba(var(--bs-warning-rgb), var(--bs-bg-opacity));
 }
 
 .bg-table-info {
-  --bs-bg-opacity: 0.6;
+  --bs-bg-opacity: 0.4;
   background: rgba(var(--bs-info-rgb), var(--bs-bg-opacity));
 }
 

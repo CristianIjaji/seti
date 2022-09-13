@@ -94,7 +94,7 @@ class TblCotizacionPolicy
     }
 
     public function aproveQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')])) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) || $tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero) {
             return false;
         }
 
@@ -102,7 +102,7 @@ class TblCotizacionPolicy
     }
 
     public function rejectQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')])) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) || $tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero) {
             return false;
         }
 
@@ -110,7 +110,7 @@ class TblCotizacionPolicy
     }
 
     public function sendQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if($tblCotizacion->estado == NULL || in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta')])) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_enviada')])) {
             return false;
         }
 

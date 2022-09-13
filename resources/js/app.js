@@ -50,26 +50,13 @@ const app = new Vue({
 window.regexCurrencyToFloat = /[^0-9.-]+/g;
 window.formatCurrency = { alias : "currency", prefix: '', min: 0 };
 
-Pusher.logToConsole = true;
+// Pusher.logToConsole = true;
 var pusher = new Pusher('c27a0f7fb7b0efd70263', {
     cluster: 'us2'
 });
 
-const updateGrid = (url, data) => {
-    $.ajax({
-        url: url,
-        method: 'POST',
-        data: data,
-        beforeSend: () => {
-            showLoader(true);
-        }
-    }).done(function(view) {
-        $('#container').html(view);
-    }).always(function() {
-        showLoader(false);
-        setupSelect2();
-    });
-}
+let url_cotizacion = 'quotes';
+let form_cotizacion = 'form_quotes';
 
 const createChannel = (evento, canal, text, location, urlGrid, formData, audio = '') => {
     var channel = pusher.subscribe(`user-${canal}`);
@@ -80,7 +67,7 @@ const createChannel = (evento, canal, text, location, urlGrid, formData, audio =
         }
 
         if(window.location.pathname === `/${location}`) {
-            updateGrid(urlGrid, formData);
+            getGrid(urlGrid, formData);
         }
 
         Push.create(text, {
@@ -91,7 +78,6 @@ const createChannel = (evento, canal, text, location, urlGrid, formData, audio =
             onClick: function() {
                 if(window.location.pathname !== `/${location}`) {
                     window.location.href = location;
-                    console.log(window.location.href, location);
                 }
 
                 window.focus();
@@ -102,9 +88,9 @@ const createChannel = (evento, canal, text, location, urlGrid, formData, audio =
 }
 
 window.listener = (canal) => {
-    createChannel('quote-created', canal, "Cotización creada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), 'sounds/notification1.mp3');
-    createChannel('quote-deny', canal, "Cotización devuelta!", "quotes", "quotes/grid", $('#form_quotes').serialize(), '');
-    createChannel('quote-aprove', canal, "Cotización aprobada!", "quotes", "quotes/grid", $('#form_quotes').serialize(), '');
+    createChannel('quote-created', canal, "Revisar cotización!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+    createChannel('quote-deny', canal, "Cotización devuelta!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+    createChannel('quote-aprove', canal, "Cotización aprobada!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
 }
 
 window.closeConnection = () => {
@@ -274,11 +260,10 @@ const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
         },
         restrictions: {
             minDate
-        },
-        // allowInputToggle: true
+        }
     });
 
-    picker.clear();
+    // picker.clear();
 
     picker.dates.formatInput = (date) => {
         return (date !== undefined && date !== null
@@ -292,7 +277,19 @@ const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
     }
 
     picker.subscribe(tempusDominus.Namespace.events.hide, (event) => {
-        $(element).trigger('change');
+        if(picker.dates.lastPicked !== undefined) {
+            $(element).trigger('change');
+        }
+    });
+
+    $(element).focus(() => {
+        // picker.dispose();
+        picker.show();
+    });
+
+    $(element).blur(() => {
+        // $(element).trigger('change');
+        // picker.hide();
     });
 
     return picker;
@@ -637,6 +634,7 @@ $(document).ready(function() {
                 showLoader(true);
             },
             success: function(response) {
+                closeConnection();
                 window.location.href = "home";
             },
             error: function(response) {
@@ -647,8 +645,6 @@ $(document).ready(function() {
             showLoader(false);
         });
     });
-
-    
 
     $('#input_file').change(function(e){
         $('#lbl_input_file')
@@ -697,16 +693,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
         
         // Validate that all variables exist
         if(toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', ()=>{
+            toggle.addEventListener('click', () => {
                 // show navbar
                 nav.classList.toggle('show-panel');
+                $('.nav_list *[title]').tooltip(`${$('#nav-bar').hasClass('show-panel') ? 'disable' : 'enable'}`);
                 // change icon
                 toggle.classList.toggle('fa-xmark');
                 // add padding to body
                 bodypd.classList.toggle('body-pd');
                 // add padding to header
                 headerpd.classList.toggle('body-pd');
-                $('.customer, .connection').toggleClass('d-none');
             });
         }
     }
@@ -719,29 +715,64 @@ $(document).on('click', '.modal-form', function(e) {
     handleModal($(this));
 });
 
-$(document).on('submit', '.search_form', function(e){
+const updateGrid = (url, data) => {
+    $.ajax({
+        url: url,
+        method: 'POST',
+        data: data,
+        beforeSend: () => {
+            showLoader(true);
+        }
+    }).done(function(view) {
+        $('#container').html(view);
+    }).always(function() {
+        showLoader(false);
+        setupSelect2();
+    });
+}
+
+const getGrid = (url, id_form) => {
+    $.ajax({
+        url: `${url}/grid`,
+        method: 'POST',
+        data: $(`#${id_form}`).serialize(),
+        beforeSend: function() {
+            showLoader(true);
+        }
+    }).done(function(view) {
+        $(`#${id_form}`).parent().html(view);
+    }).always(function() {
+        showLoader(false);
+        setupSelect2();
+    });
+};
+
+$(document).on('submit', `.search_form`, function(e){
     e.preventDefault();
 });
 
 $(document).on('change', '.search_form', function() {
-    let form = $(this).closest('form').attr('id');
-    let url = form.split('_'); 
+    let id_form = $(this).closest('form').attr('id');
+    let url = id_form.split('_');
 
-    // $('.search_form select').each(function() {
-        $.ajax({
-            url: `${url[1]}/grid`,
-            method: 'POST',
-            data: $(`#${form}`).serialize(),
-            beforeSend: function() {
-                showLoader(true);
-            }
-        }).done(function(view) {
-            $('#container').html(view);
-        }).always(function() {
-            showLoader(false);
-            setupSelect2();
-        });
-    // });
+    getGrid(url[1], id_form);
+});
+
+$(document).on('click', '.page-item', function(e) {
+    e.preventDefault();
+
+    if(!$(this).hasClass('disabled')) {
+        $('.page-item').removeClass('active');
+        $(this).addClass('active');
+        let id_form = $(this).closest('form').attr('id');
+        let page = $.urlParam('page', $(this).children().attr('href'));
+        let url = id_form.split('_');
+
+        if(typeof page === 'string') {
+            $(`#${id_form} > #page`).val(page);
+            getGrid(url[1], id_form);
+        }
+    }
 });
 
 $(document).on('click', '#btn-form-action', function(e){
@@ -765,21 +796,6 @@ $(document).on('click', '#btn-form-action', function(e){
 $(document).on('click', 'button.close', function() {
     if($(this).parent().hasClass('alert')) {
         $(this).parent().fadeOut().html('');
-    }
-});
-
-$(document).on('click', '.page-item', function(e) {
-    e.preventDefault();
-
-    if(!$(this).hasClass('disabled')) {
-        $('.page-item').removeClass('active');
-        $(this).addClass('active');
-        let form = $(this).closest('form').attr('id');
-        let page = $.urlParam('page', $(this).children().attr('href'));
-        if(typeof page === 'string') {
-            $(`#${form} > #page`).val(page);
-            $('.search_form').change();
-        }
     }
 });
 
@@ -831,7 +847,43 @@ $(document).on("click", ".btn-export", function(e) {
     }).always(function () {
         showLoader(false);
     });
+});
 
+$(document).on("click", ".btn-download", function(e) {
+    e.preventDefault();
+    
+    let action = $(this).data('route');
+    $.ajax({
+        xhrFields: {
+            responseType: 'blob',
+        },
+        type: 'GET',
+        url: `${action}/template`,
+        beforeSend: () => {
+            showLoader(true);
+        },
+        success: (result, status, xhr) => {
+            var disposition = xhr.getResponseHeader('content-disposition');
+            var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+            var filename = (matches != null && matches[1] ? matches[1] : 'Template.xlsx').replace(/"/g,'');
+
+            // The actual download
+            var blob = new Blob([result], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            link.text = filename;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }).always(function () {
+        showLoader(false);
+    });
 });
 
 $(document).on('click', '#btn_upload', function() {
@@ -921,7 +973,7 @@ $(document).on('change', '.txt-cotizaciones', function() {
 });
 
 $(document).on('change', '#id_cliente_cotizacion', function() {    
-    if(typeof $(this).closest('form').attr('action') !== 'undefined' && $(this).closest('form').attr('action').indexOf('quotes') > -1) {
+    if(typeof $(this).closest('form').attr('action') !== 'undefined' && $(this).closest('form').attr('action').indexOf(url_cotizacion) > -1) {
         $('#table-cotizaciones').addClass('d-none');
 
         $('#id_estacion').empty();
@@ -957,7 +1009,7 @@ $(document).on('change', '#id_cliente_cotizacion', function() {
 });
 
 $(document).on('change', '#iva', function() {
-    if($(this).closest('form').attr('action').indexOf('quotes') > -1) {
+    if($(this).closest('form').attr('action').indexOf(url_cotizacion) > -1) {
         $.each(carrito, (type, item) => {
             if(typeof item !== 'undefined' && carrito[type]['update'] === false) {
                 carrito[type]['update'] = true;
@@ -1035,7 +1087,7 @@ $(document).on('click', '.btn-quote', function(e) {
     }).then((result) => {
         if(result.isConfirmed) {
             $.ajax({
-                url: `quotes/${$('#id_cotizacion').val()}/handleQuote`,
+                url: `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`,
                 method: 'POST',
                 data,
                 processData: false,
@@ -1049,7 +1101,7 @@ $(document).on('click', '.btn-quote', function(e) {
                     if(response.success) {
                         $('#modalForm').modal('hide');
                         if(action === 'send') {
-                            window.open(`quotes/exportQuote?quote=${$('#id_cotizacion').val()}`, '_blank');  
+                            window.open(`${url_cotizacion}/exportQuote?quote=${$('#id_cotizacion').val()}`, '_blank');  
                         }
 
                         Swal.fire({
@@ -1079,46 +1131,11 @@ $(document).on('click', '.btn-quote', function(e) {
                         });
                 }
             }).always(function () {
-                // updateQuoteGrid();
+                getGrid(url_cotizacion, form_cotizacion);
                 showLoader(false);
             });
 
             return false;
         }
     });
-
-    /*
-        $.ajax({
-            xhrFields: {
-                responseType: 'blob',
-            },
-            type: 'POST',
-            url: '/downloadPayroll',
-            data: {
-                salaryMonth: month,
-                salaryYear: year,
-                is_employee_salary: 1,
-                department: department.val()
-            },
-            success: function(result, status, xhr) {
-
-                var disposition = xhr.getResponseHeader('content-disposition');
-                var matches = /"([^"]*)"/.exec(disposition);
-                var filename = (matches != null && matches[1] ? matches[1] : 'salary.xlsx');
-
-                // The actual download
-                var blob = new Blob([result], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                });
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = filename;
-
-                document.body.appendChild(link);
-
-                link.click();
-                document.body.removeChild(link);
-            }
-        });
-    */
 });

@@ -123,7 +123,7 @@
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-date">
                     <label for="fecha_solicitud" class="required">Fecha solicitud</label>
-                    <input type="text" class="form-control" @if ($edit) name="fecha_solicitud" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $cotizacion->fecha_solicitud) }}" @if ($edit) required @else disabled @endif>
+                    <input type="text" class="form-control" @if ($edit) name="fecha_solicitud" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $cotizacion->fecha_solicitud) }}" @if ($edit) required @else disabled @endif readonly>
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                     <label for="id_prioridad" class="required">Prioridad</label>
@@ -303,29 +303,36 @@
                     </table>
                 </div>
 
-                <div class="form-group col-12 col-sm-6 col-md-6 co-lg-6">
+                <div class="col-12 col-md-6 co-lg-6 my-auto pb-2">
                     @if ($edit)
-                        @can('aproveQuote', $cotizacion)
-                            <button id="btn-aprove-quote" class="btn bg-success bg-gradient text-white btn-quote">
-                                <i class="fa-solid fa-thumbs-up"></i> Aprobar cotización
-                            </button>
-                        @endcan
+                        <div class="col-12 border rounded p-3">
+                            <div class="form-group col-12">
+                                <label for="comentario">Nuevo comentario</label>
+                                <textarea class="form-control" name="comentario" rows="3" style="resize: none"></textarea>
+                            </div>
 
-                        @can('rejectQuote', $cotizacion)
-                            <button id="btn-deny-quote" class="btn bg-danger bg-gradient text-white btn-quote">
-                                <i class="fa-solid fa-thumbs-down"></i> Devolver cotización
-                            </button>
-                        @endcan
+                            @can('aproveQuote', $cotizacion)
+                                <button id="btn-aprove-quote" class="btn bg-success bg-gradient text-white btn-quote">
+                                    <i class="fa-solid fa-thumbs-up"></i> Aprobar cotización
+                                </button>
+                            @endcan
 
-                        @can('sendQuote', $cotizacion)
-                            <button id="btn-send-quote" class="btn bg-info bg-gradient text-white btn-quote">
-                                <i class="fa-solid fa-download"></i> Enviar cotización
-                            </button>
-                        @endcan
+                            @can('rejectQuote', $cotizacion)
+                                <button id="btn-deny-quote" class="btn bg-danger bg-gradient text-white btn-quote">
+                                    <i class="fa-solid fa-thumbs-down"></i> Devolver cotización
+                                </button>
+                            @endcan
+
+                            @can('sendQuote', $cotizacion)
+                                <button id="btn-send-quote" class="btn bg-info bg-gradient text-white btn-quote">
+                                    <i class="fa-solid fa-download"></i> Enviar cotización
+                                </button>
+                            @endcan
+                        </div>
                     @endif
                 </div>
 
-                <div class="form-group col-12 col-sm-6 col-md-6 co-lg-6">
+                <div class="form-group col-12 col-md-6 co-lg-6 my-auto">
                     <div class="row fs-5">
                         <label class="col-6 text-end">Total sin IVA:</label>
                         <label id="lbl_total_sin_iva" class="col-6 text-end"></label>
@@ -337,14 +344,23 @@
                 </div>
             </div>
 
-            @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear cotización' : 'Editar cotización', 'modal' => 'modalForm'])
-    @if (!$create)
-        </div>
-        <div class="tab-pane" id="track" role="tabpanel" aria-labelledby="track-tab">
-            @include('cotizaciones._track')
-        </div>
-    @endif
-        
+            @php
+                $edit = (
+                    $edit &&
+                    $cotizacion->id_usuareg == Auth::user()->id_usuario &&
+                    in_array($cotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta')]) ||
+                    ($edit && Auth::user()->role == session('id_dominio_analista'))
+                );
+            @endphp
+
+            @include('partials.buttons', [$create, 'edit' => $edit, 'label' => $create ? 'Crear cotización' : 'Editar cotización', 'modal' => 'modalForm'])
+
+            @if (!$create)
+                </div>
+                <div class="tab-pane" id="track" role="tabpanel" aria-labelledby="track-tab">
+                    @include('cotizaciones._track', [$edit, 'model' => $estados_cotizacion])
+                </div>
+            @endif
     </div>
 
 <script type="application/javascript">

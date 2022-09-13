@@ -15,10 +15,14 @@
             </div>
         @endif
     </div>
-    <div class="col-sm-12 col-md-6 text-end">
-        <a href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-light border-white text-info font-weight-bolder fs-3 bg-update">
-            <i class="fas fa-sync-alt"></i>
-        </a>
+    <div id="div-submenus" class="col-sm-12 col-md-6 text-end">
+        @isset($view)
+            @if ($view)
+                <a href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-light border-white text-info font-weight-bolder fs-3 bg-update">
+                    <i class="fas fa-sync-alt"></i>
+                </a>
+            @endif
+        @endisset
         @isset($export)
             @if ($export)
                 <a href="#" data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn btn-outline-light border-white text-success font-weight-bolder fs-3 btn-export">
@@ -28,14 +32,30 @@
         @endisset
         @isset($import)
             @if ($import)
-                <form class="btn px-0" action="{{ route("$route.import") }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-                    <span id="btn_upload" data-toggle="tooltip" title="Importar" class="btn btn-outline-light border-white text-primary font-weight-bolder fs-3">
-                        <i class="fa-solid fa-upload"></i>
-                    </span>
-                    <input type="file" name="input_file" id="input_file" accept=".xlsx,.xls" class="d-none">
-                    <button class="d-none">Enviar</button>
-                </form>
+                <div class="dropdown d-inline me-1">
+                    <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span data-toggle="tooltip" title="Importar" class="btn btn-outline-light border-white text-primary font-weight-bolder fs-3">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <span id="btn_upload" class="dropdown-item pl-3 btn">
+                                Subir archivo
+                            </span>
+                            <form action="{{ route("$route.import") }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <input type="file" name="input_file" id="input_file" accept=".xlsx,.xls" class="d-none">
+                                <button class="d-none">Enviar</button>
+                            </form>
+                        </li>
+                        <li>
+                            <a href="#" data-route="{{$route}}" class="dropdown-item pl-3 btn btn-download">
+                                Descargar plantilla
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             @endif
         @endisset
         @isset($create)
@@ -118,13 +138,7 @@
                     @forelse ($headers as $header)
                         <td 
                             data-value="{{ $model[$header['name']] }}"
-                            class="
-                                align-middle
-                                {{ isset($header['align']) ? $header['align'] : '' }} {{ isset($header['col']) ?  $header['col'] : '' }}
-                                {{ isset($header['class'])
-                                    && isset($status)
-                                    ? $header['class'] : ''
-                                }}">
+                            class="align-middle {{ isset($header['align']) ? $header['align'] : '' }}{{ isset($header['col']) ? $header['col'] : '' }}{{ isset($header['class']) && isset($status) ? $header['class'] : '' }}">
                             @if (isset($model[$header['name']]))
                                 @if (!isset($header['options']))
                                     @if (!isset($header['foreign']))

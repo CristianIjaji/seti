@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
+use App\Http\Controllers\EstadoCotizacionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MenuTipoTerceroController;
@@ -33,6 +34,7 @@ Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
 
 // Controlador terceros
 Route::get('clients/export', [TerceroController::class, 'export'])->name('clients.export');
+Route::get('clients/template', [TerceroController::class, 'download_template'])->name('clients.template');
 Route::get('/clients/search', [TerceroController::class, 'search'])->name('clients.search');
 Route::resource('clients', TerceroController::class);
 Route::post('clients/grid', [TerceroController::class, 'grid'])->name('clients.grid');
@@ -40,6 +42,7 @@ Route::post('clients/import', [TerceroController::class, 'import'])->name('clien
 
 // Controlador puntos interes
 Route::get('sites/export', [PuntosInteresController::class, 'export'])->name('sites.export');
+Route::get('sites/template', [PuntosInteresController::class, 'download_template'])->name('sites.template');
 Route::get('sites/{client}/get_puntos_interes_client', [PuntosInteresController::class, 'get_puntos_interes_client'])->name('sites.get_puntos_interes_client');
 Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
@@ -47,16 +50,21 @@ Route::post('sites/import', [PuntosInteresController::class, 'import'])->name('s
 
 // Controlador lista de precios
 Route::get('priceList/export', [ListaPrecioController::class, 'export'])->name('priceList.export');
+Route::get('priceList/template', [ListaPrecioController::class, 'download_template'])->name('priceList.template');
 Route::resource('priceList', ListaPrecioController::class);
 Route::get('priceList/{type}/{client}', [ListaPrecioController::class, 'search'])->name('priceList.search');
 Route::post('priceList/grid',[ListaPrecioController::class, 'grid'])->name('priceList.grid');
 Route::post('priceList/import', [ListaPrecioController::class, 'import'])->name('priceList.import');
 
-// Controlador contabilidad
+// Controlador cotizaciones
 Route::get('quotes/exportQuote', [CotizacionController::class, 'exportQuote'])->name('quotes.exportQuote');
 Route::resource('quotes', CotizacionController::class);
 Route::post('quotes/grid', [CotizacionController::class, 'grid'])->name('quotes.grid');
 Route::post('quotes/{quote}/handleQuote', [CotizacionController::class, 'handleQuote'])->name('quotes.handleQuote');
+
+// Controlador estado cotizaciones
+Route::resource('statequotes', EstadoCotizacionController::class);
+Route::post('statequotes/grid', [EstadoCotizacionController::class, 'grid'])->name('statequotes.grid');
 
 // Controlador de actividades
 Route::resource('activities', ActividadController::class);

@@ -46,7 +46,8 @@ class ListaPrecioController extends Controller
                     $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
                 } else if($key == 'full_name' && $value) {
                     $querybuilder->whereHas('tbltercerocliente', function($q) use($value){
-                        $q->where('nombres', 'like', strtolower("%$value%"));
+                        $q->where('razon_social', 'like', strtolower("%$value%"));
+                        $q->orwhere('nombres', 'like', strtolower("%$value%"));
                         $q->orwhere('apellidos', 'like', strtolower("%$value%"));
                     });
                 }
@@ -221,8 +222,8 @@ class ListaPrecioController extends Controller
         ]);
     }
 
-    public function export() {
-        $precios = TblListaPrecio::select(
+    private function generateDownload($option) {
+        return TblListaPrecio::select(
             DB::raw("
                 tbl_lista_precios.id_lista_precio,
                 CONCAT(t.nombres, ' ', t.apellidos) as nombre,
@@ -237,15 +238,26 @@ class ListaPrecioController extends Controller
         )
         ->join('tbl_terceros as t', 'tbl_lista_precios.id_cliente', '=', 't.id_tercero')
         ->join('tbl_dominios as ti', 'tbl_lista_precios.id_tipo_item', '=', 'ti.id_dominio')
-        ->where(function ($q) {
-            $this->dinamyFilters($q, [
-                'tbl_lista_precios.estado' => 'estado'
-            ]);
+        ->where(function ($q) use($option) {
+            if($option == 1) {
+                $this->dinamyFilters($q, [
+                    'tbl_lista_precios.estado' => 'estado'
+                ]);
+            } else {
+                $q->where('tbl_lista_precios.estado', '=', '-1');
+            }
         })
         ->get();
+    }
 
+    public function export() {
         $headers = ['#', 'Cliente', 'Tipo ítem', 'Código', 'Descripción', 'Unidad', 'Cantidad', 'Valor unitario', 'Estado'];
-        return $this->excel->download(new ReportsExport($headers, $precios), 'Reporte lista precios.xlsx');
+        return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte lista precios.xlsx');
+    }
+
+    public function download_template() {
+        $headers = ['Documento cliente', 'Tipo ítem', 'Código', 'Descripción', 'Unidad', 'Cantidad', 'Valor unitario'];
+        return $this->excel->download(new ReportsExport($headers, $this->generateDownload(2)), 'Template lista precios.xlsx');
     }
 
     public function import() {

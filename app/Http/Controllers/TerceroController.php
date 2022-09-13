@@ -262,8 +262,8 @@ class TerceroController extends Controller
         ]);
     }
 
-    public function export() {
-        $terceros = TblTercero::select(
+    private function generateDownload($option) {
+        return TblTercero::select(
             DB::raw("
                 tbl_terceros.id_tercero,
                 td.nombre as id_dominio_tipo_documento,
@@ -283,23 +283,37 @@ class TerceroController extends Controller
         ->join('tbl_dominios as td', 'tbl_terceros.id_dominio_tipo_documento', '=', 'td.id_dominio')
         ->join('tbl_dominios as tt', 'tbl_terceros.id_dominio_tipo_tercero', '=', 'tt.id_dominio')
         ->leftjoin('tbl_terceros as t', 'tbl_terceros.id_responsable_cliente', '=', 't.id_tercero')
-        ->where(function ($q) {
-            $this->dinamyFilters($q, [
-                'tbl_terceros.id_dominio_tipo_documento' => 'id_dominio_tipo_documento',
-                'tbl_terceros.documento' => 'documento',
-                'tbl_terceros.nombres' => 'nombres',
-                'tbl_terceros.apellidos' => 'apellidos',
-                'tbl_terceros.ciudad' => 'ciudad',
-                'tbl_terceros.id_dominio_tipo_tercero' => 'id_dominio_tipo_tercero',
-                'tbl_terceros.estado' => 'estado'
-            ]);
+        ->where(function ($q) use($option) {
+            if($option == 1) {
+                $this->dinamyFilters($q, [
+                    'tbl_terceros.id_dominio_tipo_documento' => 'id_dominio_tipo_documento',
+                    'tbl_terceros.documento' => 'documento',
+                    'tbl_terceros.nombres' => 'nombres',
+                    'tbl_terceros.apellidos' => 'apellidos',
+                    'tbl_terceros.ciudad' => 'ciudad',
+                    'tbl_terceros.id_dominio_tipo_tercero' => 'id_dominio_tipo_tercero',
+                    'tbl_terceros.estado' => 'estado'
+                ]);
+            } else {
+                $q->where('tbl_terceros.estado', '=', '-1');
+            }
         })
         ->get();
+    }
 
+    public function export() {
         $headers = ['#', 'Tipo documento', 'Documento', 'DV', 'Razón social', 'Nombre', 'Ciudad', 'Dirección',
             'Correo', 'Teléfono', 'Tipo tercero', 'Estado', 'Dependencia'
         ];
-        return $this->excel->download(new ReportsExport($headers, $terceros), 'Reporte terceros.xlsx');
+
+        return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte terceros.xlsx');
+    }
+
+    public function download_template() {
+        $headers = ['Tipo documento', 'Documento', 'Dígito Verificación', 'Razón social', 'Nombres', 'Apellidos', 'Ciudad', 'Dirección',
+            'Correo', 'Teléfono', 'Tipo tercero', 'Dependencia'
+        ];
+        return $this->excel->download(new ReportsExport($headers, $this->generateDownload(2)), 'Template terceros.xlsx');
     }
 
     public function import() {

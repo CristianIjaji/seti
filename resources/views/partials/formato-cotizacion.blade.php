@@ -122,7 +122,7 @@
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->unidad }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->cantidad }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->valor_unitario }}</td>
-            <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ "=$detalle->cantidad*$detalle->valor_total" }}</td>
+            <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ "=$detalle->cantidad*$detalle->valor_unitario" }}</td>
         </tr>
     @endforeach
     <tr>
@@ -194,7 +194,7 @@
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->unidad }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->cantidad }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->valor_unitario }}</td>
-            <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ "=$detalle->cantidad*$detalle->valor_total" }}</td>
+            <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ "=$detalle->cantidad*$detalle->valor_unitario" }}</td>
         </tr>
     @endforeach
     <tr>

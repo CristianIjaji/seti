@@ -45,7 +45,7 @@
             <hr class="bg-white">
             <div class="nav_list">
                 @foreach (Auth::user()->getMenusPerfil() as $menu)
-                    <a href="{{ route($menu->url) }}" class="nav_link {{ setActive($menu->url) }} rounded my-2">
+                    <a href="{{ route($menu->url) }}" title="{{$menu->nombre}}" data-toggle="tooltip" data-bs-placement="right" class="nav_link {{ setActive($menu->url) }} rounded my-2">
                         <i class="{{ $menu->icon }}"></i>
                         <span class="nav_name">{{$menu->nombre}}</span>
                     </a>

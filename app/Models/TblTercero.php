@@ -50,7 +50,7 @@ class TblTercero extends Model
     }
 
     public function tbluser() {
-        return $this->belongsTo(TblUsuario::class, 'id_tercero');
+        return $this->hasOne(TblUsuario::class, 'id_tercero', 'id_tercero');
     }
 
     public function tblusuario() {

@@ -55,6 +55,10 @@ class TblCotizacion extends Model
         return $this->belongsTo(TblTercero::class, 'id_responsable_cliente');
     }
 
+    public function tblusereg() {
+        return $this->hasOne(TblUsuario::class, 'id_usuareg');
+    }
+
     public function getmaterialescotizacion($id_cotizacion) {
         return TblCotizacionDetalle::where(['id_cotizacion' => $id_cotizacion, 'id_tipo_item' => session('id_dominio_materiales')])->get();
     }

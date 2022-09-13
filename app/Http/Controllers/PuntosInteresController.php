@@ -221,8 +221,8 @@ class PuntosInteresController extends Controller
         ]);
     }
 
-    public function export() {
-        $sitios = TblPuntosInteres::select(
+    private function generateDownload($option) {
+        return TblPuntosInteres::select(
             DB::raw("
                 tbl_puntos_interes.id_punto_interes,
                 COALESCE(t.razon_social, CONCAT(t.nombres, ' ', t.apellidos)) as full_name,
@@ -240,19 +240,30 @@ class PuntosInteresController extends Controller
         ->join('tbl_dominios as z', 'tbl_puntos_interes.id_zona', '=', 'z.id_dominio')
         ->join('tbl_dominios as tt', 'tbl_puntos_interes.id_tipo_transporte', '=', 'tt.id_dominio')
         ->join('tbl_dominios as ta', 'tbl_puntos_interes.id_tipo_accesso', '=', 'ta.id_dominio')
-        ->where(function ($q) {
-            $this->dinamyFilters($q, [
-                'tbl_puntos_interes.id_punto_interes' => 'id_punto_interes',
-                'tbl_puntos_interes.nombre' => 'nombre',
-                'tbl_puntos_interes.estado' => 'estado'
-            ]);
+        ->where(function ($q) use($option) {
+            if($option == 1) {
+                $this->dinamyFilters($q, [
+                    'tbl_puntos_interes.id_punto_interes' => 'id_punto_interes',
+                    'tbl_puntos_interes.nombre' => 'nombre',
+                    'tbl_puntos_interes.estado' => 'estado'
+                ]);
+            } else {
+                $q->where('tbl_puntos_interes.estado', '=', '-1');
+            }
         })
         ->get();
+    }
 
+    public function export() {
         $headers = ['#', 'Cliente', 'Zona', 'Sitio', 'Latitud', 'Longitud', 'Descripción', 'Tipo transporte',
             'Tipo acceso', 'Estado'
         ];
-        return $this->excel->download(new ReportsExport($headers, $sitios), 'Reporte sitios.xlsx');
+        return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte sitios.xlsx');
+    }
+
+    public function download_template() {
+        $headers = ['Documento cliente', 'Zona', 'Sitio', 'Latitud', 'Longitud', 'Descripción', 'Tipo transporte', 'Tipo acceso'];
+        return $this->excel->download(new ReportsExport($headers, $this->generateDownload(2)), 'Template puntos interes.xlsx');
     }
 
     public function import() {

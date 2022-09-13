@@ -220,8 +220,7 @@ class MenuTipoTerceroController extends Controller
             'ttm.importar',
             'ttm.exportar'
         )->join('tbl_menu_tipo_tercero as ttm', 'tbl_menus.id_menu', '=', 'ttm.id_menu')
-        ->where(['tbl_menus.estado' => 1])
-        ->wherein('tbl_menus.id_menu', TblMenuTipoTercero::select('id_menu')->where(['id_tipo_tercero' => $profile->id_tipo_tercero])->get())
+        ->where(['tbl_menus.estado' => 1, 'ttm.id_tipo_tercero' => $profile->id_tipo_tercero])
         ->orderBy('tbl_menus.orden')->get();
 
         foreach ($menus as $menu) {

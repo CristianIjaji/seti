@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\TblEstadoCotizacion;
 use Illuminate\Http\Request;
 
-class EstadoCotizacion extends Controller
+class EstadoCotizacionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -80,5 +81,19 @@ class EstadoCotizacion extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function grid() {
+        return $this->getView('cotizaciones._track');
+    }
+
+    private function getView($view) {
+        $estados = new TblEstadoCotizacion;
+
+        return view($view, [
+            'edit' => true,
+            'model' => TblEstadoCotizacion::with(['tblCotizacion', 'tblestado', 'tblusuario'])
+                ->orderBy('created_at', 'desc')->paginate(10),
+        ]);
     }
 }
