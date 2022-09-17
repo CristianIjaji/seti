@@ -334,7 +334,7 @@ class CotizacionController extends Controller
         try {
             $response = '';
             switch (request()->action) {
-                case 'aprove':
+                case 'check':
                     $quote->comentario = (
                         isset(request()->comentario) && trim(request()->comentario) != ''
                         ? request()->comentario
@@ -347,7 +347,6 @@ class CotizacionController extends Controller
                         'Cotización aprobada!',
                         'quote-aprove'
                     );
-
                     break;
                 case 'deny':
                     $quote->comentario = (
@@ -363,25 +362,71 @@ class CotizacionController extends Controller
                         'quote-deny'
                     );
                     break;
-                case 'send':
+                case 'wait':
                     $quote->comentario = (
                         isset(request()->comentario) && trim(request()->comentario) != ''
                         ? request()->comentario
-                        : "Cotización descargada."
+                        : "Cotización enviada al cliente."
                     );
                     $response = $this->updateQuote(
                         $quote,
                         [session('id_dominio_cotizacion_revisada')],
-                        session('id_dominio_cotizacion_enviada'),
-                        'Cotización descargada!',
+                        session('id_dominio_cotizacion_pendiente_aprobacion'),
+                        'Cotización pendiente por aprobación!',
+                        'quote-wait'
+                    );
+                    break;
+                case 'aprove':
+                    $quote->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                        ? request()->comentario
+                        : "Cotización aprobada por el cliente."
+                    );
+                    $response = $this->updateQuote(
+                        $quote,
+                        [session('id_dominio_cotizacion_pendiente_aprobacion')],
+                        session('id_dominio_cotizacion_aprobada'),
+                        'Cotización aprobada cliente!',
                         'quote-aprove'
+                    );
+                    break;
+                case 'reject':
+                    $quote->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                        ? request()->comentario
+                        : 'Cotización rechazada por el cliente.'
+                    );
+                    $response = $this->updateQuote(
+                        $quote,
+                        [session('id_dominio_cotizacion_pendiente_aprobacion')],
+                        session('id_dominio_cotizacion_rechazada'),
+                        'Cotización rechazada cliente!',
+                        'quote-reject'
+                    );
+                    break;
+                case 'cancel':
+                    $quote->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                        ? request()->comentario
+                        : 'Cotización cancelada.'
+                    );
+                    $response = $this->updateQuote(
+                        $quote,
+                        [
+                            session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta'), session('id_dominio_cotizacion_revisada'),
+                            session('id_dominio_cotizacion_enviada'), session('id_dominio_cotizacion_pendiente_aprobacion'), session('id_dominio_cotizacion_rechazada'),
+                            session('id_dominio_cotizacion_aprobada')
+                        ],
+                        session('id_dominio_cotizacion_cancelada'),
+                        'Cotización cancelada!',
+                        'quote-cancel'
                     );
                     break;
                 default:
                     # code...
                     break;
             }
-            return $response;
+
             if(!isset($response['success'])) {
                 throw new Exception($response['error']);
             }

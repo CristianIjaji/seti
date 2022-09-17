@@ -93,8 +93,32 @@ class TblCotizacionPolicy
         //
     }
 
-    public function aproveQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+    public function cancelQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_cancelada')])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function checkQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
         if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) || $tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function denyQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) || $tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function waitQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_revisada')])) {
             return false;
         }
 
@@ -102,15 +126,15 @@ class TblCotizacionPolicy
     }
 
     public function rejectQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) || $tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_pendiente_aprobacion')])) {
             return false;
         }
 
         return true;
     }
 
-    public function sendQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_enviada')])) {
+    public function aproveQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_pendiente_aprobacion')])) {
             return false;
         }
 

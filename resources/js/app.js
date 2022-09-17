@@ -430,6 +430,61 @@ const updateTextAreaSize = () => {
     });
 }
 
+const responsiveTd = (id, i) => {
+    let clase = ((i + 1) % 2 == 0 ? 'bg-light' : '');
+    if ($(window).width() <= 768) {
+        $(`#${id} td:nth-child(${(i + 1)})`).addClass(clase);
+        $(`#${id} td.btn-delete-item > i`).addClass('text-white');
+        $(`#${id} td.btn-delete-item`).addClass('btn bg-danger text-white').removeClass(clase);
+        
+    } else {
+        $(`#${id} td:nth-child(${(i + 1)})`).removeClass('bg-light');
+        $(`#${id} td.btn-delete-item > i`).removeClass('text-white');
+        $(`#${id} td.btn-delete-item`).removeClass('btn bg-danger text-white');
+    }
+}
+
+window.table = () => {
+    $('.table-responsive-stack').each(function (i) {
+        let id = $(this).attr('id');
+        $(`#${id} .table-responsive-stack-thead`).remove();
+        $(this).find("th").each(function(i) {
+            $(`#${id} td:nth-child(${(i + 1)})`).prepend(`<span class="table-responsive-stack-thead">${$(this).text()}</span>`);
+            $('.table-responsive-stack-thead').hide();
+        });
+    });
+}
+
+window.flexTable = () => {
+    if ($(window).width() < 768) {
+        $(".table-responsive-stack").each(function (i) {
+            let id = $(this).attr('id');
+            $(this).find(".table-responsive-stack-thead").show();
+            $(this).find('thead').hide();
+            $(this).find("th").each(function(i) {
+                responsiveTd(id, i);
+            });
+        });
+        // window is less than 768px
+    } else {
+        $(".table-responsive-stack").each(function (i) {
+            let id = $(this).attr('id');
+            $(this).find(".table-responsive-stack-thead").hide();
+            $(this).find('thead').show();
+            $(this).find("th").each(function(i) {
+                responsiveTd(id, i);
+            });
+        });
+    }
+    // flextable
+}      
+
+flexTable();
+window.onresize = function(event) {
+    flexTable();
+};
+// document ready
+
 window.drawItems = (edit = true) => {
     // type: tipo de item: mano de obra, transporte o suministro
     // item: ítem de la lista de precios
@@ -447,28 +502,28 @@ window.drawItems = (edit = true) => {
                         let classname = `${$(`#caret_${type}`).hasClass(showIcon) ? 'show' : ''}`;
                         $(`
                             <tr id="tr_${type}_${index}" class="tr_cotizacion collapse ${classname} item_${type}">
-                                <td>
+                                <td class="col-1 my-auto">
                                     <input type='hidden' name="id_tipo_item[]" value="${type}" />
                                     <input type='hidden' name="id_lista_precio[]" value="${index}" />
-                                    <input type="text" class="form-control text-center text-uppercase border-0" id="item_${index}" value="${element['item']}" disabled>
+                                    <input type="text" class="form-control text-md-center text-end text-uppercase border-0" id="item_${index}" value="${element['item']}" disabled>
                                 </td>
-                                <td>
+                                <td class="col-4 my-auto">
                                     <textarea class="form-control border-0" rows="2" name="descripcion_item[]" id="descripcion_item_${index}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
                                 </td>
-                                <td>
-                                    <input type="text" class="form-control text-center border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${index}" value="${element['unidad']}" ${edit ? '' : 'disabled'}>
+                                <td class="col-1 my-auto">
+                                    <input type="text" class="form-control text-md-center text-end border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${index}" value="${element['unidad']}" ${edit ? '' : 'disabled'}>
                                 </td>
-                                <td>
-                                    <input type="number" min="0" class="form-control text-center border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
+                                <td class="col-1 my-auto">
+                                    <input type="number" min="0" class="form-control text-end border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
                                 </td>
-                                <td>
+                                <td class="col-2 my-auto">
                                     <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required ${edit ? '' : 'disabled'}>
                                 </td>
-                                <td>
+                                <td class="col-2 my-auto">
                                     <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_total[]" id="valor_total_${index}" value="${element['valor_total']}" disabled>
                                 </td>
                                 ${edit == true
-                                    ? `<td class="text-center"><i id="${type}_${index}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>`
+                                    ? `<td id="${type}_${index}" class="text-center col-1 my-auto btn-delete-item"><i id="${type}_${index}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>`
                                     : ``
                                 }
                             </tr>
@@ -534,6 +589,8 @@ const addItems = (items) => {
             carrito[$(item).data('type')]['update'] = false;
             carrito[$(item).data('type')][$(item).val()] = getItem(item);
             drawItems();
+            table();
+            flexTable();
         }
     });
 }
@@ -1045,8 +1102,8 @@ $(document).on('click', '.btn-quote', function(e) {
     let data = new FormData(form[0]);
 
     switch ($(this).attr('id')) {
-        case 'btn-aprove-quote':
-            action = 'aprove';
+        case 'btn-check-quote':
+            action = 'check';
             title = `<h2 class='fw-bold text-success'>Aprobar cotización</h2>`;
             text = `¿Seguro quiere aprobar está cotización?`;
             confirmButtonColor = `var(--bs-success)`;
@@ -1059,18 +1116,82 @@ $(document).on('click', '.btn-quote', function(e) {
             confirmButtonColor = `var(--bs-danger)`;
             confirmButtonText = `Sí, regresar cotización`;
             break;
-        case 'btn-send-quote':
-            action = 'send';
-            title = `<h2 class='fw-bold text-info'>Enviar cotización</h2>`;
-            text = `¿Seguro quiere enviar la cotización?`;
-            confirmButtonColor = `var(--bs-info)`;
-            confirmButtonText = `Sí, enviar cotización`;
+        case 'btn-wait-quote':
+            action = 'wait';
+            title = `<h2 class='fw-bold text-success'>Cotización pendiente aprobación</h2>`;
+            text = `¿Seguro quiere dejar la cotización en pendiente aprobación?`;
+            confirmButtonColor = `var(--bs-success)`;
+            confirmButtonText = `Sí, dejar en Cotización pendiente aprobación`;
+            break;
+        case 'btn-aprove-quote':
+            action = 'aprove';
+            title = `<h2 class='fw-bold text-success'>Cotización aprobada cliente</h2>`;
+            text = `¿Seguro quiere dejar la cotización en aprobada cliente?`;
+            confirmButtonColor = `var(--bs-success)`;
+            confirmButtonText = `Sí, dejar en Cotización aprobada cliente`;
+            break;
+        case 'btn-reject-quote':
+            action = 'reject';
+            title = `<h2 class='fw-bold text-danger'>Cotización rechazada</h2>`;
+            text = `¿Seguro quiere dejar la cotización rechazada?`;
+            confirmButtonColor = `var(--bs-danger)`;
+            confirmButtonText = `Sí, dejar en Cotización rechazada`;
+            break;
+        case 'btn-cancel-quote':
+            action = 'cancel';
+            title = `<h2 class='fw-bold text-danger'>Cotización cancelada</h2>`;
+            text = `¿Seguro quiere cancelar la cotización?`;
+            confirmButtonColor = `var(--bs-danger)`;
+            confirmButtonText = `Sí, cancelar cotización`;
             break;
         default:
             break;
     }
 
-    if (action === '') return false;
+    if(action === '') return false;
+
+    if(action === 'send') {
+        $.ajax({
+            xhrFields: {
+                responseType: 'blob',
+            },
+            type: 'GET',
+            url: `${url_cotizacion}/exportQuote?quote=${$('#id_cotizacion').val()}`,
+            beforeSend: () => {
+                showLoader(true);
+            },
+            success: (result, status, xhr) => {
+                var disposition = xhr.getResponseHeader('content-disposition');
+                var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                var filename = (matches != null && matches[1] ? matches[1] : 'Reporte.xlsx').replace(/"/g,'');
+    
+                // The actual download
+                var blob = new Blob([result], {
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                });
+    
+                var link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+                link.text = filename;
+    
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }).always(function () {
+            showLoader(false);
+        });
+        return false;
+    }
+
+    if(action === 'cancel') {
+        $('#comentario').removeClass('is-invalid');
+        if($('#comentario').val().trim() === '') {
+            $('#comentario').addClass('is-invalid');
+            return false;
+        }
+    }
 
     data.append('action', action);
     data.delete('_method');

@@ -196,23 +196,32 @@
                     <label for="descripcion" class="required">Descripción orden</label>
                     <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $cotizacion->descripcion) }}</textarea>
                 </div>
+                @if (!$create)
+                    <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 my-auto text-end text-md-center">
+                        <button id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
+                            <i class="fa-solid fa-file-excel fs-4"></i> Descargar
+                        </button>
+                    </div>
+                @endif
 
                 <div class="clearfix"><hr></div>
 
                 <div class="table-responsive">
-                    <table id="table_items" class="table table-sm table-bordered align-middle">
-                        <thead class="col-12">
-                            <th class="col-1 text-center">Ítem</th>
-                            <th class="col-4 text-center">Descripción</th>
-                            <th class="col-1 text-center">Un.</th>
-                            <th class="col-1 text-center">Cant.</th>
-                            <th class="col-2 text-center">VR UNIT</th>
-                            <th class="col-2 text-center">VR TOTAL</th>
-                            <th id="th-delete" class="col-1 text-center">Eliminar</th>
+                    <table id="table_items" class="table table-sm table-bordered align-middle table-responsive-stack">
+                        <thead>
+                            <tr>
+                                <th class="col-1 text-center">Ítem</th>
+                                <th class="col-4 text-center">Descripción</th>
+                                <th class="col-1 text-center">Un.</th>
+                                <th class="col-1 text-center">Cant.</th>
+                                <th class="col-2 text-center">VR UNIT</th>
+                                <th class="col-2 text-center">VR TOTAL</th>
+                                <th id="th-delete" class="col-1 text-center">Eliminar</th>
+                            </tr>
                         </thead>
                         <tbody>
                             <tr id="tr_{{ session('id_dominio_materiales') }}">
-                                <td colspan="7">
+                                <th colspan="7">
                                     <span
                                         class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
@@ -237,12 +246,10 @@
                                             <i id="caret_{{ session('id_dominio_materiales') }}" class="show-more fa-solid fa-caret-down"></i>
                                         </span>
                                     </div>
-                                </td>
+                                </th>
                             </tr>
-                        </tbody>
-                        <tbody>
                             <tr id="tr_{{ session('id_dominio_mano_obra') }}">
-                                <td colspan="7">
+                                <th colspan="7">
                                     <span
                                         class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
@@ -267,12 +274,10 @@
                                             <i id="caret_{{ session('id_dominio_mano_obra') }}" class="show-more fa-solid fa-caret-down"></i>
                                         </span>
                                     </div>
-                                </td>
+                                </th>
                             </tr>
-                        </tbody>
-                        <tbody>
                             <tr id="tr_{{ session('id_dominio_transporte') }}">
-                                <td colspan="7">
+                                <th colspan="7">
                                     <span
                                         class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
@@ -297,49 +302,70 @@
                                             <i id="caret_{{ session('id_dominio_transporte') }}" class="show-more fa-solid fa-caret-down"></i>
                                         </span>
                                     </div>
-                                </td>
+                                </th>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <div class="col-12 col-md-6 co-lg-6 my-auto pb-2">
-                    @if ($edit)
+                    @if (!$create && $edit)
                         <div class="col-12 border rounded p-3">
-                            <div class="form-group col-12">
+                            <div class="form-group col-12 text-start">
                                 <label for="comentario">Nuevo comentario</label>
-                                <textarea class="form-control" name="comentario" rows="3" style="resize: none"></textarea>
+                                <textarea class="form-control" id="comentario" name="comentario" rows="3" style="resize: none"></textarea>
+                                
                             </div>
 
-                            @can('aproveQuote', $cotizacion)
-                                <button id="btn-aprove-quote" class="btn bg-success bg-gradient text-white btn-quote">
-                                    <i class="fa-solid fa-thumbs-up"></i> Aprobar cotización
-                                </button>
-                            @endcan
+                            <div class="col-12 d-flex justify-content-evenly align-items-center">
+                                @can('checkQuote', $cotizacion)
+                                    <button id="btn-check-quote" title="Aprobar cotización" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
+                                        <i class="fa-solid fa-thumbs-up"></i> Aprobar cotización
+                                    </button>
+                                @endcan
 
-                            @can('rejectQuote', $cotizacion)
-                                <button id="btn-deny-quote" class="btn bg-danger bg-gradient text-white btn-quote">
-                                    <i class="fa-solid fa-thumbs-down"></i> Devolver cotización
-                                </button>
-                            @endcan
+                                @can('denyQuote', $cotizacion)
+                                    <button id="btn-deny-quote" title="Devolver cotización" data-toggle="tooltip" class="btn bg-info bg-gradient text-white btn-quote">
+                                        <i class="fa-solid fa-thumbs-down"></i> Devolver cotización
+                                    </button>
+                                @endcan
 
-                            @can('sendQuote', $cotizacion)
-                                <button id="btn-send-quote" class="btn bg-info bg-gradient text-white btn-quote">
-                                    <i class="fa-solid fa-download"></i> Enviar cotización
-                                </button>
-                            @endcan
+                                @can('waitQuote', $cotizacion)
+                                    <button id="btn-wait-quote" title="Cotización se envió al cliente y está pendiente por aprobación" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
+                                        <i class="fa-regular fa-clock"></i> Pendiente aprobación
+                                    </button>
+                                @endcan
+
+                                @can('aproveQuote', $cotizacion)
+                                    <button id="btn-aprove-quote" title="Cliente reviso la cotización y la aprobó" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
+                                        <i class="fa-regular fa-circle-check"></i> Cotización aprobada cliente
+                                    </button>
+                                @endcan
+
+                                @can('rejectQuote', $cotizacion)
+                                    <button id="btn-reject-quote" title="Cliente rechazó la cotización" data-toggle="tooltip" class="btn bg-info bg-gradient text-white btn-quote">
+                                        <i class="fa-solid fa-xmark"></i> Cotización rechazada cliente
+                                    </button>
+                                @endcan
+
+                                @can('cancelQuote', $cotizacion)
+                                    <button id="btn-cancel-quote" title="Se cancela proceso de cotización" data-toggle="tooltip" class="btn btn-danger bg-gradient text-white btn-quote">
+                                        <i class="fa-solid fa-handshake-slash"></i> Cancelar cotización
+                                    </button>
+                                @endcan
+                            </div>
                         </div>
                     @endif
                 </div>
 
                 <div class="form-group col-12 col-md-6 co-lg-6 my-auto">
                     <div class="row fs-5">
-                        <label class="col-6 text-end">Total sin IVA:</label>
-                        <label id="lbl_total_sin_iva" class="col-6 text-end"></label>
-                        <label class="col-6 text-end">Total IVA:</label>
-                        <label id="lbl_total_iva" class="col-6 text-end"></label>
-                        <label class="col-6 text-end">Total con IVA:</label>
-                        <label id="lbl_total_con_iva" class="col-6 text-end"></label>
+                        <label class="col-4 col-sm-4 col-md-5 text-end">Total sin IVA:</label>
+                        <label id="lbl_total_sin_iva" class="col-8 col-sm-8 col-md-7 text-end border-bottom"></label>
+                        <label class="col-4 col-sm-4 col-md-5 text-end">Total IVA:</label>
+                        <label id="lbl_total_iva" class="col-8 col-sm-8 col-md-7 text-end border-bottom"></label>
+                        <label class="col-4 col-sm-4 col-md-5 text-end">Total con IVA:</label>
+                        <label id="lbl_total_con_iva" class="col-8 col-sm-8 col-md-7 text-end border-bottom"></label>
                     </div>
                 </div>
             </div>
@@ -371,5 +397,8 @@
     if(Object.keys(carrito).length) {
         drawItems(<?= $edit ? 'true' : 'false' ?>);
         $('#table-cotizaciones').removeClass('d-none');
+        table();
     }
+
+    flexTable();
 </script>

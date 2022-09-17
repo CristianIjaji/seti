@@ -121,7 +121,7 @@ class TblCotizacion extends Model
             session('id_dominio_cotizacion_creada') => 'bg-gradient',
             session('id_dominio_cotizacion_devuelta') => 'bg-table-warning bg-gradient text-dark fw-normal',
             session('id_dominio_cotizacion_revisada') => 'bg-table-info bg-gradient text-dark fw-normal',
-            session('id_dominio_cotizacion_enviada') => 'bg-table-success bg-gradient',
+            // session('id_dominio_cotizacion_enviada') => 'bg-table-success bg-gradient',
             session('id_dominio_cotizacion_pendiente_aprobacion') => 'bg-table-success bg-gradient',
             session('id_dominio_cotizacion_rechazada') => 'bg-gradient text-danger',
             session('id_dominio_cotizacion_cancelada') => 'bg-gradient text-danger',

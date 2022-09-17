@@ -9473,6 +9473,61 @@ var updateTextAreaSize = function updateTextAreaSize() {
   });
 };
 
+var responsiveTd = function responsiveTd(id, i) {
+  var clase = (i + 1) % 2 == 0 ? 'bg-light' : '';
+
+  if ($(window).width() <= 768) {
+    $("#".concat(id, " td:nth-child(").concat(i + 1, ")")).addClass(clase);
+    $("#".concat(id, " td.btn-delete-item > i")).addClass('text-white');
+    $("#".concat(id, " td.btn-delete-item")).addClass('btn bg-danger text-white').removeClass(clase);
+  } else {
+    $("#".concat(id, " td:nth-child(").concat(i + 1, ")")).removeClass('bg-light');
+    $("#".concat(id, " td.btn-delete-item > i")).removeClass('text-white');
+    $("#".concat(id, " td.btn-delete-item")).removeClass('btn bg-danger text-white');
+  }
+};
+
+window.table = function () {
+  $('.table-responsive-stack').each(function (i) {
+    var id = $(this).attr('id');
+    $("#".concat(id, " .table-responsive-stack-thead")).remove();
+    $(this).find("th").each(function (i) {
+      $("#".concat(id, " td:nth-child(").concat(i + 1, ")")).prepend("<span class=\"table-responsive-stack-thead\">".concat($(this).text(), "</span>"));
+      $('.table-responsive-stack-thead').hide();
+    });
+  });
+};
+
+window.flexTable = function () {
+  if ($(window).width() < 768) {
+    $(".table-responsive-stack").each(function (i) {
+      var id = $(this).attr('id');
+      $(this).find(".table-responsive-stack-thead").show();
+      $(this).find('thead').hide();
+      $(this).find("th").each(function (i) {
+        responsiveTd(id, i);
+      });
+    }); // window is less than 768px
+  } else {
+    $(".table-responsive-stack").each(function (i) {
+      var id = $(this).attr('id');
+      $(this).find(".table-responsive-stack-thead").hide();
+      $(this).find('thead').show();
+      $(this).find("th").each(function (i) {
+        responsiveTd(id, i);
+      });
+    });
+  } // flextable
+
+};
+
+flexTable();
+
+window.onresize = function (event) {
+  flexTable();
+}; // document ready
+
+
 window.drawItems = function () {
   var edit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
@@ -9489,7 +9544,7 @@ window.drawItems = function () {
         if (typeof element !== 'undefined' && _typeof(element) === 'object') {
           if (!$("#tr_".concat(type, "_").concat(index)).length) {
             var classname = "".concat($("#caret_".concat(type)).hasClass(showIcon) ? 'show' : '');
-            $("\n                            <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion collapse ").concat(classname, " item_").concat(type, "\">\n                                <td>\n                                    <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type, "\" />\n                                    <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                    <input type=\"text\" class=\"form-control text-center text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                                </td>\n                                <td>\n                                    <textarea class=\"form-control border-0\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(index, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                                </td>\n                                <td>\n                                    <input type=\"text\" class=\"form-control text-center border-0\" data-toggle=\"tooltip\" title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td>\n                                    <input type=\"number\" min=\"0\" class=\"form-control text-center border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td>\n                                    <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" data-toggle=\"tooltip\" title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td>\n                                    <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                                </td>\n                                ").concat(edit == true ? "<td class=\"text-center\"><i id=\"".concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>") : "", "\n                            </tr>\n                        ")).insertAfter("#tr_".concat(type));
+            $("\n                            <tr id=\"tr_".concat(type, "_").concat(index, "\" class=\"tr_cotizacion collapse ").concat(classname, " item_").concat(type, "\">\n                                <td class=\"col-1 my-auto\">\n                                    <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type, "\" />\n                                    <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(index, "\" />\n                                    <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(index, "\" value=\"").concat(element['item'], "\" disabled>\n                                </td>\n                                <td class=\"col-4 my-auto\">\n                                    <textarea class=\"form-control border-0\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(index, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                                </td>\n                                <td class=\"col-1 my-auto\">\n                                    <input type=\"text\" class=\"form-control text-md-center text-end border-0\" data-toggle=\"tooltip\" title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(index, "\" value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td class=\"col-1 my-auto\">\n                                    <input type=\"number\" min=\"0\" class=\"form-control text-end border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(index, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td class=\"col-2 my-auto\">\n                                    <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" data-toggle=\"tooltip\" title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(index, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                                </td>\n                                <td class=\"col-2 my-auto\">\n                                    <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" name=\"valor_total[]\" id=\"valor_total_").concat(index, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                                </td>\n                                ").concat(edit == true ? "<td id=\"".concat(type, "_").concat(index, "\" class=\"text-center col-1 my-auto btn-delete-item\"><i id=\"").concat(type, "_").concat(index, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>") : "", "\n                            </tr>\n                        ")).insertAfter("#tr_".concat(type));
             $('.money').inputmask(formatCurrency);
           } else {
             $("#tr_".concat(type, "_").concat(index, " #valor_total_").concat(index)).val(element['valor_total']);
@@ -9541,6 +9596,8 @@ var addItems = function addItems(items) {
       carrito[$(item).data('type')]['update'] = false;
       carrito[$(item).data('type')][$(item).val()] = getItem(item);
       drawItems();
+      table();
+      flexTable();
     }
   });
 };
@@ -9991,8 +10048,8 @@ $(document).on('click', '.btn-quote', function (e) {
   var data = new FormData(form[0]);
 
   switch ($(this).attr('id')) {
-    case 'btn-aprove-quote':
-      action = 'aprove';
+    case 'btn-check-quote':
+      action = 'check';
       title = "<h2 class='fw-bold text-success'>Aprobar cotizaci\xF3n</h2>";
       text = "\xBFSeguro quiere aprobar est\xE1 cotizaci\xF3n?";
       confirmButtonColor = "var(--bs-success)";
@@ -10007,12 +10064,36 @@ $(document).on('click', '.btn-quote', function (e) {
       confirmButtonText = "S\xED, regresar cotizaci\xF3n";
       break;
 
-    case 'btn-send-quote':
-      action = 'send';
-      title = "<h2 class='fw-bold text-info'>Enviar cotizaci\xF3n</h2>";
-      text = "\xBFSeguro quiere enviar la cotizaci\xF3n?";
-      confirmButtonColor = "var(--bs-info)";
-      confirmButtonText = "S\xED, enviar cotizaci\xF3n";
+    case 'btn-wait-quote':
+      action = 'wait';
+      title = "<h2 class='fw-bold text-success'>Cotizaci\xF3n pendiente aprobaci\xF3n</h2>";
+      text = "\xBFSeguro quiere dejar la cotizaci\xF3n en pendiente aprobaci\xF3n?";
+      confirmButtonColor = "var(--bs-success)";
+      confirmButtonText = "S\xED, dejar en Cotizaci\xF3n pendiente aprobaci\xF3n";
+      break;
+
+    case 'btn-aprove-quote':
+      action = 'aprove';
+      title = "<h2 class='fw-bold text-success'>Cotizaci\xF3n aprobada cliente</h2>";
+      text = "\xBFSeguro quiere dejar la cotizaci\xF3n en aprobada cliente?";
+      confirmButtonColor = "var(--bs-success)";
+      confirmButtonText = "S\xED, dejar en Cotizaci\xF3n aprobada cliente";
+      break;
+
+    case 'btn-reject-quote':
+      action = 'reject';
+      title = "<h2 class='fw-bold text-danger'>Cotizaci\xF3n rechazada</h2>";
+      text = "\xBFSeguro quiere dejar la cotizaci\xF3n rechazada?";
+      confirmButtonColor = "var(--bs-danger)";
+      confirmButtonText = "S\xED, dejar en Cotizaci\xF3n rechazada";
+      break;
+
+    case 'btn-cancel-quote':
+      action = 'cancel';
+      title = "<h2 class='fw-bold text-danger'>Cotizaci\xF3n cancelada</h2>";
+      text = "\xBFSeguro quiere cancelar la cotizaci\xF3n?";
+      confirmButtonColor = "var(--bs-danger)";
+      confirmButtonText = "S\xED, cancelar cotizaci\xF3n";
       break;
 
     default:
@@ -10020,6 +10101,48 @@ $(document).on('click', '.btn-quote', function (e) {
   }
 
   if (action === '') return false;
+
+  if (action === 'send') {
+    $.ajax({
+      xhrFields: {
+        responseType: 'blob'
+      },
+      type: 'GET',
+      url: "".concat(url_cotizacion, "/exportQuote?quote=").concat($('#id_cotizacion').val()),
+      beforeSend: function beforeSend() {
+        showLoader(true);
+      },
+      success: function success(result, status, xhr) {
+        var disposition = xhr.getResponseHeader('content-disposition');
+        var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+        var filename = (matches != null && matches[1] ? matches[1] : 'Reporte.xlsx').replace(/"/g, ''); // The actual download
+
+        var blob = new Blob([result], {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.text = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }).always(function () {
+      showLoader(false);
+    });
+    return false;
+  }
+
+  if (action === 'cancel') {
+    $('#comentario').removeClass('is-invalid');
+
+    if ($('#comentario').val().trim() === '') {
+      $('#comentario').addClass('is-invalid');
+      return false;
+    }
+  }
+
   data.append('action', action);
   data["delete"]('_method');
   Swal.fire({
