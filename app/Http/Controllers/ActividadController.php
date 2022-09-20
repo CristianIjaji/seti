@@ -71,7 +71,10 @@ class ActividadController extends Controller
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
             ])->where('id_responsable_cliente', '>', 0)->get(),
-
+            'clientes' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
         ]);
     }
 

@@ -26,13 +26,13 @@
                         <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
                             <select class="form-control" name="id_encargado_cliente" id="id_encargado_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
                                 <option value="">Elegir cliente</option>
-                                {{-- @foreach ($clientes as $cliente)
+                                @foreach ($clientes as $cliente)
                                     <option
                                         data-id_cliente="{{ (isset($cliente->tblterceroresponsable) ? $cliente->tblterceroresponsable->id_tercero : $cliente->id_tercero ) }}"
-                                        value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $cotizacion->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
+                                        value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $activity->id_encargado_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
                                         {{ $cliente->full_name }} {{ (isset($cliente->tblterceroresponsable) ? ' - '.$cliente->tblterceroresponsable->razon_social : '' ) }}
                                     </option>
-                                @endforeach --}}
+                                @endforeach
                             </select>
                         </div>
                         @if ($create_client)
