@@ -12,10 +12,9 @@ import Push from 'push.js';
 window.Pusher = require('pusher-js');
 
 import moment from 'moment';
-// import typeaheadBundle from 'typeahead.js';
+import { TempusDominus, Namespace } from '@eonasdan/tempus-dominus';
 
 const Swal = require('sweetalert2');
-const tempusDominus = require('@eonasdan/tempus-dominus');
 
 require('inputmask/dist/jquery.inputmask');
 require('bootstrap-fileinput/js/fileinput.min.js');
@@ -90,7 +89,11 @@ const createChannel = (evento, canal, text, location, urlGrid, formData, audio =
 window.listener = (canal) => {
     createChannel('quote-created', canal, "Revisar cotización!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
     createChannel('quote-deny', canal, "Cotización devuelta!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+    createChannel('quote-check', canal, "Cotización revisada!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+    createChannel('quote-wait', canal, "Cotización en espera de aprobación!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
     createChannel('quote-aprove', canal, "Cotización aprobada!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+    createChannel('quote-reject', canal, "Cotización rechazada por cliente!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+    createChannel('quote-cancel', canal, "Cotización cancelada!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
 }
 
 window.closeConnection = () => {
@@ -111,29 +114,68 @@ window.timer = () => {
     setTimeout(timer, 1000);
 }
 
-window.datePicker = (minDate = null) => {
-    $('.input-date input').each((i, element) => {
-        let initialDate = $(element).val();
-        (minDate !== null
-            ? setupDatePicker(element, initialDate, false, false, minDate)
-            : setupDatePicker(element, initialDate, false, false)
-        );
+window.datePicker = () => {
+    let setup = {
+        localization: {
+            locale: 'es',
+            dayViewHeaderFormat: { month: 'long', year: 'numeric' },
+        },
+    };
 
-        $(element).val(initialDate);
-        // $(element).addClass('datetimepicker-input');
+    $('.input-date input').each((i, element) => {
+        let initialDate = (typeof $(element).data('default-date') !== 'undefined' ? $(element).data('default-date') : '');
+        let format = (typeof $(element).data('format') !== 'undefined' ? $(element).data('format') : 'YYYY-MM-DD');
+        let minDate = (typeof $(element).data('minDate') !== 'undefined' ? $(element).data('minDate') : '');
+        let maxDate = (typeof $(element).data('max-date') !== 'undefined' ? $(element).data('max-date') : '');
+        let useCurrent = (initialDate === '' ? true : false);
+
+        setup.display = {
+            components: {
+                clock: false,
+                calendar: true
+            },
+            buttons: {
+                clear: true,
+                today: true,
+            },
+            keepOpen: false,
+            viewMode: 'calendar'
+        };
+
+        if(!useCurrent && initialDate !== '') {
+            setup.defaultDate = moment(initialDate, 'YYYY-MM-DD').add(12, 'hour').format();
+        }
+
+        if(minDate !== '') {
+            setup.restrictions = {
+                minDate: moment(minDate, 'YYYY-MM-DD', true).format()
+            };
+        }
+
+        if(maxDate !== '') {
+            setup.restrictions = {
+                maxDate: moment(maxDate, 'YYYY-MM-DD', true).add(1, 'day').format()
+            };
+        }
+
+        setupDatePicker(element, setup, format);
     });
 
+    $('.input-months input').each((i, element) => { });
+
+    /*
     let picker1, picker2;
     $('.input-daterange input').each((i, element) => {
+        let format = (typeof $(element).data('format') !== 'undefined' ? $(element).data('format') : 'YYYY-MM-DD');
         if(i == 0) {
             picker1 = (minDate !== null
-                ? setupDatePicker(element, '', false, true, minDate)
-                : setupDatePicker(element, '', false, true));
+                ? setupDatePicker(element, '', false, true, format, minDate)
+                : setupDatePicker(element, '', false, true, format));
         }
         if(i== 1) {
             picker2 = (minDate !== null
-                ? setupDatePicker(element, '', false, false, minDate)
-                : setupDatePicker(element, '', false, false));
+                ? setupDatePicker(element, '', false, false, format, minDate)
+                : setupDatePicker(element, '', false, false, format));
 
             picker1.subscribe(tempusDominus.Namespace.events.change, (e) => {
                 picker2.updateOptions({
@@ -182,10 +224,11 @@ window.datePicker = (minDate = null) => {
     });
 
     $('.input-datetimerange input').each((i, element) => {
+        let format = (typeof $(element).data('format') !== 'undefined' ? $(element).data('format') : 'YYYY-MM-DD');
         if(i == 0) {
             picker1 = (minDate !== null
-                ? setupDatePicker(element, '', true, false, minDate)
-                : setupDatePicker(element, '', true, false)
+                ? setupDatePicker(element, '', true, false, format, minDate)
+                : setupDatePicker(element, '', true, false, format)
             );
         }
         if(i== 1) {
@@ -238,11 +281,27 @@ window.datePicker = (minDate = null) => {
                 });
             });
         }
-    });
+    });*/
 }
 
-const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
-    let picker = new tempusDominus.TempusDominus(element, {
+const setupDatePicker = (element, setup, format) => {
+    let picker = new TempusDominus(element, setup);
+
+    picker.subscribe(Namespace.events.hide, (event) => {
+        $(element).trigger('change');
+    });
+
+    picker.dates.formatInput = (date) => {
+        return moment(date).format(format);
+    }
+
+    if(setup.defaultDate) {
+        let parseDate = picker.dates.parseInput(new Date(setup.defaultDate));
+        picker.dates.setValue(parseDate, picker.dates.lastPickedIndex);
+    }
+    
+    /*
+    let picker = new TempusDominus(element, {
         useCurrent,
         localization: {
             locale: 'es',
@@ -250,30 +309,33 @@ const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
         },
         display: {
             components: {
-                clock: clock,
+                // clock: clock,
+                calendar: true
             },
             buttons: {
                 clear: true,
                 today: true,
             },
             keepOpen: false,
+            viewMode: 'months'
         },
-        restrictions: {
-            minDate
-        }
+        // restrictions: {
+        //     minDate: minDate,
+        //     maxDate: maxDate
+        // },
     });
 
     // picker.clear();
 
     picker.dates.formatInput = (date) => {
         return (date !== undefined && date !== null
-            ? clock ? moment(date, 'h:mm:ss A').format('YYYY-MM-DD HH:mm') : moment(date).format('YYYY-MM-DD')
+            ? clock ? moment(date, 'h:mm:ss A').format('YYYY-MM-DD HH:mm') : moment(date).format(format)
             : null
         );
     };
 
     if(initialDate !== '') {
-        picker.dates.setValue(new tempusDominus.DateTime(moment(initialDate).add(1, 'days').format('YYYY-MM-DD')))
+        picker.dates.setValue(new tempusDominus.DateTime(moment(initialDate).add(1, 'days').format(format)))
     }
 
     picker.subscribe(tempusDominus.Namespace.events.hide, (event) => {
@@ -283,7 +345,6 @@ const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
     });
 
     $(element).focus(() => {
-        // picker.dispose();
         picker.show();
     });
 
@@ -292,6 +353,7 @@ const setupDatePicker = (element, initialDate, clock, useCurrent, minDate) => {
         // picker.hide();
     });
 
+    */
     return picker;
 }
 

@@ -11,6 +11,7 @@ use App\Models\TblEstadoCotizacion;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -74,12 +75,6 @@ class CotizacionController extends Controller
                     'tbl_cotizaciones.id_usuareg' => Auth::user()->id_usuario
                 ]);
             }
-            // $querybuilder->where('id_responsable_cliente', '=', Auth::user()->id_tercero);
-            // $querybuilder->orwhere('id_usuareg', '=', Auth::user()->id_tercero);
-
-            // $querybuilder->where('tbl_cotizaciones.estado', '=', session('id_dominio_cotizacion_creada'));
-            // if(Auth::user()->role == session('id_dominio_coordinador')) {
-                // }
         }
 
         return $querybuilder;
@@ -345,7 +340,7 @@ class CotizacionController extends Controller
                         [session('id_dominio_cotizacion_creada')],
                         session('id_dominio_cotizacion_revisada'),
                         'Cotización aprobada!',
-                        'quote-aprove'
+                        'quote-check'
                     );
                     break;
                 case 'deny':
@@ -368,6 +363,7 @@ class CotizacionController extends Controller
                         ? request()->comentario
                         : "Cotización enviada al cliente."
                     );
+                    $quote->fecha_envio = Carbon::now();
                     $response = $this->updateQuote(
                         $quote,
                         [session('id_dominio_cotizacion_revisada')],
@@ -505,6 +501,7 @@ class CotizacionController extends Controller
                     ? $id_usuario
                     : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
                 );
+
                 $this->sendNotification($quote, $channel, $notification);
             }
 

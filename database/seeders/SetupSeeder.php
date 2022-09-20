@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\TblConsolidado;
 use App\Models\TblCotizacion;
 use App\Models\TblDominio;
 use App\Models\TblFactura;
@@ -105,6 +106,7 @@ class SetupSeeder extends Seeder
             </html>
         ';
 
+        TblConsolidado::truncate();
         TblHallazgo::truncate();
         TblFactura::truncate();
         TblOrdenCompra::truncate();
@@ -846,11 +848,19 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario
             ]);
+            $menuConsolidados = TblMenu::create([
+                'url' => 'deals.index',
+                'icon' => 'fa-solid fa-handshake nav_icon',
+                'nombre' => 'Consolidados',
+                'orden' => 6,
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario
+            ]);
             $menuUsuarios = TblMenu::create([
                 'url' => 'users.index',
                 'icon' => 'fa-solid fa-chalkboard-user nav_icon',
                 'nombre' => 'Usuarios',
-                'orden' => 6,
+                'orden' => 7,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -858,7 +868,7 @@ class SetupSeeder extends Seeder
                 'url' => 'profiles.index',
                 'icon' => 'fa-solid fa-list-check nav_icon',
                 'nombre' => 'Perfiles',
-                'orden' => 7,
+                'orden' => 8,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -866,7 +876,7 @@ class SetupSeeder extends Seeder
                 'url' => 'domains.index',
                 'icon' => 'fa-solid fa-screwdriver nav_icon',
                 'nombre' => 'Dominios',
-                'orden' => 8,
+                'orden' => 9,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -874,7 +884,7 @@ class SetupSeeder extends Seeder
                 'url' => 'params.index',
                 'icon' => 'fa-solid fa-sliders nav_icon',
                 'nombre' => 'Parámetros',
-                'orden' => 9,
+                'orden' => 10,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -919,6 +929,15 @@ class SetupSeeder extends Seeder
             ]);
             TblMenuTipoTercero::create([
                 'id_menu' => $menuActividades->id_menu,
+                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
+                'crear' => true,
+                'editar' => true,
+                'ver' => true,
+                'importar' => true,
+                'exportar' => true
+            ]);
+            TblMenuTipoTercero::create([
+                'id_menu' => $menuConsolidados->id_menu,
                 'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
                 'crear' => true,
                 'editar' => true,

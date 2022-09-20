@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActividadController;
+use App\Http\Controllers\ConsolidadoController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
 use App\Http\Controllers\EstadoCotizacionController;
@@ -69,6 +70,11 @@ Route::post('statequotes/grid', [EstadoCotizacionController::class, 'grid'])->na
 // Controlador de actividades
 Route::resource('activities', ActividadController::class);
 Route::post('activities/grid', [ActividadController::class, 'grid'])->name('activities.grid');
+
+
+// Controlador de consolidado
+Route::resource('deals', ConsolidadoController::class);
+Route::post('deals/grid', [ConsolidadoController::class, 'grid'])->name('deals.grid');
 
 // Controlador usuarios
 Route::resource('users', UsuarioController::class);

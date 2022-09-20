@@ -18,7 +18,7 @@
             <label for="id_cliente" class="required">Cliente</label>
             @if ($edit)
                 <div class="row">
-                    <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
+                    <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
                         <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir cliente</option>
                             @foreach ($clientes as $cliente)
@@ -29,7 +29,7 @@
                         </select>
                     </div>
                     @if ($create_client)
-                        <div class="col-2 text-end">
+                        <div class="col-2 col-md-1 text-end">
                             <i
                                 class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
                                 data-title="Nuevo cliente"

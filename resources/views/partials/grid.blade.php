@@ -138,7 +138,7 @@
                     @forelse ($headers as $header)
                         <td 
                             data-value="{{ $model[$header['name']] }}"
-                            class="align-middle {{ isset($header['align']) ? $header['align'] : '' }}{{ isset($header['col']) ? $header['col'] : '' }}{{ isset($header['class']) && isset($status) ? $header['class'] : '' }}">
+                            class="align-middle {{ isset($header['align']) ? $header['align'] : '' }} {{ isset($header['col']) ? $header['col'] : '' }} {{ isset($header['class']) && isset($status) ? $header['class'] : '' }}">
                             @if (isset($model[$header['name']]))
                                 @if (!isset($header['options']))
                                     @if (!isset($header['foreign']))

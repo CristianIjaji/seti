@@ -22,8 +22,7 @@
                 <button class="nav-link" id="track-tab" data-bs-toggle="tab" data-bs-target="#track" type="button" role="tab" aria-controls="track" aria-selected="true">Seguimiento</button>
             </li>
         </ul>
-    @endif
-    @if (!$create)
+
         <div class="tab-content pt-3" id="quotesTab">
             <div class="tab-pane fade show active" id="quotes" role="tabpanel" aria-labelledby="quotes-tab">    
     @endif
@@ -123,7 +122,7 @@
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-date">
                     <label for="fecha_solicitud" class="required">Fecha solicitud</label>
-                    <input type="text" class="form-control" @if ($edit) name="fecha_solicitud" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $cotizacion->fecha_solicitud) }}" @if ($edit) required @else disabled @endif readonly>
+                    <input type="text" class="form-control" data-max-date="{{ date('Y-m-d') }}" @if ($edit) name="fecha_solicitud" data-default-date="{{ $cotizacion->fecha_solicitud }}" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $cotizacion->fecha_solicitud) }}" @if ($edit) required @else disabled @endif readonly>
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                     <label for="id_prioridad" class="required">Prioridad</label>

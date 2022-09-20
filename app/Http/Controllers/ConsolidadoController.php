@@ -2,11 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Consolidado;
+use App\Models\TblConsolidado;
+use App\Models\TblTercero;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ConsolidadoController extends Controller
 {
+    protected $filtros;
+    protected $excel;
+
+    public function __construct(Excel $excel)
+    {
+        $this->middleware('auth');
+        $this->excel = $excel;
+    }
+
+    private function dinamyFilters($querybuilder) {
+        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
+
+        foreach (request()->all() as $key => $value) {
+            if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
+                $operador = [];
+
+                foreach ($operadores as $item) {
+                    $operador = explode($item, trim($value));
+
+                    if(count($operador) > 1){
+                        $operador[0] = $item;
+                        break;
+                    }
+                }
+            }
+            $this->filtros[$key] = $value;
+        }
+
+        return $querybuilder;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +48,8 @@ class ConsolidadoController extends Controller
      */
     public function index()
     {
-        //
+        $this->authorize('view', new TblConsolidado);
+        return $this->getView('consolidados.index');
     }
 
     /**
@@ -24,7 +59,15 @@ class ConsolidadoController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', new TblConsolidado);
+
+        return view('consolidados._form', [
+            'consolidado' => new TblConsolidado,
+            'clientes' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
+        ]);
     }
 
     /**
@@ -44,7 +87,7 @@ class ConsolidadoController extends Controller
      * @param  \App\Models\Consolidado  $consolidado
      * @return \Illuminate\Http\Response
      */
-    public function show(Consolidado $consolidado)
+    public function show(TblConsolidado $consolidado)
     {
         //
     }
@@ -55,7 +98,7 @@ class ConsolidadoController extends Controller
      * @param  \App\Models\Consolidado  $consolidado
      * @return \Illuminate\Http\Response
      */
-    public function edit(Consolidado $consolidado)
+    public function edit(TblConsolidado $consolidado)
     {
         //
     }
@@ -67,7 +110,7 @@ class ConsolidadoController extends Controller
      * @param  \App\Models\Consolidado  $consolidado
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Consolidado $consolidado)
+    public function update(Request $request, TblConsolidado $consolidado)
     {
         //
     }
@@ -78,8 +121,27 @@ class ConsolidadoController extends Controller
      * @param  \App\Models\Consolidado  $consolidado
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Consolidado $consolidado)
+    public function destroy(TblConsolidado $consolidado)
     {
         //
+    }
+
+    public function grid() {
+        return $this->getView('consolidados.grid');
+    }
+
+    private function getView($view) {
+        $consolidado = new TblConsolidado;
+
+        return view($view, [
+            'model' => TblConsolidado::where(function ($q) {
+                $this->dinamyFilters($q);
+            })->orderBy('id_consolidado', 'desc')->paginate(10),
+
+            'create' => Gate::allows('create', $consolidado),
+            'edit' => Gate::allows('update', $consolidado),
+            'view' => Gate::allows('view', $consolidado),
+            'request' => $this->filtros
+        ]);
     }
 }

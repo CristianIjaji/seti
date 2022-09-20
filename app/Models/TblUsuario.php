@@ -99,6 +99,7 @@ class TblUsuario extends Authenticatable
             ->join('tbl_menus as m', 't.id_menu', '=', 'm.id_menu')
             ->select('m.url', 'm.icon', 'm.nombre')
             ->where(['m.estado' => 1, 't.id_tipo_tercero' => Auth::user()->role])
+            ->orderBy('orden', 'asc')
             ->get();
     }
 

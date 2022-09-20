@@ -9063,6 +9063,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var push_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(push_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _eonasdan_tempus_dominus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @eonasdan/tempus-dominus */ "./node_modules/@eonasdan/tempus-dominus/dist/js/tempus-dominus.esm.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 /**
@@ -9077,11 +9078,10 @@ __webpack_require__(/*! ./multiselect.min */ "./resources/js/multiselect.min.js"
 
 
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
- // import typeaheadBundle from 'typeahead.js';
+
+
 
 var Swal = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/dist/sweetalert2.all.js");
-
-var tempusDominus = __webpack_require__(/*! @eonasdan/tempus-dominus */ "./node_modules/@eonasdan/tempus-dominus/dist/js/tempus-dominus.esm.js");
 
 __webpack_require__(/*! inputmask/dist/jquery.inputmask */ "./node_modules/inputmask/dist/jquery.inputmask.js");
 
@@ -9158,7 +9158,11 @@ var createChannel = function createChannel(evento, canal, text, location, urlGri
 window.listener = function (canal) {
   createChannel('quote-created', canal, "Revisar cotización!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
   createChannel('quote-deny', canal, "Cotización devuelta!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+  createChannel('quote-check', canal, "Cotización revisada!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+  createChannel('quote-wait', canal, "Cotización en espera de aprobación!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
   createChannel('quote-aprove', canal, "Cotización aprobada!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+  createChannel('quote-reject', canal, "Cotización rechazada por cliente!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
+  createChannel('quote-cancel', canal, "Cotización cancelada!", url_cotizacion, url_cotizacion, form_cotizacion, 'sounds/notification1.mp3');
 };
 
 window.closeConnection = function () {
@@ -9178,174 +9182,232 @@ window.timer = function () {
 };
 
 window.datePicker = function () {
-  var minDate = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-  $('.input-date input').each(function (i, element) {
-    var initialDate = $(element).val();
-    minDate !== null ? setupDatePicker(element, initialDate, false, false, minDate) : setupDatePicker(element, initialDate, false, false);
-    $(element).val(initialDate); // $(element).addClass('datetimepicker-input');
-  });
-  var picker1, picker2;
-  $('.input-daterange input').each(function (i, element) {
-    if (i == 0) {
-      picker1 = minDate !== null ? setupDatePicker(element, '', false, true, minDate) : setupDatePicker(element, '', false, true);
-    }
-
-    if (i == 1) {
-      picker2 = minDate !== null ? setupDatePicker(element, '', false, false, minDate) : setupDatePicker(element, '', false, false);
-      picker1.subscribe(tempusDominus.Namespace.events.change, function (e) {
-        picker2.updateOptions({
-          restrictions: {
-            minDate: e.date
-          },
-          localization: {
-            locale: 'es',
-            dayViewHeaderFormat: {
-              month: 'long',
-              year: 'numeric'
-            }
-          },
-          display: {
-            components: {
-              clock: false
-            },
-            buttons: {
-              clear: true,
-              today: true
-            },
-            keepOpen: false
-          }
-        });
-      });
-      picker2.subscribe(tempusDominus.Namespace.events.change, function (e) {
-        picker1.updateOptions({
-          restrictions: {
-            maxDate: e.date
-          },
-          localization: {
-            locale: 'es',
-            dayViewHeaderFormat: {
-              month: 'long',
-              year: 'numeric'
-            }
-          },
-          display: {
-            components: {
-              clock: false
-            },
-            buttons: {
-              clear: true,
-              today: true
-            },
-            keepOpen: false
-          }
-        });
-      });
-    }
-  });
-  $('.input-datetimerange input').each(function (i, element) {
-    if (i == 0) {
-      picker1 = minDate !== null ? setupDatePicker(element, '', true, false, minDate) : setupDatePicker(element, '', true, false);
-    }
-
-    if (i == 1) {
-      picker2 = minDate !== null ? setupDatePicker(element, '', true, false, minDate) : setupDatePicker(element, '', true, false);
-      picker1.subscribe(tempusDominus.Namespace.events.change, function (e) {
-        picker2.updateOptions({
-          localization: {
-            locale: 'es',
-            dayViewHeaderFormat: {
-              month: 'long',
-              year: 'numeric'
-            }
-          },
-          display: {
-            components: {
-              clock: true
-            },
-            buttons: {
-              clear: true,
-              today: true
-            },
-            keepOpen: false
-          },
-          restrictions: {
-            minDate: e.date
-          }
-        });
-      });
-      picker2.subscribe(tempusDominus.Namespace.events.change, function (e) {
-        picker1.updateOptions({
-          localization: {
-            locale: 'es',
-            dayViewHeaderFormat: {
-              month: 'long',
-              year: 'numeric'
-            }
-          },
-          display: {
-            components: {
-              clock: true
-            },
-            buttons: {
-              clear: true,
-              today: true
-            },
-            keepOpen: false
-          },
-          restrictions: {
-            maxDate: e.date
-          }
-        });
-      });
-    }
-  });
-};
-
-var setupDatePicker = function setupDatePicker(element, initialDate, clock, useCurrent, minDate) {
-  var picker = new tempusDominus.TempusDominus(element, {
-    useCurrent: useCurrent,
+  var setup = {
     localization: {
       locale: 'es',
       dayViewHeaderFormat: {
         month: 'long',
         year: 'numeric'
       }
-    },
-    display: {
+    }
+  };
+  $('.input-date input').each(function (i, element) {
+    var initialDate = typeof $(element).data('default-date') !== 'undefined' ? $(element).data('default-date') : '';
+    var format = typeof $(element).data('format') !== 'undefined' ? $(element).data('format') : 'YYYY-MM-DD';
+    var minDate = typeof $(element).data('minDate') !== 'undefined' ? $(element).data('minDate') : '';
+    var maxDate = typeof $(element).data('max-date') !== 'undefined' ? $(element).data('max-date') : '';
+    var useCurrent = initialDate === '' ? true : false;
+    setup.display = {
       components: {
-        clock: clock
+        clock: false,
+        calendar: true
       },
       buttons: {
         clear: true,
         today: true
       },
-      keepOpen: false
-    },
-    restrictions: {
-      minDate: minDate
+      keepOpen: false,
+      viewMode: 'calendar'
+    };
+
+    if (!useCurrent && initialDate !== '') {
+      setup.defaultDate = moment__WEBPACK_IMPORTED_MODULE_1___default()(initialDate, 'YYYY-MM-DD').add(12, 'hour').format();
     }
-  }); // picker.clear();
+
+    if (minDate !== '') {
+      setup.restrictions = {
+        minDate: moment__WEBPACK_IMPORTED_MODULE_1___default()(minDate, 'YYYY-MM-DD', true).format()
+      };
+    }
+
+    if (maxDate !== '') {
+      setup.restrictions = {
+        maxDate: moment__WEBPACK_IMPORTED_MODULE_1___default()(maxDate, 'YYYY-MM-DD', true).add(1, 'day').format()
+      };
+    }
+
+    setupDatePicker(element, setup, format);
+  });
+  $('.input-months input').each(function (i, element) {});
+  /*
+  let picker1, picker2;
+  $('.input-daterange input').each((i, element) => {
+      let format = (typeof $(element).data('format') !== 'undefined' ? $(element).data('format') : 'YYYY-MM-DD');
+      if(i == 0) {
+          picker1 = (minDate !== null
+              ? setupDatePicker(element, '', false, true, format, minDate)
+              : setupDatePicker(element, '', false, true, format));
+      }
+      if(i== 1) {
+          picker2 = (minDate !== null
+              ? setupDatePicker(element, '', false, false, format, minDate)
+              : setupDatePicker(element, '', false, false, format));
+            picker1.subscribe(tempusDominus.Namespace.events.change, (e) => {
+              picker2.updateOptions({
+                  restrictions: {
+                      minDate: e.date
+                  },
+                  localization: {
+                      locale: 'es',
+                      dayViewHeaderFormat: { month: 'long', year: 'numeric' }
+                  },
+                  display: {
+                      components: {
+                          clock: false,
+                      },
+                      buttons: {
+                          clear: true,
+                          today: true
+                      },
+                      keepOpen: false,
+                  },
+              });
+          });
+            picker2.subscribe(tempusDominus.Namespace.events.change, (e) => {
+              picker1.updateOptions({
+                  restrictions: {
+                      maxDate: e.date
+                  },
+                  localization: {
+                      locale: 'es',
+                      dayViewHeaderFormat: { month: 'long', year: 'numeric' }
+                  },
+                  display: {
+                      components: {
+                          clock: false,
+                      },
+                      buttons: {
+                          clear: true,
+                          today: true
+                      },
+                      keepOpen: false,
+                  },
+              });
+          });
+      }
+  });
+    $('.input-datetimerange input').each((i, element) => {
+      let format = (typeof $(element).data('format') !== 'undefined' ? $(element).data('format') : 'YYYY-MM-DD');
+      if(i == 0) {
+          picker1 = (minDate !== null
+              ? setupDatePicker(element, '', true, false, format, minDate)
+              : setupDatePicker(element, '', true, false, format)
+          );
+      }
+      if(i== 1) {
+          picker2 = (minDate !== null
+              ? setupDatePicker(element, '', true, false, minDate)
+              : setupDatePicker(element, '', true, false)
+          );
+            picker1.subscribe(tempusDominus.Namespace.events.change, (e) => {
+              picker2.updateOptions({
+                  localization: {
+                      locale: 'es',
+                      dayViewHeaderFormat: { month: 'long', year: 'numeric' },
+                  },
+                  display: {
+                      components: {
+                          clock: true,
+                      },
+                      buttons: {
+                          clear: true,
+                          today: true
+                      },
+                      keepOpen: false,
+                  },
+                  restrictions: {
+                      minDate: e.date
+                  },
+              });
+          });
+            picker2.subscribe(tempusDominus.Namespace.events.change, (e) => {
+              picker1.updateOptions({
+                  localization: {
+                      locale: 'es',
+                      dayViewHeaderFormat: { month: 'long', year: 'numeric' },
+                  },
+                  display: {
+                      components: {
+                          clock: true,
+                      },
+                      buttons: {
+                          clear: true,
+                          today: true
+                      },
+                      keepOpen: false,
+                  },
+                  restrictions: {
+                      maxDate: e.date
+                  },
+              });
+          });
+      }
+  });*/
+};
+
+var setupDatePicker = function setupDatePicker(element, setup, format) {
+  var picker = new _eonasdan_tempus_dominus__WEBPACK_IMPORTED_MODULE_2__.TempusDominus(element, setup);
+  picker.subscribe(_eonasdan_tempus_dominus__WEBPACK_IMPORTED_MODULE_2__.Namespace.events.hide, function (event) {
+    $(element).trigger('change');
+  });
 
   picker.dates.formatInput = function (date) {
-    return date !== undefined && date !== null ? clock ? moment__WEBPACK_IMPORTED_MODULE_1___default()(date, 'h:mm:ss A').format('YYYY-MM-DD HH:mm') : moment__WEBPACK_IMPORTED_MODULE_1___default()(date).format('YYYY-MM-DD') : null;
+    return moment__WEBPACK_IMPORTED_MODULE_1___default()(date).format(format);
   };
 
-  if (initialDate !== '') {
-    picker.dates.setValue(new tempusDominus.DateTime(moment__WEBPACK_IMPORTED_MODULE_1___default()(initialDate).add(1, 'days').format('YYYY-MM-DD')));
+  if (setup.defaultDate) {
+    var parseDate = picker.dates.parseInput(new Date(setup.defaultDate));
+    picker.dates.setValue(parseDate, picker.dates.lastPickedIndex);
   }
+  /*
+  let picker = new TempusDominus(element, {
+      useCurrent,
+      localization: {
+          locale: 'es',
+          dayViewHeaderFormat: { month: 'long', year: 'numeric' },
+      },
+      display: {
+          components: {
+              // clock: clock,
+              calendar: true
+          },
+          buttons: {
+              clear: true,
+              today: true,
+          },
+          keepOpen: false,
+          viewMode: 'months'
+      },
+      // restrictions: {
+      //     minDate: minDate,
+      //     maxDate: maxDate
+      // },
+  });
+    // picker.clear();
+    picker.dates.formatInput = (date) => {
+      return (date !== undefined && date !== null
+          ? clock ? moment(date, 'h:mm:ss A').format('YYYY-MM-DD HH:mm') : moment(date).format(format)
+          : null
+      );
+  };
+    if(initialDate !== '') {
+      picker.dates.setValue(new tempusDominus.DateTime(moment(initialDate).add(1, 'days').format(format)))
+  }
+    picker.subscribe(tempusDominus.Namespace.events.hide, (event) => {
+      if(picker.dates.lastPicked !== undefined) {
+          $(element).trigger('change');
+      }
+  });
+    $(element).focus(() => {
+      picker.show();
+  });
+    $(element).blur(() => {
+      // $(element).trigger('change');
+      // picker.hide();
+  });
+    */
 
-  picker.subscribe(tempusDominus.Namespace.events.hide, function (event) {
-    if (picker.dates.lastPicked !== undefined) {
-      $(element).trigger('change');
-    }
-  });
-  $(element).focus(function () {
-    // picker.dispose();
-    picker.show();
-  });
-  $(element).blur(function () {// $(element).trigger('change');
-    // picker.hide();
-  });
+
   return picker;
 };
 
