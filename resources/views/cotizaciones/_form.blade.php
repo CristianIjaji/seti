@@ -168,7 +168,7 @@
                                             {{ $contratista->full_name }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
                                         </option>
                                     @empty
-                                        <option value="">Elegir contratista</option>
+                                        <option value="">Elegir aprobador</option>
                                     @endforelse
                                 </select>
                             </div>
@@ -176,14 +176,14 @@
                                 <div class="col-2 text-end">
                                     <i
                                         class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
-                                        data-title="Nuevo contratista"
+                                        data-title="Nuevo aprobador"
                                         data-size='modal-xl'
                                         data-reload="false"
                                         data-select="id_responsable"
                                         data-action='{{ route('clients.create', "tipo_tercero=".session('id_dominio_coordinador')."") }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
-                                        title="Crear contratista"
+                                        title="Crear aprobador"
                                     ></i>
                                 </div>
                             @endif

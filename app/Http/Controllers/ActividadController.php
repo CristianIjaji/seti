@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveActividadRequest;
 use App\Models\TblActividad;
+use App\Models\TblTercero;
+use App\Models\TblUsuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -63,6 +65,13 @@ class ActividadController extends Controller
 
         return view('actividades._form', [
             'activity' => new TblActividad,
+            'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
+            'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
+            'contratistas' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
+
         ]);
     }
 

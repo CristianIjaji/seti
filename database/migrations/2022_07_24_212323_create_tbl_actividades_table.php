@@ -17,7 +17,7 @@ class CreateTblActividadesTable extends Migration
             $table->bigIncrements('id_actividad');
             $table->string('ot')->uniqid();
             $table->unsignedBigInteger('id_tipo_actividad');
-            $table->unsignedBigInteger("id_subsistema");
+            $table->unsignedBigInteger("id_subsistema")->nullable();
             $table->text('descripcion');
             $table->unsignedBigInteger('id_encargado_cliente');
             $table->unsignedBigInteger('id_resposable_contratista');
