@@ -79,6 +79,7 @@ class ActividadController extends Controller
             ])->where('id_responsable_cliente', '>', 0)->get(),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
+            'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas')),
             'cotizaciones' => TblCotizacion::where(['estado' => session('id_dominio_cotizacion_aprobada')])->get(),
         ]);
     }
