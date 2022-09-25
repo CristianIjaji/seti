@@ -209,6 +209,13 @@ class SetupSeeder extends Seeder
             'estado' => 1,
             'id_usuareg' => $user->id_usuario
         ]);
+
+        $lista_subsistemas = TblDominio::create([
+            'nombre' => 'Listado de los subsistemas',
+            'descripcion' => 'Listado de los subsistemas',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
         
         /* Creacioón dominios hijos tipo documentos */
             $cedula = TblDominio::create([
@@ -544,6 +551,23 @@ class SetupSeeder extends Seeder
             ]);
         /* Fin creación dominios hijos tipo de prioridad */
 
+        /* Creación dominios hijos tipos de subsistemas */
+            TblDominio::create([
+                'nombre' => 'Motogenerador',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Motogenerador',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Aires acondicionados',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Aires acondicionados',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creación dominios hijos tipos de subsistemas */
+
         /* Creación parametros */
             // Creación parametro tipo documentos
             TblParametro::create([
@@ -787,6 +811,13 @@ class SetupSeeder extends Seeder
                 'llave' => 'id_dominio_nit',
                 'valor' => $nit->id_dominio,
                 'descripcion' => 'id_dominio_nit',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro lista subsistemas
+            TblParametro::create([
+                'llave' => 'id_dominio_subsistemas',
+                'valor' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'id_dominio_subsistemas',
                 'id_usuareg' => $user->id_usuario
             ]);
         /* Fin creación parametros */

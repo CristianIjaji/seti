@@ -1093,8 +1093,8 @@ $(document).on('change', '.txt-cotizaciones', function() {
     fnc_totales_cot($(this).parent().parent().attr('id'));
 });
 
-$(document).on('change', '#id_cliente_cotizacion', function() {    
-    if(typeof $(this).closest('form').attr('action') !== 'undefined' && $(this).closest('form').attr('action').indexOf(url_cotizacion) > -1) {
+$(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', function() {    
+    if(typeof $(this).closest('form').attr('action') !== 'undefined') {
         $('#table-cotizaciones').addClass('d-none');
 
         $('#id_estacion').empty();
