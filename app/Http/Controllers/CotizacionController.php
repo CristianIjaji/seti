@@ -529,4 +529,9 @@ class CotizacionController extends Controller
         $cotizacion = TblCotizacion::with(['tblEstacion'])->where(['id_cotizacion' => request()->quote])->get();
         return $this->excel->download(new CotizacionExport($cotizacion), "Cotizacion.xlsx");
     }
+
+    public function getCotizacion(TblCotizacion $quote) {
+        $quote->estacion = $quote->tblEstacion->nombre;
+        return $quote;
+    }
 }

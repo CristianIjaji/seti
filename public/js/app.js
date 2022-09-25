@@ -10047,8 +10047,9 @@ $(document).on('keyup', '.txt-cotizaciones', function () {
 $(document).on('change', '.txt-cotizaciones', function () {
   fnc_totales_cot($(this).parent().parent().attr('id'));
 });
+var consultar = true;
 $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', function () {
-  if (typeof $(this).closest('form').attr('action') !== 'undefined') {
+  if (typeof $(this).closest('form').attr('action') !== 'undefined' && consultar) {
     $('#table-cotizaciones').addClass('d-none');
     $('#id_estacion').empty();
     $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
@@ -10271,6 +10272,43 @@ $(document).on('click', '.btn-quote', function (e) {
       return false;
     }
   });
+});
+$(document).on('change', '#id_cotizacion_actividad', function () {
+  $('#ot').val('');
+  $('#id_encargado_cliente').val('');
+  $('#id_estacion').empty();
+  $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
+  $('#id_tipo_actividad').val('');
+  $('#fecha_solicitud').val('');
+  $('#id_resposable_contratista').val('');
+  $('#descripcion').val('');
+  $('#id_encargado_cliente, #id_tipo_actividad, #id_subsistema').change();
+
+  if ($(this).val() !== '') {
+    $.ajax({
+      url: "quotes/".concat($(this).val(), "/getquote"),
+      method: 'GET',
+      beforeSend: function beforeSend() {
+        consultar = false;
+        showLoader(true);
+      }
+    }).done(function (response) {
+      $('#ot').val(response.ot);
+      $('#id_encargado_cliente').val(response.id_cliente);
+      $('#id_encargado_cliente').change();
+      $('#id_estacion').append("<option value='".concat(response.id_estacion, "'>").concat(response.tbl_estacion.nombre, "</option>"));
+      $('#id_estacion').val(response.id_estacion);
+      $('#id_estacion').change();
+      $('#id_tipo_actividad').val(response.id_tipo_trabajo);
+      $('#id_tipo_actividad').change();
+      $('#fecha_solicitud').val(response.fecha_solicitud);
+      $('#id_resposable_contratista').val(response.id_responsable_cliente);
+      $('#id_resposable_contratista').change();
+      $('#descripcion').val(response.descripcion);
+    }).always(function () {
+      showLoader(false);
+    });
+  }
 });
 
 /***/ }),

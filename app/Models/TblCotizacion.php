@@ -155,4 +155,8 @@ class TblCotizacion extends Model
 
         return "$day/$month/$year";
     }
+
+    public function getCotizacionAttribute() {
+        return "Sitio: ".$this->tblestacion->nombre.". F. Solcitud: ".$this->fecha_solicitud.'. Manto.: '.$this->tblTipoTrabajo->nombre.'. Alcance: '.$this->descripcion;
+    }
 }

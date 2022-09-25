@@ -33,7 +33,7 @@ class CreateTblActividadesTable extends Migration
             $table->unsignedBigInteger('id_informe')->nullable();
             $table->date('fecha_liquidado')->nullable();
             $table->boolean('liquidado')->default(false);
-            $table->unsignedBigInteger('id_mes_consolidado');
+            $table->unsignedBigInteger('id_mes_consolidado')->nullable();
             $table->decimal('valor', 20, 2);
             $table->text('observaciones');
             $table->unsignedBigInteger('id_usuareg');

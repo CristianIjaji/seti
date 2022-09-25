@@ -59,6 +59,7 @@ Route::post('priceList/import', [ListaPrecioController::class, 'import'])->name(
 
 // Controlador cotizaciones
 Route::get('quotes/exportQuote', [CotizacionController::class, 'exportQuote'])->name('quotes.exportQuote');
+Route::get('quotes/{quote}/getquote', [CotizacionController::class, 'getCotizacion'])->name('quotes.getquote');
 Route::resource('quotes', CotizacionController::class);
 Route::post('quotes/grid', [CotizacionController::class, 'grid'])->name('quotes.grid');
 Route::post('quotes/{quote}/handleQuote', [CotizacionController::class, 'handleQuote'])->name('quotes.handleQuote');

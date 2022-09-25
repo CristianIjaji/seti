@@ -11,6 +11,7 @@ class TblOrdenCompra extends Model
 
     protected $table = 'tbl_ordenes_compra';
     protected $primaryKey = 'id_orden_compra';
+    protected $guarded = [];
 
     protected $fillable = [
         'codigo_orden',

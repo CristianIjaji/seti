@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveActividadRequest;
 use App\Models\TblActividad;
+use App\Models\TblCotizacion;
+use App\Models\TblDominio;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Http\Request;
@@ -75,6 +77,9 @@ class ActividadController extends Controller
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
             ])->where('id_responsable_cliente', '>', 0)->get(),
+            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
+            'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
+            'cotizaciones' => TblCotizacion::where(['estado' => session('id_dominio_cotizacion_aprobada')])->get(),
         ]);
     }
 

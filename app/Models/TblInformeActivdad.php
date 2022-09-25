@@ -11,6 +11,7 @@ class TblInformeActivdad extends Model
 
     protected $table = 'tbl_informes_actividades';
     protected $primaryKey = 'id_informe_actividad';
+    protected $guarded = [];
 
     protected $fillable = [
         'id_actividad',
