@@ -36,8 +36,8 @@
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
                     <label for="id_cliente_cotizacion" class="required">Cliente</label>
                     @if ($edit)
-                        <div class="row">
-                            <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
+                        <div class="row pe-0 pe-md-3">
+                            <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
                                 <select class="form-control" name="id_cliente" id="id_cliente_cotizacion" style="width: 100%" @if ($edit) required @else disabled @endif>
                                     <option value="">Elegir cliente</option>
                                     @foreach ($clientes as $cliente)
@@ -50,7 +50,7 @@
                                 </select>
                             </div>
                             @if ($create_client)
-                                <div class="col-2 text-end">
+                                <div class="col-2 col-md-1 text-end">
                                     <i
                                         class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
                                         data-title="Nuevo cliente"
@@ -72,8 +72,8 @@
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
                     <label for="id_estacion" class="required">Punto interés</label>
                     @if ($edit)
-                        <div class="row">
-                            <div class="{{ $create_site ? 'col-10' : 'col-12' }}">
+                        <div class="row pe-0 pe-md-3">
+                            <div class="{{ $create_site ? 'col-10 col-md-11' : 'col-12' }}">
                                 <select class="form-control" name="id_estacion" id="id_estacion" data-minimuminputlength="3" style="width: 100%" @if ($edit) required @else disabled @endif>
                                     <option value="">Elegir punto interés</option>
                                     @isset($estaciones)
@@ -86,7 +86,7 @@
                                 </select>
                             </div>
                             @if ($create_site)
-                                <div class="col-2 text-end">
+                                <div class="col-2 col-md-1 text-end">
                                     <i
                                         class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
                                         data-title="Nuevo punto interés"
@@ -157,8 +157,8 @@
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
                     <label for="id_responsable" class="required">Aprobador</label>
                     @if ($edit)
-                        <div class="row">
-                            <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
+                        <div class="row pe-0 pe-md-3">
+                            <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
                                 <select class="form-control" name="id_responsable_cliente" id="id_responsable" style="width: 100%" @if ($edit) required @else disabled @endif>
                                     @forelse ($contratistas as $contratista)
                                         <option
@@ -172,7 +172,7 @@
                                 </select>
                             </div>
                             @if ($create_client)
-                                <div class="col-2 text-end">
+                                <div class="col-2 col-md-1 text-end">
                                     <i
                                         class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
                                         data-title="Nuevo contratista"
@@ -196,9 +196,9 @@
                     <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $cotizacion->descripcion) }}</textarea>
                 </div>
                 @if (!$create)
-                    <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 my-auto text-end text-md-center">
+                    <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 my-auto text-center">
                         <button id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
-                            <i class="fa-solid fa-file-excel fs-4"></i> Descargar
+                            <i class="fa-solid fa-file-excel fs-4"></i> Descargar cotización
                         </button>
                     </div>
                 @endif

@@ -14,7 +14,7 @@ class CreateTblConsolidadosTable extends Migration
     public function up()
     {
         Schema::create('tbl_consolidados', function (Blueprint $table) {
-            $table->bigInteger('id_consolidado');
+            $table->bigIncrements('id_consolidado');
             $table->unsignedBigInteger('id_cliente');
             $table->integer('anyo');
             $table->unsignedBigInteger('id_mes');

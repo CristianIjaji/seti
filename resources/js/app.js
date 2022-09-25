@@ -115,15 +115,18 @@ window.timer = () => {
 }
 
 window.datePicker = () => {
-    let setup = {
-        localization: {
-            locale: 'es',
-            dayViewHeaderFormat: { month: 'long', year: 'numeric' },
-        },
-    };
+    $('.input-date input, .input-months input').each((i, element) => {
+        let setup = {
+            localization: {
+                locale: 'es',
+                dayViewHeaderFormat: { month: 'long', year: 'numeric' },
+            },
+        };
 
-    $('.input-date input').each((i, element) => {
-        let initialDate = (typeof $(element).data('default-date') !== 'undefined' ? $(element).data('default-date') : '');
+        let initialDate = (typeof $(element).data('default-date') !== 'undefined'
+            ? $(element).data('default-date')
+            : ($(element).val() !== '' ? $(element).val() : '')
+        );
         let format = (typeof $(element).data('format') !== 'undefined' ? $(element).data('format') : 'YYYY-MM-DD');
         let minDate = (typeof $(element).data('minDate') !== 'undefined' ? $(element).data('minDate') : '');
         let maxDate = (typeof $(element).data('max-date') !== 'undefined' ? $(element).data('max-date') : '');
@@ -132,14 +135,15 @@ window.datePicker = () => {
         setup.display = {
             components: {
                 clock: false,
-                calendar: true
+                date: ($(element).parent().hasClass('input-date') ? true : false),
+                calendar: true,
             },
             buttons: {
                 clear: true,
                 today: true,
             },
             keepOpen: false,
-            viewMode: 'calendar'
+            viewMode: ($(element).parent().hasClass('input-date') ? 'calendar' : 'months')
         };
 
         if(!useCurrent && initialDate !== '') {
@@ -160,8 +164,6 @@ window.datePicker = () => {
 
         setupDatePicker(element, setup, format);
     });
-
-    $('.input-months input').each((i, element) => { });
 
     /*
     let picker1, picker2;
@@ -292,7 +294,7 @@ const setupDatePicker = (element, setup, format) => {
     });
 
     picker.dates.formatInput = (date) => {
-        return moment(date).format(format);
+        return date !== null ? moment(date).format(format) : null;
     }
 
     if(setup.defaultDate) {
@@ -661,49 +663,49 @@ $('body').tooltip({
     selector: '[data-toggle="tooltip"]'
 });
 
+window.showLoader = function(show = false) {
+    $('#lds-loader').toggle(show);
+}
+
+window.setupSelect2 = function(modal = '') {
+    modal = (modal !== '' ? `#${modal} ` : '');
+
+    $(`${modal}select`).each((index, element) => {
+        let minimumInputLength = $(element).data('minimuminputlength');
+        let maximumSelectionLength = $(element).data('maximumselectionlength');
+        let closeOnSelect = $(element).data('closeonselect');
+
+        closeOnSelect = (typeof closeOnSelect !== 'undefined' ? (closeOnSelect === 'true' ? true : false) : true);
+
+        $(element).select2({
+            dropdownParent: modal,
+            minimumInputLength,
+            maximumSelectionLength,
+            closeOnSelect,
+            language: {
+                inputTooShort: function (args) {
+                    var remainingChars = args.minimum - args.input.length;
+                    var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
+                    return message;
+                },
+                noResults: function() {
+                    return 'No existen resultados';
+                },
+                maximumSelected: function (args) {
+                    var t = `Puedes seleccionar hasta ${args.maximum} ítem`;
+                    args.maximum != 1 && (t += "s");
+                    return t;
+                }
+            },
+        });
+    });
+
+    $('.select2-selection').addClass('form-control');
+    $('.select2-selection__rendered').data('toggle', 'tooltip');
+}
+
 $(document).ready(function() {
     AOS.init();
-
-    window.showLoader = function(show = false) {
-        $('#lds-loader').toggle(show);
-    }
-
-    window.setupSelect2 = function(modal = '') {
-        modal = (modal !== '' ? `#${modal} ` : '');
-
-        $(`${modal}select`).each((index, element) => {
-            let minimumInputLength = $(element).data('minimuminputlength');
-            let maximumSelectionLength = $(element).data('maximumselectionlength');
-            let closeOnSelect = $(element).data('closeonselect');
-
-            closeOnSelect = (typeof closeOnSelect !== 'undefined' ? (closeOnSelect === 'true' ? true : false) : true);
-
-            $(element).select2({
-                dropdownParent: modal,
-                minimumInputLength,
-                maximumSelectionLength,
-                closeOnSelect,
-                language: {
-                    inputTooShort: function (args) {
-                        var remainingChars = args.minimum - args.input.length;
-                        var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
-                        return message;
-                    },
-                    noResults: function() {
-                        return 'No existen resultados';
-                    },
-                    maximumSelected: function (args) {
-                        var t = `Puedes seleccionar hasta ${args.maximum} ítem`;
-                        args.maximum != 1 && (t += "s");
-                        return t;
-                    }
-                },
-            });
-        });
-
-        $('.select2-selection').addClass('form-control');
-        $('.select2-selection__rendered').data('toggle', 'tooltip');
-    }
 
     $('.nav-item > .nav-link').click(function(e) {
         if($('.navbar-toggler').is(":visible")){
@@ -1205,6 +1207,9 @@ $(document).on('click', '.btn-quote', function(e) {
             text = `¿Seguro quiere cancelar la cotización?`;
             confirmButtonColor = `var(--bs-danger)`;
             confirmButtonText = `Sí, cancelar cotización`;
+            break;
+        case 'btn-send-quote':
+            action = 'send';
             break;
         default:
             break;

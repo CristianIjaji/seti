@@ -215,6 +215,7 @@
     <input type="hidden" name="page" id="page" value="1">
     {{ $models->links("pagination::bootstrap-4")}}
 </form>
+
 <script type="application/javascript">
     if(typeof datePicker !== 'undefined') {
         datePicker();

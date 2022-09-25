@@ -11,7 +11,6 @@
     'headers' => [
         ['name' => 'id_consolidado', 'label' => '#', 'align' => 'text-end'],
         ['name' => 'id_cliente', 'label' => 'Cliente'],
-        ['name' => 'anyo', 'label' => 'Año', 'align' => 'text-start'],
         ['name' => 'id_mes', 'label' => 'Mes', 'align' => 'text-start'],
         ['name' => 'id_estado_consolidado', 'label' => 'Estado'],
         ['name' => '', 'label' => 'Acciones', 'actions' => [

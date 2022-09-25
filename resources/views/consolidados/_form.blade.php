@@ -19,40 +19,46 @@
             @if ($edit)
                 <select name="id_cliente" id="id_cliente" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
                     <option value="">Elegir cliente</option>
+                    @foreach ($clientes as $cliente)
+                        <option value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $consolidado->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
+                            {{ $cliente->full_name }} {{ (isset($cliente->tblterceroresponsable) ? ' - '.$cliente->tblterceroresponsable->razon_social : '' ) }}
+                        </option>
+                    @endforeach
                 </select>
             @else
                 <input type="text" class="form-control" value="{{ $consolidado->tblCliente->full_name }} {{ (isset($consolidado->tblCliente->tblterceroresponsable) ? ' - '.$consolidado->tblCliente->tblterceroresponsable->razon_social : '') }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-date">
+        <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-months">
             <label for="id_mes">Mes</label>
             <input type="text" name="id_mes" id="id_mes" data-format="YYYY-MM" data-viewMode="months" class="form-control">
         </div>
-        {{-- <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
-            <label for="anyo">Año</label>
-            @if ($edit)
-                <select name="anyo" id="anyo" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
-                    <option value="">Elegir año</option>
-                </select>
-            @else
-                <input type="text" class="form-control" >
-            @endif
-        </div>
-        <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
-            <label for="anyo">Mes</label>
-            <select name="id_mes" id="id_mes" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
-                <option value="">Elegir mes</option>
-            </select>
-        </div> --}}
         <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
-            <label for="id_responsable_cliente" class="required">Cliente</label>
+            <label for="id_responsable_cliente" class="required">Encargado cliente</label>
             @if ($edit)
                 <select name="id_responsable_cliente" id="id_responsable_cliente" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
-                    <option value="">Elegir responsable</option>
+                    @forelse ($contratistas as $contratista)
+                        <option
+                            value="{{ $contratista->id_tercero }}" {{ old('id_responsable', $consolidado->id_responsable_cliente) == $contratista->id_tercero ? 'selected' : '' }}>
+                            {{ $contratista->full_name }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
+                        </option>
+                    @empty
+                        <option value="">Elegir contratista</option>
+                    @endforelse
                 </select>
             @else
                 <input type="text" class="form-control" value="{{ $consolidado->tblresponsablecliente->full_name }} {{ (isset($consolidado->tblresponsablecliente->tblterceroresponsable) ? ' - '.$consolidado->tblresponsablecliente->tblterceroresponsable->razon_social : '') }}" disabled>
             @endif
+        </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-2 my-auto mx-auto">
+            <button id="btn-form-action" data-modal="modalForm" class="btn bg-info bg-gradient text-white">
+                <i class="fa-solid fa-magnifying-glass"></i> Consultar actividades
+            </button>
+        </div>
+        <div class="clearfix"></div>
+        <hr>
+        <div class="table-responsive">
+            @include('consolidados.detalle', ['model' => $detalle_consolidado])
         </div>
     </div>
 

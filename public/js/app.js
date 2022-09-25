@@ -9182,17 +9182,17 @@ window.timer = function () {
 };
 
 window.datePicker = function () {
-  var setup = {
-    localization: {
-      locale: 'es',
-      dayViewHeaderFormat: {
-        month: 'long',
-        year: 'numeric'
+  $('.input-date input, .input-months input').each(function (i, element) {
+    var setup = {
+      localization: {
+        locale: 'es',
+        dayViewHeaderFormat: {
+          month: 'long',
+          year: 'numeric'
+        }
       }
-    }
-  };
-  $('.input-date input').each(function (i, element) {
-    var initialDate = typeof $(element).data('default-date') !== 'undefined' ? $(element).data('default-date') : '';
+    };
+    var initialDate = typeof $(element).data('default-date') !== 'undefined' ? $(element).data('default-date') : $(element).val() !== '' ? $(element).val() : '';
     var format = typeof $(element).data('format') !== 'undefined' ? $(element).data('format') : 'YYYY-MM-DD';
     var minDate = typeof $(element).data('minDate') !== 'undefined' ? $(element).data('minDate') : '';
     var maxDate = typeof $(element).data('max-date') !== 'undefined' ? $(element).data('max-date') : '';
@@ -9200,6 +9200,7 @@ window.datePicker = function () {
     setup.display = {
       components: {
         clock: false,
+        date: $(element).parent().hasClass('input-date') ? true : false,
         calendar: true
       },
       buttons: {
@@ -9207,7 +9208,7 @@ window.datePicker = function () {
         today: true
       },
       keepOpen: false,
-      viewMode: 'calendar'
+      viewMode: $(element).parent().hasClass('input-date') ? 'calendar' : 'months'
     };
 
     if (!useCurrent && initialDate !== '') {
@@ -9228,7 +9229,6 @@ window.datePicker = function () {
 
     setupDatePicker(element, setup, format);
   });
-  $('.input-months input').each(function (i, element) {});
   /*
   let picker1, picker2;
   $('.input-daterange input').each((i, element) => {
@@ -9352,7 +9352,7 @@ var setupDatePicker = function setupDatePicker(element, setup, format) {
   });
 
   picker.dates.formatInput = function (date) {
-    return moment__WEBPACK_IMPORTED_MODULE_1___default()(date).format(format);
+    return date !== null ? moment__WEBPACK_IMPORTED_MODULE_1___default()(date).format(format) : null;
   };
 
   if (setup.defaultDate) {
@@ -9667,48 +9667,48 @@ var addItems = function addItems(items) {
 $('body').tooltip({
   selector: '[data-toggle="tooltip"]'
 });
+
+window.showLoader = function () {
+  var show = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  $('#lds-loader').toggle(show);
+};
+
+window.setupSelect2 = function () {
+  var modal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  modal = modal !== '' ? "#".concat(modal, " ") : '';
+  $("".concat(modal, "select")).each(function (index, element) {
+    var minimumInputLength = $(element).data('minimuminputlength');
+    var maximumSelectionLength = $(element).data('maximumselectionlength');
+    var closeOnSelect = $(element).data('closeonselect');
+    closeOnSelect = typeof closeOnSelect !== 'undefined' ? closeOnSelect === 'true' ? true : false : true;
+    $(element).select2({
+      dropdownParent: modal,
+      minimumInputLength: minimumInputLength,
+      maximumSelectionLength: maximumSelectionLength,
+      closeOnSelect: closeOnSelect,
+      language: {
+        inputTooShort: function inputTooShort(args) {
+          var remainingChars = args.minimum - args.input.length;
+          var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
+          return message;
+        },
+        noResults: function noResults() {
+          return 'No existen resultados';
+        },
+        maximumSelected: function maximumSelected(args) {
+          var t = "Puedes seleccionar hasta ".concat(args.maximum, " \xEDtem");
+          args.maximum != 1 && (t += "s");
+          return t;
+        }
+      }
+    });
+  });
+  $('.select2-selection').addClass('form-control');
+  $('.select2-selection__rendered').data('toggle', 'tooltip');
+};
+
 $(document).ready(function () {
   AOS.init();
-
-  window.showLoader = function () {
-    var show = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
-    $('#lds-loader').toggle(show);
-  };
-
-  window.setupSelect2 = function () {
-    var modal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-    modal = modal !== '' ? "#".concat(modal, " ") : '';
-    $("".concat(modal, "select")).each(function (index, element) {
-      var minimumInputLength = $(element).data('minimuminputlength');
-      var maximumSelectionLength = $(element).data('maximumselectionlength');
-      var closeOnSelect = $(element).data('closeonselect');
-      closeOnSelect = typeof closeOnSelect !== 'undefined' ? closeOnSelect === 'true' ? true : false : true;
-      $(element).select2({
-        dropdownParent: modal,
-        minimumInputLength: minimumInputLength,
-        maximumSelectionLength: maximumSelectionLength,
-        closeOnSelect: closeOnSelect,
-        language: {
-          inputTooShort: function inputTooShort(args) {
-            var remainingChars = args.minimum - args.input.length;
-            var message = 'Por favor ingrese ' + remainingChars + ' o más carácteres';
-            return message;
-          },
-          noResults: function noResults() {
-            return 'No existen resultados';
-          },
-          maximumSelected: function maximumSelected(args) {
-            var t = "Puedes seleccionar hasta ".concat(args.maximum, " \xEDtem");
-            args.maximum != 1 && (t += "s");
-            return t;
-          }
-        }
-      });
-    });
-    $('.select2-selection').addClass('form-control');
-    $('.select2-selection__rendered').data('toggle', 'tooltip');
-  };
-
   $('.nav-item > .nav-link').click(function (e) {
     if ($('.navbar-toggler').is(":visible")) {
       setTimeout(function () {
@@ -10156,6 +10156,10 @@ $(document).on('click', '.btn-quote', function (e) {
       text = "\xBFSeguro quiere cancelar la cotizaci\xF3n?";
       confirmButtonColor = "var(--bs-danger)";
       confirmButtonText = "S\xED, cancelar cotizaci\xF3n";
+      break;
+
+    case 'btn-send-quote':
+      action = 'send';
       break;
 
     default:

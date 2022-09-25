@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TblConsolidado;
+use App\Models\TblDetalleConsolidado;
 use App\Models\TblTercero;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
@@ -67,6 +68,11 @@ class ConsolidadoController extends Controller
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
             ])->where('id_responsable_cliente', '>', 0)->get(),
+            'contratistas' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
+            'detalle_consolidado' => TblDetalleConsolidado::where(['id_consolidado' => -1])->orderBy('id_detalle_consolidado', 'desc')->paginate(10)
         ]);
     }
 

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\TblConsolidado;
 use App\Models\TblCotizacion;
+use App\Models\TblDetalleConsolidado;
 use App\Models\TblDominio;
 use App\Models\TblFactura;
 use App\Models\TblHallazgo;
@@ -106,6 +107,7 @@ class SetupSeeder extends Seeder
             </html>
         ';
 
+        TblDetalleConsolidado::truncate();
         TblConsolidado::truncate();
         TblHallazgo::truncate();
         TblFactura::truncate();
