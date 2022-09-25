@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveActividadRequest;
 use App\Models\TblActividad;
+use App\Models\TblDominio;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Http\Request;
@@ -66,6 +67,7 @@ class ActividadController extends Controller
         return view('actividades._form', [
             'activity' => new TblActividad,
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
+            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
             'contratistas' => TblTercero::where([
                 'estado' => 1,

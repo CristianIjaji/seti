@@ -136,6 +136,7 @@ class CotizacionController extends Controller
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
             ])->where('id_responsable_cliente', '>', 0)->get(),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
+            'tipos_subsistema' => TblDominio::getListaDominios(session('id_dominio_subsistemas')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
             'contratistas' => TblTercero::where([

@@ -88,14 +88,23 @@
                         @endif
                     </div>
                 @else
-                    <input type="text" class="form-control" id="id_estacion" value="{{ $cotizacion->tblEstacion->nombre }}" disabled>
+                    <input type="text" class="form-control" id="id_estacion" value="{{ $activity->tblEstacion->nombre }}" disabled>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
+            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                 <label for="id_tipo_actividad" class="required">Tipo trabajo</label>
-                <select name="id_tipo_actividad" id="id_tipo_actividad" class="form-control" style="width: 100%">
-                    <option value="">Elegir tipo trabajo</option>
-                </select>
+                @if ($edit)
+                    <select class="form-control" name="id_tipo_actividad" id="id_tipo_actividad" style="width: 100%" @if ($edit) required @else disabled @endif>
+                        <option value="">Elegir tipo trabajo</option>
+                        @foreach ($tipos_trabajo as $id => $nombre)
+                            <option value="{{ $id }}" {{ old('id_tipo_actividad', $activity->id_tipo_actividad) == $id ? 'selected' : '' }}>
+                                {{$nombre}}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="text" class="form-control" id="id_tipo_actividad" value="{{ $activity->tblTipoTrabajo->nombre }}" disabled>
+                @endif
             </div>
             <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
                 <label for="id_subsistema" class="required">Subsistema</label>
@@ -122,15 +131,15 @@
                         <div class="{{ $create_client ? 'col-10' : 'col-12' }}">
                             <select class="form-control" name="id_responsable_cliente" id="id_resposable_contratista" style="width: 100%" @if ($edit) required @else disabled @endif>
                                 <option value="">Elegir responsable</option>
-                                {{-- @forelse ($contratistas as $contratista)
+                                @forelse ($contratistas as $contratista)
                                     <option
                                         data-id_contratista="{{ (isset($contratista->tblterceroresponsable) ? $contratista->tblterceroresponsable->id_tercero : $contratista->id_tercero ) }}"
-                                        value="{{ $contratista->id_tercero }}" {{ old('id_resposable_contratista', $cotizacion->id_responsable_cliente) == $contratista->id_tercero ? 'selected' : '' }}>
+                                        value="{{ $contratista->id_tercero }}" {{ old('id_resposable_contratista', $activity->id_responsable_cliente) == $contratista->id_tercero ? 'selected' : '' }}>
                                         {{ $contratista->full_name }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
                                     </option>
                                 @empty
                                     <option value="">Elegir Responsable</option>
-                                @endforelse --}}
+                                @endforelse 
                             </select>
                         </div>
                         @if ($create_client)
