@@ -95,7 +95,7 @@
                     <input type="text" class="form-control" id="id_estacion" value="{{ $activity->tblEstacion->nombre }}" disabled>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
+            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                 <label for="id_tipo_actividad" class="required">Tipo trabajo</label>
                 @if ($edit)
                     <select name="id_tipo_actividad" id="id_tipo_actividad" class="form-control" style="width: 100%">

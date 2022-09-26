@@ -68,6 +68,8 @@ class ActividadController extends Controller
         return view('actividades._form', [
             'activity' => new TblActividad,
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
+            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
+            'tipos_subsistema' => TblDominio::getListaDominios(session('id_dominio_subsistemas')),
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
             'contratistas' => TblTercero::where([
                 'estado' => 1,
