@@ -108,9 +108,18 @@
             </div>
             <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
                 <label for="id_subsistema" class="required">Subsistema</label>
-                <select name="id_subsistema" id="id_subsistema" class="form-control" style="width: 100%">
+                @if ($edit)
+                <select class="form-control" name="id_subsistema" id="id_subsistema" style="width: 100%" @if ($edit) required @else disabled @endif>
                     <option value="">Elegir subsistema</option>
+                    @foreach ($tipos_subsistema as $id => $nombre)
+                        <option value="{{ $id }}" {{ old('id_subsistema', $activity->id_subsistema) == $id ? 'selected' : '' }}>
+                            {{$nombre}}
+                        </option>
+                    @endforeach
                 </select>
+            @else
+                <input type="text" class="form-control" id="id_subsistema" value="{{ $activity->tblTipoTrabajo->nombre }}" disabled>
+            @endif
             </div>
             <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2 input-date">
                 <label for="fecha_solicitud" class="required">Fecha solicitud</label>
