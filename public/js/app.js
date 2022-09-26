@@ -10237,52 +10237,55 @@ $(document).on('click', '.btn-quote', function (e) {
     cancelButtonText: 'Cancelar'
   }).then(function (result) {
     if (result.isConfirmed) {
-      $.ajax({
-        url: "".concat(url_cotizacion, "/").concat($('#id_cotizacion').val(), "/handleQuote"),
-        method: 'POST',
-        data: data,
-        processData: false,
-        contentType: false,
-        cache: false,
-        beforeSend: function beforeSend() {
-          $('.alert-success, .alert-danger').fadeOut().html('');
-          showLoader(true);
-        },
-        success: function success(response, status, xhr) {
-          if (response.success) {
-            $('#modalForm').modal('hide');
+      if (action !== 'create-activity') {
+        $.ajax({
+          url: "".concat(url_cotizacion, "/").concat($('#id_cotizacion').val(), "/handleQuote"),
+          method: 'POST',
+          data: data,
+          processData: false,
+          contentType: false,
+          cache: false,
+          beforeSend: function beforeSend() {
+            $('.alert-success, .alert-danger').fadeOut().html('');
+            showLoader(true);
+          },
+          success: function success(response, status, xhr) {
+            if (response.success) {
+              $('#modalForm').modal('hide');
 
-            if (action === 'send') {
-              window.open("".concat(url_cotizacion, "/exportQuote?quote=").concat($('#id_cotizacion').val()), '_blank');
+              if (action === 'send') {
+                window.open("".concat(url_cotizacion, "/exportQuote?quote=").concat($('#id_cotizacion').val()), '_blank');
+              }
+
+              Swal.fire({
+                icon: 'success',
+                title: 'Cambio realizado',
+                text: response.success,
+                confirmButtonColor: 'var(--bs-primary)'
+              });
+            } else {
+              Swal.fire({
+                icon: 'warning',
+                title: response.error,
+                confirmButtonColor: 'var(--bs-primary)'
+              });
             }
-
-            Swal.fire({
-              icon: 'success',
-              title: 'Cambio realizado',
-              text: response.success,
-              confirmButtonColor: 'var(--bs-primary)'
+          },
+          error: function error(response) {
+            var errors = '';
+            $.each(response.responseJSON.errors, function (i, item) {
+              errors += "<li>".concat(item, "</li>");
             });
-          } else {
-            Swal.fire({
-              icon: 'warning',
-              title: response.error,
-              confirmButtonColor: 'var(--bs-primary)'
+            $('.alert-danger').html("<h6 class=\"alert-heading fw-bold\">Por favor corrija los siguientes campos:</h6> <ol>".concat(errors, "</ol>")).fadeTo(10000, 1000).slideUp(1000, function () {
+              $(".alert-danger").slideUp(1000);
             });
           }
-        },
-        error: function error(response) {
-          var errors = '';
-          $.each(response.responseJSON.errors, function (i, item) {
-            errors += "<li>".concat(item, "</li>");
-          });
-          $('.alert-danger').html("<h6 class=\"alert-heading fw-bold\">Por favor corrija los siguientes campos:</h6> <ol>".concat(errors, "</ol>")).fadeTo(10000, 1000).slideUp(1000, function () {
-            $(".alert-danger").slideUp(1000);
-          });
-        }
-      }).always(function () {
-        getGrid(url_cotizacion, form_cotizacion);
-        showLoader(false);
-      });
+        }).always(function () {
+          getGrid(url_cotizacion, form_cotizacion);
+          showLoader(false);
+        });
+      } else {}
+
       return false;
     }
   });
