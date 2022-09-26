@@ -15,7 +15,7 @@
 @endif
         <div class="row">
             <input type="hidden" id="id_actividad" value="{{ $activity->id_actividad }}">
-            <div class="form-group col-12 mb-5">
+            {{-- <div class="form-group col-12 mb-5">
                 <label for="id_cotizacion">Cotizaciones aprobadas</label>
                 <select name="id_cotizacion" id="id_cotizacion_actividad" class="form-control" style="width: 100%">
                     <option value="">Elegir cotización</option>
@@ -25,7 +25,7 @@
                         </option>
                     @endforeach
                 </select>
-            </div>
+            </div> --}}
             <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
                 <label for="ot">OT</label>
                 <input type="text" class="form-control" @if ($edit) name="ot" @endif id="ot" value="{{ old('ot', $activity->ot) }}" @if (!$edit) disabled @endif >
@@ -131,7 +131,7 @@
             </div>
             <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2 input-date">
                 <label for="fecha_programacion" class="required">Fecha programación</label>
-                <input type="text" class="form-control" @if ($edit) name="fecha_programacion" @endif id="fecha_programacion" value="{{ old('fecha_programacion', $activity->fecha_programacion) }}" @if ($edit) required @else disabled @endif readonly>
+                <input type="text" class="form-control" data-min-date="{{ date('Y-m-d') }}" @if ($edit) name="fecha_programacion" @endif id="fecha_programacion" value="{{ old('fecha_programacion', $activity->fecha_programacion) }}" @if ($edit) required @else disabled @endif readonly>
             </div>
             <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
                 <label for="permiso_acceso">ID Permiso</label>
@@ -142,11 +142,11 @@
                 @if ($edit)
                     <div class="row pe-0 pe-md-3">
                         <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
-                            <select class="form-control" name="id_responsable_cliente" id="id_resposable_contratista" style="width: 100%" @if ($edit) required @else disabled @endif>
+                            <select class="form-control" name="id_resposable_contratista" id="id_resposable_contratista" style="width: 100%" @if ($edit) required @else disabled @endif>
                                 @forelse ($contratistas as $contratista)
                                     <option
                                         data-id_contratista="{{ (isset($contratista->tblterceroresponsable) ? $contratista->tblterceroresponsable->id_tercero : $contratista->id_tercero ) }}"
-                                        value="{{ $contratista->id_tercero }}" {{ old('id_resposable_contratista', $activity->id_responsable_cliente) == $contratista->id_tercero ? 'selected' : '' }}>
+                                        value="{{ $contratista->id_tercero }}" {{ old('id_resposable_contratista', $activity->id_resposable_contratista) == $contratista->id_tercero ? 'selected' : '' }}>
                                         {{ $contratista->full_name }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
                                     </option>
                                 @empty

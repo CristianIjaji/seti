@@ -20,10 +20,10 @@
         ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [
             'btnOptions' => [
                 'view' => $view,
-                'modal-view-title' => 'Ver Lista precio',
+                'modal-view-title' => 'Ver lista precio',
                 'modal-view-size' => 'modal-xl',
                 'edit' => $edit,
-                'modal-edit-title' => 'Editar Lista Precio',
+                'modal-edit-title' => 'Editar lista Precio',
                 'modal-edit-size' => 'modal-xl',
             ]
         ]]

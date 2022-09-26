@@ -1,7 +1,8 @@
-<?php
+@php
     $create = isset($cotizacion->id_cotizacion) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
-?>
+    $disable_form = in_array($cotizacion->estado, [session('id_dominio_cotizacion_aprobada'), session('id_dominio_cotizacion_cancelada')]) ? true : false;
+@endphp
 
 @if ($create || $edit)
     <div class="alert alert-success" role="alert"></div>
@@ -31,14 +32,14 @@
 
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                     <label for="ot_trabajo">OT</label>
-                    <input type="text" class="form-control" @if ($edit) name="ot_trabajo" @endif id="ot_trabajo" value="{{ old('ot_trabajo', $cotizacion->ot_trabajo) }}" @if ($edit) required @else disabled @endif>
+                    <input type="text" class="form-control" @if ($edit && !$disable_form) name="ot_trabajo" @endif id="ot_trabajo" value="{{ old('ot_trabajo', $cotizacion->ot_trabajo) }}" @if ($edit && !$disable_form) required @else disabled @endif>
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
                     <label for="id_cliente_cotizacion" class="required">Cliente</label>
-                    @if ($edit)
+                    @if ($edit && !$disable_form)
                         <div class="row pe-0 pe-md-3">
                             <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
-                                <select class="form-control" name="id_cliente" id="id_cliente_cotizacion" style="width: 100%" @if ($edit) required @else disabled @endif>
+                                <select class="form-control" name="id_cliente" id="id_cliente_cotizacion" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                                     <option value="">Elegir cliente</option>
                                     @foreach ($clientes as $cliente)
                                         <option
@@ -71,10 +72,10 @@
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
                     <label for="id_estacion" class="required">Punto interés</label>
-                    @if ($edit)
+                    @if ($edit && !$disable_form)
                         <div class="row pe-0 pe-md-3">
                             <div class="{{ $create_site ? 'col-10 col-md-11' : 'col-12' }}">
-                                <select class="form-control" name="id_estacion" id="id_estacion" data-minimuminputlength="3" style="width: 100%" @if ($edit) required @else disabled @endif>
+                                <select class="form-control" name="id_estacion" id="id_estacion" data-minimuminputlength="3" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                                     <option value="">Elegir punto interés</option>
                                     @isset($estaciones)
                                         @foreach ($estaciones as $id => $nombre)
@@ -107,8 +108,8 @@
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                     <label for="id_tipo_trabajo" class="required">Tipo trabajo</label>
-                    @if ($edit)
-                        <select class="form-control" name="id_tipo_trabajo" id="id_tipo_trabajo" style="width: 100%" @if ($edit) required @else disabled @endif>
+                    @if ($edit && !$disable_form)
+                        <select class="form-control" name="id_tipo_trabajo" id="id_tipo_trabajo" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                             <option value="">Elegir tipo trabajo</option>
                             @foreach ($tipos_trabajo as $id => $nombre)
                                 <option value="{{ $id }}" {{ old('id_tipo_trabajo', $cotizacion->id_tipo_trabajo) == $id ? 'selected' : '' }}>
@@ -122,12 +123,12 @@
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-date">
                     <label for="fecha_solicitud" class="required">Fecha solicitud</label>
-                    <input type="text" class="form-control" data-max-date="{{ date('Y-m-d') }}" @if ($edit) name="fecha_solicitud" data-default-date="{{ $cotizacion->fecha_solicitud }}" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $cotizacion->fecha_solicitud) }}" @if ($edit) required @else disabled @endif readonly>
+                    <input type="text" class="form-control" data-max-date="{{ date('Y-m-d') }}" @if ($edit && !$disable_form) name="fecha_solicitud" data-default-date="{{ $cotizacion->fecha_solicitud }}" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $cotizacion->fecha_solicitud) }}" @if ($edit && !$disable_form) required @else disabled @endif readonly>
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                     <label for="id_prioridad" class="required">Prioridad</label>
-                    @if ($edit)
-                        <select class="form-control" name="id_prioridad" id="id_prioridad" style="width: 100%" @if ($edit) required @else disabled @endif>
+                    @if ($edit && !$disable_form)
+                        <select class="form-control" name="id_prioridad" id="id_prioridad" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                             <option value="">Elegir prioridad</option>
                             @foreach ($prioridades as $id => $nombre)
                                 <option value="{{ $id }}" {{ old('id_prioridad', $cotizacion->id_prioridad) == $id ? 'selected' : '' }}>
@@ -141,8 +142,8 @@
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                     <label for="iva" class="required">IVA %</label>
-                    @if ($edit)
-                        <select class="form-control" name="iva" id="iva" style="width: 100%" @if ($edit) required @else disabled @endif>
+                    @if ($edit && !$disable_form)
+                        <select class="form-control" name="iva" id="iva" data-dir="rtl" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                             @foreach ($impuestos as $id => $nombre)
                                 <option value="{{ $id }}" {{ old('iva', $cotizacion->iva) == $id ? 'selected' : '' }}>
                                     {{$nombre}}
@@ -156,10 +157,10 @@
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
                     <label for="id_responsable" class="required">Aprobador</label>
-                    @if ($edit)
+                    @if ($edit && !$disable_form)
                         <div class="row pe-0 pe-md-3">
                             <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
-                                <select class="form-control" name="id_responsable_cliente" id="id_responsable" style="width: 100%" @if ($edit) required @else disabled @endif>
+                                <select class="form-control" name="id_responsable_cliente" id="id_responsable" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                                     @forelse ($contratistas as $contratista)
                                         <option
                                             data-id_contratista="{{ (isset($contratista->tblterceroresponsable) ? $contratista->tblterceroresponsable->id_tercero : $contratista->id_tercero ) }}"
@@ -193,7 +194,7 @@
                 </div>
                 <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6">
                     <label for="descripcion" class="required">Descripción orden</label>
-                    <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $cotizacion->descripcion) }}</textarea>
+                    <textarea class="form-control" @if ($edit && !$disable_form) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit && !$disable_form) required @else disabled @endif>{{ old('nombre', $cotizacion->descripcion) }}</textarea>
                 </div>
                 @if (!$create)
                     <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 my-auto text-center">
@@ -222,7 +223,7 @@
                             <tr id="tr_{{ session('id_dominio_materiales') }}">
                                 <th colspan="7">
                                     <span
-                                        class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="btn w-100 bg-gray fw-bold {{ $edit && !$disable_form ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
                                         title="Agregar ítem"
                                         data-title="Buscar ítems suministro materiales"
@@ -250,7 +251,7 @@
                             <tr id="tr_{{ session('id_dominio_mano_obra') }}">
                                 <th colspan="7">
                                     <span
-                                        class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="btn w-100 bg-gray fw-bold {{ $edit && !$disable_form ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
                                         title="Agregar ítem"
                                         data-title="Buscar ítems mano obra"
@@ -278,7 +279,7 @@
                             <tr id="tr_{{ session('id_dominio_transporte') }}">
                                 <th colspan="7">
                                     <span
-                                        class="btn w-100 bg-gray fw-bold {{ $edit ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="btn w-100 bg-gray fw-bold {{ $edit && !$disable_form ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
                                         title="Agregar ítem"
                                         data-title="Buscar ítems transporte y peajes"
@@ -307,53 +308,94 @@
                     </table>
                 </div>
 
-                <div class="col-12 col-md-6 co-lg-6 my-auto pb-2">
+                <div class="col-12 col-md-6 co-lg-6 my-auto pb-2 ps-4">
+                    @can('createComment', $cotizacion)
+                        @if (!$create && $edit)
+                            <div class="col-12 border rounded p-3">
+                                <div class="form-group col-12 text-start">
+                                    <label for="comentario">Nuevo comentario</label>
+                                    <textarea class="form-control" id="comentario" name="comentario" rows="3" style="resize: none"></textarea>
+                                    
+                                </div>
+
+                                <div class="col-12 d-flex justify-content-evenly align-items-center">
+                                    @can('checkQuote', $cotizacion)
+                                        <button id="btn-check-quote" title="Aprobar cotización" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
+                                            <i class="fa-solid fa-thumbs-up"></i> Aprobar cotización
+                                        </button>
+                                    @endcan
+
+                                    @can('denyQuote', $cotizacion)
+                                        <button id="btn-deny-quote" title="Devolver cotización" data-toggle="tooltip" class="btn bg-info bg-gradient text-white btn-quote">
+                                            <i class="fa-solid fa-thumbs-down"></i> Devolver cotización
+                                        </button>
+                                    @endcan
+
+                                    @can('waitQuote', $cotizacion)
+                                        <button id="btn-wait-quote" title="Cotización se envió al cliente y está pendiente por aprobación" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
+                                            <i class="fa-regular fa-clock"></i> Pendiente aprobación
+                                        </button>
+                                    @endcan
+
+                                    @can('aproveQuote', $cotizacion)
+                                        <button id="btn-aprove-quote" title="Cliente reviso la cotización y la aprobó" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
+                                            <i class="fa-regular fa-circle-check"></i> Cotización aprobada cliente
+                                        </button>
+                                    @endcan
+
+                                    @can('rejectQuote', $cotizacion)
+                                        <button id="btn-reject-quote" title="Cliente rechazó la cotización" data-toggle="tooltip" class="btn bg-info bg-gradient text-white btn-quote">
+                                            <i class="fa-solid fa-xmark"></i> Cotización rechazada cliente
+                                        </button>
+                                    @endcan
+
+                                    @can('cancelQuote', $cotizacion)
+                                        <button id="btn-cancel-quote" title="Se cancela proceso de cotización" data-toggle="tooltip" class="btn btn-danger bg-gradient text-white btn-quote">
+                                            <i class="fa-solid fa-handshake-slash"></i> Cancelar cotización
+                                        </button>
+                                    @endcan
+                                </div>
+                            </div>
+                        @endif
+                    @endcan
+
                     @if (!$create && $edit)
-                        <div class="col-12 border rounded p-3">
-                            <div class="form-group col-12 text-start">
-                                <label for="comentario">Nuevo comentario</label>
-                                <textarea class="form-control" id="comentario" name="comentario" rows="3" style="resize: none"></textarea>
-                                
+                        @can('createActivity', $cotizacion)
+                            <div class="row border rounded p-3">
+                                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-7 text-start">
+                                    <label for="id_subsistema" class="required">Subsistema</label>
+                                    <select name="id_subsistema" id="id_subsistema" class="form-control" style="width: 100%">
+                                        <option value="">Elegir subsistema</option>
+                                        @foreach ($subsistemas as $id => $nombre)
+                                            <option value="{{ $id }}" {{ old('id_subsistema') == $id ? 'selected' : '' }}>
+                                                {{$nombre}}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    {{-- @if ($edit)
+                                        <select name="id_subsistema" id="id_subsistema" class="form-control" style="width: 100%">
+                                            <option value="">Elegir subsistema</option>
+                                            @foreach ($subsistemas as $id => $nombre)
+                                                <option value="{{ $id }}" {{ old('id_subsistema') == $id ? 'selected' : '' }}>
+                                                    {{$nombre}}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    @else
+                                        <input type="text" class="form-control" id="id_subsistema" value="{{ $activity->tblsubsistema->nombre }}" disabled>
+                                    @endif --}}
+                                </div>
+                                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-5 input-date">
+                                    <label for="fecha_programacion" class="required">Fecha programación</label>
+                                    <input type="text" class="form-control" data-toolbarplacement="bottom" data-min-date="{{ date('Y-m-d') }}" @if ($edit) name="fecha_programacion" @endif id="fecha_programacion" value="{{ old('fecha_programacion') }}" @if ($edit) required @else disabled @endif readonly>
+                                </div>
+                                <div class="col-12 d-flex justify-content-evenly align-items-center">
+                                    <button id="btn-create-activity" title="Se crea actividad con la cotización aprobada" data-toggle="tooltip" class="btn btn-primary bg-gradient text-white btn-quote">
+                                        <i class="fa-solid fa-person-digging"></i> Crear actividad
+                                    </button>
+                                </div>
                             </div>
-
-                            <div class="col-12 d-flex justify-content-evenly align-items-center">
-                                @can('checkQuote', $cotizacion)
-                                    <button id="btn-check-quote" title="Aprobar cotización" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
-                                        <i class="fa-solid fa-thumbs-up"></i> Aprobar cotización
-                                    </button>
-                                @endcan
-
-                                @can('denyQuote', $cotizacion)
-                                    <button id="btn-deny-quote" title="Devolver cotización" data-toggle="tooltip" class="btn bg-info bg-gradient text-white btn-quote">
-                                        <i class="fa-solid fa-thumbs-down"></i> Devolver cotización
-                                    </button>
-                                @endcan
-
-                                @can('waitQuote', $cotizacion)
-                                    <button id="btn-wait-quote" title="Cotización se envió al cliente y está pendiente por aprobación" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
-                                        <i class="fa-regular fa-clock"></i> Pendiente aprobación
-                                    </button>
-                                @endcan
-
-                                @can('aproveQuote', $cotizacion)
-                                    <button id="btn-aprove-quote" title="Cliente reviso la cotización y la aprobó" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
-                                        <i class="fa-regular fa-circle-check"></i> Cotización aprobada cliente
-                                    </button>
-                                @endcan
-
-                                @can('rejectQuote', $cotizacion)
-                                    <button id="btn-reject-quote" title="Cliente rechazó la cotización" data-toggle="tooltip" class="btn bg-info bg-gradient text-white btn-quote">
-                                        <i class="fa-solid fa-xmark"></i> Cotización rechazada cliente
-                                    </button>
-                                @endcan
-
-                                @can('cancelQuote', $cotizacion)
-                                    <button id="btn-cancel-quote" title="Se cancela proceso de cotización" data-toggle="tooltip" class="btn btn-danger bg-gradient text-white btn-quote">
-                                        <i class="fa-solid fa-handshake-slash"></i> Cancelar cotización
-                                    </button>
-                                @endcan
-                            </div>
-                        </div>
+                        @endcan
                     @endif
                 </div>
 

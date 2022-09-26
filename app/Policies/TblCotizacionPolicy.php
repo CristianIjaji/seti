@@ -140,4 +140,20 @@ class TblCotizacionPolicy
 
         return true;
     }
+
+    public function createComment(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_aprobada'), session('id_dominio_cotizacion_cancelada')])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function createActivity(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        if($tblCotizacion->estado != session('id_dominio_cotizacion_aprobada')) {
+            return false;
+        }
+
+        return true;
+    }
 }

@@ -20,7 +20,7 @@
         @endif
 @endif
     <div class="row">
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-4">
             <label for="id_dominio_tipo_documento" class="required">Tipo documento</label>
             @if ($edit)
                 @if (!$tipo_documento)
@@ -123,19 +123,6 @@
             @endif
         </div>
         
-        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-6 col-lg-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente'), session('id_dominio_proveedor')]) ? '' : 'd-none' }} ">
-            <label for="logo" class="required col-12">Logo cotización</label>
-            @if ($edit)
-                <div class="file-loading">
-                    <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
-                </div>
-            @else
-                @if ($tercero->logo != '')
-                    <img src="/storage/{{ $tercero->logo }}" class="img-thumbnail" alt="Logo cotizaciones">
-                @endif
-            @endif
-        </div>
-
         @if(!$create)
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
                 <label for="estado" class="required">Estado</label>
@@ -151,18 +138,29 @@
                     <input type="text" class="form-control" id="estado" value="{{ $tercero->estado_form = 1 ? 'Activo' : 'Inactivo' }}" disabled>
                 @endif
             </div>
-
-            @if (!$edit)
-                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
-                    <label for="creado_por">Creado por</label>
-                    <input type="text" id="creado_por" class="form-control" disabled value="{{ $tercero->tblusuario->usuario }}">
+        @endif
+        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-6 col-lg-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente'), session('id_dominio_proveedor')]) ? '' : 'd-none' }} ">
+            <label for="logo" class="required col-12">Logo cotización</label>
+            {{-- @if ($edit) --}}
+                <div class="file-loading">
+                    <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
                 </div>
-            
-                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
-                    <label for="fecha_creacion">Fecha creación</label>
-                    <input type="text" id="fecha_creacion" class="form-control" disabled value="{{ $tercero->created_at }}">
-                </div>
-            @endif
+            {{-- @else
+                @if ($tercero->logo != '')
+                    <img src="/storage/{{ $tercero->logo }}" class="img-thumbnail" alt="Logo cotizaciones">
+                @endif
+            @endif --}}
+        </div>
+        @if(!$create && !$edit)
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+                <label for="creado_por">Creado por</label>
+                <input type="text" id="creado_por" class="form-control" disabled value="{{ $tercero->tblusuario->usuario }}">
+            </div>
+        
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+                <label for="fecha_creacion">Fecha creación</label>
+                <input type="text" id="fecha_creacion" class="form-control" disabled value="{{ $tercero->created_at }}">
+            </div>
         @endif
     </div>
 
@@ -226,29 +224,27 @@
     
         var show = (!"{!! $create !!}" && !"{!! $edit !!}") ? false : true;
     
-        if(show) {
-            $("#logo").fileinput({
-                language: 'es',
-                theme: "explorer",
-                showCaption: show,
-                showBrowse: show,
+        $("#logo").fileinput({
+            language: 'es',
+            theme: "explorer",
+            showCaption: show,
+            showBrowse: show,
+            showRemove: false,
+            showUpload: false,
+            showCancel: false,
+            showClose: false,
+            showDescriptionClose: false,
+            // allowedPreviewTypes : [ 'image' ],
+            allowedFileExtensions : ['jpg', 'jpeg', 'png'],
+            initialPreviewShowDelete: false,
+            fileActionSettings: {
                 showRemove: false,
-                showUpload: false,
-                showCancel: false,
-                showClose: false,
-                showDescriptionClose: false,
-                // allowedPreviewTypes : [ 'image' ],
-                allowedFileExtensions : ['jpg', 'jpeg', 'png'],
-                initialPreviewShowDelete: false,
-                fileActionSettings: {
-                    showRemove: false,
-                    showDrag: false
-                },
-                initialPreview: [
-                    previewImage
-                ],
-                initialPreviewAsData: true,
-                initialPreviewConfig: {}
-            });
-        }
+                showDrag: false
+            },
+            initialPreview: [
+                previewImage
+            ],
+            initialPreviewAsData: true,
+            initialPreviewConfig: {}
+        });
     </script>

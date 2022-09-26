@@ -131,8 +131,10 @@ window.datePicker = () => {
         let minDate = (typeof $(element).data('minDate') !== 'undefined' ? $(element).data('minDate') : '');
         let maxDate = (typeof $(element).data('max-date') !== 'undefined' ? $(element).data('max-date') : '');
         let useCurrent = (initialDate === '' ? true : false);
+        let toolbarPlacement = (typeof $(element).data('toolbarplacement') !== 'undefined' ? $(element).data('toolbarplacement') : 'top');
 
         setup.display = {
+            toolbarPlacement,
             components: {
                 clock: false,
                 date: ($(element).parent().hasClass('input-date') ? true : false),
@@ -671,6 +673,7 @@ window.setupSelect2 = function(modal = '') {
     modal = (modal !== '' ? `#${modal} ` : '');
 
     $(`${modal}select`).each((index, element) => {
+        let dir = (typeof $(element).data('dir') !== 'undefined' ? $(element).data('dir') : 'ltr');
         let minimumInputLength = $(element).data('minimuminputlength');
         let maximumSelectionLength = $(element).data('maximumselectionlength');
         let closeOnSelect = $(element).data('closeonselect');
@@ -678,6 +681,7 @@ window.setupSelect2 = function(modal = '') {
         closeOnSelect = (typeof closeOnSelect !== 'undefined' ? (closeOnSelect === 'true' ? true : false) : true);
 
         $(element).select2({
+            dir: dir,
             dropdownParent: modal,
             minimumInputLength,
             maximumSelectionLength,
@@ -1212,6 +1216,13 @@ $(document).on('click', '.btn-quote', function(e) {
         case 'btn-send-quote':
             action = 'send';
             break;
+        case 'btn-create-activity':
+            action = 'create-activity';
+            title = `<h2 class='fw-bold text-primary'>Crear actividad</h2>`;
+            text = `¿Seguro quiere crear la actividad?`;
+            confirmButtonColor = `var(--bs-primary)`;
+            confirmButtonText = `Sí, crear actividad`;
+            break;
         default:
             break;
     }
@@ -1261,6 +1272,10 @@ $(document).on('click', '.btn-quote', function(e) {
         }
     }
 
+    if(action === 'create-activity') {
+        
+    }
+
     data.append('action', action);
     data.delete('_method');
 
@@ -1275,54 +1290,58 @@ $(document).on('click', '.btn-quote', function(e) {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if(result.isConfirmed) {
-            $.ajax({
-                url: `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`,
-                method: 'POST',
-                data,
-                processData: false,
-                contentType: false,
-                cache: false,
-                beforeSend: function() {
-                    $('.alert-success, .alert-danger').fadeOut().html('');
-                    showLoader(true);
-                },
-                success: function(response, status, xhr) {
-                    if(response.success) {
-                        $('#modalForm').modal('hide');
-                        if(action === 'send') {
-                            window.open(`${url_cotizacion}/exportQuote?quote=${$('#id_cotizacion').val()}`, '_blank');  
+            if(action !== 'create-activity') {
+                $.ajax({
+                    url: `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`,
+                    method: 'POST',
+                    data,
+                    processData: false,
+                    contentType: false,
+                    cache: false,
+                    beforeSend: function() {
+                        $('.alert-success, .alert-danger').fadeOut().html('');
+                        showLoader(true);
+                    },
+                    success: function(response, status, xhr) {
+                        if(response.success) {
+                            $('#modalForm').modal('hide');
+                            if(action === 'send') {
+                                window.open(`${url_cotizacion}/exportQuote?quote=${$('#id_cotizacion').val()}`, '_blank');  
+                            }
+    
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Cambio realizado',
+                                text: response.success,
+                                confirmButtonColor: 'var(--bs-primary)'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: response.error,
+                                confirmButtonColor: 'var(--bs-primary)'
+                            });
                         }
-
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Cambio realizado',
-                            text: response.success,
-                            confirmButtonColor: 'var(--bs-primary)'
+                    },
+                    error: function(response) {
+                        let errors = '';
+                        $.each(response.responseJSON.errors, function(i, item){
+                            errors += `<li>${item}</li>`;
                         });
-                    } else {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: response.error,
-                            confirmButtonColor: 'var(--bs-primary)'
-                        });
+                        $('.alert-danger')
+                            .html(`<h6 class="alert-heading fw-bold">Por favor corrija los siguientes campos:</h6> <ol>${errors}</ol>`)
+                            .fadeTo(10000, 1000)
+                            .slideUp(1000, function(){
+                                $(`.alert-danger`).slideUp(1000);
+                            });
                     }
-                },
-                error: function(response) {
-                    let errors = '';
-                    $.each(response.responseJSON.errors, function(i, item){
-                        errors += `<li>${item}</li>`;
-                    });
-                    $('.alert-danger')
-                        .html(`<h6 class="alert-heading fw-bold">Por favor corrija los siguientes campos:</h6> <ol>${errors}</ol>`)
-                        .fadeTo(10000, 1000)
-                        .slideUp(1000, function(){
-                            $(`.alert-danger`).slideUp(1000);
-                        });
-                }
-            }).always(function () {
-                getGrid(url_cotizacion, form_cotizacion);
-                showLoader(false);
-            });
+                }).always(function () {
+                    getGrid(url_cotizacion, form_cotizacion);
+                    showLoader(false);
+                });
+            } else {
+                
+            }
 
             return false;
         }
@@ -1338,8 +1357,8 @@ $(document).on('change', '#id_cotizacion_actividad', function() {
     $('#fecha_solicitud').val('');
     $('#id_resposable_contratista').val('');
     $('#descripcion').val('');
-
     $('#id_encargado_cliente, #id_tipo_actividad, #id_subsistema').change();
+    consultar = true;
 
     if($(this).val() !== '') {
         $.ajax({

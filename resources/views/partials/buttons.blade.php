@@ -11,7 +11,7 @@
     </form>
 @else
     <div class="modal-footer text-end">
-        <button class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
+        <button type="button" class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
             <i class="fa-regular fa-circle-xmark"></i> Cerrar
         </button>
     </div>

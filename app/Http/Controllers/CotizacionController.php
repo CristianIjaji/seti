@@ -243,6 +243,7 @@ class CotizacionController extends Controller
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
             ])->where('id_responsable_cliente', '>', 0)->get(),
+            'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas')),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
         ]);

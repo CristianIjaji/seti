@@ -9197,7 +9197,9 @@ window.datePicker = function () {
     var minDate = typeof $(element).data('minDate') !== 'undefined' ? $(element).data('minDate') : '';
     var maxDate = typeof $(element).data('max-date') !== 'undefined' ? $(element).data('max-date') : '';
     var useCurrent = initialDate === '' ? true : false;
+    var toolbarPlacement = typeof $(element).data('toolbarplacement') !== 'undefined' ? $(element).data('toolbarplacement') : 'top';
     setup.display = {
+      toolbarPlacement: toolbarPlacement,
       components: {
         clock: false,
         date: $(element).parent().hasClass('input-date') ? true : false,
@@ -9677,11 +9679,13 @@ window.setupSelect2 = function () {
   var modal = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
   modal = modal !== '' ? "#".concat(modal, " ") : '';
   $("".concat(modal, "select")).each(function (index, element) {
+    var dir = typeof $(element).data('dir') !== 'undefined' ? $(element).data('dir') : 'ltr';
     var minimumInputLength = $(element).data('minimuminputlength');
     var maximumSelectionLength = $(element).data('maximumselectionlength');
     var closeOnSelect = $(element).data('closeonselect');
     closeOnSelect = typeof closeOnSelect !== 'undefined' ? closeOnSelect === 'true' ? true : false : true;
     $(element).select2({
+      dir: dir,
       dropdownParent: modal,
       minimumInputLength: minimumInputLength,
       maximumSelectionLength: maximumSelectionLength,
@@ -10163,6 +10167,14 @@ $(document).on('click', '.btn-quote', function (e) {
       action = 'send';
       break;
 
+    case 'btn-create-activity':
+      action = 'create-activity';
+      title = "<h2 class='fw-bold text-primary'>Crear actividad</h2>";
+      text = "\xBFSeguro quiere crear la actividad?";
+      confirmButtonColor = "var(--bs-primary)";
+      confirmButtonText = "S\xED, crear actividad";
+      break;
+
     default:
       break;
   }
@@ -10209,6 +10221,8 @@ $(document).on('click', '.btn-quote', function (e) {
       return false;
     }
   }
+
+  if (action === 'create-activity') {}
 
   data.append('action', action);
   data["delete"]('_method');
@@ -10283,6 +10297,7 @@ $(document).on('change', '#id_cotizacion_actividad', function () {
   $('#id_resposable_contratista').val('');
   $('#descripcion').val('');
   $('#id_encargado_cliente, #id_tipo_actividad, #id_subsistema').change();
+  consultar = true;
 
   if ($(this).val() !== '') {
     $.ajax({
