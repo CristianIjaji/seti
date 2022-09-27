@@ -209,10 +209,15 @@ class SetupSeeder extends Seeder
             'estado' => 1,
             'id_usuareg' => $user->id_usuario
         ]);
-
         $lista_subsistemas = TblDominio::create([
             'nombre' => 'Listado de los subsistemas',
             'descripcion' => 'Listado de los subsistemas',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        $lista_estados_actividad = TblDominio::create([
+            'nombre' => 'Listado de los estados de la actividad',
+            'descripcion' => 'Listado de los estados de la actividad',
             'estado' => 1,
             'id_usuareg' => $user->id_usuario
         ]);
@@ -624,6 +629,58 @@ class SetupSeeder extends Seeder
             ]);
         /* Fin creación dominios hijos tipos de subsistemas */
 
+        /* Creación dominios hijos estados actividad */
+            $actividad_programado = TblDominio::create([
+                'nombre' => 'Programado',
+                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'Programado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $actividad_comprando = TblDominio::create([
+                'nombre' => 'Comprando',
+                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'Comprando',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $actividad_reprogramado = TblDominio::create([
+                'nombre' => 'Reprogramado',
+                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'Reprogramado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $actividad_ejecutado = TblDominio::create([
+                'nombre' => 'Ejecutado',
+                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'Ejecutado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $actividad_pausada = TblDominio::create([
+                'nombre' => 'Pausada',
+                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'Pausada',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $actividad_liquidado = TblDominio::create([
+                'nombre' => 'Liquidado',
+                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'Liquidado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $actividad_conciliado = TblDominio::create([
+                'nombre' => 'Conciliado',
+                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'Conciliado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creación dominios hijos estados actividad */
+
         /* Creación parametros */
             // Creación parametro tipo documentos
             TblParametro::create([
@@ -874,6 +931,62 @@ class SetupSeeder extends Seeder
                 'llave' => 'id_dominio_subsistemas',
                 'valor' => $lista_subsistemas->id_dominio,
                 'descripcion' => 'id_dominio_subsistemas',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creacón parametro estados de la actividad
+            TblParametro::create([
+                'llave' => 'id_dominio_estados_actividad',
+                'valor' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'id_dominio_estados_actividad',
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            // Creación parametro actividad programado
+            TblParametro::create([
+                'llave' => 'id_dominio_actividad_programado',
+                'valor' => $actividad_programado->id_dominio,
+                'descripcion' => 'id_dominio_actividad_programado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro actividad comprando
+            TblParametro::create([
+                'llave' => 'id_dominio_actividad_comprando',
+                'valor' => $actividad_comprando->id_dominio,
+                'descripcion' => 'id_dominio_actividad_comprando',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro actividad reprogramado
+            TblParametro::create([
+                'llave' => 'id_dominio_actividad_reprogramado',
+                'valor' => $actividad_reprogramado->id_dominio,
+                'descripcion' => 'id_dominio_actividad_reprogramado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro actividad ejecutado
+            TblParametro::create([
+                'llave' => 'id_dominio_actividad_ejecutado',
+                'valor' => $actividad_ejecutado->id_dominio,
+                'descripcion' => 'id_dominio_actividad_ejecutado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro actividad pausada
+            TblParametro::create([
+                'llave' => 'id_dominio_actividad_pausada',
+                'valor' => $actividad_pausada->id_dominio,
+                'descripcion' => 'id_dominio_actividad_pausada',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro actividad liquidado
+            TblParametro::create([
+                'llave' => 'id_dominio_actividad_liquidado',
+                'valor' => $actividad_liquidado->id_dominio,
+                'descripcion' => 'id_dominio_actividad_liquidado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro actividad conciliado
+            TblParametro::create([
+                'llave' => 'id_dominio_actividad_conciliado',
+                'valor' => $actividad_conciliado->id_dominio,
+                'descripcion' => 'id_dominio_actividad_conciliado',
                 'id_usuareg' => $user->id_usuario
             ]);
         /* Fin creación parametros */

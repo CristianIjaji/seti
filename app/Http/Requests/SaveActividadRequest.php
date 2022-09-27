@@ -90,7 +90,6 @@ class SaveActividadRequest extends FormRequest
                 'exists:tbl_dominios,id_dominio'
             ],
             'id_cotizacion' => [
-                'required',
                 'nullable',
                 'exists:tbl_cotizaciones,id_cotizacion'
             ],
