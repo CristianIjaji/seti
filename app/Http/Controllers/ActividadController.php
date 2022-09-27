@@ -10,6 +10,7 @@ use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class ActividadController extends Controller
 {
@@ -94,7 +95,21 @@ class ActividadController extends Controller
      */
     public function store(SaveActividadRequest $request)
     {
-        //
+        try {
+            $actividad = TblActividad::create($request->validated());
+            $this->authorize('create', $actividad);
+
+            $this->createTrak($actividad, session(''));
+            return response()->json([
+                'success' => 'Actividad creada exitosamente!',
+                'response' => [
+                    'value' => $actividad->id_actividad,
+                    'option' => $actividad->descripcion,
+                ],
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 
     /**
@@ -167,5 +182,13 @@ class ActividadController extends Controller
             'view' => Gate::allows('view', $actividad),
             'request' => $this->filtros,
         ]);
+    }
+
+    private function createTrak($activity, $action) {
+        try {
+            
+        } catch (\Throwable $th) {
+            Log::error("Error creando track de actividad: ".$th->getMessage());
+        }
     }
 }

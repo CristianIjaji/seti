@@ -209,7 +209,6 @@ class SetupSeeder extends Seeder
             'estado' => 1,
             'id_usuareg' => $user->id_usuario
         ]);
-
         $lista_subsistemas = TblDominio::create([
             'nombre' => 'Listado de los subsistemas',
             'descripcion' => 'Listado de los subsistemas',
