@@ -566,6 +566,62 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            TblDominio::create([
+                'nombre' => 'Sistema puesta tierra',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Sistema puesta tierra',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Baja tensión',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Baja Tensión',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Media tensión',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Baja Tensión',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Obra civil',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Obra civil',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Media tensión',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Sistema regulado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'ATS',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'ATS',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'SPT/MT/BT',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Sistema puesta atierra, media tensión y baja tensión',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Power',
+                'id_dominio_padre' => $lista_subsistemas->id_dominio,
+                'descripcion' => 'Sistema de respaldo power',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
         /* Fin creación dominios hijos tipos de subsistemas */
 
         /* Creación parametros */
