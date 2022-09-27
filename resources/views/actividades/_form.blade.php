@@ -141,15 +141,14 @@
                 <label for="id_estado_actividad" class="required">Estado actividad</label>
                 @if ($edit)
                     <select name="id_estado_actividad" id="id_estado_actividad" class="form-control" style="width: 100%">
-                        {{-- <option value="">Estado actividad:</option> --}}
-                        @foreach ($tipos_trabajo as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $id ? 'selected' : '' }}>
-                                {{$nombre}}
-                            </option>
+                        @foreach ($estados as $estado)
+                        <option value="{{ $estado->id_dominio}}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $estado->id_dominio ? 'selected' : '' }}>
+                        {{ $estado->nombre}}
+                        </option>
                         @endforeach
                     </select>
                 @else
-                    <input type="text" class="form-control" id="id_estado_actividad" value="{{ $activity->tbltipoactividad->nombre }}" disabled>
+                    <input type="text" class="form-control" id="id_estado_actividad" value="{{ $activity->tblestadoactividad->nombre }}" disabled>
                 @endif
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2">
