@@ -583,7 +583,7 @@ class SetupSeeder extends Seeder
             TblDominio::create([
                 'nombre' => 'Media tensión',
                 'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Baja Tensión',
+                'descripcion' => 'Media tensión',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -595,7 +595,7 @@ class SetupSeeder extends Seeder
                 'id_usuareg' => $user->id_usuario,
             ]);
             TblDominio::create([
-                'nombre' => 'Media tensión',
+                'nombre' => 'Sistema regulado',
                 'id_dominio_padre' => $lista_subsistemas->id_dominio,
                 'descripcion' => 'Sistema regulado',
                 'estado' => 1,

@@ -96,18 +96,18 @@
                 @endif
             </div>
             <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
-                <label for="id_tipo_actividad" class="required">Tipo trabajo</label>
+                <label for="id_estado_actividad" class="required">Tipo trabajo</label>
                 @if ($edit)
-                    <select name="id_tipo_actividad" id="id_tipo_actividad" class="form-control" style="width: 100%">
+                    <select name="id_estado_actividad" id="id_estado_actividad" class="form-control" style="width: 100%">
                         <option value="">Elegir tipo trabajo</option>
                         @foreach ($tipos_trabajo as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('id_tipo_actividad', $activity->id_tipo_actividad) == $id ? 'selected' : '' }}>
+                            <option value="{{ $id }}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $id ? 'selected' : '' }}>
                                 {{$nombre}}
                             </option>
                         @endforeach
                     </select>
                 @else
-                    <input type="text" class="form-control" id="id_tipo_actividad" value="{{ $activity->tbltipoactividad->nombre }}" disabled>
+                    <input type="text" class="form-control" id="id_estado_actividad" value="{{ $activity->tbltipoactividad->nombre }}" disabled>
                 @endif
             </div>
             <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
@@ -137,7 +137,26 @@
                 <label for="permiso_acceso">ID Permiso</label>
                 <input type="text" class="form-control" @if ($edit) name="permiso_acceso" @endif id="permiso_acceso" value="{{ old('permiso_acceso', $activity->permiso_acceso) }}" @if (!$edit) disabled @endif >
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-5 col-xl-4">
+            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
+                <label for="id_estado_actividad" class="required">Estado actividad</label>
+                @if ($edit)
+                    <select name="id_estado_actividad" id="id_estado_actividad" class="form-control" style="width: 100%">
+                        {{-- <option value="">Estado actividad:</option> --}}
+                        @foreach ($tipos_trabajo as $id => $nombre)
+                            <option value="{{ $id }}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $id ? 'selected' : '' }}>
+                                {{$nombre}}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="text" class="form-control" id="id_estado_actividad" value="{{ $activity->tbltipoactividad->nombre }}" disabled>
+                @endif
+            </div>
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2">
+                <label for="valor" class="required">Valor actividad</label>
+                <input type="text" class="form-control money" @if ($edit) name="valor" @endif id="valor" value="{{ old('valor', $activity->valor) }}" @if ($edit) required @else disabled @endif>
+            </div>
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-5 col-xl-3">
                 <label for="id_resposable_contratista" class="required">Responsable</label>
                 @if ($edit)
                     <div class="row pe-0 pe-md-3">
