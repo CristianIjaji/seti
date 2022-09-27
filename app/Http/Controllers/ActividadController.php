@@ -82,7 +82,7 @@ class ActividadController extends Controller
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
-            'estados' => TblDominio::wherein('id_dominio_estado', [session('id_dominio_actividad_programado'), session('id_dominio_actividad_comprando')]),
+            'estados' => TblDominio::wherein('id_dominio', [session('id_dominio_actividad_programado'), session('id_dominio_actividad_comprando')])->get(),
         ]);
     }
 
@@ -176,7 +176,10 @@ class ActividadController extends Controller
                 ->where(function($q) {
                     $this->dinamyFilters($q);
                 })->latest()->paginate(10),
-
+            'clientes' => TblTercero::getClientesTipo(session('id_dominio_representante_cliente')),
+            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
+            'contratistas' => TblTercero::getClientesTipo(session('id_dominio_coordinador')),
+            'estados_actividad' => TblDominio::getListaDominios(session('id_dominio_estados_actividad')),
             'status' => [],
             'create' => Gate::allows('create', $actividad),
             'edit' => Gate::allows('update', $actividad),

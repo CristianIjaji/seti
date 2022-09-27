@@ -9197,9 +9197,7 @@ window.datePicker = function () {
     var minDate = typeof $(element).data('minDate') !== 'undefined' ? $(element).data('minDate') : '';
     var maxDate = typeof $(element).data('max-date') !== 'undefined' ? $(element).data('max-date') : '';
     var useCurrent = initialDate === '' ? true : false;
-    var toolbarPlacement = typeof $(element).data('toolbarplacement') !== 'undefined' ? $(element).data('toolbarplacement') : 'top';
     setup.display = {
-      toolbarPlacement: toolbarPlacement,
       components: {
         clock: false,
         date: $(element).parent().hasClass('input-date') ? true : false,

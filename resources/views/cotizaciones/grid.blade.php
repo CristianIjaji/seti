@@ -13,7 +13,7 @@
         ['name' => 'id_cotizacion', 'label' => '#', 'align' => 'text-end'],
         ['name' => 'ot_trabajo', 'label' => 'OT trabajo'],
         ['name' => 'id_cliente', 'label' => 'Cliente', 'options' => $clientes],
-        ['name' => 'tblEstacion', 'label' => 'Estación', 'foreign' => 'nombre'],
+        ['name' => 'tblEstacion', 'label' => 'Sitio', 'foreign' => 'nombre'],
         ['name' => 'fecha_solicitud', 'label' => 'Fecha solicitud', 'class' => 'input-date'],
         ['name' => 'fecha_envio', 'label' => 'Fecha envió', 'class' => 'input-date'],
         ['name' => 'id_prioridad', 'label' => 'Prioridad', 'options' => $prioridades],
