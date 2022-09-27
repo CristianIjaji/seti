@@ -217,7 +217,7 @@ class PuntosInteresController extends Controller
 
     public static function get_puntos_interes_client($client) {
         return response()->json([
-            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $client])->pluck('nombre', 'id_punto_interes'),
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $client])->orderBy('nombre', 'asc')->pluck('nombre', 'id_punto_interes'),
         ]);
     }
 

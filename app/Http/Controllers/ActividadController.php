@@ -69,8 +69,7 @@ class ActividadController extends Controller
         return view('actividades._form', [
             'activity' => new TblActividad,
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
-            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
-            'tipos_subsistema' => TblDominio::getListaDominios(session('id_dominio_subsistemas')),
+            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
             'contratistas' => TblTercero::where([
                 'estado' => 1,
@@ -82,8 +81,8 @@ class ActividadController extends Controller
             ])->where('id_responsable_cliente', '>', 0)->get(),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
-            'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas')),
-            'cotizaciones' => TblCotizacion::where(['estado' => session('id_dominio_cotizacion_aprobada')])->get(),
+            'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
+            'estados' => TblDominio::wherein('id_dominio_estado', [session('id_dominio_actividad_programado'), session('id_dominio_actividad_comprando')]),
         ]);
     }
 
@@ -108,7 +107,9 @@ class ActividadController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
-            //throw $th;
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
         }
     }
 
@@ -169,7 +170,7 @@ class ActividadController extends Controller
         $actividad = new TblActividad;
 
         return view($view, [
-            'model' => TblActividad::with(['tblencargado', 'tblcliente', 'tbltipoactividad', 'tblmes',
+            'model' => TblActividad::with(['tblencargadocliente', 'tblcliente', 'tbltipoactividad', 'tblmes',
                 'tblestacion', 'tblpermiso', 'tblestadoactividad', 'tblcotizacion', 'tblordencompra',
                 'tblinforme', 'tblreponsablecliente', 'tblmesconsolidado', 'tblfactura', 'tblusuario'])
                 ->where(function($q) {

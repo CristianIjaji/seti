@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class TblDominio extends Model
 {
@@ -48,7 +49,10 @@ class TblDominio extends Model
         return $status;
     }
 
-    public static function getListaDominios($id_domiino_padre) {
-        return TblDominio::where(['estado' => 1, 'id_dominio_padre' => $id_domiino_padre])->pluck('nombre', 'id_dominio');
+    public static function getListaDominios($id_domiino_padre, $orderBy = '', $sort = 'ASC') {
+        return ($orderBy != ''
+            ? TblDominio::where(['estado' => 1, 'id_dominio_padre' => $id_domiino_padre])->orderBy($orderBy, $sort)->pluck('nombre', 'id_dominio')
+            : TblDominio::where(['estado' => 1, 'id_dominio_padre' => $id_domiino_padre])->pluck('nombre', 'id_dominio')
+        );
     }
 }
