@@ -31,7 +31,7 @@
                     @if ($create_client)
                         <div class="col-2 col-md-1 text-end">
                             <i
-                                class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                                class="fa-solid fa-plus btn btn-outline-primary fs-6 fw-bold modal-form"
                                 data-title="Nuevo cliente"
                                 data-size='modal-xl'
                                 data-reload="false"

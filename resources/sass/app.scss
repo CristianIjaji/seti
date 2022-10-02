@@ -626,6 +626,11 @@ label.required::after {
     background: rgba(var(--bs-info-rgb), var(--bs-bg-opacity));
 }
 
+.bg-table-pink {
+    // --bs-bg-opacity: 0.4;
+    background: var(--bs-pink);
+}
+
 .bg-orange {
     --bs-bg-opacity: 1;
     background-color: var(--bs-orange) !important;

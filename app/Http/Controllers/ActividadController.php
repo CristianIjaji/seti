@@ -10,6 +10,7 @@ use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
@@ -93,7 +94,7 @@ class ActividadController extends Controller
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
             'estados' => TblDominio::wherein('id_dominio', [session('id_dominio_actividad_programado'), session('id_dominio_actividad_comprando')])->get(),
-            'quote' => isset(request()->cotizacion) ? TblCotizacion::find(request()->cotizacion)->first() : [],
+            'quote' => isset(request()->cotizacion) ? TblCotizacion::find(request()->cotizacion) : [],
         ]);
     }
 
@@ -135,7 +136,8 @@ class ActividadController extends Controller
 
         return view('actividades._form', [
             'edit' => false,
-            'activity' => $activity
+            'activity' => $activity,
+            'quote' => isset(request()->cotizacion) ? TblCotizacion::find(request()->cotizacion) : [],
         ]);
     }
 
@@ -164,11 +166,21 @@ class ActividadController extends Controller
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
-            // 'estados' => TblDominio::wherein('id_dominio', [session('id_dominio_actividad_programado'), session('id_dominio_actividad_comprando')])->get(),
+            'estados' => TblDominio::where(['id_dominio_padre' => session('id_dominio_estados_actividad')])->get(),
             'contratistas' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
             ])->where('id_responsable_cliente', '>', 0)->get(),
+            'cotizaciones' => TblCotizacion::select(DB::raw('DISTINCT tbl_cotizaciones.*'))
+            ->leftjoin('tbl_actividades as act', 'tbl_cotizaciones.id_cotizacion', '=', 'act.id_cotizacion')
+            ->where('act.id_cotizacion')
+            ->where([
+                'tbl_cotizaciones.id_cliente' => $activity->id_encargado_cliente,
+                'tbl_cotizaciones.id_estacion' => $activity->id_estacion,
+                'tbl_cotizaciones.id_tipo_trabajo' => $activity->id_tipo_actividad,
+                'tbl_cotizaciones.estado' => session('id_dominio_cotizacion_aprobada')
+            ])
+            ->get(),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
         ]);
@@ -186,7 +198,6 @@ class ActividadController extends Controller
         try {
             $this->authorize('update', $activity);
             $activity->update($request->validated());
-
 
             return response()->json([
                 'success' => 'Cotización actualizada correctamente!'

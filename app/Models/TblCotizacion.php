@@ -165,7 +165,10 @@ class TblCotizacion extends Model
     }
 
     public function getCotizacionAttribute() {
-        return "Sitio: ".$this->tblestacion->nombre.". F. Solcitud: ".$this->fecha_solicitud.'. Manto.: '.$this->tblTipoTrabajo->nombre.'. Alcance: '.$this->descripcion;
+        return isset($this->tblestacion->nombre)
+            ? (!empty($this->ot_trabajo) ? 'OT: '.$this->ot_trabajo.'. ' : '').$this->tblestacion->nombre.". Solicitud: ".$this->fecha_solicitud.
+                '. Manto.: '.$this->tblTipoTrabajo->nombre.'. Valor: $'.number_format($this->valor, 2).'. Alcance: '.$this->descripcion
+            : null;
     }
 
     public static function getRules() {

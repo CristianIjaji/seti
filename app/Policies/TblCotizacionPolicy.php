@@ -152,7 +152,10 @@ class TblCotizacionPolicy
     }
 
     public function createComment(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_aprobada'), session('id_dominio_cotizacion_cancelada')])) {
+        // Se valida sí ya existe una actividad asociado
+        $actividad = TblActividad::where(['id_cotizacion' => $tblCotizacion->id_cotizacion])->first();
+
+        if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_cancelada')]) || isset($actividad->id_actividad)) {
             return false;
         }
 
@@ -167,6 +170,6 @@ class TblCotizacionPolicy
             return false;
         }
 
-        return true;
+        return isset($tblUsuario->getPermisosMenu('activities.index')->create) ? $tblUsuario->getPermisosMenu('activities.index')->create : false;
     }
 }

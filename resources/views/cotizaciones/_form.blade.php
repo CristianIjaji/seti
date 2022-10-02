@@ -54,7 +54,7 @@
                             @if ($create_client)
                                 <div class="col-2 col-md-1 text-end">
                                     <i
-                                        class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                                        class="fa-solid fa-plus btn btn-outline-primary fs-6 fw-bold modal-form"
                                         data-title="Nuevo cliente"
                                         data-size='modal-xl'
                                         data-reload="false"
@@ -91,7 +91,7 @@
                             @if ($create_site)
                                 <div class="col-2 col-md-1 text-end">
                                     <i
-                                        class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                                        class="fa-solid fa-plus btn btn-outline-primary fs-6 fw-bold modal-form"
                                         data-title="Nuevo punto interés"
                                         data-size='modal-xl'
                                         data-reload="false"
@@ -179,7 +179,7 @@
                             @if ($create_client)
                                 <div class="col-2 col-md-1 text-end">
                                     <i
-                                        class="fa-solid fa-plus btn fs-6 fw-bold bg-primary text-white modal-form"
+                                        class="fa-solid fa-plus btn btn-outline-primary fs-6 fw-bold modal-form"
                                         data-title="Nuevo aprobador"
                                         data-size='modal-xl'
                                         data-reload="false"
@@ -213,19 +213,21 @@
                         </button>
 
                         @if (isset($actividad->id_actividad))
-                            <span
-                                class="btn btn-info text-white modal-form"
-                                data-title="Ver actividad"
-                                data-size="modal-fullscreen"
-                                data-header-class='bg-info text-white'
-                                data-reload="false"
-                                data-action="{{ route('activities.show', $actividad) }}"
-                                data-modal="modalForm-2"
-                                data-toggle="tooltip"
-                                title="Ver actividad"
-                            >
-                                <i class="fa-solid fa-circle-info"></i> Ver Actividad
-                            </span>
+                            @can('view', $actividad)
+                                <span
+                                    class="btn btn-info text-white modal-form"
+                                    data-title="Ver actividad"
+                                    data-size="modal-fullscreen"
+                                    data-header-class='bg-info text-white'
+                                    data-reload="false"
+                                    data-action="{{ route('activities.show', $actividad->id_actividad) }}"
+                                    data-modal="modalForm-2"
+                                    data-toggle="tooltip"
+                                    title="Ver actividad"
+                                >
+                                    <i class="fa-solid fa-circle-info"></i> Ver Actividad
+                                </span>
+                            @endcan
                         @endif
 
                         @can('createActivity', $cotizacion)

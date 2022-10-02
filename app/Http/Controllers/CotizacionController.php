@@ -220,6 +220,7 @@ class CotizacionController extends Controller
             'cotizacion' => $quote,
             'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('created_at', 'desc')->paginate(10),
             'carrito' => $this->getDetalleCotizacion($quote),
+            'actividad' => TblActividad::where(['id_cotizacion' => $quote->id_cotizacion])->first(),
         ]);
     }
 
