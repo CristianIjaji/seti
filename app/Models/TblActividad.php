@@ -70,7 +70,7 @@ class TblActividad extends Model
     }
 
     public function tblinforme() {
-        return $this->belongsTo(tblinforme::class, 'id_informe');
+        // return $this->belongsTo(tblinforme::class, 'id_informe');
     }
 
     public function tblmesconsolidado() {
@@ -79,5 +79,21 @@ class TblActividad extends Model
 
     public function tblusuario() {
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
+    }
+
+    public function getEstadoAttribute() {
+        return $this->attributes['id_estado_actividad'];
+    }
+
+    public function getStatusAttribute() {
+        return [
+            session('id_dominio_actividad_programado') => '',
+            session('id_dominio_actividad_comprando') => '',
+            session('id_dominio_actividad_reprogramado') => '',
+            session('id_dominio_actividad_ejecutado') => '',
+            session('id_dominio_actividad_pausada') => '',
+            session('id_dominio_actividad_liquidado') => '',
+            session('id_dominio_actividad_conciliado') => '',
+        ];
     }
 }

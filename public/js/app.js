@@ -9518,7 +9518,7 @@ var handleModal = function handleModal(button) {
     });
   }
 
-  $("#".concat(modal, " .modal-dialog")).removeClass('modal-sm modal-md modal-lg modal-xl').addClass(size);
+  $("#".concat(modal, " .modal-dialog")).removeClass().addClass("modal-dialog modal-dialog-centered ".concat(size));
   $("#".concat(modal, " .modal-title")).html(title);
   $("#".concat(modal, " .modal-header")).attr('class', 'modal-header border-bottom border-2');
   $("#".concat(modal, " .modal-header")).addClass(headerClass);
@@ -10049,9 +10049,8 @@ $(document).on('keyup', '.txt-cotizaciones', function () {
 $(document).on('change', '.txt-cotizaciones', function () {
   fnc_totales_cot($(this).parent().parent().attr('id'));
 });
-var consultar = true;
 $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', function () {
-  if (typeof $(this).closest('form').attr('action') !== 'undefined' && consultar) {
+  if (typeof $(this).closest('form').attr('action') !== 'undefined') {
     $('#table-cotizaciones').addClass('d-none');
     $('#id_estacion').empty();
     $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
@@ -10220,8 +10219,6 @@ $(document).on('click', '.btn-quote', function (e) {
     }
   }
 
-  if (action === 'create-activity') {}
-
   data.append('action', action);
   data["delete"]('_method');
   Swal.fire({
@@ -10235,55 +10232,66 @@ $(document).on('click', '.btn-quote', function (e) {
     cancelButtonText: 'Cancelar'
   }).then(function (result) {
     if (result.isConfirmed) {
-      if (action !== 'create-activity') {
-        $.ajax({
-          url: "".concat(url_cotizacion, "/").concat($('#id_cotizacion').val(), "/handleQuote"),
-          method: 'POST',
-          data: data,
-          processData: false,
-          contentType: false,
-          cache: false,
-          beforeSend: function beforeSend() {
-            $('.alert-success, .alert-danger').fadeOut().html('');
-            showLoader(true);
-          },
-          success: function success(response, status, xhr) {
-            if (response.success) {
-              $('#modalForm').modal('hide');
+      var url = "".concat(url_cotizacion, "/").concat($('#id_cotizacion').val(), "/handleQuote");
 
-              if (action === 'send') {
-                window.open("".concat(url_cotizacion, "/exportQuote?quote=").concat($('#id_cotizacion').val()), '_blank');
-              }
+      if (action == 'create-activity') {
+        url = 'activities';
+        data.append('id_encargado_cliente', $('#id_cliente').val());
+        data.append('id_estacion', $('#id_punto_interes').val());
+        data.append('id_tipo_actividad', $('#id_tipo_actividad').val());
+        data.append('fecha_solicitud', $('#fecha_solicitud').val());
+        data.append('valor', $('#valor_actividad').val());
+        data.append('id_resposable_contratista', $('#id_resposable_contratista').val());
+        data.append('descripcion', $('#descripcion').val());
+        data.append('id_estado_actividad', $('#id_estado_actividad').val());
+        data.append('id_cotizacion', $('#id_cotizacion').val());
+        data.append('observaciones', $('#descripcion').val());
+      }
 
-              Swal.fire({
-                icon: 'success',
-                title: 'Cambio realizado',
-                text: response.success,
-                confirmButtonColor: 'var(--bs-primary)'
-              });
-            } else {
-              Swal.fire({
-                icon: 'warning',
-                title: response.error,
-                confirmButtonColor: 'var(--bs-primary)'
-              });
-            }
-          },
-          error: function error(response) {
-            var errors = '';
-            $.each(response.responseJSON.errors, function (i, item) {
-              errors += "<li>".concat(item, "</li>");
+      $.ajax({
+        url: url,
+        method: 'POST',
+        data: data,
+        processData: false,
+        contentType: false,
+        cache: false,
+        beforeSend: function beforeSend() {
+          $('.alert-success, .alert-danger').fadeOut().html('');
+          showLoader(true);
+        },
+        success: function success(response, status, xhr) {
+          if (response.success) {
+            $('#modalForm').modal('hide');
+            Swal.fire({
+              icon: 'success',
+              title: 'Cambio realizado',
+              text: response.success,
+              confirmButtonColor: 'var(--bs-primary)'
             });
-            $('.alert-danger').html("<h6 class=\"alert-heading fw-bold\">Por favor corrija los siguientes campos:</h6> <ol>".concat(errors, "</ol>")).fadeTo(10000, 1000).slideUp(1000, function () {
-              $(".alert-danger").slideUp(1000);
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: response.error,
+              confirmButtonColor: 'var(--bs-primary)'
             });
           }
-        }).always(function () {
+        },
+        error: function error(response) {
+          var errors = '';
+          $.each(response.responseJSON.errors, function (i, item) {
+            errors += "<li>".concat(item, "</li>");
+          });
+          $('.alert-danger').html("<h6 class=\"alert-heading fw-bold\">Por favor corrija los siguientes campos:</h6> <ol>".concat(errors, "</ol>")).fadeTo(10000, 1000).slideUp(1000, function () {
+            $(".alert-danger").slideUp(1000);
+          });
+        }
+      }).always(function () {
+        if (action !== 'create-activity') {
           getGrid(url_cotizacion, form_cotizacion);
-          showLoader(false);
-        });
-      } else {}
+        }
 
+        showLoader(false);
+      });
       return false;
     }
   });
@@ -10298,14 +10306,12 @@ $(document).on('change', '#id_cotizacion_actividad', function () {
   $('#id_resposable_contratista').val('');
   $('#descripcion').val('');
   $('#id_encargado_cliente, #id_tipo_actividad, #id_subsistema').change();
-  consultar = true;
 
   if ($(this).val() !== '') {
     $.ajax({
       url: "quotes/".concat($(this).val(), "/getquote"),
       method: 'GET',
       beforeSend: function beforeSend() {
-        consultar = false;
         showLoader(true);
       }
     }).done(function (response) {

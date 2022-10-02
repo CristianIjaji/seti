@@ -6,6 +6,7 @@ use App\Http\Requests\SaveActividadRequest;
 use App\Models\TblActividad;
 use App\Models\TblCotizacion;
 use App\Models\TblDominio;
+use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Http\Request;
@@ -66,6 +67,15 @@ class ActividadController extends Controller
     {
         $this->authorize('create', new TblActividad);
 
+        $id_cliente = 0;
+        if(isset(request()->cotizacion)) {
+            $quote = TblCotizacion::find(request()->cotizacion);
+            $id_cliente = (isset($quote->tblCliente->id_responsable_cliente)
+                ? $quote->tblCliente->id_responsable_cliente
+                : $quote->id_cliente
+            );
+        }
+
         return view('actividades._form', [
             'activity' => new TblActividad,
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
@@ -79,10 +89,11 @@ class ActividadController extends Controller
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
             ])->where('id_responsable_cliente', '>', 0)->get(),
-            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
             'estados' => TblDominio::wherein('id_dominio', [session('id_dominio_actividad_programado'), session('id_dominio_actividad_comprando')])->get(),
+            'quote' => isset(request()->cotizacion) ? TblCotizacion::find(request()->cotizacion)->first() : [],
         ]);
     }
 
@@ -96,7 +107,6 @@ class ActividadController extends Controller
     {
         try {
             $actividad = TblActividad::create($request->validated());
-            $this->authorize('create', $actividad);
 
             $this->createTrak($actividad, session(''));
             return response()->json([
@@ -124,6 +134,7 @@ class ActividadController extends Controller
         $this->authorize('view', $activity);
 
         return view('actividades._form', [
+            'edit' => false,
             'activity' => $activity
         ]);
     }
@@ -134,9 +145,33 @@ class ActividadController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(TblActividad $activity)
     {
-        //
+        $this->authorize('update', $activity);
+
+        $id_cliente = (isset($activity->tblencargadocliente->id_responsable_cliente)
+            ? $activity->tblencargadocliente->id_responsable_cliente
+            : $activity->id_encargado_cliente
+        );
+
+        return view('actividades._form', [
+            'edit' => true,
+            'activity' => $activity,
+            'clientes' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
+            'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
+            'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
+            // 'estados' => TblDominio::wherein('id_dominio', [session('id_dominio_actividad_programado'), session('id_dominio_actividad_comprando')])->get(),
+            'contratistas' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
+            ])->where('id_responsable_cliente', '>', 0)->get(),
+            'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
+            'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
+        ]);
     }
 
     /**
@@ -146,9 +181,21 @@ class ActividadController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(SaveActividadRequest $request, TblActividad $activity)
     {
-        //
+        try {
+            $this->authorize('update', $activity);
+            $activity->update($request->validated());
+
+
+            return response()->json([
+                'success' => 'Cotización actualizada correctamente!'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -170,9 +217,9 @@ class ActividadController extends Controller
         $actividad = new TblActividad;
 
         return view($view, [
-            'model' => TblActividad::with(['tblencargadocliente', 'tblcliente', 'tbltipoactividad', 'tblmes',
-                'tblestacion', 'tblpermiso', 'tblestadoactividad', 'tblcotizacion', 'tblordencompra',
-                'tblinforme', 'tblreponsablecliente', 'tblmesconsolidado', 'tblfactura', 'tblusuario'])
+            'model' => TblActividad::with(['tbltipoactividad', 'tblsubsistema', 'tblencargadocliente',
+                'tblresposablecontratista', 'tblestacion', 'tblestadoactividad', 'tblcotizacion', 'tblordencompra',
+                'tblmesconsolidado', 'tblusuario'])
                 ->where(function($q) {
                     $this->dinamyFilters($q);
                 })->latest()->paginate(10),
@@ -180,7 +227,7 @@ class ActividadController extends Controller
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
             'contratistas' => TblTercero::getClientesTipo(session('id_dominio_coordinador')),
             'estados_actividad' => TblDominio::getListaDominios(session('id_dominio_estados_actividad')),
-            'status' => [],
+            'status' => $actividad->status,
             'create' => Gate::allows('create', $actividad),
             'edit' => Gate::allows('update', $actividad),
             'view' => Gate::allows('view', $actividad),

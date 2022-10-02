@@ -60,7 +60,7 @@ class TblPuntosInteres extends Model
         return [
             '0' => 'required|exists:tbl_terceros,documento',
             '1' => 'required|exists:tbl_dominios,nombre',
-            '2' => 'required|string|max:255',
+            '2' => 'required|string|max:255|unique:tbl_puntos_interes,nombre',
             '3' => 'nullable',
             '4' => 'nullable',
             '5' => 'required',
@@ -101,22 +101,16 @@ class TblPuntosInteres extends Model
         $transporte = TblDominio::where(['nombre' => $transporte, 'id_dominio_padre' => $parametro_transporte])->first();
         $acceso = TblDominio::where(['nombre' => $acceso, 'id_dominio_padre' => $parametro_acceso])->first();
 
-        $estacion = TblPuntosInteres::where(['id_cliente' => $cliente->id_tercero, 'id_zona' => $zona->id_dominio, 'nombre' => $nombre])->first();
-        
-        if(!$estacion) {
-            return new TblPuntosInteres([
-                'id_cliente' => (isset($cliente->id_tercero) ? $cliente->id_tercero : null),
-                'id_zona' => (isset($zona->id_dominio) ? $zona->id_dominio : null),
-                'nombre' => $nombre,
-                'latitud' => $latitud,
-                'longitud' => $longitud,
-                'descripcion' => $descripcion,
-                'id_tipo_transporte' => (isset($transporte->id_dominio) ? $transporte->id_dominio : null),
-                'id_tipo_accesso' => (isset($acceso->id_dominio) ? $acceso->id_dominio : null),
-                'id_usuareg' => auth()->id()
-            ]);
-        } else {
-            return null;
-        }
+        return new TblPuntosInteres([
+            'id_cliente' => (isset($cliente->id_tercero) ? $cliente->id_tercero : null),
+            'id_zona' => (isset($zona->id_dominio) ? $zona->id_dominio : null),
+            'nombre' => $nombre,
+            'latitud' => $latitud,
+            'longitud' => $longitud,
+            'descripcion' => $descripcion,
+            'id_tipo_transporte' => (isset($transporte->id_dominio) ? $transporte->id_dominio : null),
+            'id_tipo_accesso' => (isset($acceso->id_dominio) ? $acceso->id_dominio : null),
+            'id_usuareg' => auth()->id()
+        ]);
     }
 }

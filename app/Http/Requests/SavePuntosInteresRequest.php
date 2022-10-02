@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SavePuntosInteresRequest extends FormRequest
 {
@@ -29,7 +30,7 @@ class SavePuntosInteresRequest extends FormRequest
      *
      * @return array
      */
-    public static function rules()
+    public function rules()
     {
         return [
             'id_cliente' => [
@@ -43,7 +44,8 @@ class SavePuntosInteresRequest extends FormRequest
             'nombre' => [
                 'required',
                 'string',
-                'max:255'
+                'max:255',
+                Rule::unique('tbl_puntos_interes')->ignore($this->route('site'))
             ],
             'latitud' => [
                 'nullable',

@@ -15,7 +15,7 @@ class CreateTblActividadesTable extends Migration
     {
         Schema::create('tbl_actividades', function (Blueprint $table) {
             $table->bigIncrements('id_actividad');
-            $table->string('ot')->uniqid();
+            $table->string('ot')->uniqid()->nullable();
             $table->unsignedBigInteger('id_tipo_actividad');
             $table->unsignedBigInteger("id_subsistema")->nullable();
             $table->text('descripcion');

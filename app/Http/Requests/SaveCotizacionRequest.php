@@ -39,7 +39,7 @@ class SaveCotizacionRequest extends FormRequest
             'ot_trabajo' => [
                 'string',
                 'nullable',
-                'max:255',
+                'max:20',
                 Rule::unique('tbl_cotizaciones')->ignore($this->route('quote'))
             ],
             'id_cliente' => [

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\TblActividad;
 use App\Models\TblCotizacion;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -93,8 +94,17 @@ class TblCotizacionPolicy
         //
     }
 
+    public function export(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->export) ? $tblUsuario->getPermisosMenu('quotes.index')->export : false;
+    }
+
+    public function import(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->import) ? $tblUsuario->getPermisosMenu('quotes.index')->import : false;
+    }
+
+
     public function cancelQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_cancelada')])) {
+        if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_rechazada')])) {
             return false;
         }
 
@@ -150,7 +160,10 @@ class TblCotizacionPolicy
     }
 
     public function createActivity(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if($tblCotizacion->estado != session('id_dominio_cotizacion_aprobada')) {
+        // Se valida sí ya existe una actividad asociado
+        $actividad = TblActividad::where(['id_cotizacion' => $tblCotizacion->id_cotizacion])->first();
+
+        if($tblCotizacion->estado != session('id_dominio_cotizacion_aprobada') || isset($actividad->id_actividad)) {
             return false;
         }
 

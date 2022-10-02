@@ -14,7 +14,7 @@
         @endif
 @endif
     <div class="row">
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="form-group col-12 col-sm-12 col-md-12">
             <label for="id_cliente" class="required">Cliente</label>
             @if ($edit)
                 <div class="row pe-0 pe-md-3">
@@ -48,7 +48,7 @@
                 <input type="text" class="form-control" id="id_cliente" value="{{ $site->tblcliente->full_name }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3">
+        <div class="form-group col-12 col-sm-12 col-md-6">
             <label for="id_zona" class="required">Zona</label>
             @if ($edit)
                 <select class="form-control" name="id_zona" id="id_zona" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -63,19 +63,19 @@
                 <input type="text" class="form-control" id="id_zona" value="{{ $site->tbldominiozona->nombre }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3">
+        <div class="form-group col-12 col-sm-12 col-md-6">
             <label for="nombre" class="required">Nombre</label>
             <input type="text" class="form-control text-uppercase" @if ($edit) name="nombre" @endif id="nombre" value="{{ old('nombre', $site->nombre) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
+        <div class="form-group col-12 col-sm-12 col-md-6">
             <label for="latitud">Latitud</label>
             <input type="text" class="form-control" @if ($edit) name="latitud" @endif id="latitud" value="{{ old('latitud', $site->latitud) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
+        <div class="form-group col-12 col-sm-12 col-md-6">
             <label for="longitud">Longitud</label>
             <input type="text" class="form-control" @if ($edit) name="longitud" @endif id="longitud" value="{{ old('longitud', $site->longitud) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
+        <div class="form-group col-12 col-sm-12 col-md-6">
             <label for="id_tipo_transporte" class="required">Transporte</label>
             @if ($edit)
                 <select class="form-control" name="id_tipo_transporte" id="id_tipo_transporte" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -90,7 +90,7 @@
                 <input type="text" class="form-control" id="id_tipo_transporte" value="{{ $site->tbldominiotransporte->nombre }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3 col-xl-3">
+        <div class="form-group col-12 col-sm-12 col-md-6">
             <label for="id_tipo_accesso" class="required">Acceso</label>
             @if ($edit)
                 <select class="form-control" name="id_tipo_accesso" id="id_tipo_accesso" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -105,12 +105,12 @@
                 <input type="text" class="form-control" id="id_tipo_accesso" value="{{ $site->tbldominioacceso->nombre }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+        <div class="form-group col-12 col-sm-12 col-md-12">
             <label for="descripcion" class="required">Descripcion</label>
             <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $site->descripcion) }}</textarea>
         </div>
         @if(!$create)
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3">
+            <div class="form-group col-12 col-sm-12 col-md-6">
                 <label for="estado" class="required">Estado</label>
                 @if ($edit)
                     <select class="form-control" name="estado" id="estado" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -126,12 +126,12 @@
             </div>
 
             @if (!$edit)
-                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3">
+                <div class="form-group col-12 col-sm-12 col-md-6">
                     <label for="creado_por">Creado por</label>
                     <input type="text" id="creado_por" class="form-control" disabled value="{{ $site->tblusuario->usuario }}">
                 </div>
             
-                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3">
+                <div class="form-group col-12 col-sm-12 col-md-6">
                     <label for="fecha_creacion">Fecha creación</label>
                     <input type="text" id="fecha_creacion" class="form-control" disabled value="{{ $site->created_at }}">
                 </div>
