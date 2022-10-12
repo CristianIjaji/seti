@@ -13,6 +13,7 @@ use App\Http\Controllers\ParametroController;
 use App\Http\Controllers\PuntosInteresController;
 use App\Http\Controllers\TerceroController;
 use App\Http\Controllers\UsuarioController;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -93,5 +94,11 @@ Route::post('domains/grid', [DominioController::class, 'grid'])->name('domains.g
 // Controlador parametros
 Route::resource('params', ParametroController::class);
 Route::post('params/grid', [ParametroController::class, 'grid'])->name('params.grid');
+
+Route::get('/artisan/storage', function() {
+    $command = 'storage:link';
+    $result = Artisan::call($command);
+    return Artisan::output();
+});
 
 Auth::routes();
