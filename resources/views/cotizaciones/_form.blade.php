@@ -32,7 +32,7 @@
 
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                     <label for="ot_trabajo">OT</label>
-                    <input type="text" class="form-control" @if ($edit && !$disable_form) name="ot_trabajo" @endif id="ot_trabajo" value="{{ old('ot_trabajo', $cotizacion->ot_trabajo) }}" @if ($edit && !$disable_form) required @else disabled @endif>
+                    <input type="text" class="form-control text-uppercase" @if ($edit && !$disable_form) name="ot_trabajo" @endif id="ot_trabajo" value="{{ old('ot_trabajo', $cotizacion->ot_trabajo) }}" @if ($edit && !$disable_form) required @else disabled @endif>
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
                     <label for="id_cliente_cotizacion" class="required">Cliente</label>
@@ -446,12 +446,14 @@
                 <div class="form-group col-12 col-md-6 co-lg-6 my-auto">
                     <div class="p-3">
                         <div class="row fs-5">
-                            <label class="col-4 col-sm-4 col-md-5 text-end">Total sin IVA:</label>
-                            <label id="lbl_total_sin_iva" class="col-8 col-sm-8 col-md-7 text-end border-bottom"></label>
-                            <label class="col-4 col-sm-4 col-md-5 text-end">Total IVA:</label>
-                            <label id="lbl_total_iva" class="col-8 col-sm-8 col-md-7 text-end border-bottom"></label>
-                            <label class="col-4 col-sm-4 col-md-5 text-end">Total con IVA:</label>
-                            <label id="lbl_total_con_iva" class="col-8 col-sm-8 col-md-7 text-end border-bottom"></label>
+                            <label class="col-12 col-sm-4 col-md-5 text-start text-md-end">Total sin IVA:</label>
+                            <label id="lbl_total_sin_iva" class="col-12 col-sm-8 col-md-7 text-end border-bottom"></label>
+
+                            <label class="col-12 col-sm-4 col-md-5 text-start text-md-end">Total IVA:</label>
+                            <label id="lbl_total_iva" class="col-12 col-sm-8 col-md-7 text-end border-bottom"></label>
+
+                            <label class="col-12 col-sm-4 col-md-5 text-start text-md-end">Total con IVA:</label>
+                            <label id="lbl_total_con_iva" class="col-12 col-sm-8 col-md-7 text-end border-bottom"></label>
                         </div>
                     </div>
                 </div>

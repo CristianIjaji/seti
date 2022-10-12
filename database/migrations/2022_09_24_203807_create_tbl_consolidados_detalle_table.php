@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTblDetalleConsolidadoTable extends Migration
+class CreateTblConsolidadosDetalleTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateTblDetalleConsolidadoTable extends Migration
      */
     public function up()
     {
-        Schema::create('tbl_detalle_consolidado', function (Blueprint $table) {
-            $table->bigIncrements('id_detalle_consolidado');
+        Schema::create('tbl_consolidados_detalle', function (Blueprint $table) {
+            $table->bigIncrements('id_consolidado_detalle');
             $table->unsignedBigInteger('id_consolidado');
             $table->unsignedBigInteger('id_actividad');
             $table->string('observacion');
@@ -37,6 +37,6 @@ class CreateTblDetalleConsolidadoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tbl_detalle_consolidado');
+        Schema::dropIfExists('tbl_consolidados_detalle');
     }
 }

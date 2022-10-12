@@ -139,7 +139,7 @@ class TblTercero extends Model
         $tipoDocumento = TblDominio::where(['nombre' => $tipo_documento, 'id_dominio_padre' => $parametro_documentos])->first();
         $tipoTercero = TblDominio::where(['nombre' => $tipo_tercero, 'id_dominio_padre' => $parametro_terceros])->first();
         $responsable = TblTercero::where(['documento' => $dependencia])->first();
-
+        
         return new TblTercero([
             'id_dominio_tipo_documento' => (isset($tipoDocumento->id_dominio) ? $tipoDocumento->id_dominio : null),
             'documento' => $documento,

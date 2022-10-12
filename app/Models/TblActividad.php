@@ -77,6 +77,10 @@ class TblActividad extends Model
         return $this->belongsTo(TblConsolidado::class, 'id_mes_consolidado');
     }
 
+    public function tblconsolidadodetalle() {
+        return $this->belongsTo(TblConsolidadoDetalle::class, 'id_actividad');
+    }
+
     public function tblusuario() {
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
     }
@@ -87,13 +91,23 @@ class TblActividad extends Model
 
     public function getStatusAttribute() {
         return [
-            session('id_dominio_actividad_programado') => 'bg-table-danger bg-gradient',
+            session('id_dominio_actividad_programado') => 'bg-table-danger bg-gradient  text-danger',
             session('id_dominio_actividad_comprando') => ' bg-gradient',
             session('id_dominio_actividad_reprogramado') => '',
-            session('id_dominio_actividad_ejecutado') => 'bg-table-warning bg-gradient',
-            session('id_dominio_actividad_pausada') => '',
+            session('id_dominio_actividad_ejecutado') => 'bg-table-success bg-gradient ',
+            session('id_dominio_actividad_pausada') => 'bg-danger bg-gradient',
             session('id_dominio_actividad_liquidado') => '',
             session('id_dominio_actividad_conciliado') => '',
         ];
     }
+
+    public function getValorCotizadoAttribute() {
+        return number_format(isset($this->attributes['valor_cotizado']) ? $this->attributes['valor_cotizado'] : $this->attributes['valor'], 2);
+    }
+
+    // public function getObservacionAttribute() {
+    //     return isset($this->tblconsolidadodetalle) ? $this->tblconsolidadodetalle->observacion : '';
+    //     $observacion = isset($this->tblconsolidadodetalle) ? $this->tblconsolidadodetalle->observacion : '';
+    //     return "<textarea class='form-control' style='resize: none;'>$observacion</textarea>";
+    // }
 }

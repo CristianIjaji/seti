@@ -20867,6 +20867,10 @@ textarea.form-control-lg {
   src: url("/fonts/Apex New Bold Italic/Apex New Bold Italic.otf");
   font-family: "Apex New Bold Italic";
 }
+#container {
+  min-height: 90vh;
+}
+
 body {
   overflow-x: hidden;
 }

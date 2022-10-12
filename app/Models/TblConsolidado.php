@@ -14,9 +14,7 @@ class TblConsolidado extends Model
 
     protected $fillable = [
         'id_cliente',
-        'anyo',
-        'id_mes',
-        'observacion',
+        'mes',
         'id_estado_consolidado',
         'id_responsable_cliente',
         'id_usuareg'
@@ -24,10 +22,6 @@ class TblConsolidado extends Model
 
     public function tblcliente() {
         return $this->belongsTo(TblTercero::class, 'id_cliente');
-    }
-
-    public function tblmes() {
-        return $this->belongsTo(TblDominio::class, 'id_mes');
     }
 
     public function tblestadoconsolidado() {

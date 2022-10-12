@@ -22,7 +22,7 @@
 
     <link rel="icon" href="/images/icon.png">
 </head>
-<body id="body-pd" class="bg-white min-vh-100">
+<body id="body-pd" class="bg-white">
     <div id="app">
         @include('partials.dialog')
         @include('partials.dialog-2')

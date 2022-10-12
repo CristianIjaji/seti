@@ -166,7 +166,7 @@ class TblCotizacion extends Model
 
     public function getCotizacionAttribute() {
         return isset($this->tblestacion->nombre)
-            ? (!empty($this->ot_trabajo) ? 'OT: '.$this->ot_trabajo.'. ' : '').$this->tblestacion->nombre.". Solicitud: ".$this->fecha_solicitud.
+            ? 'Cotización: '.$this->id_cotizacion.'. '.(!empty($this->ot_trabajo) ? 'OT: '.$this->ot_trabajo.'. ' : '').$this->tblestacion->nombre.". Solicitud: ".$this->fecha_solicitud.
                 '. Manto.: '.$this->tblTipoTrabajo->nombre.'. Valor: $'.number_format($this->valor, 2).'. Alcance: '.$this->descripcion
             : null;
     }

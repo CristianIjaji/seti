@@ -66,7 +66,6 @@ Route::resource('quotes', CotizacionController::class);
 Route::post('quotes/grid', [CotizacionController::class, 'grid'])->name('quotes.grid');
 Route::post('quotes/{quote}/handleQuote', [CotizacionController::class, 'handleQuote'])->name('quotes.handleQuote');
 Route::post('quotes/import', [CotizacionController::class, 'import'])->name('quotes.import');
-
 // Controlador estado cotizaciones
 Route::resource('statequotes', EstadoCotizacionController::class);
 Route::post('statequotes/grid', [EstadoCotizacionController::class, 'grid'])->name('statequotes.grid');
@@ -76,8 +75,10 @@ Route::resource('activities', ActividadController::class);
 Route::post('activities/grid', [ActividadController::class, 'grid'])->name('activities.grid');
 
 // Controlador de consolidado
+// Route::get('deals/export', [ConsolidadoController::class, 'export'])->name('deals.export');
 Route::resource('deals', ConsolidadoController::class);
-Route::post('deals/grid', [ConsolidadoController::class, 'grid'])->name('deals.grid');
+Route::post('deals/getActivities', [ConsolidadoController::class, 'getActivities'])->name('deals.getActivities');
+// Route::post('deals/grid', [ConsolidadoController::class, 'grid'])->name('deals.grid');
 
 // Controlador usuarios
 Route::resource('users', UsuarioController::class);

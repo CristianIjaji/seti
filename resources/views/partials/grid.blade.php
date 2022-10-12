@@ -83,7 +83,7 @@
 </p>
 
 <form class="search_form table-responsive" id="form_{{$route}}">
-    <table class="table table-hover table-sm">
+    <table id="table__{{$route}}" class="table table-hover table-sm">
         <thead class="col-12">
             <tr>
             @isset($headers)
@@ -137,40 +137,40 @@
                 <tr class="{{ isset($status) ? $status[$model->estado] : '' }}">
                     @forelse ($headers as $header)
                         <td 
-                            data-value="{{ $model[$header['name']] }}"
+                            data-value="{{ $model->{$header['name']} }}"
                             class="align-middle {{ isset($header['align']) ? $header['align'] : '' }} {{ isset($header['col']) ? $header['col'] : '' }} {{ isset($header['class']) && isset($status) ? $header['class'] : '' }}">
-                            @if (isset($model[$header['name']]))
+                            @if (isset($model->{$header['name']}))
                                 @if (!isset($header['options']))
                                     @if (!isset($header['foreign']))
                                         @if (isset($header['html']) && $header['html'])
-                                            {!! $model[$header['name']] !!}
+                                            {!! $model->{$header['name']} !!}
                                         @else
                                             @if (isset($header['diffForHumans']) && $header['diffForHumans'] == true)
-                                                {{ $model[$header['name']]->diffForHumans() }}
+                                                {{ $model->{$header['name']}->diffForHumans() }}
                                             @else
-                                                {{ $model[$header['name']] }}
+                                                {{ $model->{$header['name']} }}
                                             @endif
                                         @endif
                                     @else
                                         @if (isset($header['html']) && $header['html'])
-                                            {!! $model[$header['name']][$header['foreign']] !!}
+                                            {!! $model->{$header['name']}->{$header['foreign']} !!}
                                         @else
-                                            {{ $model[$header['name']][$header['foreign']] }}
+                                            {{ $model->{$header['name']}->{$header['foreign']} }}
                                         @endif
                                     @endif
                                 @else
                                     @if (count($header['options']))
                                         @if (isset($header['html']) && $header['html'])
-                                            <?= $model[$header['name']] ?>
+                                            {!! $model->{$header['name']} !!}
                                         @else
-                                            {{ isset($header['options'][$model[$header['name']]]) ? $header['options'][$model[$header['name']]] : '' }}
+                                            {{ isset($header['options'][$model->{$header['name']}]) ? $header['options'][$model->{$header['name']}] : '' }}
                                         @endif
                                     @endif
                                 @endif
                             @else
                                 @isset($header['actions'])
                                     <div class="h-100 w-100 text-center">
-                                        @if ($header['actions']['btnOptions']['view'])
+                                        @isset($header['actions']['btnOptions']['view'])
                                             <i
                                                 class="fas fa-eye btn modal-form text-info fs-5 fw-bold"
                                                 data-toggle="tooltip"
@@ -183,8 +183,8 @@
                                                 data-action={{ route("$route.show", $model) }}
                                                 title="Ver">
                                             </i>
-                                        @endif
-                                        @if ($header['actions']['btnOptions']['edit'])
+                                        @endisset
+                                        @isset($header['actions']['btnOptions']['edit'])
                                             <i
                                                 class="fas fa-pencil-alt btn modal-form text-warning fs-5 fw-bold"
                                                 data-toggle="tooltip"
@@ -196,7 +196,21 @@
                                                 data-action={{ route("$route.edit", $model) }}
                                                 title="Editar">
                                             </i>
-                                        @endif
+                                        @endisset
+                                        @isset($header['actions']['btnOptions']{'delete'})
+                                            <i
+                                                class="fa-solid fa-trash-can btn modal-form-2 text-danger fs-5 fw-bold"
+                                                data-toggle="tooltip"
+                                                data-placement="top"
+                                                data-toggle="modal"
+                                                data-title="{{ $header['actions']['btnOptions']['modal-delete-title'] }}"
+                                                {{-- data-size="{{ $header['actions']['btnOptions']['modal-delete-size'] }}" --}}
+                                                {{-- data-header-class="{{ isset($header['actions']['btnOptions']['header-delete-class']) ? $header['actions']['btnOptions']['header-delete-class'] : '' }}" --}}
+                                                {{-- data-action={{ route("$route.edit", $model) }} --}}
+                                                title="Eliminar"
+                                                >
+                                            </i>
+                                        @endisset
                                     </div>
                                 @endisset
                             @endif 

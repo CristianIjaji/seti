@@ -20,6 +20,7 @@ class SaveCotizacionRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
+            'ot_trabajo' => mb_strtoupper($this->get('ot_trabajo')),
             'estado' => session('id_dominio_cotizacion_creada'),
             'codigo' => mb_strtoupper($this->get('codigo')),
             'valor' => 0,

@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveConsolidadoRequest;
+use App\Models\TblActividad;
 use App\Models\TblConsolidado;
-use App\Models\TblDetalleConsolidado;
+use App\Models\TblConsolidadoDetalle;
 use App\Models\TblTercero;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsolidadoController extends Controller
@@ -42,6 +46,17 @@ class ConsolidadoController extends Controller
         return $querybuilder;
     }
 
+    private function saveDetalleConsolidado($deal) {
+        foreach (request()->id_actividad as $index => $valor) {
+            $detalle = new TblConsolidadoDetalle;
+            $detalle->id_consolidado = $deal->id_consolidado;
+            $detalle->id_actividad = request()->id_actividad[$index];
+            $detalle->observacion = request()->observacion[$index];
+
+            $detalle->save();
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -72,7 +87,7 @@ class ConsolidadoController extends Controller
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
             ])->where('id_responsable_cliente', '>', 0)->get(),
-            'detalle_consolidado' => TblDetalleConsolidado::where(['id_consolidado' => -1])->orderBy('id_detalle_consolidado', 'desc')->paginate(10)
+            'detalle_consolidado' => TblConsolidadoDetalle::where(['id_consolidado' => -1])->orderBy('id_detalle_consolidado', 'desc')->paginate(10)
         ]);
     }
 
@@ -82,9 +97,26 @@ class ConsolidadoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SaveConsolidadoRequest $request)
     {
-        //
+        try {
+            $deal = TblConsolidado::create($request->validated());
+            // $this->authorize('create', $deal);
+
+            $this->saveDetalleConsolidado($deal);
+
+            return response()->json([
+                'success' => 'Cotización creada exitosamente!',
+                'response' => [
+                    'value' => $deal->id_consolidado,
+                    'option' => $deal->anyo,
+                ],
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -149,5 +181,50 @@ class ConsolidadoController extends Controller
             'view' => Gate::allows('view', $consolidado),
             'request' => $this->filtros
         ]);
+    }
+
+    private function generateDownload($option) {
+
+    }
+
+    public function export() {
+        
+    }
+
+    public function getActivities() {
+        try {
+            $id_cliente = request()->id_cliente;
+            $id_responsable_cliente = request()->id_encargado;
+            return view('consolidados.detalle', [
+                'model' => TblActividad::select(
+                    DB::raw("
+                        ROW_NUMBER() OVER(PARTITION BY tbl_actividades.id_encargado_cliente) as item,
+                        tbl_actividades.id_actividad,
+                        z.nombre as zona,
+                        tbl_actividades.ot,
+                        e.nombre as estacion,
+                        tbl_actividades.fecha_ejecucion,
+                        tbl_actividades.descripcion,
+                        c.valor as valor_cotizado,
+                        det.observacion
+                    ")
+                )
+                ->join('tbl_cotizaciones as c', 'tbl_actividades.id_cotizacion', '=', 'c.id_cotizacion')
+                ->join('tbl_puntos_interes as e', 'c.id_estacion', '=', 'e.id_punto_interes')
+                ->join('tbl_dominios as z', 'e.id_zona', '=', 'z.id_dominio')
+                ->leftjoin('tbl_detalle_consolidado as det', 'tbl_actividades.id_actividad', '=', 'det.id_actividad')
+                ->where([
+                    'tbl_actividades.id_encargado_cliente' => $id_cliente,
+                    'tbl_actividades.id_resposable_contratista' => $id_responsable_cliente
+                ])
+                ->orderBy('e.nombre', 'asc')
+                ->get()
+                // ->paginate(10)
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage()
+            ]);
+        }
     }
 }

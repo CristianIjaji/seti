@@ -9554,6 +9554,7 @@ window.table = function () {
     var id = $(this).attr('id');
     $("#".concat(id, " .table-responsive-stack-thead")).remove();
     $(this).find("th").each(function (i) {
+      console.log(id);
       $("#".concat(id, " td:nth-child(").concat(i + 1, ")")).prepend("<span class=\"table-responsive-stack-thead\">".concat($(this).text(), "</span>"));
       $('.table-responsive-stack-thead').hide();
     });
@@ -9581,9 +9582,8 @@ window.flexTable = function () {
     });
   } // flextable
 
-};
+}; // flexTable();
 
-flexTable();
 
 window.onresize = function (event) {
   flexTable();
@@ -10332,6 +10332,43 @@ $(document).on('change', '#id_cotizacion_actividad', function () {
     });
   }
 });
+$(document).on('click', '#btn-get-activities', function (e) {
+  e.preventDefault();
+  var id_cliente = $('#id_cliente').val();
+  var id_encargado = $('#id_responsable_cliente').val();
+  var mes = $('#id_mes').val();
+
+  if (id_cliente !== '' && id_encargado !== '') {
+    $.ajax({
+      url: "deals/getActivities",
+      method: 'POST',
+      headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+      },
+      data: {
+        id_cliente: id_cliente,
+        id_encargado: id_encargado,
+        _token: $('meta[name="csrf-token"]').attr('content')
+      },
+      beforeSend: function beforeSend() {
+        showLoader(true);
+      }
+    }).done(function (view) {
+      $('#div_detalle_consolidado').html(view); // $(`#form_statequotes`).parent().parent().parent().parent().html(view);
+      // $('#form_statequotes > .table').addClass('table-responsive-stack');
+
+      table();
+      flexTable();
+    }).always(function () {
+      showLoader(false);
+    });
+  }
+});
+$(document).on('click', '.menuToggle', function () {
+  $('.menuToggle').toggleClass('active');
+}); // $('.menuToggle').click(() => {
+//     $(this).toggle('active');
+// });
 
 /***/ }),
 

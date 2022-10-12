@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\TblConsolidado;
 use App\Models\TblCotizacion;
-use App\Models\TblDetalleConsolidado;
+use App\Models\TblConsolidadoDetalle;
 use App\Models\TblDominio;
 use App\Models\TblFactura;
 use App\Models\TblHallazgo;
@@ -107,7 +107,7 @@ class SetupSeeder extends Seeder
             </html>
         ';
 
-        TblDetalleConsolidado::truncate();
+        TblConsolidadoDetalle::truncate();
         TblConsolidado::truncate();
         TblHallazgo::truncate();
         TblFactura::truncate();
@@ -218,6 +218,18 @@ class SetupSeeder extends Seeder
         $lista_estados_actividad = TblDominio::create([
             'nombre' => 'Listado de los estados de la actividad',
             'descripcion' => 'Listado de los estados de la actividad',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        $lista_estados_consolidado = TblDominio::create([
+            'nombre' => 'Listado de los estados del consolidado',
+            'descripcion' => 'Listado de los estados del consolidado',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        $lista_meses = TblDominio::create([
+            'nombre' => 'Lista meses',
+            'descripcion' => 'Lista meses',
             'estado' => 1,
             'id_usuareg' => $user->id_usuario
         ]);
@@ -681,6 +693,47 @@ class SetupSeeder extends Seeder
             ]);
         /* Fin creación dominios hijos estados actividad */
 
+        /* Creación dominios hijos estado consolidado */
+            $consolidado_creado = TblDominio::create([
+                'nombre' => 'Consolidado creado',
+                'id_dominio_padre' => $lista_estados_consolidado->id_dominio,
+                'descripcion' => 'Consolidado creado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $consolidado_conciliado = TblDominio::create([
+                'nombre' => 'Consolidado conciliado',
+                'id_dominio_padre' => $lista_estados_consolidado->id_dominio,
+                'descripcion' => 'Consolidado conciliado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creación dominios hijos estados consolidado */
+
+        /* Creación dominios hijos meses */
+            TblDominio::create([
+                'nombre' => 'Enero',
+                'id_dominio_padre' => $lista_meses->id_dominio,
+                'descripcion' => 'Enero',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Febrero',
+                'id_dominio_padre' => $lista_meses->id_dominio,
+                'descripcion' => 'Febrero',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            TblDominio::create([
+                'nombre' => 'Marzo',
+                'id_dominio_padre' => $lista_meses->id_dominio,
+                'descripcion' => 'Marzo',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creación dominios hijos meses */
+
         /* Creación parametros */
             // Creación parametro tipo documentos
             TblParametro::create([
@@ -987,6 +1040,27 @@ class SetupSeeder extends Seeder
                 'llave' => 'id_dominio_actividad_conciliado',
                 'valor' => $actividad_conciliado->id_dominio,
                 'descripcion' => 'id_dominio_actividad_conciliado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro estados consolidado
+            TblParametro::create([
+                'llave' => 'id_dominio_estados_consolidado',
+                'valor' => $lista_estados_consolidado->id_dominio,
+                'descripcion' => 'id_dominio_estados_consolidado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro consolidado creado
+            TblParametro::create([
+                'llave' => 'id_dominio_consolidado_creado',
+                'valor' => $consolidado_creado->id_dominio,
+                'descripcion' => 'id_dominio_consolidado_creado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro consolidado conciliado
+            TblParametro::create([
+                'llave' => 'id_dominio_consolidado_conciliado',
+                'valor' => $consolidado_conciliado->id_dominio,
+                'descripcion' => 'id_dominio_consolidado_conciliado',
                 'id_usuareg' => $user->id_usuario
             ]);
         /* Fin creación parametros */

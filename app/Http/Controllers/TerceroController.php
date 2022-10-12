@@ -251,7 +251,7 @@ class TerceroController extends Controller
             'model' => TblTercero::with(['tbldominiodocumento', 'tbldominiotercero', 'tbluser', 'tblusuario'])
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
-                })->latest()->paginate(10),
+                })->orderBy('id_tercero', 'desc')->paginate(10),
             'tipo_terceros' => $this->getTipoTerceros(),
             'export' => Gate::allows('export', $tercero),
             'import' => Gate::allows('import', $tercero),

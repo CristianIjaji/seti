@@ -44,7 +44,7 @@
             <input type="hidden" id="id_actividad" value="{{ $activity->id_actividad }}">
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2">
                 <label for="ot">OT</label>
-                <input type="text" class="form-control" @if ($edit) name="ot" @endif id="ot" value="{{ old('ot', $activity->ot) }}" @if (!$edit || $existe_cotizacion) readonly @endif >
+                <input type="text" class="form-control text-uppercase" @if ($edit) name="ot" @endif id="ot" value="{{ old('ot', $activity->ot) }}" @if (!$edit) readonly @endif >
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-9 col-xl-5">
                 <label for="id_encargado_cliente" class="required">Cliente</label>
@@ -242,6 +242,8 @@
                         <input type="hidden" name="id_cotizacion" value="{{ $activity->id_cotizacion }}">
                     @endif
                 </div>
+            @else
+                <input type="hidden" name="id_cotizacion" value="{{ $activity->id_cotizacion }}">
             @endif
             <div class="clearfix"></div>
             <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">

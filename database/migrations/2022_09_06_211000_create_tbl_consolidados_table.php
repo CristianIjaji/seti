@@ -16,17 +16,13 @@ class CreateTblConsolidadosTable extends Migration
         Schema::create('tbl_consolidados', function (Blueprint $table) {
             $table->bigIncrements('id_consolidado');
             $table->unsignedBigInteger('id_cliente');
-            $table->integer('anyo');
-            $table->unsignedBigInteger('id_mes');
-            $table->string('observacion');
+            $table->date('mes');
             $table->unsignedBigInteger('id_estado_consolidado');
             $table->unsignedBigInteger('id_responsable_cliente');
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
             $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros')
-                ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_mes')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_estado_consolidado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
