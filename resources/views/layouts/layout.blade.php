@@ -11,14 +11,14 @@
     {{-- <title>{{ Auth::user()->title }}</title> --}}
 
     <!-- Scripts -->
-    <script src="{{ secure_asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}" defer></script>
     {{-- <script src="{{ asset('js/ConectorPlugin.js') }}"></script> --}}
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
 
     <!-- Styles -->
-    <link href="{{ secure_asset('css/app.css') }}" defer rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" defer rel="stylesheet">
 
     <link rel="icon" href="/images/icon.png">
 </head>
