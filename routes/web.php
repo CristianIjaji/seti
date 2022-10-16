@@ -95,10 +95,4 @@ Route::post('domains/grid', [DominioController::class, 'grid'])->name('domains.g
 Route::resource('params', ParametroController::class);
 Route::post('params/grid', [ParametroController::class, 'grid'])->name('params.grid');
 
-Route::get('/artisan/storage', function() {
-    $command = 'storage:link';
-    $result = Artisan::call($command);
-    return Artisan::output();
-});
-
 Auth::routes();
