@@ -21,6 +21,7 @@ class SaveActividadRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
+            'ot' => mb_strtoupper($this->get('ot')),
             'id_usuareg' => (Auth::id() === null ? 1 : Auth::id()),
         ]);
     }

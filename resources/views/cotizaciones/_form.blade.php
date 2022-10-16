@@ -32,7 +32,7 @@
 
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
                     <label for="ot_trabajo">OT</label>
-                    <input type="text" class="form-control" @if ($edit && !$disable_form) name="ot_trabajo" @endif id="ot_trabajo" value="{{ old('ot_trabajo', $cotizacion->ot_trabajo) }}" @if ($edit && !$disable_form) required @else disabled @endif>
+                    <input type="text" class="form-control text-uppercase" @if ($edit && !$disable_form) name="ot_trabajo" @endif id="ot_trabajo" value="{{ old('ot_trabajo', $cotizacion->ot_trabajo) }}" @if ($edit && !$disable_form) required @else disabled @endif>
                 </div>
                 <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
                     <label for="id_cliente_cotizacion" class="required">Cliente</label>
