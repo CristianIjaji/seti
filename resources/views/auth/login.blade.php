@@ -18,7 +18,7 @@
         <div class="row vh-100">
             <div class="col-1 col-sm-2 col-md-3 col-lg-4 col-xl-4"></div>
             <div class="col-10 col-sm-8 col-md-6 col-lg-4 col-xl-4 my-auto">
-                <form action="{{ route('login') }}" method="POST" id="login-form" class="p-4 border rounded shadow-lg" style="background-color: #ffffff59;">
+                <form action="{{ route('login') }}" method="POST" id="login-form" class="p-4 border rounded shadow-lg" style="background-color: #ffffff9c;">
                     <div class="col-12 py-3">
                         <label for="" class="fw-bold fs-4 mx-auto">Iniciar Sesión</label>
 

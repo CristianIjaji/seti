@@ -112,7 +112,8 @@ class TblCotizacionPolicy
     }
 
     public function checkQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) || $tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) ||
+            ($tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero && $tblCotizacion->id_usuareg !== $tblUsuario->id_usuario)) {
             return false;
         }
 
@@ -120,7 +121,8 @@ class TblCotizacionPolicy
     }
 
     public function denyQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) || $tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero) {
+        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) ||
+            ($tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero && $tblCotizacion->id_usuareg !== $tblUsuario->id_usuario)) {
             return false;
         }
 

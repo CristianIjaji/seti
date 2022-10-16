@@ -185,11 +185,12 @@ class CotizacionController extends Controller
             $cotizacion->valor = $this->getDetailQuote($cotizacion);
             $cotizacion->save();
 
-            $cotizacion->comentario = "Creación cotización # ".$cotizacion->id_cotizacion;
-
             $cotizacion->comentario = "Cotización creada # $cotizacion->id_cotizacion.";
+
+            $id_usuario = (isset($cotizacion->tblCliente->tbluser) ? $cotizacion->tblCliente->tbluser->id_usuario : $cotizacion->tblCliente->tblusuario->id_usuario);
+
             $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'));
-            $this->sendNotification($cotizacion, 'user-'.$cotizacion->tblCliente->tblusuario->id_usuario, 'quote-created');
+            $this->sendNotification($cotizacion, 'user-'.$id_usuario, 'quote-created');
 
             return response()->json([
                 'success' => 'Cotización creada exitosamente!',
