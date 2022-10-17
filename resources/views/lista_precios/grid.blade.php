@@ -4,7 +4,7 @@
     'route' => 'priceList',
     'btnOptionsCreate' => [
         "title" => 'Nueva lista precio',
-        "modal-size" => "modal-lg",
+        "modal-size" => "modal-xl",
         "route" => route("priceList.create"),
     ],
     'headers' => [
@@ -21,10 +21,10 @@
             'btnOptions' => [
                 'view' => $view,
                 'modal-view-title' => 'Ver lista precio',
-                'modal-view-size' => 'modal-lg',
+                'modal-view-size' => 'modal-xl',
                 'edit' => $edit,
                 'modal-edit-title' => 'Editar lista Precio',
-                'modal-edit-size' => 'modal-lg',
+                'modal-edit-size' => 'modal-xl',
             ]
         ]]
     ],

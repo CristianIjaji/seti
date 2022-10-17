@@ -20,7 +20,7 @@
         @endif
 @endif
     <div class="row">
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="id_dominio_tipo_documento" class="required">Tipo documento</label>
             @if ($edit)
                 @if (!$tipo_documento)
@@ -41,28 +41,28 @@
                 <input type="hidden" id="id_dominio_tipo_documento" value="{{ $tercero->id_dominio_tipo_documento }}">
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="documento" class="required">Documento</label>
             <input type="text" class="form-control" @if ($edit) name="documento" @endif id="documento" value="{{ old('documento', $tercero->documento) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div id="div_dv" class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div id="div_dv" class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="dv">DV</label>
             <input type="text" class="form-control" @if ($edit) name="dv" @endif id="dv" value="{{ old('dv', $tercero->dv) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div id="div_razon_social" class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div id="div_razon_social" class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="razon_social">Razón social</label>
             <input type="text" class="form-control" @if ($edit) name="razon_social" @endif id="razon_social" value="{{ old('dv', $tercero->razon_social) }}" @if ($edit) required @else disabled @endif>
         </div>
 
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="nombres" class="required">Nombres</label>
             <input type="text" class="form-control" @if ($edit) name="nombres" @endif id="nombres" value="{{ old('nombres', $tercero->nombres) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="apellidos" class="required">Apellidos</label>
             <input type="text" class="form-control" @if ($edit) name="apellidos" @endif id="apellidos" value="{{ old('apellidos', $tercero->apellidos) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="ciudad" class="required">Ciudad</label>
             <input type="text" class="form-control" list="list-ciudades" @if ($edit) name="ciudad" @endif id="ciudad" value="{{ old('ciudad', $tercero->ciudad) }}" @if ($edit) required @else disabled @endif>
             @if ($edit)
@@ -73,20 +73,20 @@
                 </datalist>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="direccion" class="required">Dirección</label>
             <input type="text" class="form-control" @if ($edit) name="direccion" @endif id="direccion" value="{{ old('direccion', $tercero->direccion) }}" @if ($edit) required @else disabled @endif>
         </div>
 
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="correo" class="required">Correo</label>
             <input type="email" class="form-control" @if ($edit) name="correo" @endif id="correo" value="{{ old('correo', $tercero->correo) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="telefono" class="required">Teléfono / Celular</label>
             <input type="tel" class="form-control" @if ($edit) name="telefono" @endif id="telefono" value="{{ old('telefono', $tercero->telefono) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 {{ $tipo_tercero ? 'd-none' : '' }}">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 {{ $tipo_tercero ? 'd-none' : '' }}">
             <label for="id_dominio_tipo_tercero" class="required">Tipo tercero</label>
             @if ($edit)
                 @if (!$tipo_tercero)
@@ -107,7 +107,7 @@
                 <input type="hidden" id="id_dominio_tipo_tercero" value="{{ $tercero->id_dominio_tipo_tercero }}">
             @endif
         </div>
-        <div id="div_dependencia" class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+        <div id="div_dependencia" class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="id_responsable_cliente" class="required">Dependencia</label>
             @if ($edit)
                 <select class="form-control" name="id_responsable_cliente" id="id_responsable_cliente" data-minimuminputlength="3" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -124,7 +124,7 @@
         </div>
         
         @if(!$create)
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
                 <label for="estado" class="required">Estado</label>
                 @if ($edit)
                     <select class="form-control" name="estado" id="estado" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -139,25 +139,19 @@
                 @endif
             </div>
         @endif
-        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-6 col-lg-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente'), session('id_dominio_proveedor')]) ? '' : 'd-none' }} ">
+        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente'), session('id_dominio_proveedor')]) ? '' : 'd-none' }} ">
             <label for="logo" class="required col-12">Logo cotización</label>
-            {{-- @if ($edit) --}}
-                <div class="file-loading">
-                    <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
-                </div>
-            {{-- @else
-                @if ($tercero->logo != '')
-                    <img src="/storage/{{ $tercero->logo }}" class="img-thumbnail" alt="Logo cotizaciones">
-                @endif
-            @endif --}}
+            <div class="file-loading">
+                <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
+            </div>
         </div>
         @if(!$create && !$edit)
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
                 <label for="creado_por">Creado por</label>
                 <input type="text" id="creado_por" class="form-control" disabled value="{{ $tercero->tblusuario->usuario }}">
             </div>
         
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4">
+            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
                 <label for="fecha_creacion">Fecha creación</label>
                 <input type="text" id="fecha_creacion" class="form-control" disabled value="{{ $tercero->created_at }}">
             </div>

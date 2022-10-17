@@ -6,7 +6,7 @@
     'route' => 'sites',
     'btnOptionsCreate' => [
         "title" => 'Nuevo punto interés',
-        "modal-size" => "modal-lg",
+        "modal-size" => "modal-xl",
         "route" => route("sites.create"),
     ],
     'headers' => [
@@ -21,10 +21,10 @@
             'btnOptions' => [
                 'view' => $view,
                 'modal-view-title' => 'Ver punto interés',
-                'modal-view-size' => 'modal-lg',
+                'modal-view-size' => 'modal-xl',
                 'edit' => $edit,
                 'modal-edit-title' => 'Editar punto interés',
-                'modal-edit-size' => 'modal-lg',
+                'modal-edit-size' => 'modal-xl',
             ]
         ]]
     ],

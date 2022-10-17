@@ -30,11 +30,11 @@
             <div class="row">
                 <input type="hidden" id="id_cotizacion" value="{{ $cotizacion->id_cotizacion }}">
 
-                <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                     <label for="ot_trabajo">OT</label>
                     <input type="text" class="form-control text-uppercase" @if ($edit && !$disable_form) name="ot_trabajo" @endif id="ot_trabajo" value="{{ old('ot_trabajo', $cotizacion->ot_trabajo) }}" @if ($edit && !$disable_form) required @else disabled @endif>
                 </div>
-                <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                     <label for="id_cliente_cotizacion" class="required">Cliente</label>
                     <input type="hidden" id="id_cliente" value="{{ $cotizacion->id_cliente }}">
                     @if ($edit && !$disable_form)
@@ -71,7 +71,7 @@
                         <input type="text" class="form-control" id="id_cliente_cotizacion" value="{{ $cotizacion->tblCliente->full_name }} {{ (isset($cotizacion->tblCliente->tblterceroresponsable) ? ' - '.$cotizacion->tblCliente->tblterceroresponsable->razon_social : '') }}" disabled>
                     @endif
                 </div>
-                <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                     <label for="id_estacion" class="required">Punto interés</label>
                     <input type="hidden" id="id_punto_interes" value="{{ $cotizacion->id_estacion }}">
                     @if ($edit && !$disable_form)
@@ -108,7 +108,7 @@
                         <input type="text" class="form-control" id="id_estacion" value="{{ $cotizacion->tblEstacion->nombre }}" disabled>
                     @endif
                 </div>
-                <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                     <label for="id_tipo_trabajo" class="required">Tipo trabajo</label>
                     <input type="hidden" id="id_tipo_actividad" value="{{ $cotizacion->id_tipo_trabajo }}">
                     @if ($edit && !$disable_form)
@@ -124,11 +124,11 @@
                         <input type="text" class="form-control" id="id_tipo_trabajo" value="{{ $cotizacion->tblTipoTrabajo->nombre }}" disabled>
                     @endif
                 </div>
-                <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-date">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2 input-date">
                     <label for="fecha_solicitud" class="required">Fecha solicitud</label>
                     <input type="text" class="form-control" data-max-date="{{ date('Y-m-d') }}" @if ($edit && !$disable_form) name="fecha_solicitud" data-default-date="{{ $cotizacion->fecha_solicitud }}" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $cotizacion->fecha_solicitud) }}" @if ($edit && !$disable_form) required @else disabled @endif readonly>
                 </div>
-                <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                     <label for="id_prioridad" class="required">Prioridad</label>
                     @if ($edit && !$disable_form)
                         <select class="form-control" name="id_prioridad" id="id_prioridad" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
@@ -143,7 +143,7 @@
                         <input type="text" class="form-control" id="id_prioridad" value="{{ $cotizacion->tblPrioridad->nombre }}" disabled>
                     @endif
                 </div>
-                <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                     <label for="iva" class="required">IVA %</label>
                     @if ($edit && !$disable_form)
                         <select class="form-control text-end" name="iva" id="iva" data-dir="rtl" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
@@ -158,7 +158,7 @@
                         <input type="text" class="form-control text-end" value="{{ $cotizacion->tblIva->nombre }}" disabled>
                     @endif
                 </div>
-                <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                     <label for="id_responsable" class="required">Aprobador</label>
                     <input type="hidden" id="id_resposable_contratista" value="{{ $cotizacion->id_responsable_cliente }}">
                     @if ($edit && !$disable_form)
@@ -197,17 +197,17 @@
                     @endif
                 </div>
                 @if (!$create)
-                    <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2">
+                    <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                         <label>Estado</label>
                         <label class="form-control {{ isset($cotizacion->status[$cotizacion->estado]) ? $cotizacion->status[$cotizacion->estado] : '' }}">{{ $cotizacion->tbldominioestado->nombre }}</label>
                     </div>
                 @endif
-                <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6">
+                <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
                     <label for="descripcion" class="required">Descripción orden</label>
                     <textarea class="form-control" @if ($edit && !$disable_form) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit && !$disable_form) required @else disabled @endif>{{ old('nombre', $cotizacion->descripcion) }}</textarea>
                 </div>
                 @if (!$create)
-                    <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 my-auto text-center">
+                    <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 my-auto text-center">
                         <button id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-secondary btn-quote">
                             <i class="fa-solid fa-file-excel fs-4"></i> Descargar cotización
                         </button>
@@ -353,7 +353,7 @@
                     </table>
                 </div>
 
-                <div class="col-12 col-md-6 co-lg-6 my-auto pb-2">
+                <div class="col-12 col-sm-12 col-md-6 co-lg-6 col-xl-6 my-auto pb-2">
                     @can('createComment', $cotizacion)
                         @if (!$create && $edit)
                             <div class="border rounded p-3">
@@ -362,7 +362,7 @@
                                         <label for="comentario">Nuevo comentario</label>
                                         <textarea class="form-control" id="comentario" name="comentario" rows="3" style="resize: none"></textarea>
                                     </div>
-    
+
                                     <div class="col-12 d-flex justify-content-evenly align-items-center">
                                         @can('checkQuote', $cotizacion)
                                             <button id="btn-check-quote" title="Aprobar cotización" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
@@ -404,46 +404,9 @@
                             </div>
                         @endif
                     @endcan
-
-                    @if (!$create && $edit)
-                        {{-- @can('createActivity', $cotizacion)
-                            <div class="border rounded p-3">
-                                <div class="row">
-                                    <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4 text-start">
-                                        <label for="id_subsistema" class="required">Subsistema</label>
-                                        <select name="id_subsistema" id="id_subsistema" class="form-control" style="width: 100%">
-                                            <option value="">Elegir subsistema</option>
-                                            @foreach ($subsistemas as $id => $nombre)
-                                                <option value="{{ $id }}" {{ old('id_subsistema') == $id ? 'selected' : '' }}>
-                                                    {{$nombre}}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4 input-date">
-                                        <label for="fecha_programacion" class="required">Fecha programación</label>
-                                        <input type="text" class="form-control" data-toolbarplacement="bottom" data-min-date="{{ date('Y-m-d') }}" @if ($edit) name="fecha_programacion" @endif id="fecha_programacion" value="{{ old('fecha_programacion') }}" @if ($edit) required @else disabled @endif readonly>
-                                    </div>
-                                    <div class="form-group col-12 col-sm-6 col-md-6 col-lg-4">
-                                        <label for="id_estado_actividad">Estado actividad</label>
-                                        <select id="id_estado_actividad" style="width: 100%">
-                                            @foreach ($estados_actividad as $estado)
-                                                <option value="{{ $estado->id_dominio }}">{{ $estado->nombre }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-12 d-flex justify-content-evenly align-items-center">
-                                        <button id="btn-create-activity" title="Se crea actividad con la cotización aprobada" data-toggle="tooltip" class="btn btn-primary bg-gradient text-white btn-quote">
-                                            <i class="fa-solid fa-person-digging"></i> Crear actividad
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        @endcan --}}
-                    @endif
                 </div>
 
-                <div class="form-group col-12 col-md-6 co-lg-6 my-auto">
+                <div class="form-group col-12 col-md-6 co-lg-6 col-xl-6 my-auto">
                     <div class="p-3">
                         <div class="row fs-5">
                             <label class="col-12 col-sm-4 col-md-5 text-start text-md-end">Total sin IVA:</label>

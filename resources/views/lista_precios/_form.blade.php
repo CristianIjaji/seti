@@ -14,10 +14,10 @@
         @endif
 @endif
     <div class="row">
-        <div class="form-group col-12 col-sm-12 col-md-12">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
             <label for="id_cliente" class="required">Cliente</label>
             @if ($edit)
-                <div class="row">
+                <div class="row pe-0 pe-md-3">
                     <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
                         <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir cliente</option>
@@ -48,7 +48,7 @@
                 <input type="text" class="form-control" id="id_cliente" value="{{ $lista_precio->tbltercerocliente->full_name }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
             <label for="id_tipo_item" class="required">Tipo ítem</label>
             @if ($edit)
                 <select class="form-control" name="id_tipo_item" id="id_tipo_item" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -63,11 +63,11 @@
                 <input type="text" class="form-control" id="id_cliente" value="{{ $lista_precio->tbldominioitem->nombre }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
             <label for="codigo" class="required">Código</label>
             <input type="text" class="form-control text-uppercase" @if ($edit) name="codigo" @endif id="codigo" value="{{ old('codigo', $lista_precio->codigo) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
             <label for="unidad" class="required">Unidad</label>
             <input type="text" class="form-control" list="list_unidades" @if ($edit) name="unidad" @endif id="unidad" value="{{ old('unidad', $lista_precio->unidad) }}" @if ($edit) required @else disabled @endif>
             @if ($edit)
@@ -78,20 +78,20 @@
                 </datalist>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
             <label for="cantidad" class="required">Cantidad</label>
             <input type="number" min="0" class="form-control text-end" @if ($edit) name="cantidad" @endif id="cantidad" value="{{ old('cantidad', $lista_precio->cantidad) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-6">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
             <label for="valor_unitario" class="required">Valor unitario</label>
             <input type="text" class="form-control money" @if ($edit) name="valor_unitario" @endif id="valor_unitario" value="{{ old('valor_unitario', $lista_precio->valor_unitario) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
             <label for="descripcion">Descripción</label>
             <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $lista_precio->descripcion) }}</textarea>
         </div>
         @if(!$create)
-            <div class="form-group col-12 col-sm-12 col-md-6">
+            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
                 <label for="estado" class="required">Estado</label>
                 @if ($edit)
                     <select class="form-control" name="estado" id="estado" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -107,12 +107,12 @@
             </div>
 
             @if (!$edit)
-                <div class="form-group col-12 col-sm-12 col-md-6">
+                <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
                     <label for="creado_por">Creado por</label>
                     <input type="text" id="creado_por" class="form-control" disabled value="{{ $lista_precio->tblusuario->usuario }}">
                 </div>
             
-                <div class="form-group col-12 col-sm-12 col-md-6">
+                <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
                     <label for="fecha_creacion">Fecha creación</label>
                     <input type="text" id="fecha_creacion" class="form-control" disabled value="{{ $lista_precio->created_at }}">
                 </div>

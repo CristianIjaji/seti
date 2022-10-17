@@ -61,7 +61,7 @@
         @isset($create)
             @if ($create)
                 <button
-                    class="btn bg-primary bg-gradient bg-opacity-75 bg-md modal-form text-white fw-bold rounded-pill px-4 py-2"
+                    class="btn bg-primary bg-gradient bg-md modal-form text-white fw-bold rounded-pill px-4 py-2"
                     data-title="{{ $btnOptionsCreate['title'] }}"
                     data-header-class="{{ isset($btnOptionsCreate['header-class']) ? $btnOptionsCreate['header-class'] : '' }}"
                     data-size="{{ $btnOptionsCreate['modal-size'] }}"

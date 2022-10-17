@@ -42,11 +42,11 @@
     @endif
         <div class="row">
             <input type="hidden" id="id_actividad" value="{{ $activity->id_actividad }}">
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-3 col-xl-2">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="ot">OT</label>
                 <input type="text" class="form-control text-uppercase" @if ($edit) name="ot" @endif id="ot" value="{{ old('ot', $activity->ot) }}" @if (!$edit) readonly @endif >
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-9 col-xl-5">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_encargado_cliente" class="required">Cliente</label>
                 @if ($edit)
                     <div class="row pe-0 {{ !$existe_cotizacion ? 'pe-md-3' : '' }}">
@@ -82,7 +82,7 @@
                     <input type="text" class="form-control" id="id_encargado_cliente" value="{{ $activity->tblencargadocliente->full_name }} {{ (isset($activity->tblencargadocliente->tblterceroresponsable) ? ' - '.$activity->tblencargadocliente->tblterceroresponsable->razon_social : '') }}" readonly>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-5">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_estacion" class="required">Punto interés</label>
                 @if ($edit)
                     <div class="row pe-0 {{ !$existe_cotizacion ? 'pe-md-3' : ''}}">
@@ -118,7 +118,7 @@
                     <input type="text" class="form-control" id="id_estacion" value="{{ $activity->tblEstacion->nombre }}" readonly>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_tipo_actividad" class="required">Tipo trabajo</label>
                 @if ($edit)
                     <select name="id_tipo_actividad" id="id_tipo_actividad" class="form-control" style="width: 100%" @if ($edit && !$existe_cotizacion) required @else readonly @endif>
@@ -133,7 +133,7 @@
                     <input type="text" class="form-control" id="id_tipo_actividad" value="{{ $activity->tbltipoactividad->nombre }}" readonly>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_subsistema" class="required">Subsistema</label>
                 @if ($edit)
                     <select name="id_subsistema" id="id_subsistema" class="form-control" style="width: 100%" @if ($edit) required @else readonly @endif>
@@ -148,19 +148,19 @@
                     <input type="text" class="form-control" id="id_subsistema" value="{{ $activity->tblsubsistema->nombre }}" readonly>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2 {{ !$existe_cotizacion ? 'input-date' : '' }}">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 {{ !$existe_cotizacion ? 'input-date' : '' }}">
                 <label for="fecha_solicitud" class="required">Fecha solicitud</label>
                 <input type="text" class="form-control" @if ($edit) name="fecha_solicitud" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $activity->fecha_solicitud) }}" @if ($edit && !$existe_cotizacion) required @else readonly @endif readonly>
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2 input-date">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 input-date">
                 <label for="fecha_programacion" class="required">Fecha programación</label>
                 <input type="text" class="form-control" data-min-date="{{ date('Y-m-d') }}" @if ($edit) name="fecha_programacion" @endif id="fecha_programacion" value="{{ old('fecha_programacion', $activity->fecha_programacion) }}" @if ($edit) required @else readonly @endif readonly>
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="permiso_acceso">ID Permiso</label>
                 <input type="text" class="form-control" @if ($edit) name="permiso_acceso" @endif id="permiso_acceso" value="{{ old('permiso_acceso', $activity->permiso_acceso) }}" @if (!$edit) readonly @endif >
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_estado_actividad" class="required">Estado actividad</label>
                 @if ($edit)
                     @if ($create)
@@ -179,11 +179,11 @@
                 <label class="form-control {{ isset($activity->status[$activity->id_estado_actividad]) ? $activity->status[$activity->id_estado_actividad] : '' }}">{{ $activity->tblestadoactividad->nombre }}</label>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-6 col-md-6 col-lg-3 col-xl-2">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="valor" class="required">Valor actividad</label>
                 <input type="text" class="form-control money" @if ($edit) name="valor" @endif id="valor" value="{{ old('valor', $activity->valor) }}" @if ($edit) required @else readonly @endif>
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-9 col-xl-5">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_resposable_contratista" class="required">Responsable</label>
                 @if ($edit)
                     <div class="row pe-0 pe-md-3">
@@ -221,7 +221,7 @@
                 @endif
             </div>
             @if (!$create && !$existe_cotizacion)
-                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-12 col-xl-5">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                     <label for="id_cotizacion">Cotización</label>
                     @if ($edit)
                         <select name="id_cotizacion" id="id_cotizacion" class="form-control" style="width: 100%">
