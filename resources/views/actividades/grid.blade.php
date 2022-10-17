@@ -5,7 +5,7 @@
     'status' => $status,
     'btnOptionsCreate' => [
         "title" => 'Nueva actividad',
-        'header-class' => 'bg-primary text-white',
+        'header-class' => 'bg-primary bg-opacity-75 text-white',
         "modal-size" => "modal-fullscreen",
         "route" => route("activities.create"),
     ],

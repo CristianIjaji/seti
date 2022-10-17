@@ -127,10 +127,10 @@ class TblCotizacion extends Model
     public function getStatusAttribute() {
         return [
             session('id_dominio_cotizacion_creada') => 'bg-gradient',
-            session('id_dominio_cotizacion_devuelta') => 'bg-table-warning bg-gradient text-dark fw-normal',
-            session('id_dominio_cotizacion_revisada') => 'bg-table-info bg-gradient text-dark fw-normal',
+            session('id_dominio_cotizacion_devuelta') => 'bg-warning bg-gradient bg-opacity-75 text-dark fw-normal',
+            session('id_dominio_cotizacion_revisada') => 'bg-info bg-gradient bg-opacity-75 text-dark fw-normal',
             // session('id_dominio_cotizacion_enviada') => 'bg-table-success bg-gradient',
-            session('id_dominio_cotizacion_pendiente_aprobacion') => 'bg-table-success bg-gradient',
+            session('id_dominio_cotizacion_pendiente_aprobacion') => 'bg-success bg-gradient bg-opacity-75',
             session('id_dominio_cotizacion_rechazada') => 'bg-gradient text-danger',
             session('id_dominio_cotizacion_cancelada') => 'bg-gradient text-danger',
             session('id_dominio_cotizacion_aprobada') => 'bg-gradient text-success',
