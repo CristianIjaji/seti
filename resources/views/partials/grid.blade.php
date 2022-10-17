@@ -25,7 +25,7 @@
         @endisset
         @isset($export)
             @if ($export)
-                <a href="#" data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn btn-outline-light border-white text-success font-weight-bolder fs-3 btn-export">
+                <a data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn btn-outline-light border-white text-success font-weight-bolder fs-3 btn-export">
                     <i class="fas fa-file-excel"></i>
                 </a>
             @endif
@@ -33,7 +33,7 @@
         @isset($import)
             @if ($import)
                 <div class="dropdown d-inline me-1">
-                    <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <span data-toggle="tooltip" title="Importar" class="btn btn-outline-light border-white text-primary font-weight-bolder fs-3">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
                         </span>
@@ -50,7 +50,7 @@
                             </form>
                         </li>
                         <li>
-                            <a href="#" data-route="{{$route}}" class="dropdown-item pl-3 btn btn-download">
+                            <a data-route="{{$route}}" class="dropdown-item pl-3 btn btn-download">
                                 Descargar plantilla
                             </a>
                         </li>
@@ -61,7 +61,7 @@
         @isset($create)
             @if ($create)
                 <button
-                    class="btn bg-primary bg-gradient bg-md modal-form text-white rounded-pill px-4 py-2"
+                    class="btn bg-primary bg-gradient bg-opacity-75 bg-md modal-form text-white fw-bold rounded-pill px-4 py-2"
                     data-title="{{ $btnOptionsCreate['title'] }}"
                     data-header-class="{{ isset($btnOptionsCreate['header-class']) ? $btnOptionsCreate['header-class'] : '' }}"
                     data-size="{{ $btnOptionsCreate['modal-size'] }}"
@@ -88,7 +88,15 @@
             <tr>
             @isset($headers)
                 @forelse ($headers as $header)
-                    <th scope="col" class="{{ isset($header['actions']) ? 'text-center' : '' }}">{{ isset($header['label']) ? $header['label'] : '' }}</th>
+                    <th
+                        scope="col"
+                        class="align-middle text-center bg-primary bg-opacity-75 ps-2 py-2 text-white
+                            {{ $header === reset($headers) ? 'rounded-start' : '' }}
+                            {{ $header === end($headers) ? 'rounded-end' : '' }}
+                        "
+                    >
+                        {{ isset($header['label']) ? $header['label'] : '' }}
+                    </th>
                 @empty
                     <td class="bg-danger font-weight-bolder text-white">No se han definido las cabeceras de la tabla</td>
                 @endforelse

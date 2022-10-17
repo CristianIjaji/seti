@@ -21501,6 +21501,10 @@ label.required::after {
   font-weight: bold;
 }
 
+.table > :not(:first-child) {
+  border-top: 0;
+}
+
 @media screen and (max-width: 768px) {
   .table-responsive-stack tr {
     flex-direction: column;

@@ -4,7 +4,7 @@
     'route' => 'deals',
     'btnOptionsCreate' => [
         "title" => 'Nuevo consolidado',
-        'header-class' => 'bg-primary text-white',
+        'header-class' => 'bg-primary bg-opacity-75 text-white',
         "modal-size" => "modal-fullscreen",
         "route" => route("deals.create"),
     ],
