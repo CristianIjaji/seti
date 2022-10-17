@@ -77,8 +77,8 @@ Route::post('activities/grid', [ActividadController::class, 'grid'])->name('acti
 // Controlador de consolidado
 // Route::get('deals/export', [ConsolidadoController::class, 'export'])->name('deals.export');
 Route::resource('deals', ConsolidadoController::class);
+Route::post('deals/grid', [ConsolidadoController::class, 'grid'])->name('deals.grid');
 Route::post('deals/getActivities', [ConsolidadoController::class, 'getActivities'])->name('deals.getActivities');
-// Route::post('deals/grid', [ConsolidadoController::class, 'grid'])->name('deals.grid');
 
 // Controlador usuarios
 Route::resource('users', UsuarioController::class);

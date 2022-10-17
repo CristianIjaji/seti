@@ -30,7 +30,7 @@
                 @endif
             </div>
             @if ($edit)
-                <div class="col-5">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5">
                     <label for="id_menu">Menús disponibles</label>
                     <select id="id_menu" size="10" class="form-control" multiple style="width: 100%;">
                         @foreach ($menus_disponibles as $menu)
@@ -38,12 +38,12 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-2 d-grid gap-2">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-2 col-xl-2 d-grid gap-2">
                     <button type="button" id="id_menu_rightSelected" class="btn btn-light rounded"><i class="fa-solid fa-chevron-right"></i></button>
                     <button type="button" id="id_menu_leftSelected" class="btn btn-light rounded"><i class="fa-solid fa-chevron-left"></i></button>
                 </div>
             @endif
-            <div class="col-5">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5">
                 <label for="id_menu_to" class="required">Menús asignados</label>
                 <select id="id_menu_to" size="10" class="form-control" multiple style="width: 100%;">
                     @foreach ($menus_asignados as $id => $menu)
@@ -52,10 +52,10 @@
                 </select>
             </div>
             @if ($edit)
-                <div class="col-7"></div>    
+                <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7"></div>    
             @endif
             
-            <div class="{{ $edit ? 'col-5' : 'col-7 m-auto' }} pb-3">
+            <div class="{{ $edit ? 'col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5' : 'col-7 m-auto' }} py-3">
                 <label for="">Permisos del menú</label>
                 <div class="row m-auto">
                     <div class="col-4"><label for="chk_crear">Crear</label></div>

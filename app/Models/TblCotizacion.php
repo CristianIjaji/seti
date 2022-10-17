@@ -128,7 +128,7 @@ class TblCotizacion extends Model
         return [
             session('id_dominio_cotizacion_creada') => 'bg-gradient',
             session('id_dominio_cotizacion_devuelta') => 'bg-warning bg-gradient bg-opacity-75 text-dark fw-normal',
-            session('id_dominio_cotizacion_revisada') => 'bg-info bg-gradient bg-opacity-75 text-dark fw-normal',
+            session('id_dominio_cotizacion_revisada') => 'bg-info bg-gradient bg-opacity-50 text-dark fw-normal',
             // session('id_dominio_cotizacion_enviada') => 'bg-table-success bg-gradient',
             session('id_dominio_cotizacion_pendiente_aprobacion') => 'bg-success bg-gradient bg-opacity-75',
             session('id_dominio_cotizacion_rechazada') => 'bg-gradient text-danger',

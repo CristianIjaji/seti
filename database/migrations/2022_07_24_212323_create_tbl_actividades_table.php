@@ -33,7 +33,7 @@ class CreateTblActividadesTable extends Migration
             $table->unsignedBigInteger('id_informe')->nullable();
             $table->date('fecha_liquidado')->nullable();
             $table->boolean('liquidado')->default(false);
-            $table->unsignedBigInteger('id_mes_consolidado')->nullable();
+            $table->unsignedBigInteger('mes_consolidado')->nullable();
             $table->decimal('valor', 20, 2);
             $table->text('observaciones');
             $table->unsignedBigInteger('id_usuareg');
@@ -56,8 +56,6 @@ class CreateTblActividadesTable extends Migration
             $table->foreign('id_encargado_cliente')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
                 $table->foreign('id_resposable_contratista')->references('id_tercero')->on('tbl_terceros')
-                ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_mes_consolidado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

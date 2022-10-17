@@ -2,6 +2,13 @@
     $create = isset($cotizacion->id_cotizacion) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
     $disable_form = in_array($cotizacion->estado, [session('id_dominio_cotizacion_aprobada'), session('id_dominio_cotizacion_cancelada')]) ? true : false;
+    $editable = (
+        $edit &&
+        $cotizacion->id_usuareg == Auth::user()->id_usuario &&
+        in_array($cotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta'),
+            session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_rechazada')]) ||
+        ($edit && Auth::user()->role == session('id_dominio_analista'))
+    )
 @endphp
 
 @if ($create || $edit)
@@ -268,16 +275,15 @@
                             <tr id="tr_{{ session('id_dominio_materiales') }}">
                                 <th colspan="7">
                                     <span
-                                        class="btn w-100 bg-gray fw-bold {{ $edit && !$disable_form ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="w-100 bg-gray fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
-                                        title="Agregar ítem"
+                                        {{ $editable ? 'title=Agregar ítem' : '' }}
                                         data-title="Buscar ítems suministro materiales"
                                         data-size='modal-xl'
-                                        data-header-class='bg-gray text-white'
+                                        data-header-class='bg-primary bg-opacity-75 text-white'
                                         data-action='{{ route('priceList.search', ['type' => session('id_dominio_materiales'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
-                                        title="Crear"
                                     >
                                         <label>SUMINISTRO DE MATERIALES</label>
                                     </span>
@@ -296,16 +302,15 @@
                             <tr id="tr_{{ session('id_dominio_mano_obra') }}">
                                 <th colspan="7">
                                     <span
-                                        class="btn w-100 bg-gray fw-bold {{ $edit && !$disable_form ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="w-100 bg-gray fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
-                                        title="Agregar ítem"
+                                        {{ $editable ? 'title=Agregar ítem' : '' }}
                                         data-title="Buscar ítems mano obra"
                                         data-size='modal-xl'
-                                        data-header-class='bg-gray text-white'
+                                        data-header-class='bg-primary bg-opacity-75 text-white'
                                         data-action='{{ route('priceList.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
-                                        title="Crear"
                                     >
                                         <label>MANO DE OBRA</label>
                                     </span>
@@ -324,16 +329,15 @@
                             <tr id="tr_{{ session('id_dominio_transporte') }}">
                                 <th colspan="7">
                                     <span
-                                        class="btn w-100 bg-gray fw-bold {{ $edit && !$disable_form ? 'modal-form' : ''}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="w-100 bg-gray fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
-                                        title="Agregar ítem"
+                                        {{ $editable ? 'title=Agregar ítem' : '' }}
                                         data-title="Buscar ítems transporte y peajes"
                                         data-size='modal-xl'
-                                        data-header-class='bg-gray text-white'
+                                        data-header-class='bg-primary bg-opacity-75 text-white'
                                         data-action='{{ route('priceList.search', ['type' => session('id_dominio_transporte'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
                                         data-modal="modalForm-2"
                                         data-toggle="tooltip"
-                                        title="Crear"
                                     >
                                         <label>TRANSPORTE Y PEAJES</label>
                                     </span>
@@ -423,12 +427,7 @@
             </div>
 
             @php
-                $edit = (
-                    $edit &&
-                    $cotizacion->id_usuareg == Auth::user()->id_usuario &&
-                    in_array($cotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta'), session('id_dominio_cotizacion_rechazada')]) ||
-                    ($edit && Auth::user()->role == session('id_dominio_analista'))
-                );
+                $edit = $editable;
             @endphp
 
             @include('partials.buttons', [$create, 'edit' => $edit, 'label' => $create ? 'Crear cotización' : 'Editar cotización', 'modal' => 'modalForm'])

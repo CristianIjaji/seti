@@ -9352,7 +9352,7 @@ var setupDatePicker = function setupDatePicker(element, setup, format) {
   });
 
   picker.dates.formatInput = function (date) {
-    return date !== null ? moment__WEBPACK_IMPORTED_MODULE_1___default()(date).format(format) : null;
+    return date !== null ? moment__WEBPACK_IMPORTED_MODULE_1___default()(date).locale('es').format(format) : null;
   };
 
   if (setup.defaultDate) {
@@ -9510,9 +9510,10 @@ var handleModal = function handleModal(button) {
         selector: '[data-toggle="tooltip"]'
       });
       setTimeout(function () {
-        $("#".concat(modal, " input:text, #").concat(modal, " textarea")).first().focus();
+        // $(`#${modal} input:text, #${modal} textarea`).first().focus();
+        $("#".concat(modal)).focus();
         $('.money').inputmask(formatCurrency);
-      }, 100);
+      }, 200);
     }).always(function () {
       showLoader(false);
     });
@@ -10354,9 +10355,7 @@ $(document).on('click', '#btn-get-activities', function (e) {
         showLoader(true);
       }
     }).done(function (view) {
-      $('#div_detalle_consolidado').html(view); // $(`#form_statequotes`).parent().parent().parent().parent().html(view);
-      // $('#form_statequotes > .table').addClass('table-responsive-stack');
-
+      $('#div_detalle_consolidado').html(view);
       table();
       flexTable();
     }).always(function () {
@@ -10366,9 +10365,7 @@ $(document).on('click', '#btn-get-activities', function (e) {
 });
 $(document).on('click', '.menuToggle', function () {
   $('.menuToggle').toggleClass('active');
-}); // $('.menuToggle').click(() => {
-//     $(this).toggle('active');
-// });
+});
 
 /***/ }),
 

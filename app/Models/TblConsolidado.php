@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,5 +35,16 @@ class TblConsolidado extends Model
 
     public function tblusuario() {
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
+    }
+
+    public function getMesAttribute() {
+        return (isset($this->attributes['mes'])
+            ? Carbon::createFromFormat('Y-m-d', $this->attributes['mes'])->isoFormat('Y-MMMM')
+            : ''
+        );
+    }
+
+    public function getMesFormAttribute() {
+        return $this->attributes['mes'];
     }
 }

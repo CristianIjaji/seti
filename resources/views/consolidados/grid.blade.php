@@ -9,10 +9,12 @@
         "route" => route("deals.create"),
     ],
     'headers' => [
-        ['name' => 'id_consolidado', 'label' => '#', 'align' => 'text-end'],
-        ['name' => 'id_cliente', 'label' => 'Cliente'],
-        ['name' => 'id_mes', 'label' => 'Mes', 'align' => 'text-start'],
-        ['name' => 'id_estado_consolidado', 'label' => 'Estado'],
+        ['name' => 'id_consolidado', 'label' => '#', 'col' => 'col-2', 'align' => 'text-end'],
+        ['name' => 'id_cliente', 'label' => 'Cliente', 'col' => 'col-4', 'options' => $clientes],
+        ['name' => 'mes', 'label' => 'Mes', 'col' => 'col-3', 'align' => 'text-capitalize',
+            'class' => 'input-months text-capitalize', 'data' => ['format' => 'YYYY-MMMM', 'viewmode' => "months"]
+        ],
+        ['name' => 'id_estado_consolidado', 'label' => 'Estado', 'col' => 'col-2', 'options' => $estados],
         ['name' => '', 'label' => 'Acciones', 'actions' => [
             'btnOptions' => [
                 'view' => $view,

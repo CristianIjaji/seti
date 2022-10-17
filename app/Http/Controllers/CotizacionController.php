@@ -187,10 +187,10 @@ class CotizacionController extends Controller
 
             $cotizacion->comentario = "Cotización creada # $cotizacion->id_cotizacion.";
 
-            $id_usuario = (isset($cotizacion->tblCliente->tbluser) ? $cotizacion->tblCliente->tbluser->id_usuario : $cotizacion->tblCliente->tblusuario->id_usuario);
-
             $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'));
-            $this->sendNotification($cotizacion, 'user-'.$id_usuario, 'quote-created');
+            if(isset($cotizacion->tblCliente->tbluser)) {
+                $this->sendNotification($cotizacion, 'user-'.$cotizacion->tblCliente->tbluser->id_usuario, 'quote-created');
+            }
 
             return response()->json([
                 'success' => 'Cotización creada exitosamente!',
@@ -293,16 +293,9 @@ class CotizacionController extends Controller
 
                 $this->createTrack($quote, session('id_dominio_cotizacion_creada'));
 
-                $id_usuario = (isset($quote->tblContratista->tbluser->id_usuario)
-                    ? $quote->tblContratista->tbluser->id_usuario
-                    : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
-                );
-                $channel = 'user-'.(intval(Auth::user()->id_usuario) != intval($id_usuario)
-                    ? $id_usuario
-                    : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
-                );
-
-                $this->sendNotification($quote, $channel, 'quote-created');
+                if(isset($quote->tblContratista->tbluser)) {
+                    $this->sendNotification($quote, 'user-'.$quote->tblCliente->tbluser->id_usuario, 'quote-created');
+                }
             }
 
             return response()->json([

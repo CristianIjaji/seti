@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class SaveConsolidadoRequest extends FormRequest
@@ -18,8 +19,21 @@ class SaveConsolidadoRequest extends FormRequest
 
     protected function prepareForValidation()
     {
+        if(trim($this->get('mes')) != '') {
+            $meses = ['enero' => 1, 'febrero' => 2, 'marzo' => 3, 'abril' => 4, 'mayo' => 5, 'junio' => 6,
+                'julio' => 7, 'agosto' => 8, 'septiembre' => 9, 'octubre' => 10, 'noviembre' => 11, 'diciembre' => 12
+            ];
+
+            $date = explode('-', $this->get('mes'));
+            $month = mb_strtolower($date[1]);
+
+            $this->merge([
+                'mes' => $date[0].'-'.$meses[$month].'-'.date('d')
+            ]);
+        }
+
         $this->merge([
-            'mes' => date('Y-m-d', strtotime($this->get('mes'))),
+            // 'mes' => (trim($this->get('mes')) != '' ? date('Y-m-d', strtotime($this->get('mes'))) : null),
             'id_estado_consolidado' => session('id_dominio_consolidado_creado'),
             'id_usuareg' => (auth()->guest() ? 1 : auth()->id()),
         ]);
@@ -55,6 +69,7 @@ class SaveConsolidadoRequest extends FormRequest
             ],
             'id_actividad' => [
                 'required',
+                Rule::unique('tbl_consolidados_detalle')->ignore($this->route('deal')),
                 'exists:tbl_actividades,id_actividad'
             ],
             'id_usuareg' => [
@@ -69,6 +84,7 @@ class SaveConsolidadoRequest extends FormRequest
             'id_cliente.required' => 'El campo cliente es obligatorio.',
             'id_responsable_cliente.required' => 'El campo encargado cliente es obligatorio.',
             'id_actividad.required' => 'Debe agregar una actividad al consolidado.',
+            'id_actividad.unique' => 'La actividad ya fue registrada.'
         ];
     }
 }

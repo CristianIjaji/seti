@@ -17,7 +17,6 @@ class TblConsolidadoDetalle extends Model
         'id_consolidado',
         'id_actividad',
         'observacion',
-        'id_usuareg'
     ];
 
     public function tblconsolidado() {
@@ -27,14 +26,6 @@ class TblConsolidadoDetalle extends Model
     public function tblactividad() {
         return $this->belongsTo(TblActividad::class, 'id_actividad');
     }
-
-    public function tblusuareg() {
-        return $this->belongsTo(TblUsuario::class, 'id_usuareg');
-    }
-
-    // public function getObservacionAttribute() {
-    //     return "<textarea class='form-control' name='observacion[]' id='observacion' rows='2' style='resize: none;' required >{{ old('observacion[]', $this->attributes[observacion]) }}</textarea>";
-    // }
 
     public function getObservacionConsolidadoAttribute() {
         $observacion = isset($this->attributes['observacion']) ? $this->attributes['observacion'] : '';

@@ -121,9 +121,18 @@
                                                 @endforeach
                                             </select>
                                         @else
+                                            @php
+                                                $data_value = '';
+                                                if(isset($header['data'])) {
+                                                    foreach ($header['data'] as $data => $value) {
+                                                        $data_value .= "data-$data=$value ";
+                                                    }
+                                                }
+                                            @endphp
                                             <input
                                                 type="text"
-                                                class="form-control"
+                                                class="form-control {{ isset($header['class']) ? $header['class'] : '' }}"
+                                                {{$data_value}}
                                                 name="{{ !isset($header['foreign']) ? $header['name'] : $header['foreign'] }}"
                                                 value="{{ !isset($header['foreign'])
                                                     ? (isset($request[$header['name']]) ? $request[$header['name']] : '')

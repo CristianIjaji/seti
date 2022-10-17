@@ -31,7 +31,7 @@ class TblActividad extends Model
         'id_informe',
         'fecha_liquidado',
         'liquidado',
-        'id_mes_consolidado',
+        'mes_consolidado',
         'valor',
         'observaciones',
         'id_usuareg'
@@ -71,10 +71,6 @@ class TblActividad extends Model
 
     public function tblinforme() {
         // return $this->belongsTo(tblinforme::class, 'id_informe');
-    }
-
-    public function tblmesconsolidado() {
-        return $this->belongsTo(TblConsolidado::class, 'id_mes_consolidado');
     }
 
     public function tblconsolidadodetalle() {

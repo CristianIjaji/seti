@@ -294,7 +294,7 @@ const setupDatePicker = (element, setup, format) => {
     });
 
     picker.dates.formatInput = (date) => {
-        return date !== null ? moment(date).format(format) : null;
+        return date !== null ? moment(date).locale('es').format(format) : null;
     }
 
     if(setup.defaultDate) {
@@ -468,10 +468,12 @@ const handleModal = (button) => {
             $('body').tooltip({
                 selector: '[data-toggle="tooltip"]'
             });
+
             setTimeout(() => {
-                $(`#${modal} input:text, #${modal} textarea`).first().focus();
+                // $(`#${modal} input:text, #${modal} textarea`).first().focus();
+                $(`#${modal}`).focus();
                 $('.money').inputmask(formatCurrency);
-            }, 100);
+            }, 200);
         }).always(function() {
             showLoader(false);
         });
@@ -1411,8 +1413,6 @@ $(document).on('click', '#btn-get-activities', (e) => {
             }
         }).done(function(view) {
             $('#div_detalle_consolidado').html(view);
-            // $(`#form_statequotes`).parent().parent().parent().parent().html(view);
-            // $('#form_statequotes > .table').addClass('table-responsive-stack');
             table();
             flexTable();
         }).always(function() {
@@ -1424,6 +1424,3 @@ $(document).on('click', '#btn-get-activities', (e) => {
 $(document).on('click', '.menuToggle', () => {
     $('.menuToggle').toggleClass('active');
 });
-// $('.menuToggle').click(() => {
-//     $(this).toggle('active');
-// });

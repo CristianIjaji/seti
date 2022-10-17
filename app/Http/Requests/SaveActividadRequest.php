@@ -115,11 +115,10 @@ class SaveActividadRequest extends FormRequest
                 'nullable',
                 'boolean'
             ],
-            'id_mes_consolidado' => [
+            'mes_consolidado' => [
                 'nullable',
-                'exists:tbl_dominios,id_dominio'
+                'date'
             ],
-            
             'observaciones' => [
                 'string'
             ],

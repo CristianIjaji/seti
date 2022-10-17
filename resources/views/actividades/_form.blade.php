@@ -246,11 +246,11 @@
                 <input type="hidden" name="id_cotizacion" value="{{ $activity->id_cotizacion }}">
             @endif
             <div class="clearfix"></div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                 <label for="descripcion" class="required">Descripción actividad</label>
                 <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else readonly @endif>{{ old('nombre', $activity->descripcion) }}</textarea>
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                 <label for="observaciones" class="required">Observaciones</label>
                 <textarea class="form-control" @if ($edit) name="observaciones" @endif id="observaciones" rows="2" style="resize: none" @if ($edit) required @else readonly @endif>{{ old('nombre', $activity->observaciones) }}</textarea>
             </div>

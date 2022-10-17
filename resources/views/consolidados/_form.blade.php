@@ -48,17 +48,21 @@
         </div>
         <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-months">
             <label for="mes">Mes</label>
-            <input type="text" name="mes" id="mes" data-format="YYYY-MM" data-viewMode="months" class="form-control">
+            <input type="text" class="form-control text-capitalize" @if ($edit) name="mes" @endif id="mes" value="{{ old('mes', $consolidado->mes_form) }}" data-format="YYYY-MMMM" data-viewMode="months"  @if ($edit) required @else disabled @endif>
         </div>
         <div class="col-12 col-sm-6 col-md-6 col-lg-2 pb-3 pb-md-0 my-auto text-center text-md-end">
-            <button id="btn-get-activities" class="btn bg-info bg-gradient text-white">
-                <i class="fa-solid fa-magnifying-glass"></i> Consultar actividades
-            </button>
+            @if ($edit)
+                <button id="btn-get-activities" class="btn bg-info bg-gradient text-white">
+                    <i class="fa-solid fa-magnifying-glass"></i> Consultar actividades
+                </button>
+            @else
+                
+            @endif
         </div>
         <div class="clearfix"></div>
         <hr>
         <div id="div_detalle_consolidado" class="table-responsive">
-            @include('consolidados.detalle', ['model' => $detalle_consolidado])
+            @include('consolidados.detalle', ['model' => $detalle_consolidado, 'edit' => $edit])
         </div>
     </div>
 

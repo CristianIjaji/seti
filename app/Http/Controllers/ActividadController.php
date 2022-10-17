@@ -229,8 +229,7 @@ class ActividadController extends Controller
 
         return view($view, [
             'model' => TblActividad::with(['tbltipoactividad', 'tblsubsistema', 'tblencargadocliente',
-                'tblresposablecontratista', 'tblestacion', 'tblestadoactividad', 'tblcotizacion', 'tblordencompra',
-                'tblmesconsolidado', 'tblusuario'])
+                'tblresposablecontratista', 'tblestacion', 'tblestadoactividad', 'tblcotizacion', 'tblordencompra', 'tblusuario'])
                 ->where(function($q) {
                     $this->dinamyFilters($q);
                 })->latest()->paginate(10),
