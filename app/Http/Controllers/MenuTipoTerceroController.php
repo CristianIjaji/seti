@@ -241,15 +241,17 @@ class MenuTipoTerceroController extends Controller
         $menu = new TblMenuTipoTercero;
 
         return view($view, [
-            'model' => TblMenuTipoTercero::with(['tblmenu', 'tbltipotercero'])
-                ->select(
-                    'id_tipo_tercero',
-                    DB::raw('min(id_menu_tipo_tercero) as id_menu_tipo_tercero'),
-                    DB::raw('min(created_at) as created_at')
-                )->where(function ($q) {
-                    $this->dinamyFilters($q);
-                })->groupBy('id_tipo_tercero')
-                ->latest()->paginate(10),
+            'model' => TblMenuTipoTercero::select(
+                DB::raw("
+                    tbl_menu_tipo_tercero.id_tipo_tercero,
+                    d.nombre as tipo_tercero,
+                    min(tbl_menu_tipo_tercero.id_menu_tipo_tercero) as id_menu_tipo_tercero
+                ")
+            )->join('tbl_dominios as d', 'tbl_menu_tipo_tercero.id_tipo_tercero', '=', 'd.id_dominio')
+            ->where(function ($q) {
+                $this->dinamyFilters($q);
+            })->groupBy('id_tipo_tercero', 'd.nombre')
+            ->orderBy('d.nombre', 'asc')->paginate(10),
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
             'create' => Gate::allows('create', $menu),
             'edit' => Gate::allows('update', $menu),

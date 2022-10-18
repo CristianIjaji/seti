@@ -14,7 +14,7 @@
                             @endif
                             <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white {{ $edit ? 'rounded-start' : '' }}">Zona</th>
                             <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">OT</th>
-                            <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Estación</th>
+                            <th class="col-2 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Estación</th>
                             <th class="col-2 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Fecha Ejecución</th>
                             <th class="col-3 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Actividad</th>
                             <th class="col-2 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Valor Cotizado</th>
@@ -39,7 +39,7 @@
                                 <td class="col-1 my-auto border-0">
                                     <input type="text" class="form-control text-md-center text-end border-0" value="{{ $item->ot }}" disabled>
                                 </td>
-                                <td class="col-1 my-auto border-0">
+                                <td class="col-2 my-auto border-0">
                                     <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->estacion }}" disabled>
                                 </td>
                                 <td class="col-2 my-auto border-0">
