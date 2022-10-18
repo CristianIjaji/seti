@@ -17,7 +17,7 @@
                             <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Estación</th>
                             <th class="col-2 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Fecha Ejecución</th>
                             <th class="col-3 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Actividad</th>
-                            <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Valor Cotizado</th>
+                            <th class="col-2 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Valor Cotizado</th>
                             <th class="col-3 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white {{ !$edit ? 'rounded-end' : '' }}">Observación</th>
                             @if ($edit)
                                 <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white rounded-end">Acciones</th>
@@ -26,7 +26,7 @@
                     </thead>
                     <tbody>
                         @forelse ($model as $item)
-                            <tr class="border">
+                            <tr id="tr_{{ $item->item }}" class="border">
                                 @if (!$edit)
                                     <td class="col-1 my-auto border-0">
                                         <input type="text" class="form-control text-md-end text-end border-0" value="{{ $item->item }}" disabled>
@@ -48,8 +48,8 @@
                                 <td class="col-3 my-auto border-0">
                                     <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->descripcion }}" disabled>
                                 </td>
-                                <td class="col-1 my-auto border-0">
-                                    <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->valor_cotizado }}" disabled>
+                                <td class="col-2 my-auto border-0">
+                                    <input type="text" class="form-control text-end border-0" value="{{ $item->valor_cotizado }}" disabled>
                                 </td>
                                 <td class="col-3 my-auto border-0">
                                     <textarea class="form-control border-bottom border-info" name="observacion[]" rows="3" style="resize: none;" @if (!$edit) disabled @endif>{{ $item->observacion }}</textarea>
@@ -70,7 +70,8 @@
                                                 title="{{ "Ver Actividad ".$item->id_actividad }}">
                                             </i>
                                             <i
-                                                class="fa-solid fa-trash-can btn modal-form-2 text-danger fs-5 fw-bold"
+                                                id="{{ $item->item }}"
+                                                class="fa-solid fa-trash-can btn delete-item modal-form-2 text-danger fs-5 fw-bold"
                                                 data-toggle="tooltip"
                                                 data-placement="top"
                                                 data-toggle="modal"

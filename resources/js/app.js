@@ -290,6 +290,7 @@ const setupDatePicker = (element, setup, format) => {
     let picker = new TempusDominus(element, setup);
 
     picker.subscribe(Namespace.events.hide, (event) => {
+        $(element).focus();
         $(element).trigger('change');
     });
 
@@ -841,21 +842,21 @@ $(document).on('click', '.modal-form', function(e) {
     handleModal($(this));
 });
 
-const updateGrid = (url, data) => {
-    $.ajax({
-        url: url,
-        method: 'POST',
-        data: data,
-        beforeSend: () => {
-            showLoader(true);
-        }
-    }).done(function(view) {
-        $('#container').html(view);
-    }).always(function() {
-        showLoader(false);
-        setupSelect2();
-    });
-}
+// const updateGrid = (url, data) => {
+//     $.ajax({
+//         url: url,
+//         method: 'POST',
+//         data: data,
+//         beforeSend: () => {
+//             showLoader(true);
+//         }
+//     }).done(function(view) {
+//         $('#container').html(view);
+//     }).always(function() {
+//         showLoader(false);
+//         setupSelect2();
+//     });
+// }
 
 const getGrid = (url, id_form) => {
     $.ajax({
@@ -1396,7 +1397,7 @@ $(document).on('click', '#btn-get-activities', (e) => {
 
     let id_cliente = $('#id_cliente').val();
     let id_encargado = $('#id_responsable_cliente').val();
-    let mes = $('#id_mes').val();
+    let id_consolidado = $('#id_consolidado').val();
 
     if(id_cliente !== '' && id_encargado !== '') {
         $.ajax({
@@ -1406,6 +1407,7 @@ $(document).on('click', '#btn-get-activities', (e) => {
             data: {
                 id_cliente,
                 id_encargado,
+                id_consolidado,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },
             beforeSend: function() {
@@ -1418,6 +1420,13 @@ $(document).on('click', '#btn-get-activities', (e) => {
         }).always(function() {
             showLoader(false);
         });
+    }
+});
+
+$(document).on('click', '.delete-item', function() {
+    let id = $(this).attr('id');
+    if($(`#tr_${id}`).length) {
+        $(`#tr_${id}`).remove()
     }
 });
 

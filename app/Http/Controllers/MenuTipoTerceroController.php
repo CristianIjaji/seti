@@ -48,6 +48,27 @@ class MenuTipoTerceroController extends Controller
         return $querybuilder;
     }
 
+    private function savePermisosTercero() {
+        TblMenuTipoTercero::where('id_tipo_tercero', '=', request()->id_tipo_tercero)->wherenotin('id_menu', request()->id_menu)->delete();
+
+        foreach (request()->id_menu as $index => $valor) {
+            $permiso = TblMenuTipoTercero::where(['id_tipo_tercero' => request()->id_tipo_tercero, 'id_menu' => request()->id_menu[$index]])->first();
+            if(!$permiso) {
+                $permiso = new TblMenuTipoTercero;
+            }
+
+            $permiso->id_menu = request()->id_menu[$index];
+            $permiso->id_tipo_tercero = request()->id_tipo_tercero;
+            $permiso->crear = isset(request()->crear[$index]) ? request()->crear[$index] : false;
+            $permiso->editar = isset(request()->editar[$index]) ? request()->editar[$index] : false;
+            $permiso->ver = isset(request()->ver[$index]) ? request()->ver[$index] : false;
+            $permiso->importar = isset(request()->importar[$index]) ? request()->importar[$index] : false;
+            $permiso->exportar = isset(request()->exportar[$index]) ? request()->exportar[$index] : false;
+
+            $permiso->save();
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -90,20 +111,7 @@ class MenuTipoTerceroController extends Controller
             $this->authorize('create', new TblMenuTipoTercero);
 
             $request->validated();
-            
-            foreach (request()->id_menu as $index => $valor) {
-                $permiso = new TblMenuTipoTercero;
-
-                $permiso->id_menu = request()->id_menu[$index];
-                $permiso->id_tipo_tercero = request()->id_tipo_tercero;
-                $permiso->crear = isset(request()->crear[$index]) ? request()->crear[$index] : false;
-                $permiso->editar = isset(request()->editar[$index]) ? request()->editar[$index] : false;
-                $permiso->ver = isset(request()->ver[$index]) ? request()->ver[$index] : false;
-                $permiso->importar = isset(request()->importar[$index]) ? request()->importar[$index] : false;
-                $permiso->exportar = isset(request()->exportar[$index]) ? request()->exportar[$index] : false;
-
-                $permiso->save();
-            }
+            $this->savePermisosTercero();
 
             return response()->json([
                 'success' => 'Permiso creado exitosamente!',
@@ -169,21 +177,7 @@ class MenuTipoTerceroController extends Controller
             $this->authorize('update', $profile);
 
             $request->validated();
-            TblMenuTipoTercero::where(['id_tipo_tercero' => $profile->id_tipo_tercero])->delete();
-
-            foreach (request()->id_menu as $index => $valor) {
-                $permiso = new TblMenuTipoTercero;
-
-                $permiso->id_menu = request()->id_menu[$index];
-                $permiso->id_tipo_tercero = request()->id_tipo_tercero;
-                $permiso->crear = isset(request()->crear[$index]) ? request()->crear[$index] : false;
-                $permiso->editar = isset(request()->editar[$index]) ? request()->editar[$index] : false;
-                $permiso->ver = isset(request()->ver[$index]) ? request()->ver[$index] : false;
-                $permiso->importar = isset(request()->importar[$index]) ? request()->importar[$index] : false;
-                $permiso->exportar = isset(request()->exportar[$index]) ? request()->exportar[$index] : false;
-
-                $permiso->save();
-            }
+            $this->savePermisosTercero();
 
             return response()->json([
                 'success' => 'Permiso actualizado exitosamente!',

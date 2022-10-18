@@ -27,6 +27,13 @@ class TblConsolidadoDetalle extends Model
         return $this->belongsTo(TblActividad::class, 'id_actividad');
     }
 
+    public function getValorCotizadoAttribute() {
+        return number_format((isset($this->attributes['valor_cotizado'])
+            ? $this->attributes['valor_cotizado']
+            : 0
+        ), 2);
+    }
+
     public function getObservacionConsolidadoAttribute() {
         $observacion = isset($this->attributes['observacion']) ? $this->attributes['observacion'] : '';
         return "<textarea class='form-control' style='resize: none;'>$observacion</textarea>";

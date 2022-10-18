@@ -109,9 +109,15 @@ class CotizacionController extends Controller
     }
 
     private function getDetailQuote($quote) {
+        TblCotizacionDetalle::where('id_cotizacion', '=', $quote->id_cotizacion)->wherenotin('id_lista_precio', request()->id_lista_precio)->delete();
+
         $total = 0;
         foreach (request()->id_tipo_item as $index => $valor) {
-            $detalle = new TblCotizacionDetalle;
+            $detalle = TblCotizacionDetalle::where(['id_cotizacion' => $quote->id_cotizacion, 'id_lista_precio' => request()->id_lista_precio[$index]])->first();
+            if(!$detalle) {
+                $detalle = new TblCotizacionDetalle;
+            }
+
             $detalle->id_cotizacion = $quote->id_cotizacion;
             $detalle->id_tipo_item = request()->id_tipo_item[$index];
             $detalle->id_lista_precio = request()->id_lista_precio[$index];
@@ -279,7 +285,6 @@ class CotizacionController extends Controller
 
             $estado = $quote->estado;
             $quote->update($request->validated());
-            TblCotizacionDetalle::where('id_cotizacion', '=', $quote->id_cotizacion)->delete();
 
             $quote->valor = $this->getDetailQuote($quote);
             $quote->save();
@@ -589,8 +594,8 @@ class CotizacionController extends Controller
     }
 
     public function exportQuote() {
-        $cotizacion = TblCotizacion::with(['tblEstacion'])->where(['id_cotizacion' => request()->quote])->get();
-        return $this->excel->download(new CotizacionExport($cotizacion), "Cotizacion.xlsx");
+        $cotizacion = TblCotizacion::with(['tblEstacion'])->find(request()->quote)->get();
+        return $this->excel->download(new CotizacionExport($cotizacion), "Cotizacion ".TblCotizacion::find(request()->quote)->tblEstacion->nombre.".xlsx");
     }
 
     public function getCotizacion(TblCotizacion $quote) {

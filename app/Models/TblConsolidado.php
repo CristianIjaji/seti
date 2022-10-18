@@ -45,6 +45,6 @@ class TblConsolidado extends Model
     }
 
     public function getMesFormAttribute() {
-        return $this->attributes['mes'];
+        return isset($this->attributes['mes']) ? $this->attributes['mes'] : '';
     }
 }

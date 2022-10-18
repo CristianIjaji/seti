@@ -9348,6 +9348,7 @@ window.datePicker = function () {
 var setupDatePicker = function setupDatePicker(element, setup, format) {
   var picker = new _eonasdan_tempus_dominus__WEBPACK_IMPORTED_MODULE_2__.TempusDominus(element, setup);
   picker.subscribe(_eonasdan_tempus_dominus__WEBPACK_IMPORTED_MODULE_2__.Namespace.events.hide, function (event) {
+    $(element).focus();
     $(element).trigger('change');
   });
 
@@ -9819,23 +9820,21 @@ document.addEventListener("DOMContentLoaded", function (event) {
 $(document).on('click', '.modal-form', function (e) {
   e.preventDefault();
   handleModal($(this));
-});
-
-var updateGrid = function updateGrid(url, data) {
-  $.ajax({
-    url: url,
-    method: 'POST',
-    data: data,
-    beforeSend: function beforeSend() {
-      showLoader(true);
-    }
-  }).done(function (view) {
-    $('#container').html(view);
-  }).always(function () {
-    showLoader(false);
-    setupSelect2();
-  });
-};
+}); // const updateGrid = (url, data) => {
+//     $.ajax({
+//         url: url,
+//         method: 'POST',
+//         data: data,
+//         beforeSend: () => {
+//             showLoader(true);
+//         }
+//     }).done(function(view) {
+//         $('#container').html(view);
+//     }).always(function() {
+//         showLoader(false);
+//         setupSelect2();
+//     });
+// }
 
 var getGrid = function getGrid(url, id_form) {
   $.ajax({
@@ -10337,7 +10336,7 @@ $(document).on('click', '#btn-get-activities', function (e) {
   e.preventDefault();
   var id_cliente = $('#id_cliente').val();
   var id_encargado = $('#id_responsable_cliente').val();
-  var mes = $('#id_mes').val();
+  var id_consolidado = $('#id_consolidado').val();
 
   if (id_cliente !== '' && id_encargado !== '') {
     $.ajax({
@@ -10349,6 +10348,7 @@ $(document).on('click', '#btn-get-activities', function (e) {
       data: {
         id_cliente: id_cliente,
         id_encargado: id_encargado,
+        id_consolidado: id_consolidado,
         _token: $('meta[name="csrf-token"]').attr('content')
       },
       beforeSend: function beforeSend() {
@@ -10361,6 +10361,13 @@ $(document).on('click', '#btn-get-activities', function (e) {
     }).always(function () {
       showLoader(false);
     });
+  }
+});
+$(document).on('click', '.delete-item', function () {
+  var id = $(this).attr('id');
+
+  if ($("#tr_".concat(id)).length) {
+    $("#tr_".concat(id)).remove();
   }
 });
 $(document).on('click', '.menuToggle', function () {

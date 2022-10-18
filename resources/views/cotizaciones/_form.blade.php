@@ -7,7 +7,8 @@
         $cotizacion->id_usuareg == Auth::user()->id_usuario &&
         in_array($cotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta'),
             session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_rechazada')]) ||
-        ($edit && Auth::user()->role == session('id_dominio_analista'))
+        ($edit && Auth::user()->role == session('id_dominio_analista')) ||
+        $create
     )
 @endphp
 

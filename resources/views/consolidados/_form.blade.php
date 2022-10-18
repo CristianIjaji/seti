@@ -14,6 +14,8 @@
         @endif
 @endif
     <div class="row">
+        <input type="hidden" id="id_consolidado" value="{{ $consolidado->id_consolidado }}">
+
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-4">
             <label for="id_cliente" class="required">Cliente</label>
             @if ($edit)

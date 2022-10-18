@@ -11,11 +11,12 @@ use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class CotizacionExport implements FromView, WithEvents, WithDrawings
+class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
 {
     use Exportable;
 
@@ -24,6 +25,11 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings
     public function __construct($model)
     {
         $this->model = $model;
+    }
+
+    public function title(): string
+    {
+        return $this->model[0]->tblEstacion->nombre;
     }
 
     public function view(): View

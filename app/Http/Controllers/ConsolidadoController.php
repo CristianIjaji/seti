@@ -8,11 +8,8 @@ use App\Models\TblConsolidado;
 use App\Models\TblConsolidadoDetalle;
 use App\Models\TblDominio;
 use App\Models\TblTercero;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsolidadoController extends Controller
@@ -62,8 +59,19 @@ class ConsolidadoController extends Controller
     }
 
     private function saveDetalleConsolidado($deal) {
+        TblActividad::join('tbl_consolidados_detalle as det', 'tbl_actividades.id_actividad', '=', 'det.id_actividad')
+        ->where('det.id_consolidado', '=', $deal->id_consolidado)
+        ->wherenotin('tbl_actividades.id_actividad', request()->id_actividad)
+        ->update(['mes_consolidado' => null]);
+
+        TblConsolidadoDetalle::where('id_consolidado', '=', $deal->id_consolidado)->wherenotin('id_actividad', request()->id_actividad)->delete();
+
         foreach (request()->id_actividad as $index => $valor) {
-            $detalle = new TblConsolidadoDetalle;
+            $detalle = TblConsolidadoDetalle::where(['id_consolidado' => $deal->id_consolidado, 'id_actividad' => request()->id_actividad[$index]])->first();
+            if(!$detalle) {
+                $detalle = new TblConsolidadoDetalle;
+            }
+
             $detalle->id_consolidado = $deal->id_consolidado;
             $detalle->id_actividad = request()->id_actividad[$index];
             $detalle->observacion = request()->observacion[$index];
@@ -118,11 +126,13 @@ class ConsolidadoController extends Controller
      */
     public function store(SaveConsolidadoRequest $request)
     {
+        DB::beginTransaction();
         try {
             $deal = TblConsolidado::create($request->validated());
-            // $this->authorize('create', $deal);
+            $this->authorize('create', $deal);
 
             $this->saveDetalleConsolidado($deal);
+            DB::commit();
 
             return response()->json([
                 'success' => 'Cotización creada exitosamente!',
@@ -132,6 +142,7 @@ class ConsolidadoController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json([
                 'errors' => $th->getMessage()
             ]);
@@ -153,14 +164,14 @@ class ConsolidadoController extends Controller
             'consolidado' => $deal,
             'detalle_consolidado' => TblConsolidadoDetalle::select(
                 DB::raw("
-                    ROW_NUMBER() OVER(PARTITION BY con.id_consolidado) as item,
+                    ROW_NUMBER() OVER(PARTITION BY con.id_consolidado ORDER BY tbl_consolidados_detalle.id_consolidado_detalle) as item,
                     tbl_consolidados_detalle.id_actividad,
                     zon.nombre as zona,
                     act.ot,
                     est.nombre as estacion,
                     act.fecha_ejecucion,
                     act.descripcion,
-                    act.valor,
+                    act.valor as valor_cotizado,
                     tbl_consolidados_detalle.observacion
                 ")
             )
@@ -171,7 +182,7 @@ class ConsolidadoController extends Controller
             ->where([
                 'tbl_consolidados_detalle.id_consolidado' => $deal->id_consolidado
             ])
-            ->orderBy('tbl_consolidados_detalle.id_consolidado_detalle', 'asc')
+            ->orderBy('item', 'asc')
             ->get()
         ]);
     }
@@ -206,7 +217,7 @@ class ConsolidadoController extends Controller
                     est.nombre as estacion,
                     act.fecha_ejecucion,
                     act.descripcion,
-                    act.valor,
+                    act.valor as valor_cotizado,
                     tbl_consolidados_detalle.observacion
                 ")
             )
@@ -229,9 +240,26 @@ class ConsolidadoController extends Controller
      * @param  \App\Models\Consolidado  $consolidado
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, TblConsolidado $consolidado)
+    public function update(SaveConsolidadoRequest $request, TblConsolidado $deal)
     {
-        //
+        DB::beginTransaction();
+        try {
+            $this->authorize('update', $deal);
+
+            $deal->update($request->validated());
+            $this->saveDetalleConsolidado($deal);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => 'Consolidado actualizado correctamente!'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -278,11 +306,19 @@ class ConsolidadoController extends Controller
         try {
             $id_cliente = request()->id_cliente;
             $id_responsable_cliente = request()->id_encargado;
+            $id_consolidado = request()->id_consolidado;
+
+            $filters = [
+                'tbl_actividades.id_encargado_cliente' => $id_cliente,
+                'tbl_actividades.id_resposable_contratista' => $id_responsable_cliente,
+                'tbl_actividades.mes_consolidado' => null
+            ];
+
             return view('consolidados.detalle', [
                 'edit' => true,
                 'model' => TblActividad::select(
                     DB::raw("
-                        ROW_NUMBER() OVER(PARTITION BY tbl_actividades.id_encargado_cliente) as item,
+                        ROW_NUMBER() OVER(PARTITION BY tbl_actividades.id_encargado_cliente ORDER BY e.nombre) as item,
                         tbl_actividades.id_actividad,
                         z.nombre as zona,
                         tbl_actividades.ot,
@@ -290,19 +326,16 @@ class ConsolidadoController extends Controller
                         tbl_actividades.fecha_ejecucion,
                         tbl_actividades.descripcion,
                         c.valor as valor_cotizado,
-                        '' as observacion
+                        det.observacion
                     ")
                 )
                 ->join('tbl_cotizaciones as c', 'tbl_actividades.id_cotizacion', '=', 'c.id_cotizacion')
                 ->join('tbl_puntos_interes as e', 'c.id_estacion', '=', 'e.id_punto_interes')
                 ->join('tbl_dominios as z', 'e.id_zona', '=', 'z.id_dominio')
                 ->leftjoin('tbl_consolidados_detalle as det', 'tbl_actividades.id_actividad', '=', 'det.id_actividad')
-                ->where([
-                    'tbl_actividades.id_encargado_cliente' => $id_cliente,
-                    'tbl_actividades.id_resposable_contratista' => $id_responsable_cliente,
-                    'tbl_actividades.mes_consolidado' => null
-                ])
-                ->orderBy('e.nombre', 'asc')
+                ->where($filters)
+                ->orwhere('det.id_consolidado', '=', $id_consolidado)
+                ->orderBy('item', 'asc')
                 ->get()
             ]);
         } catch (\Throwable $th) {
