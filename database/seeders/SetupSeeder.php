@@ -34,6 +34,12 @@ class SetupSeeder extends Seeder
             //throw $th;
         }
 
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 0');
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
         $plantilla_correo = '
             <!DOCTYPE html>
             <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -124,6 +130,12 @@ class SetupSeeder extends Seeder
 
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS = 1');
         } catch (\Throwable $th) {
             //throw $th;
         }
