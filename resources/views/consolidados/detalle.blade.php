@@ -1,3 +1,6 @@
+@php
+    $total = 0;
+@endphp
 <div class="row py3">
     <div class="col-12 py1">
         <div class="row">
@@ -82,10 +85,22 @@
                                         </div>
                                     </td>
                                 @endif
+
+                                @php
+                                    $total += $item->valor;
+                                @endphp
                             </tr>
                         @empty
                             <tr><td colspan="8">No hay registros para mostrar</td></tr>
                         @endforelse
+                    </tbody>
+                    <tbody>
+                        <tr>
+                            <td class="{{ $edit ? 'col-6' : 'col-7' }}"></td>
+                            <td class="col-3 fw-bold text-center">Totales</td>
+                            <td class="col-2 fw-bold text-end">{{ number_format($total, 1) }}</td>
+                            <td class="col-4"></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

@@ -172,6 +172,7 @@ class ConsolidadoController extends Controller
                     act.fecha_ejecucion,
                     act.descripcion,
                     act.valor as valor_cotizado,
+                    act.valor,
                     tbl_consolidados_detalle.observacion
                 ")
             )
@@ -218,6 +219,7 @@ class ConsolidadoController extends Controller
                     act.fecha_ejecucion,
                     act.descripcion,
                     act.valor as valor_cotizado,
+                    act.valor,
                     tbl_consolidados_detalle.observacion
                 ")
             )
@@ -326,6 +328,7 @@ class ConsolidadoController extends Controller
                         tbl_actividades.fecha_ejecucion,
                         tbl_actividades.descripcion,
                         c.valor as valor_cotizado,
+                        c.valor,
                         det.observacion
                     ")
                 )
