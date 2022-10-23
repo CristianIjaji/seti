@@ -79,13 +79,13 @@ class TblListaPrecio extends Model
     }
 
     public static function createRow(array $row) {
-        $documento = trim(mb_strtolower($row[0]));
-        $tipo_item = trim(mb_strtolower($row[1]));
+        $documento = trim(($row[0]));
+        $tipo_item = trim(($row[1]));
         $codigo = trim(mb_strtoupper($row[2]));
         $descripcion = trim($row[3]);
         $unidad = trim($row[4]);
         $cantidad = trim($row[5]);
-        $valor_unitario = str_replace(',', '', trim($row[6]));
+        $valor_unitario = trim($row[6]);
 
         $parametro_items = TblParametro::where(['llave' => 'id_dominio_tipo_items'])->first()->valor;
 

@@ -207,16 +207,16 @@ class TblCotizacion extends Model
 
     public static function createRow(array $row) {
         $ot = trim(mb_strtolower($row[0]));
-        $documento_cliente = trim(mb_strtolower($row[1]));
-        $nombre_estacion = trim(mb_strtolower($row[2]));
+        $documento_cliente = trim(($row[1]));
+        $nombre_estacion = trim(($row[2]));
         $descripcion = trim($row[3]);
         $fecha_solicitud = trim($row[4]);
         $fecha_envio = trim(($row[5]));
-        $nombre_trabajo = trim(mb_strtolower($row[6]));
-        $nombre_prioridad = trim(mb_strtolower($row[7]));
-        $nombre_estado = trim(mb_strtolower($row[8]));
-        $documento_encargado = trim(mb_strtolower($row[9]));
-        $valor_iva = trim(mb_strtolower($row[10]));
+        $nombre_trabajo = trim(($row[6]));
+        $nombre_prioridad = trim(($row[7]));
+        $nombre_estado = trim(($row[8]));
+        $documento_encargado = trim(($row[9]));
+        $valor_iva = trim(($row[10]));
         $valor = trim($row[11]);
 
         $cliente = TblTercero::where(['documento' => $documento_cliente, 'estado' => 1])->first();

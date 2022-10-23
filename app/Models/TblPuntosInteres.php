@@ -83,14 +83,14 @@ class TblPuntosInteres extends Model
     }
 
     public static function createRow(array $row) {
-        $documento = trim(mb_strtolower($row[0]));
-        $zona = trim(mb_strtolower($row[1]));
-        $nombre = trim(mb_strtoupper($row[2]));
+        $documento = trim(($row[0]));
+        $zona = trim(($row[1]));
+        $nombre = trim(($row[2]));
         $latitud = trim($row[3]);
         $longitud = trim($row[4]);
         $descripcion = trim($row[5]);
-        $transporte = trim(mb_strtolower($row[6]));
-        $acceso = trim(mb_strtolower($row[7]));
+        $transporte = trim(($row[6]));
+        $acceso = trim(($row[7]));
 
         $parametro_zonas = TblParametro::where(['llave' => 'id_dominio_zonas'])->first()->valor;
         $parametro_transporte = TblParametro::where(['llave' => 'id_dominio_transportes'])->first()->valor;
