@@ -9,7 +9,7 @@
     ],
     'headers' => [
         ['name' => 'id_usuario', 'label' => '#', 'col' => 'col-1', 'align' => 'text-end'],
-        ['name' => 'logo_image', 'label' => 'logo', 'type' => 'img', 'html' => true],
+        // ['name' => 'logo_image', 'label' => 'logo', 'type' => 'img', 'html' => true],
         ['name' => 'usuario', 'label' => 'Usuario', 'col' => 'col-2'],
         ['name' => 'tbltercero', 'label' => 'Tercero', 'col' => 'col-3', 'foreign' => 'full_name'],
         ['name' => 'tbltercero', 'label' => 'Email', 'col' => 'col-3', 'foreign' => 'correo'],

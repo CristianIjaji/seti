@@ -94,16 +94,21 @@
                             <tr><td colspan="8">No hay registros para mostrar</td></tr>
                         @endforelse
                     </tbody>
-                    <tbody>
+                    {{-- <tbody>
                         <tr>
                             <td class="{{ $edit ? 'col-6' : 'col-7' }}"></td>
                             <td class="col-3 fw-bold text-center">Totales</td>
                             <td class="col-2 fw-bold text-end">{{ number_format($total, 1) }}</td>
                             <td class="col-4"></td>
                         </tr>
-                    </tbody>
+                    </tbody> --}}
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+<script type="application/javascript">
+    table();
+    flexTable();
+</script>

@@ -16,13 +16,13 @@
         @endif
 @endif
 
-<ul class="nav nav-tabs" id="usersTab" role="tablist">
+{{-- <ul class="nav nav-tabs" id="usersTab" role="tablist">
     <li class="nav-item" role="presentation">
         <button class="nav-link active" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="true">Usuario</button>
     </li>
-</ul>
-<div class="tab-content pt-3" id="usersTabContent">
-    <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab">
+</ul> --}}
+{{-- <div class="tab-content pt-3" id="usersTabContent"> --}}
+    {{-- <div class="tab-pane fade show active" id="users" role="tabpanel" aria-labelledby="users-tab"> --}}
         <div class="form-group">
             <label for="usuario" class="required">Usuario</label>
             <input type="text" class="form-control" @if ($create || $edit) name="usuario" @endif id="usuario" value="{{ old('usuario', $usuario->usuario) }}" @if ($create || $edit) required @else disabled @endif>
@@ -102,7 +102,7 @@
                 <input type="text" id="fecha_creacion" class="form-control" disabled value="{{ $usuario->created_at }}">
             </div>
         @endif
-    </div>
+    {{-- </div> --}}
     
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear usuario' : 'Editar usuario'])
 </div>

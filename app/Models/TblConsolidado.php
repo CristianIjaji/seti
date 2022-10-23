@@ -37,11 +37,19 @@ class TblConsolidado extends Model
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
     }
 
+    public function tblconsolidadodetalle() {
+        return $this->hasMany(TblConsolidadoDetalle::class, 'id_consolidado');
+    }
+
     public function getMesAttribute() {
         return (isset($this->attributes['mes'])
             ? Carbon::createFromFormat('Y-m-d', $this->attributes['mes'])->isoFormat('Y-MMMM')
             : ''
         );
+    }
+
+    public function getNombreMesAttribute() {
+        return ucfirst(Carbon::createFromFormat('Y-m-d', $this->attributes['mes'])->isoFormat('MMMM'));
     }
 
     public function getMesFormAttribute() {

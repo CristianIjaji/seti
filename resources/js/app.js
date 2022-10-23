@@ -544,14 +544,11 @@ window.flexTable = () => {
             });
         });
     }
-    // flextable
 }      
 
-// flexTable();
 window.onresize = function(event) {
     flexTable();
 };
-// document ready
 
 window.drawItems = (edit = true) => {
     // type: tipo de item: mano de obra, transporte o suministro
@@ -1265,7 +1262,7 @@ $(document).on('click', '.btn-quote', function(e) {
         return false;
     }
 
-    if(action === 'cancel') {
+    if(action === 'cancel' || action === 'deny') {
         $('#comentario').removeClass('is-invalid');
         if($('#comentario').val().trim() === '') {
             $('#comentario').addClass('is-invalid');
@@ -1415,8 +1412,6 @@ $(document).on('click', '#btn-get-activities', (e) => {
             }
         }).done(function(view) {
             $('#div_detalle_consolidado').html(view);
-            table();
-            flexTable();
         }).always(function() {
             showLoader(false);
         });
@@ -1432,4 +1427,40 @@ $(document).on('click', '.delete-item', function() {
 
 $(document).on('click', '.menuToggle', () => {
     $('.menuToggle').toggleClass('active');
+});
+
+$(document).on('click', '#btn_download_consolidado', () => {
+    let id_consolidado = $('#btn_download_consolidado').data('consolidado');
+
+    $.ajax({
+        xhrFields: {
+            responseType: 'blob',
+        },
+        type: 'GET',
+        url: `deals/exportDeal?deal=${id_consolidado}`,
+        beforeSend: () => {
+            showLoader(true);
+        },
+        success: (result, status, xhr) => {
+            var disposition = xhr.getResponseHeader('content-disposition');
+            var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+            var filename = (matches != null && matches[1] ? matches[1] : 'Reporte.xlsx').replace(/"/g,'');
+
+            // The actual download
+            var blob = new Blob([result], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            link.text = filename;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }).always(function () {
+        showLoader(false);
+    });
 });

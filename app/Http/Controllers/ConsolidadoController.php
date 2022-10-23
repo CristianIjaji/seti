@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ConsolidadoExport;
 use App\Http\Requests\SaveConsolidadoRequest;
 use App\Models\TblActividad;
 use App\Models\TblConsolidado;
@@ -10,6 +11,7 @@ use App\Models\TblDominio;
 use App\Models\TblTercero;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ConsolidadoController extends Controller
@@ -302,6 +304,12 @@ class ConsolidadoController extends Controller
 
     public function export() {
         
+    }
+
+    public function exportDeal() {
+        $deal = TblConsolidado::with(['tblconsolidadodetalle'])->find(request()->deal)->get();
+        return Excel::download(new ConsolidadoExport($deal), 'Consolidado.xlsx');
+        // $this->excel->download(new ConsolidadoExport($deal), 'Consolidado.xlsx');
     }
 
     public function getActivities() {

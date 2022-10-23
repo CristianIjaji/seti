@@ -239,12 +239,6 @@ class SetupSeeder extends Seeder
             'estado' => 1,
             'id_usuareg' => $user->id_usuario
         ]);
-        $lista_meses = TblDominio::create([
-            'nombre' => 'Lista meses',
-            'descripcion' => 'Lista meses',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
         
         /* Creacioón dominios hijos tipo documentos */
             $cedula = TblDominio::create([
@@ -721,30 +715,6 @@ class SetupSeeder extends Seeder
                 'id_usuareg' => $user->id_usuario,
             ]);
         /* Fin creación dominios hijos estados consolidado */
-
-        /* Creación dominios hijos meses */
-            TblDominio::create([
-                'nombre' => 'Enero',
-                'id_dominio_padre' => $lista_meses->id_dominio,
-                'descripcion' => 'Enero',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Febrero',
-                'id_dominio_padre' => $lista_meses->id_dominio,
-                'descripcion' => 'Febrero',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Marzo',
-                'id_dominio_padre' => $lista_meses->id_dominio,
-                'descripcion' => 'Marzo',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos meses */
 
         /* Creación parametros */
             // Creación parametro tipo documentos

@@ -276,7 +276,7 @@
                             <tr id="tr_{{ session('id_dominio_materiales') }}">
                                 <th colspan="7">
                                     <span
-                                        class="w-100 bg-gray fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
                                         {{ $editable ? 'title=Agregar ítem' : '' }}
                                         data-title="Buscar ítems suministro materiales"
@@ -303,7 +303,7 @@
                             <tr id="tr_{{ session('id_dominio_mano_obra') }}">
                                 <th colspan="7">
                                     <span
-                                        class="w-100 bg-gray fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
                                         {{ $editable ? 'title=Agregar ítem' : '' }}
                                         data-title="Buscar ítems mano obra"
@@ -330,7 +330,7 @@
                             <tr id="tr_{{ session('id_dominio_transporte') }}">
                                 <th colspan="7">
                                     <span
-                                        class="w-100 bg-gray fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
+                                        class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
                                         data-toggle="tooltip"
                                         {{ $editable ? 'title=Agregar ítem' : '' }}
                                         data-title="Buscar ítems transporte y peajes"
@@ -363,8 +363,7 @@
                         @if (!$create && $edit)
                             <div class="border rounded p-3">
                                 <div class="row">
-                                    <div class="form-group col-12 text-start">
-                                        <label for="comentario">Nuevo comentario</label>
+                                    <div class="form-group col-12 text-start="comentario">Nuevo comentario</label>
                                         <textarea class="form-control" id="comentario" name="comentario" rows="3" style="resize: none"></textarea>
                                     </div>
 
@@ -414,14 +413,14 @@
                 <div class="form-group col-12 col-md-6 co-lg-6 col-xl-6 my-auto">
                     <div class="p-3">
                         <div class="row fs-5">
-                            <label class="col-12 col-sm-4 col-md-5 text-start text-md-end">Total sin IVA:</label>
-                            <label id="lbl_total_sin_iva" class="col-12 col-sm-8 col-md-7 text-end border-bottom"></label>
+                            <label class="col-12 text-start">Total sin IVA:</label>
+                            <label id="lbl_total_sin_iva" class="col-12 text-end border-bottom">0</label>
 
-                            <label class="col-12 col-sm-4 col-md-5 text-start text-md-end">Total IVA:</label>
-                            <label id="lbl_total_iva" class="col-12 col-sm-8 col-md-7 text-end border-bottom"></label>
+                            <label class="col-12 text-start">Total IVA:</label>
+                            <label id="lbl_total_iva" class="col-12 text-end border-bottom">0</label>
 
-                            <label class="col-12 col-sm-4 col-md-5 text-start text-md-end">Total con IVA:</label>
-                            <label id="lbl_total_con_iva" class="col-12 col-sm-8 col-md-7 text-end border-bottom"></label>
+                            <label class="col-12 text-start">Total con IVA:</label>
+                            <label id="lbl_total_con_iva" class="col-12 text-end border-bottom">0</label>
                         </div>
                     </div>
                 </div>

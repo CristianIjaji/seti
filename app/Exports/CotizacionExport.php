@@ -2,19 +2,13 @@
 
 namespace App\Exports;
 
-use App\Models\TblCotizacion;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
 use Maatwebsite\Excel\Concerns\WithEvents;
-use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
-use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
 {
@@ -65,7 +59,6 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
             'textright' => "text-align: right;",
         ]);
     }
-    
 
     public function properties(): array
     {
@@ -115,6 +108,33 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
         return [$drawing, $drawing2];
     }
 
+    function aplicarFormato($event, $column, $row, $suma, $items, $stylesArray) {
+        $event->sheet->getDelegate()->getStyleByColumnAndRow(2, $row, 9, $row)->applyFromArray($stylesArray);
+        $row++;
+
+        // Se aplica formato numero a las celdas de VR UNIT y VR TOTAL.
+        $event->sheet->getDelegate()->getStyleByColumnAndRow(8, $row, 9, ($row + $items))->applyFromArray($stylesArray['formato_numero']);
+        $row += $items;
+
+        if($items > 0 && $suma > 0) {
+            // Se aplica formato a la lista de Ítems
+            $event->sheet->getDelegate()->getStyleByColumnAndRow($column, $row, 9, ($row + $suma))->applyFromArray($stylesArray);
+        }
+
+        $event->sheet->getDelegate()->getStyle("I$row")->applyFromArray($stylesArray);
+
+        return $row += 2;
+    }
+
+    function getRowcount($text, $width=55) {
+        $rc = 0;
+        $line = explode("\n", $text);
+        foreach($line as $source) {
+            $rc += intval((strlen($source) / $width) +1);
+        }
+        return $rc;
+    }
+
     public function registerEvents(): array
     {
         return [
@@ -149,33 +169,6 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
                     ]
                 ];
 
-                function aplicarFormato($event, $column, $row, $suma, $items, $stylesArray) {
-                    $event->sheet->getDelegate()->getStyleByColumnAndRow(2, $row, 9, $row)->applyFromArray($stylesArray);
-                    $row++;
-
-                    // Se aplica formato numero a las celdas de VR UNIT y VR TOTAL.
-                    $event->sheet->getDelegate()->getStyleByColumnAndRow(8, $row, 9, ($row + $items))->applyFromArray($stylesArray['formato_numero']);
-                    $row += $items;
-
-                    if($items > 0 && $suma > 0) {
-                        // Se aplica formato a la lista de Ítems
-                        $event->sheet->getDelegate()->getStyleByColumnAndRow($column, $row, 9, ($row + $suma))->applyFromArray($stylesArray);
-                    }
-
-                    $event->sheet->getDelegate()->getStyle("I$row")->applyFromArray($stylesArray);
-
-                    return $row += 2;
-                }
-
-                function getRowcount($text, $width=55) {
-                    $rc = 0;
-                    $line = explode("\n", $text);
-                    foreach($line as $source) {
-                        $rc += intval((strlen($source) / $width) +1);
-                    }
-                    return $rc;
-                }
-
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(2, 2, 9, 4)->applyFromArray($stylesArray);
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(2, 5, 9, 11)->applyFromArray($stylesArray);
                 
@@ -193,13 +186,13 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
                 $row = 14;
                 // Suministro de materiales
                 $items = count($this->model[0]->getmaterialescotizacion($this->model[0]->id_cotizacion));
-                $row = aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
+                $row = $this->aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
                 // Mano de obra
                 $items = count($this->model[0]->getmanoobracotizacion($this->model[0]->id_cotizacion));
-                $row = aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
+                $row = $this->aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
                 // Transporte y peaje
                 $items = count($this->model[0]->gettransportecotizacion($this->model[0]->id_cotizacion));
-                $row = aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
+                $row = $this->aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
 
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(3, $row, 8, $row)->applyFromArray($stylesArray);
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(9, $row, 9, $row)->applyFromArray($stylesArray);

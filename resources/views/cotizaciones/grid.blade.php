@@ -24,11 +24,11 @@
                 'view' => $view,
                 'modal-view-title' => 'Ver cotización',
                 'modal-view-size' => 'modal-fullscreen',
-                'header-view-class' => 'bg-info text-white',
+                'header-view-class' => 'bg-info bg-opacity-75 text-white',
                 'edit' => $edit,
                 'modal-edit-title' => 'Editar cotización',
                 'modal-edit-size' => 'modal-fullscreen',
-                'header-edit-class' => 'bg-warning text-white',
+                'header-edit-class' => 'bg-warning bg-opacity-75 text-white',
             ]
         ]]
     ],

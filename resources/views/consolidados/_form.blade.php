@@ -16,7 +16,7 @@
     <div class="row">
         <input type="hidden" id="id_consolidado" value="{{ $consolidado->id_consolidado }}">
 
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-5">
             <label for="id_cliente" class="required">Cliente</label>
             @if ($edit)
                 <select name="id_cliente" id="id_cliente" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -31,7 +31,7 @@
                 <input type="text" class="form-control" value="{{ $consolidado->tblCliente->full_name }} {{ (isset($consolidado->tblCliente->tblterceroresponsable) ? ' - '.$consolidado->tblCliente->tblterceroresponsable->razon_social : '') }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-4">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-5">
             <label for="id_responsable_cliente" class="required">Encargado cliente</label>
             @if ($edit)
                 <select name="id_responsable_cliente" id="id_responsable_cliente" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -52,7 +52,18 @@
             <label for="mes">Mes</label>
             <input type="text" class="form-control text-capitalize" @if ($edit) name="mes" @endif id="mes" value="{{ old('mes', $consolidado->mes_form) }}" data-format="YYYY-MMMM" data-viewMode="months"  @if ($edit) required @else disabled @endif>
         </div>
-        <div class="col-12 col-sm-6 col-md-6 col-lg-2 pb-3 pb-md-0 my-auto text-center text-md-end">
+        <div class="form-group col-12 text-center">
+            @if ($edit)
+                <button id="btn-get-activities" class="btn bg-info bg-gradient text-white">
+                    <i class="fa-solid fa-magnifying-glass"></i> Consultar actividades
+                </button>
+            @else
+                
+            @endif
+
+            <button id="btn_download_consolidado" type="button" class="btn btn-outline-success " data-consolidado="{{ $consolidado->id_consolidado }}">Descargar consolidado</button>
+        </div>
+        {{-- <div class="col-12 col-sm-6 col-md-6 col-lg-2 pb-3 pb-md-0 my-auto text-center text-md-end">
             @if ($edit)
                 <button id="btn-get-activities" class="btn bg-info bg-gradient text-white">
                     <i class="fa-solid fa-magnifying-glass"></i> Consultar actividades
@@ -61,6 +72,9 @@
                 
             @endif
         </div>
+        <div class="col-12 col-sm-6 col-md-6 col-lg-2 pb-3 pb-md-0 my-auto text-center text-md-end">
+            <button id="btn_download_consolidado" type="button" class="btn btn-success text-white" data-consolidado="{{ $consolidado->id_consolidado }}">Descargar consolidado</button>
+        </div> --}}
         <div class="clearfix"></div>
         <hr>
         <div id="div_detalle_consolidado" class="table-responsive">
