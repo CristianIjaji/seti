@@ -119,7 +119,7 @@ class TblTercero extends Model
     }
 
     public static function createRow(array $row) {
-        $tipo_documento = trim(mb_strtolower($row[0]));
+        $tipo_documento = trim(($row[0]));
         $documento = trim($row[1]);
         $digito = trim($row[2]);
         $razon = trim($row[3]);
@@ -129,7 +129,7 @@ class TblTercero extends Model
         $direccion = trim($row[7]);
         $correo = trim($row[8]);
         $telefono = trim($row[9]);
-        $tipo_tercero = trim(mb_strtolower($row[10]));
+        $tipo_tercero = trim(($row[10]));
         $dependencia = trim($row[11]);
 
         $parametro_documentos = TblParametro::where(['llave' => 'id_dominio_tipo_documento'])->first()->valor;
