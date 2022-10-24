@@ -15,7 +15,7 @@
                             @if (!$edit)
                                 <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white rounded-start">Ítem</th>
                             @endif
-                            <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white {{ $edit ? 'rounded-start' : '' }}">Zona</th>
+                            <th class="col-2 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white {{ $edit ? 'rounded-start' : '' }}">Zona</th>
                             <th class="col-1 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">OT</th>
                             <th class="col-2 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Estación</th>
                             <th class="col-2 text-center bg-primary bg-opacity-75 ps-2 py-2 text-white">Fecha Ejecución</th>
@@ -35,7 +35,7 @@
                                         <input type="text" class="form-control text-md-end text-end border-0" value="{{ $item->item }}" disabled>
                                     </td>
                                 @endif
-                                <td class="col-1 my-auto border-0">
+                                <td class="col-2 my-auto border-0">
                                     <input type="hidden" name="id_actividad[]" value="{{ $item->id_actividad }}">
                                     <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->zona }}" disabled>
                                 </td>

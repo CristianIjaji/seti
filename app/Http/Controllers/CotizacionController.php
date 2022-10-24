@@ -194,7 +194,7 @@ class CotizacionController extends Controller
             $cotizacion->comentario = "Cotización creada # $cotizacion->id_cotizacion.";
 
             $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'));
-            if(isset($cotizacion->tblCliente->tbluser)) {
+            if(isset($cotizacion->tblContratista->tbluser)) {
                 $this->sendNotification($cotizacion, 'user-'.$cotizacion->tblCliente->tbluser->id_usuario, 'quote-created');
             }
 
@@ -299,7 +299,7 @@ class CotizacionController extends Controller
                 $this->createTrack($quote, session('id_dominio_cotizacion_creada'));
 
                 if(isset($quote->tblContratista->tbluser)) {
-                    $this->sendNotification($quote, 'user-'.$quote->tblCliente->tbluser->id_usuario, 'quote-created');
+                    $this->sendNotification($quote, 'user-'.$quote->tblContratista->tbluser->id_usuario, 'quote-created');
                 }
             }
 
@@ -441,7 +441,6 @@ class CotizacionController extends Controller
         $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $quote->id_cotizacion])->get();
 
         foreach ($items as $item) {
-            $carrito[$item->id_tipo_item]['update'] = false;
             $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
                 'item' => $item->tblListaprecio->codigo,
                 'descripcion' => $item->descripcion,
@@ -594,8 +593,8 @@ class CotizacionController extends Controller
     }
 
     public function exportQuote() {
-        $cotizacion = TblCotizacion::with(['tblEstacion'])->find(request()->quote)->get();
-        return $this->excel->download(new CotizacionExport($cotizacion), "Cotizacion ".TblCotizacion::find(request()->quote)->tblEstacion->nombre.".xlsx");
+        $cotizacion = TblCotizacion::with(['tblEstacion'])->where('id_cotizacion', '=', request()->quote)->first();
+        return $this->excel->download(new CotizacionExport($cotizacion), "Cotizacion".$cotizacion->tblEstacion->nombre.".xlsx");
     }
 
     public function getCotizacion(TblCotizacion $quote) {

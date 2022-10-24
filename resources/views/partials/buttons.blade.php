@@ -1,5 +1,5 @@
 @if ($create || $edit)
-        <div class="modal-footer text-end">
+        <div class="modal-footer">
             <button type="button" class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
                 <i class="fa-regular fa-circle-xmark"></i> Cerrar
             </button>
@@ -9,7 +9,7 @@
         </div>
     </form>
 @else
-    <div class="modal-footer text-end">
+    <div class="modal-footer">
         <button type="button" class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
             <i class="fa-regular fa-circle-xmark"></i> Cerrar
         </button>

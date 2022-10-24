@@ -63,6 +63,10 @@ class TblCotizacion extends Model
         return $this->belongsTo(TblDominio::class, 'estado');
     }
 
+    public function tblcotizaciondetalle() {
+        return $this->hasMany(TblCotizacionDetalle::class, 'id_cotizacion');
+    }
+
     public function getmaterialescotizacion($id_cotizacion) {
         return TblCotizacionDetalle::where(['id_cotizacion' => $id_cotizacion, 'id_tipo_item' => session('id_dominio_materiales')])->get();
     }

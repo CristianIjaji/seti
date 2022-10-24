@@ -15,7 +15,7 @@ class CreateTblActividadesTable extends Migration
     {
         Schema::create('tbl_actividades', function (Blueprint $table) {
             $table->bigIncrements('id_actividad');
-            $table->string('ot')->uniqid()->nullable();
+            $table->string('ot')->nullable();
             $table->unsignedBigInteger('id_tipo_actividad');
             $table->unsignedBigInteger("id_subsistema")->nullable();
             $table->text('descripcion');
@@ -33,7 +33,7 @@ class CreateTblActividadesTable extends Migration
             $table->unsignedBigInteger('id_informe')->nullable();
             $table->date('fecha_liquidado')->nullable();
             $table->boolean('liquidado')->default(false);
-            $table->unsignedBigInteger('mes_consolidado')->nullable();
+            $table->date('mes_consolidado')->nullable();
             $table->decimal('valor', 20, 2);
             $table->text('observaciones');
             $table->unsignedBigInteger('id_usuareg');

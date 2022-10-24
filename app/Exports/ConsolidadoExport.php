@@ -46,7 +46,7 @@ class ConsolidadoExport implements WithMultipleSheets
         $sheets[] = new DetalleConsolidadoExport($this->model);
 
         foreach ($this->model[0]->tblconsolidadodetalle as $detalle) {
-            $cotizacion = TblCotizacion::find($detalle->tblactividad->tblcotizacion->id_cotizacion)->get();
+            $cotizacion = TblCotizacion::where('id_cotizacion', '=', $detalle->tblactividad->tblcotizacion->id_cotizacion)->first();
             $sheets[] = new CotizacionExport($cotizacion);
         }
 

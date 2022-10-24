@@ -15,7 +15,7 @@ class CreateTblCotizacionesTable extends Migration
     {
         Schema::create('tbl_cotizaciones', function (Blueprint $table) {
             $table->bigIncrements('id_cotizacion');
-            $table->string('ot_trabajo')->unique()->nullable();
+            $table->string('ot_trabajo')->nullable();
             $table->unsignedBigInteger('id_cliente');
             $table->unsignedBigInteger('id_estacion');
             $table->unsignedBigInteger('id_tipo_trabajo');

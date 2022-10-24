@@ -490,7 +490,7 @@ const handleModal = (button) => {
 }
 
 window.carrito = [];
-const updateTextAreaSize = () => {
+window.updateTextAreaSize = () => {
     $('#table_items textarea').each(function(index, element){
         element.style.height = "1px";
         element.style.height = `${25 + element.scrollHeight}px`;
@@ -516,7 +516,6 @@ window.table = () => {
         let id = $(this).attr('id');
         $(`#${id} .table-responsive-stack-thead`).remove();
         $(this).find("th").each(function(i) {
-            console.log(id);
             $(`#${id} td:nth-child(${(i + 1)})`).prepend(`<span class="table-responsive-stack-thead">${$(this).text()}</span>`);
             $('.table-responsive-stack-thead').hide();
         });
@@ -550,84 +549,108 @@ window.onresize = function(event) {
     flexTable();
 };
 
-window.drawItems = (edit = true) => {
+window.drawItems = (edit = true, type_item, id_item) => {
     // type: tipo de item: mano de obra, transporte o suministro
     // item: ítem de la lista de precios
     if(!edit) {
         $('#th-delete').remove();
     }
 
-    $.each(carrito, (type, item) => {
-        if(typeof item !== 'undefined' && carrito[type]['update'] === false) {
-            let total = 0;
+    if(typeof carrito[type_item][id_item] !== 'undefined') {
+        let element = carrito[type_item][id_item];
 
-            $.each(item, (index, element) => {
-                if(typeof element !== 'undefined' && typeof element === 'object') {
-                    if(!$(`#tr_${type}_${index}`).length) {
-                        let classname = `${$(`#caret_${type}`).hasClass(showIcon) ? 'show' : ''}`;
-                        $(`
-                            <tr id="tr_${type}_${index}" class="tr_cotizacion collapse ${classname} item_${type}">
-                                <td class="col-1 my-auto">
-                                    <input type='hidden' name="id_tipo_item[]" value="${type}" />
-                                    <input type='hidden' name="id_lista_precio[]" value="${index}" />
-                                    <input type="text" class="form-control text-md-center text-end text-uppercase border-0" id="item_${index}" value="${element['item']}" disabled>
-                                </td>
-                                <td class="col-4 my-auto">
-                                    <textarea class="form-control border-0" rows="2" name="descripcion_item[]" id="descripcion_item_${index}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
-                                </td>
-                                <td class="col-1 my-auto">
-                                    <input type="text" class="form-control text-md-center text-end border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${index}" value="${element['unidad']}" ${edit ? '' : 'disabled'}>
-                                </td>
-                                <td class="col-1 my-auto">
-                                    <input type="number" min="0" class="form-control text-end border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${index}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
-                                </td>
-                                <td class="col-2 my-auto">
-                                    <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${index}" value="${element['valor_unitario']}" required ${edit ? '' : 'disabled'}>
-                                </td>
-                                <td class="col-2 my-auto">
-                                    <input type="text" class="form-control text-end border-0 txt-cotizaciones money" name="valor_total[]" id="valor_total_${index}" value="${element['valor_total']}" disabled>
-                                </td>
-                                ${edit == true
-                                    ? `<td id="${type}_${index}" class="text-center col-1 my-auto btn-delete-item"><i id="${type}_${index}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>`
-                                    : ``
-                                }
-                            </tr>
-                        `).insertAfter(`#tr_${type}`);
-                        $('.money').inputmask(formatCurrency);
-                    } else {
-                        $(`#tr_${type}_${index} #valor_total_${index}`).val(element['valor_total']);
-                    }
-    
-                    total += parseFloat(element['valor_total'], 2);
-                }
-                carrito[type]['update'] = true;
-            });
-
-            $(`#lbl_${type}`).text(Inputmask.format(total, formatCurrency));
+        if(typeof element !== 'undefined' && typeof element === 'object') {
+            if(!$(`#tr_${type_item}_${id_item}`).length) {
+                let classname = `${$(`#caret_${type_item}`).hasClass(showIcon) ? 'show' : ''}`;
+                $(`
+                    <tr id="tr_${type_item}_${id_item}" class="tr_cotizacion border-bottom collapse ${classname} item_${type_item}">
+                        <td class="col-1 my-auto border-0">
+                            <input type='hidden' name="id_tipo_item[]" value="${type_item}" />
+                            <input type='hidden' name="id_lista_precio[]" value="${id_item}" />
+                            <input type="text" class="form-control text-md-center text-end text-uppercase border-0" id="item_${id_item}" value="${element['item']}" disabled>
+                        </td>
+                        <td class="col-4 my-auto border-0">
+                            <textarea class="form-control border-0" rows="2" name="descripcion_item[]" id="descripcion_item_${id_item}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
+                        </td>
+                        <td class="col-1 my-auto border-0">
+                            <input type="text" class="form-control text-md-start text-end border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${id_item}" value="${element['unidad']}" ${edit ? '' : 'disabled'}>
+                        </td>
+                        <td class="col-1 my-auto border-0">
+                            <input type="number" min="0" class="form-control text-end border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${id_item}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
+                        </td>
+                        <td class="col-2 my-auto border-0">
+                            <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${id_item}" value="${element['valor_unitario']}" required ${edit ? '' : 'disabled'}>
+                        </td>
+                        <td class="col-2 my-auto border-0">
+                            <input type="text" class="form-control text-end border-0 txt-cotizaciones txt_total_item_${type_item} money" name="valor_total[]" id="valor_total_${id_item}" value="${element['valor_total']}" disabled>
+                        </td>
+                        ${edit == true
+                            ? `<td id="${type_item}_${id_item}" class="text-center col-1 my-auto border-0 btn-delete-item"><i id="${type_item}_${id_item}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>`
+                            : ``
+                        }
+                    </tr>
+                `).insertAfter(`#tr_${type_item}`);
+                $('.money').inputmask(formatCurrency);
+            } else {
+                $(`#tr_${type_item}_${id_item} #valor_total_${id_item}`).val(element['valor_total']);
+            }
         }
-    });
+    }
 
+    setTimeout(() => {
+        updateTextAreaSize();
+    }, 100);
+}
+
+const totalItemType = (type) => {
+    let total = 0;
+    let items = 0;
+    if(typeof carrito[type] !== 'undefined') {
+        $.each(carrito[type], (item, valores) => {
+            items++;
+            if($.isNumeric(valores['valor_total'])) {
+                total += parseFloat(valores['valor_total'], 2);
+            }
+        });
+    }
+
+    return {
+        total,
+        items
+    };
+}
+
+window.totalCotizacion = () => {
     let iva = parseFloat(
         $('#iva option:selected').length > 0
             ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '')
             : $('#iva').val().replace('IVA ', '').replace('%', '')
         , 0
     );
-    let total_material = parseFloat($('.lbl_total_material').text().replace(regexCurrencyToFloat, ""), 2);
-    let total_suministro = parseFloat($('.lbl_total_mano_obra').text().replace(regexCurrencyToFloat, ""), 2);
-    let total_transporte = parseFloat($('.lbl_total_transporte').text().replace(regexCurrencyToFloat, ""), 2);
 
-    let total_sin_iva = (total_material + total_suministro + total_transporte);
+    let id_materiales = $('.lbl_total_material').attr('id').replace('lbl_', '');
+    let id_mano_obra = $('.lbl_total_mano_obra').attr('id').replace('lbl_', '');
+    let id_transporte = $('.lbl_total_transporte').attr('id').replace('lbl_', '');
+
+    let total_material = totalItemType(id_materiales);
+    let total_suministro = totalItemType(id_mano_obra);
+    let total_transporte = totalItemType(id_transporte);
+
+    let total_sin_iva = (total_material.total + total_suministro.total + total_transporte.total);
     let total_iva = ((total_sin_iva * iva) / 100);
     let total_con_iva = (total_sin_iva + total_iva);
 
-    $('#lbl_total_sin_iva').text(Inputmask.format(total_sin_iva, formatCurrency));
-    $('#lbl_total_iva').text(Inputmask.format(total_iva, formatCurrency));
-    $('#lbl_total_con_iva').text(Inputmask.format(total_con_iva, formatCurrency));
+    $(`#lbl_${id_materiales}`).text(`$ ${Inputmask.format(total_material.total, formatCurrency)}`);
+    $(`#lbl_${id_mano_obra}`).text(`$ ${Inputmask.format(total_suministro.total, formatCurrency)}`);
+    $(`#lbl_${id_transporte}`).text(`$ ${Inputmask.format(total_transporte.total, formatCurrency)}`);
 
-    setTimeout(() => {
-        updateTextAreaSize();
-    }, 100);
+    $(`#lbl_total_items_materiales`).text(`Total Ítems: ${total_material.items}`);
+    $(`#lbl_total_items_mano_obra`).text(`Total Ítems: ${total_suministro.items}`);
+    $(`#lbl_total_items_transporte`).text(`Total Ítems: ${total_transporte.items}`);
+
+    $('#lbl_total_sin_iva').text(`$ ${Inputmask.format(total_sin_iva, formatCurrency)}`);
+    $('#lbl_total_iva').text(`$ ${Inputmask.format(total_iva, formatCurrency)}`);
+    $('#lbl_total_con_iva').text(`$ ${Inputmask.format(total_con_iva, formatCurrency)}`);
 }
 
 const getItem = (item) => {
@@ -651,9 +674,9 @@ const addItems = (items) => {
         }
 
         if(typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
-            carrito[$(item).data('type')]['update'] = false;
             carrito[$(item).data('type')][$(item).val()] = getItem(item);
-            drawItems();
+            drawItems(true, $(item).data('type'), $(item).val());
+            totalCotizacion();
             table();
             flexTable();
         }
@@ -1056,12 +1079,24 @@ $(document).on('click', '#btn_add_items', function() {
 
 $(document).on('click', '.btn-delete-item', function() {
     let id_tr = new String($(this).attr('id'));
-    $(`#tr_${id_tr}`).remove();
-    id_tr = id_tr.split('_');
+    let id_item = id_tr.split('_')[0];
 
-    carrito[id_tr[0]]['update'] = false;
-    delete carrito[id_tr[0]][id_tr[1]];
-    drawItems();
+    Swal.fire({
+        icon: 'question',
+        title: `Eliminar ítem ${$(`#item_${id_item}`).val()}`,
+        reverseButtons: true,
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar ítem',
+        confirmButtonColor: 'var(--bs-danger)',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if(result.isConfirmed) {
+            $(`#tr_${id_tr}`).remove();
+            id_tr = id_tr.split('_');
+            delete carrito[id_tr[0]][id_tr[1]];
+            totalCotizacion();
+        }
+    });
 });
 
 const fnc_totales_cot = (id) => {
@@ -1078,9 +1113,8 @@ const fnc_totales_cot = (id) => {
         carrito[id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
         carrito[id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
 
-        carrito[id_tr[1]]['update'] = false;
-
-        drawItems();
+        $(`#valor_total_${id_tr[2]}`).val(valor_total);
+        totalCotizacion();
     }
 }
 
@@ -1134,13 +1168,7 @@ $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', functi
 
 $(document).on('change', '#iva', function() {
     if($(this).closest('form').attr('action').indexOf(url_cotizacion) > -1) {
-        $.each(carrito, (type, item) => {
-            if(typeof item !== 'undefined' && carrito[type]['update'] === false) {
-                carrito[type]['update'] = true;
-            }
-        });
-
-        drawItems();
+        totalCotizacion();
     }
 });
 

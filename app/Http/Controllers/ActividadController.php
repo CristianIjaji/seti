@@ -108,6 +108,7 @@ class ActividadController extends Controller
     {
         try {
             $actividad = TblActividad::create($request->validated());
+            $this->authorize('create', $actividad);
 
             $this->createTrak($actividad, session(''));
             return response()->json([
@@ -198,6 +199,11 @@ class ActividadController extends Controller
         try {
             $this->authorize('update', $activity);
             $activity->update($request->validated());
+
+            if($activity->valor !== $activity->tblcotizacion->valor) {
+                $activity->valor = $activity->tblcotizacion->valor;
+                $activity->update();
+            }
 
             return response()->json([
                 'success' => 'Cotización actualizada correctamente!'

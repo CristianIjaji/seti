@@ -309,7 +309,6 @@ class ConsolidadoController extends Controller
     public function exportDeal() {
         $deal = TblConsolidado::with(['tblconsolidadodetalle'])->find(request()->deal)->get();
         return Excel::download(new ConsolidadoExport($deal), 'Consolidado.xlsx');
-        // $this->excel->download(new ConsolidadoExport($deal), 'Consolidado.xlsx');
     }
 
     public function getActivities() {

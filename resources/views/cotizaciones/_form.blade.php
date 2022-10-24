@@ -216,7 +216,7 @@
                 </div>
                 @if (!$create)
                     <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 my-auto text-center">
-                        <button id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-secondary btn-quote">
+                        <button id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-success btn-quote">
                             <i class="fa-solid fa-file-excel fs-4"></i> Descargar cotización
                         </button>
 
@@ -260,105 +260,10 @@
                 <div class="clearfix"><hr></div>
 
                 <div class="table-responsive">
-                    <table id="table_items" class="table table-sm table-bordered align-middle table-responsive-stack">
-                        <thead>
-                            <tr>
-                                <th class="col-1 text-center">Ítem</th>
-                                <th class="col-4 text-center">Descripción</th>
-                                <th class="col-1 text-center">Un.</th>
-                                <th class="col-1 text-center">Cant.</th>
-                                <th class="col-2 text-center">VR UNIT</th>
-                                <th class="col-2 text-center">VR TOTAL</th>
-                                <th id="th-delete" class="col-1 text-center">Eliminar</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="tr_{{ session('id_dominio_materiales') }}">
-                                <th colspan="7">
-                                    <span
-                                        class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
-                                        data-toggle="tooltip"
-                                        {{ $editable ? 'title=Agregar ítem' : '' }}
-                                        data-title="Buscar ítems suministro materiales"
-                                        data-size='modal-xl'
-                                        data-header-class='bg-primary bg-opacity-75 text-white'
-                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_materiales'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
-                                        data-modal="modalForm-2"
-                                        data-toggle="tooltip"
-                                    >
-                                        <label>SUMINISTRO DE MATERIALES</label>
-                                    </span>
-                                    <div class="text-end">
-                                        <label id="lbl_{{ session('id_dominio_materiales') }}" class="lbl_total_material">$ 0.00</label>
-                                        <span
-                                            class="btn"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target=".item_{{ session('id_dominio_materiales') }}"
-                                            >
-                                            <i id="caret_{{ session('id_dominio_materiales') }}" class="show-more fa-solid fa-caret-down"></i>
-                                        </span>
-                                    </div>
-                                </th>
-                            </tr>
-                            <tr id="tr_{{ session('id_dominio_mano_obra') }}">
-                                <th colspan="7">
-                                    <span
-                                        class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
-                                        data-toggle="tooltip"
-                                        {{ $editable ? 'title=Agregar ítem' : '' }}
-                                        data-title="Buscar ítems mano obra"
-                                        data-size='modal-xl'
-                                        data-header-class='bg-primary bg-opacity-75 text-white'
-                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
-                                        data-modal="modalForm-2"
-                                        data-toggle="tooltip"
-                                    >
-                                        <label>MANO DE OBRA</label>
-                                    </span>
-                                    <div class="text-end">
-                                        <label id="lbl_{{ session('id_dominio_mano_obra') }}" class="lbl_total_mano_obra">$ 0.00</label>
-                                        <span
-                                            class="btn"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target=".item_{{ session('id_dominio_mano_obra') }}"
-                                            >
-                                            <i id="caret_{{ session('id_dominio_mano_obra') }}" class="show-more fa-solid fa-caret-down"></i>
-                                        </span>
-                                    </div>
-                                </th>
-                            </tr>
-                            <tr id="tr_{{ session('id_dominio_transporte') }}">
-                                <th colspan="7">
-                                    <span
-                                        class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
-                                        data-toggle="tooltip"
-                                        {{ $editable ? 'title=Agregar ítem' : '' }}
-                                        data-title="Buscar ítems transporte y peajes"
-                                        data-size='modal-xl'
-                                        data-header-class='bg-primary bg-opacity-75 text-white'
-                                        data-action='{{ route('priceList.search', ['type' => session('id_dominio_transporte'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1]) }}'
-                                        data-modal="modalForm-2"
-                                        data-toggle="tooltip"
-                                    >
-                                        <label>TRANSPORTE Y PEAJES</label>
-                                    </span>
-                                    <div class="text-end">
-                                        <label id="lbl_{{ session('id_dominio_transporte') }}" class="lbl_total_transporte">$ 0.00</label>
-                                        <span
-                                            class="btn"
-                                            data-bs-toggle="collapse"
-                                            data-bs-target=".item_{{ session('id_dominio_transporte') }}"
-                                            >
-                                            <i id="caret_{{ session('id_dominio_transporte') }}" class="show-more fa-solid fa-caret-down"></i>
-                                        </span>
-                                    </div>
-                                </th>
-                            </tr>
-                        </tbody>
-                    </table>
+                    @include('cotizaciones.detalle', ['edit' => $editable, 'cotizacion_detalle' => $cotizacion->tblcotizaciondetalle])
                 </div>
 
-                <div class="col-12 col-sm-12 col-md-6 co-lg-6 col-xl-6 my-auto pb-2">
+                <div class="col-12 col-sm-12 col-md-6 co-lg-6 col-xl-7 my-auto pb-2">
                     @can('createComment', $cotizacion)
                         @if (!$create && $edit)
                             <div class="border rounded p-3">
@@ -410,9 +315,9 @@
                     @endcan
                 </div>
 
-                <div class="form-group col-12 col-md-6 co-lg-6 col-xl-6 my-auto">
+                <div class="form-group col-12 col-md-6 co-lg-6 col-xl-5 my-auto">
                     <div class="p-3">
-                        <div class="row fs-5">
+                        <div class="row fs-6">
                             <label class="col-12 text-start">Total sin IVA:</label>
                             <label id="lbl_total_sin_iva" class="col-12 text-end border-bottom">0</label>
 
@@ -444,12 +349,8 @@
     datePicker();
 
     carrito = <?= json_encode($carrito) ?>;
-
-    if(Object.keys(carrito).length) {
-        drawItems(<?= $edit ? 'true' : 'false' ?>);
-        $('#table-cotizaciones').removeClass('d-none');
-        table();
-    }
-
+    $('#table-cotizaciones').removeClass('d-none');
+    table();
     flexTable();
+    totalCotizacion();
 </script>

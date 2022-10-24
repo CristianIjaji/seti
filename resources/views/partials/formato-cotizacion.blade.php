@@ -12,9 +12,7 @@
     </tr>
     <tr>
         <td></td>
-        <td style="{{ $bordernone.$borderleft.$bordertop }}">
-            {{-- <img src="{{ public_path('storage/images/equans.png') }}" style="height: 1.38px; width: 4.11px;"> --}}
-        </td>
+        <td style="{{ $bordernone.$borderleft.$bordertop }}"></td>
         <td colspan="5" style="{{ $bordernone.$bordertop.$textcenter.$bold.$black }}">
             SOLUCIONES MOVILES
         </td>
@@ -34,7 +32,7 @@
         <td></td>
         <td style="{{ $bordernone.$borderleft.$borderbottom }}"></td>
         <td colspan="5" style="{{ $borderbottom.$textcenter.$bold.$red }}">
-            {{ $quote[0]->tblEstacion->nombre }}
+            {{ $quote->tblEstacion->nombre }}
         </td>
         <td style="{{ $bordernone.$borderbottom }}"></td>
         <td style="{{ $bordernone.$borderbottom.$borderright }}"></td>
@@ -48,7 +46,7 @@
             ESTACIÓN BASE
         </td>
         <td colspan="6" style="{{ $bordernone.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$red }}">
-            {{ $quote[0]->tblEstacion->nombre }}
+            {{ $quote->tblEstacion->nombre }}
         </td>
     </tr>
     <tr>
@@ -57,7 +55,7 @@
             TIPO DE TRABAJO
         </td>
         <td colspan="6" style="{{ $bordernone.$borderbottom.$borderright.$textcenter.$bold.$black }}">
-            {{ $quote[0]->descripcion }}
+            {{ $quote->descripcion }}
         </td>
     </tr>
     <tr>
@@ -66,7 +64,7 @@
             ORDEN DE TRABAJO
         </td>
         <td colspan="4" style="{{ $bordernone.$borderbottom.$textcenter.$bold.$black }}">
-            {{ $quote[0]->ot_trabajo }}
+            {{ $quote->ot_trabajo }}
         </td>
         <td style="{{ $bordernone.$borderright.$borderbottom }}"></td>
     </tr>
@@ -76,7 +74,7 @@
             CONTRATISTA
         </td>
         <td colspan="6" style="{{ $bordernone.$borderbottom.$borderright.$textcenter.$bold.$black }}">
-            {{ $quote[0]->tblContratista->full_name }}
+            {{ $quote->tblContratista->full_name }}
         </td>
     </tr>
     <tr>
@@ -84,7 +82,7 @@
         <td style="{{ $bordernone.$borderleft.$borderbottom.$bold.$black }}">FECHA</td>
         <td style="{{ $bordernone.$borderbottom }}"></td>
         <td colspan="6" style="{{ $bordernone.$borderbottom.$borderright.$textcenter.$bold.$black }}">
-            {{ $quote[0]->fecha_cotizacion }}
+            {{ $quote->fecha_cotizacion }}
         </td>
     </tr>
     <tr>
@@ -92,7 +90,7 @@
         <td style="{{ $bordernone.$borderleft.$borderbottom.$bold.$black }}">REGIÓN</td>
         <td style="{{ $bordernone.$borderbottom }}"></td>
         <td colspan="6" style="{{ $bordernone.$borderbottom.$borderright.$textcenter.$bold.$black }}">
-            {{ $quote[0]->tblEstacion->tbldominiozona->nombre }}
+            {{ $quote->tblEstacion->tbldominiozona->nombre }}
         </td>
     </tr>
 
@@ -112,12 +110,12 @@
         <td></td>
         <td colspan="8" style="{{  $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$bgblue }}">SUMINISTRO DE MATERIALES</td>
     </tr>
-    @foreach ($quote[0]->getmaterialescotizacion($quote[0]->id_cotizacion) as $detalle)
+    @foreach ($quote->getmaterialescotizacion($quote->id_cotizacion) as $detalle)
         <tr>
             <td></td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->tblListaprecio->codigo }}</td>
-            <td colspan="3" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$nowrap }} height: {{ ((trim(strlen($detalle->descripcion)) / 66) > 1 ? (trim(strlen($detalle->descripcion)) / 66) : 1) * 24 }}px;">
-                {{ $detalle->descripcion }}
+            <td colspan="3" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$nowrap }} height: {{ ((strlen(trim($detalle->descripcion)) / 60) > 1 ? (strlen(trim($detalle->descripcion)) / 60) : 1) * 28 }}px;">
+                {{ trim($detalle->descripcion) }}
             </td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->unidad }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->cantidad }}</td>
@@ -135,7 +133,7 @@
         <td></td>
         <td></td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            @if ($quote[0]->total_material)
+            @if ($quote->total_material)
                 =sum(I15:I{{ $items_material }})
             @else
                 0
@@ -148,12 +146,12 @@
         <td></td>
         <td colspan="8" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$bgblue }}">MANO DE OBRA</td>
     </tr>
-    @foreach ($quote[0]->getmanoobracotizacion($quote[0]->id_cotizacion) as $detalle)
+    @foreach ($quote->getmanoobracotizacion($quote->id_cotizacion) as $detalle)
         <tr>
             <td></td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->tblListaprecio->codigo }}</td>
-            <td colspan="3" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$nowrap }} height: {{ ((trim(strlen($detalle->descripcion)) / 66) > 1.5 ? (trim(strlen($detalle->descripcion)) / 66) : 2) * 20 }}px;">
-                {{ $detalle->descripcion }}
+            <td colspan="3" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$nowrap }} height: {{ ((strlen(trim($detalle->descripcion)) / 60) > 1 ? (strlen(trim($detalle->descripcion)) / 60) : 1) * 28 }}px;">
+                {{ trim($detalle->descripcion) }}
             </td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->unidad }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->cantidad }}</td>
@@ -171,7 +169,7 @@
         <td></td>
         <td></td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            @if ($quote[0]->total_mano_obra > 0)
+            @if ($quote->total_mano_obra > 0)
                 =sum(I{{ $items_material + 4 }}:I{{ ($items_material + 4) + $items_mano_obra }})
             @else
                 0
@@ -184,12 +182,12 @@
         <td></td>
         <td colspan="8" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$bgblue }}">TRANSPORTE Y PEAJES</td>
     </tr>
-    @foreach ($quote[0]->gettransportecotizacion($quote[0]->id_cotizacion) as $detalle)
+    @foreach ($quote->gettransportecotizacion($quote->id_cotizacion) as $detalle)
         <tr>
             <td></td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->tblListaprecio->codigo }}</td>
-            <td colspan="3" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$nowrap }} height: {{ ((trim(strlen($detalle->descripcion)) / 66) > 1.5 ? (trim(strlen($detalle->descripcion)) / 66) : 2) * 20 }}px;">
-                {{ $detalle->descripcion }}
+            <td colspan="3" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$nowrap }} height: {{ ((strlen(trim($detalle->descripcion)) / 60) > 1 ? (strlen(trim($detalle->descripcion)) / 60) : 1) * 28 }}px;">
+                {{ trim($detalle->descripcion) }}
             </td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->unidad }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->cantidad }}</td>
@@ -207,7 +205,7 @@
         <td></td>
         <td></td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            @if ($quote[0]->total_transporte > 0)
+            @if ($quote->total_transporte > 0)
                 =sum(I{{ $items_material + 4 + $items_mano_obra + 4 }}:I{{ ($items_material + 4 + $items_mano_obra + 4) + $items_transporte }})
             @else
                 0
@@ -227,9 +225,9 @@
     <tr>
         <td></td>
         <td style="{{ $bordernone.$borderleft }}"></td>
-        <td colspan="6" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold }}">{{ $quote[0]->tblIva->nombre }}</td>
+        <td colspan="6" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold }}">{{ $quote->tblIva->nombre }}</td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            =I{{ ( $items_material + $items_mano_obra + 11 + $items_transporte) }}*{{ doubleval($quote[0]->tblIva->descripcion) / 100 }}
+            =I{{ ( $items_material + $items_mano_obra + 11 + $items_transporte) }}*{{ doubleval($quote->tblIva->descripcion) / 100 }}
         </td>
     </tr>
     <tr>
