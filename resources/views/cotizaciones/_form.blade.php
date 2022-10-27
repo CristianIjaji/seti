@@ -360,7 +360,7 @@
             @if (!$create)
                 </div>
                 <div class="tab-pane" id="track-quote" role="tabpanel" aria-labelledby="track-tab-quote">
-                    @include('cotizaciones._track', [$edit, 'cotizacion' => $cotizacion, 'model' => $estados_cotizacion])
+                @include('cotizaciones._track', [$edit, 'model' => $estados_cotizacion])
                 </div>
             @endif
     </div>
