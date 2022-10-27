@@ -1,12 +1,12 @@
 @php
     $create = isset($cotizacion->id_cotizacion) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
-    $disable_form = in_array($cotizacion->estado, [session('id_dominio_cotizacion_aprobada'), session('id_dominio_cotizacion_cancelada')]) ? true : false;
+    $disable_form = in_array($cotizacion->estado, [session('id_dominio_cotizacion_aprobada')]) ? true : false;
     $editable = (
-        $edit &&
-        $cotizacion->id_usuareg == Auth::user()->id_usuario &&
+        ($edit) &&
+        // $cotizacion->id_usuareg == Auth::user()->id_usuario &&
         in_array($cotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta'),
-            session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_rechazada')]) ||
+            session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_rechazada'), session('id_dominio_cotizacion_cancelada')]) ||
         ($edit && Auth::user()->role == session('id_dominio_analista')) ||
         $create
     )
@@ -205,9 +205,9 @@
                     @endif
                 </div>
                 @if (!$create)
-                    <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
+                    <div class="form-group text-truncate col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                         <label>Estado</label>
-                        <label class="form-control {{ isset($cotizacion->status[$cotizacion->estado]) ? $cotizacion->status[$cotizacion->estado] : '' }}">{{ $cotizacion->tbldominioestado->nombre }}</label>
+                        <label data-toggle="tooltip" title="{{ $cotizacion->tbldominioestado->nombre }}" class="form-control text-truncate  {{ isset($cotizacion->status[$cotizacion->estado]) ? $cotizacion->status[$cotizacion->estado] : '' }}">{{ $cotizacion->tbldominioestado->nombre }}</label>
                     </div>
                 @endif
                 <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -219,6 +219,24 @@
                         <button id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-success btn-quote">
                             <i class="fa-solid fa-file-excel fs-4"></i> Descargar cotización
                         </button>
+
+                        @can('createComment', $cotizacion)
+                            @if ($edit)
+                                <span
+                                    class="btn btn-outline-info modal-form"
+                                    data-title="Nuevo comentario"
+                                    data-size="modal-md"
+                                    data-header-class='bg-primary bg-opacity-75 text-white'
+                                    data-reload="false"
+                                    data-action="{{ route('quotes.seguimiento', $cotizacion->id_cotizacion) }}"
+                                    data-modal="modalForm-2"
+                                    data-toggle="tooltip"
+                                    title="Nuevo comentario"
+                                >
+                                    <i class="fa-solid fa-pen-clip fs-4"></i> Seguimiento
+                                </span>
+                            @endif
+                        @endcan
 
                         @if (isset($actividad->id_actividad))
                             @can('view', $actividad)
@@ -244,7 +262,7 @@
                                 data-title="Nueva actividad"
                                 data-size="modal-fullscreen"
                                 data-header-class='bg-primary text-white'
-                                data-reload="false"
+                                data-reload="true"
                                 data-action="{{ route('activities.create', "cotizacion=".$cotizacion->id_cotizacion) }}"
                                 data-modal="modalForm-2"
                                 data-toggle="tooltip"
@@ -263,12 +281,14 @@
                     @include('cotizaciones.detalle', ['edit' => $editable, 'cotizacion_detalle' => $cotizacion->tblcotizaciondetalle])
                 </div>
 
-                <div class="col-12 col-sm-12 col-md-6 co-lg-6 col-xl-7 my-auto pb-2">
+                <div class="col-12 col-sm-12 col-md-6 co-lg-6 col-xl-7 my-auto pb-2"></div>
+                {{-- <div class="col-12 col-sm-12 col-md-6 co-lg-6 col-xl-7 my-auto pb-2">
                     @can('createComment', $cotizacion)
                         @if (!$create && $edit)
                             <div class="border rounded p-3">
                                 <div class="row">
-                                    <div class="form-group col-12 text-start="comentario">Nuevo comentario</label>
+                                    <div class="form-group col-12 text-start">
+                                        <label for="comentario">Nuevo comentario</label>
                                         <textarea class="form-control" id="comentario" name="comentario" rows="3" style="resize: none"></textarea>
                                     </div>
 
@@ -280,13 +300,13 @@
                                         @endcan
     
                                         @can('denyQuote', $cotizacion)
-                                            <button id="btn-deny-quote" title="Devolver cotización" data-toggle="tooltip" class="btn bg-info bg-gradient text-white btn-quote">
+                                            <button id="btn-deny-quote" title="Devolver cotización" data-toggle="tooltip" class="btn bg-warning bg-opacity-75 bg-gradient text-white btn-quote">
                                                 <i class="fa-solid fa-thumbs-down"></i> Devolver cotización
                                             </button>
                                         @endcan
     
                                         @can('waitQuote', $cotizacion)
-                                            <button id="btn-wait-quote" title="Cotización se envió al cliente y está pendiente por aprobación" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
+                                            <button id="btn-wait-quote" title="Cotización se envió al cliente y está pendiente por su aprobación" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
                                                 <i class="fa-regular fa-clock"></i> Pendiente aprobación
                                             </button>
                                         @endcan
@@ -313,7 +333,7 @@
                             </div>
                         @endif
                     @endcan
-                </div>
+                </div> --}}
 
                 <div class="form-group col-12 col-md-6 co-lg-6 col-xl-5 my-auto">
                     <div class="p-3">
@@ -331,16 +351,16 @@
                 </div>
             </div>
 
-            @php
+            {{-- @php
                 $edit = $editable;
-            @endphp
+            @endphp --}}
 
-            @include('partials.buttons', [$create, 'edit' => $edit, 'label' => $create ? 'Crear cotización' : 'Editar cotización', 'modal' => 'modalForm'])
+            @include('partials.buttons', [$create, 'edit' => $editable, 'label' => $create ? 'Crear cotización' : 'Editar cotización', 'modal' => 'modalForm'])
 
             @if (!$create)
                 </div>
                 <div class="tab-pane" id="track-quote" role="tabpanel" aria-labelledby="track-tab-quote">
-                    @include('cotizaciones._track', [$edit, 'model' => $estados_cotizacion])
+                    @include('cotizaciones._track', [$edit, 'cotizacion' => $cotizacion, 'model' => $estados_cotizacion])
                 </div>
             @endif
     </div>

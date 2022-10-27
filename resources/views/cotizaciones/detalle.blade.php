@@ -13,7 +13,7 @@
         </tr>
     </thead>
     <tbody>
-        <tr id="tr_{{ session('id_dominio_materiales') }}">
+        <tr id="tr_{{ session('id_dominio_materiales') }}" class="item_{{session('id_dominio_materiales')}}">
             <th colspan="7" class="border rounded">
                 <span
                     class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
@@ -72,7 +72,7 @@
                 @endif
             </tr>
         @endforeach
-        <tr id="tr_{{ session('id_dominio_mano_obra') }}">
+        <tr id="tr_{{ session('id_dominio_mano_obra') }}" class="item_{{session('id_dominio_mano_obra')}}">
             <th colspan="7" class="border rounded">
                 <span
                     class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"
@@ -131,7 +131,7 @@
                 @endif
             </tr>
         @endforeach
-        <tr id="tr_{{ session('id_dominio_transporte') }}">
+        <tr id="tr_{{ session('id_dominio_transporte') }}" class="item_{{session('id_dominio_transporte')}}">
             <th colspan="7" class="border rounded">
                 <span
                     class="w-100 bg-primary bg-opacity-75 fw-bold {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_cotizacion"

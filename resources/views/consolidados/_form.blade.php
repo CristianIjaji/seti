@@ -57,24 +57,14 @@
                 <button id="btn-get-activities" class="btn bg-info bg-gradient text-white">
                     <i class="fa-solid fa-magnifying-glass"></i> Consultar actividades
                 </button>
-            @else
-                
             @endif
 
-            <button id="btn_download_consolidado" type="button" class="btn btn-outline-success " data-consolidado="{{ $consolidado->id_consolidado }}">Descargar consolidado</button>
-        </div>
-        {{-- <div class="col-12 col-sm-6 col-md-6 col-lg-2 pb-3 pb-md-0 my-auto text-center text-md-end">
-            @if ($edit)
-                <button id="btn-get-activities" class="btn bg-info bg-gradient text-white">
-                    <i class="fa-solid fa-magnifying-glass"></i> Consultar actividades
+            @if (!$create)
+                <button id="btn_download_consolidado" type="button" class="btn btn-outline-success " data-consolidado="{{ $consolidado->id_consolidado }}">
+                    <i class="fa-solid fa-file-excel fs-4"></i> Descargar consolidado
                 </button>
-            @else
-                
             @endif
         </div>
-        <div class="col-12 col-sm-6 col-md-6 col-lg-2 pb-3 pb-md-0 my-auto text-center text-md-end">
-            <button id="btn_download_consolidado" type="button" class="btn btn-success text-white" data-consolidado="{{ $consolidado->id_consolidado }}">Descargar consolidado</button>
-        </div> --}}
         <div class="clearfix"></div>
         <hr>
         <div id="div_detalle_consolidado" class="table-responsive">

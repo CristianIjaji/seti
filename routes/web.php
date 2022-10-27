@@ -61,6 +61,7 @@ Route::post('priceList/import', [ListaPrecioController::class, 'import'])->name(
 Route::get('quotes/exportQuote', [CotizacionController::class, 'exportQuote'])->name('quotes.exportQuote');
 Route::get('quotes/export', [CotizacionController::class, 'export'])->name('quotes.export');
 Route::get('quotes/template', [CotizacionController::class, 'download_template'])->name('quotes.template');
+Route::get('quotes/{quote}/seguimiento', [CotizacionController::class, 'seguimiento'])->name('quotes.seguimiento');
 Route::get('quotes/{quote}/getquote', [CotizacionController::class, 'getCotizacion'])->name('quotes.getquote');
 Route::resource('quotes', CotizacionController::class);
 Route::post('quotes/grid', [CotizacionController::class, 'grid'])->name('quotes.grid');

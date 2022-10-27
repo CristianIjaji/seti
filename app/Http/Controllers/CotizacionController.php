@@ -195,7 +195,7 @@ class CotizacionController extends Controller
 
             $this->createTrack($cotizacion, session('id_dominio_cotizacion_creada'));
             if(isset($cotizacion->tblContratista->tbluser)) {
-                $this->sendNotification($cotizacion, 'user-'.$cotizacion->tblCliente->tbluser->id_usuario, 'quote-created');
+                $this->sendNotification($cotizacion, 'user-'.$cotizacion->tblContratista->tbluser->id_usuario, 'quote-created');
             }
 
             return response()->json([
@@ -225,7 +225,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => false,
             'cotizacion' => $quote,
-            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('created_at', 'desc')->paginate(10),
+            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(9999999999),
             'carrito' => $this->getDetalleCotizacion($quote),
             'actividad' => TblActividad::where(['id_cotizacion' => $quote->id_cotizacion])->first(),
         ]);
@@ -249,7 +249,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => true,
             'cotizacion' => $quote,
-            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('created_at', 'desc')->paginate(10),
+            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(9999999999),
             'carrito' => $this->getDetalleCotizacion($quote),
             'clientes' => TblTercero::where([
                 'estado' => 1,
@@ -427,7 +427,7 @@ class CotizacionController extends Controller
             }
 
             return response()->json([
-                'success' => $response['success']
+                'success' => 'Pruebas'//$response['success']
             ]);
         } catch (\Throwable $th) {
             return response()->json([
@@ -558,15 +558,12 @@ class CotizacionController extends Controller
                 $quote->save();
             }
 
-            $id_usuario = (isset($quote->tblContratista->tbluser->id_usuario)
-                ? $quote->tblContratista->tbluser->id_usuario
-                : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
-            );
+            $id_usuario = TblCotizacion::find($quote->id_cotizacion)->id_usuareg;
 
             if($notification !== '') {
                 $channel = 'user-'.(intval(Auth::user()->id_usuario) != intval($id_usuario)
                     ? $id_usuario
-                    : TblCotizacion::find($quote->id_cotizacion)->id_usuareg
+                    : (isset($quote->tblContratista->tbluser->id_usuario) ? $quote->tblContratista->tbluser->id_usuario : null)
                 );
 
                 $this->sendNotification($quote, $channel, $notification);
@@ -594,11 +591,17 @@ class CotizacionController extends Controller
 
     public function exportQuote() {
         $cotizacion = TblCotizacion::with(['tblEstacion'])->where('id_cotizacion', '=', request()->quote)->first();
-        return $this->excel->download(new CotizacionExport($cotizacion), "Cotizacion".$cotizacion->tblEstacion->nombre.".xlsx");
+        return $this->excel->download(new CotizacionExport($cotizacion), "Cotizacion ".$cotizacion->tblEstacion->nombre.".xlsx");
     }
 
     public function getCotizacion(TblCotizacion $quote) {
         $quote->estacion = $quote->tblEstacion->nombre;
         return $quote;
+    }
+
+    public function seguimiento(TblCotizacion $quote) {
+        return view('cotizaciones.seguimiento', [
+            'cotizacion' => $quote
+        ]);
     }
 }

@@ -154,7 +154,7 @@ class TblCotizacionPolicy
     }
 
     public function createComment(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        // Se valida sí ya existe una actividad asociado
+        // Se valida sí ya existe una actividad asociada
         $actividad = TblActividad::where(['id_cotizacion' => $tblCotizacion->id_cotizacion])->first();
 
         if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_cancelada')]) || isset($actividad->id_actividad)) {

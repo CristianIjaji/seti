@@ -589,7 +589,8 @@ window.drawItems = (edit = true, type_item, id_item) => {
                             : ``
                         }
                     </tr>
-                `).insertAfter(`#tr_${type_item}`);
+                `).insertAfter($(`.item_${type_item}`).last());
+                // `#tr_${type_item}`
                 $('.money').inputmask(formatCurrency);
             } else {
                 $(`#tr_${type_item}_${id_item} #valor_total_${id_item}`).val(element['valor_total']);
@@ -1081,22 +1082,22 @@ $(document).on('click', '.btn-delete-item', function() {
     let id_tr = new String($(this).attr('id'));
     let id_item = id_tr.split('_')[0];
 
-    Swal.fire({
-        icon: 'question',
-        title: `Eliminar ítem ${$(`#item_${id_item}`).val()}`,
-        reverseButtons: true,
-        showCancelButton: true,
-        confirmButtonText: 'Eliminar ítem',
-        confirmButtonColor: 'var(--bs-danger)',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if(result.isConfirmed) {
+    // Swal.fire({
+    //     icon: 'question',
+    //     title: `Eliminar ítem ${$(`#item_${id_item}`).val()}`,
+    //     reverseButtons: true,
+    //     showCancelButton: true,
+    //     confirmButtonText: 'Eliminar ítem',
+    //     confirmButtonColor: 'var(--bs-danger)',
+    //     cancelButtonText: 'Cancelar'
+    // }).then((result) => {
+    //     if(result.isConfirmed) {
             $(`#tr_${id_tr}`).remove();
             id_tr = id_tr.split('_');
             delete carrito[id_tr[0]][id_tr[1]];
             totalCotizacion();
-        }
-    });
+    //     }
+    // });
 });
 
 const fnc_totales_cot = (id) => {
@@ -1181,7 +1182,7 @@ $(document).on('click', '.show-more', function() {
     }, 100);
 });
 
-$(document).on('click', '.btn-quote', function(e) {
+$(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
     e.preventDefault();
 
     let action = '';
@@ -1195,8 +1196,12 @@ $(document).on('click', '.btn-quote', function(e) {
     let form = button.closest('form');
 
     let data = new FormData(form[0]);
+    let cambio = ($(this).attr('id') === 'btn-send-quote'
+        ? $(this).attr('id')
+        : $('#estado_cotizacion').val()
+    );
 
-    switch ($(this).attr('id')) {
+    switch (cambio) {
         case 'btn-check-quote':
             action = 'check';
             title = `<h2 class='fw-bold text-success'>Aprobar cotización</h2>`;
@@ -1227,7 +1232,7 @@ $(document).on('click', '.btn-quote', function(e) {
             break;
         case 'btn-reject-quote':
             action = 'reject';
-            title = `<h2 class='fw-bold text-danger'>Cotización rechazada</h2>`;
+            title = `<h2 class='fw-bold text-danger'>Cliente rechaza cotización</h2>`;
             text = `¿Seguro quiere dejar la cotización rechazada?`;
             confirmButtonColor = `var(--bs-danger)`;
             confirmButtonText = `Sí, dejar en Cotización rechazada`;
@@ -1375,7 +1380,8 @@ $(document).on('click', '.btn-quote', function(e) {
                 showLoader(false);
             });
 
-            return false;
+            $('#modalForm-2').modal('hide');
+            // return false;
         }
     });
 });

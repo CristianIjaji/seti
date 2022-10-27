@@ -91,4 +91,18 @@ class TblActividadPolicy
     {
         //
     }
+
+    public function export(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        return isset($tblUsuario->getPermisosMenu('activities.inde')->export) ? $tblUsuario->getPermisosMenu('activities.inde')->export : false;
+    }
+
+    public function import(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        return isset($tblUsuario->getPermisosMenu('activities.index')->import) ? $tblUsuario->getPermisosMenu('activities.index')->import : false;
+    }
+
+
+
+    public function createComment(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        
+    }
 }

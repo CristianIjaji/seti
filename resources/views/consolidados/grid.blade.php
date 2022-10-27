@@ -20,11 +20,11 @@
                 'view' => $view,
                 'modal-view-title' => 'Ver consolidado',
                 'modal-view-size' => 'modal-fullscreen',
-                'header-view-class' => 'bg-info text-white',
+                'header-view-class' => 'bg-primary bg-opacity-75 text-white',
                 'edit' => $edit,
                 'modal-edit-title' => 'Editar consolidado',
                 'modal-edit-size' => 'modal-fullscreen',
-                'header-edit-class' => 'bg-warning text-white',
+                'header-edit-class' => 'bg-primary bg-opacity-75 text-white',
             ]
         ]]
     ],
