@@ -529,6 +529,8 @@ class CotizacionController extends Controller
     }
 
     public function export() {
+        ob_end_clean();
+        ob_start();
         $headers = ['#', 'OT', 'Proveedor', 'Estación', 'Descripción Orden', 'Fecha Solicitud', 'Fecha Envio',
             'Tipo Trabajo', 'Prioridad', 'Estado', 'Encargado', 'IVA', 'Valor', 
         ];

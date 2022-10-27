@@ -75,6 +75,10 @@ Route::post('statequotes/grid', [EstadoCotizacionController::class, 'grid'])->na
 Route::resource('activities', ActividadController::class);
 Route::post('activities/grid', [ActividadController::class, 'grid'])->name('activities.grid');
 
+// Controlador estado activities
+Route::resource('stateactivities', EstadoActividadController::class);
+Route::post('stateActivities/grid',[EstadoActividadController::class, 'grid'])->name('stateActivities.grid');
+
 // Controlador de consolidado
 // Route::get('deals/export', [ConsolidadoController::class, 'export'])->name('deals.export');
 Route::get('deals/exportDeal', [ConsolidadoController::class, 'exportDeal'])->name('deals.exportDeal');

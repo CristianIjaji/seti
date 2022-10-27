@@ -261,7 +261,7 @@
         @if (!$create)
             </div>
             <div class="tab-pane" id="track-activity" role="tabpanel" aria-labelledby="track-tab-activity">
-                {{-- @include('cotizaciones._track', [$edit, 'model' => $estados_cotizacion]) --}}
+                @include('actividades._track', [$edit, 'model' => $estados_actividad])
             </div>
         @endif
     </div>

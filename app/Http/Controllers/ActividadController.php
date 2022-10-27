@@ -9,6 +9,8 @@ use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
+use App\Models\TblEstadoActividad;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -110,7 +112,7 @@ class ActividadController extends Controller
             $actividad = TblActividad::create($request->validated());
             $this->authorize('create', $actividad);
 
-            $this->createTrak($actividad, session(''));
+            $this->createTrak($actividad, $actividad->id_estado_actividad);
             return response()->json([
                 'success' => 'Actividad creada exitosamente!',
                 'response' => [
@@ -138,6 +140,7 @@ class ActividadController extends Controller
         return view('actividades._form', [
             'edit' => false,
             'activity' => $activity,
+            'estados_actividad' => TblEstadoActividad::where(['id_actividad' =>$activity->id_actividad])->orderby('created_at', 'desc')->paginate(10),
             'quote' => isset(request()->cotizacion) ? TblCotizacion::find(request()->cotizacion) : [],
         ]);
     }
@@ -167,6 +170,7 @@ class ActividadController extends Controller
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
+            'estados_actividad' => TblEstadoActividad::where(['id_actividad' =>$activity->id_actividad])->orderby('created_at','desc')->paginate(10),
             'estados' => TblDominio::where(['id_dominio_padre' => session('id_dominio_estados_actividad')])->get(),
             'contratistas' => TblTercero::where([
                 'estado' => 1,
@@ -199,6 +203,7 @@ class ActividadController extends Controller
         try {
             $this->authorize('update', $activity);
             $activity->update($request->validated());
+            $this->createTrak($actividad, $actividad->id_estado_actividad);
 
             if($activity->valor !== $activity->tblcotizacion->valor) {
                 $activity->valor = $activity->tblcotizacion->valor;
@@ -253,6 +258,12 @@ class ActividadController extends Controller
 
     private function createTrak($activity, $action) {
         try {
+            TblEstadoActividad::create([
+                'id_actividad' => $activity->id_actividad,
+                'estado' => $action,
+                'comentario' => $activity->observaciones,
+                'id_usuareg' => Auth::id()
+            ]);
             
         } catch (\Throwable $th) {
             Log::error("Error creando track de actividad: ".$th->getMessage());

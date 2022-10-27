@@ -360,7 +360,11 @@
             @if (!$create)
                 </div>
                 <div class="tab-pane" id="track-quote" role="tabpanel" aria-labelledby="track-tab-quote">
+<<<<<<< HEAD
                     @include('cotizaciones._track', [$edit, 'cotizacion' => $cotizacion, 'model' => $estados_cotizacion])
+=======
+                @include('cotizaciones._track', [$edit, 'model' => $estados_cotizacion])
+>>>>>>> 55bd86b (se suben estados de la actividad)
                 </div>
             @endif
     </div>
