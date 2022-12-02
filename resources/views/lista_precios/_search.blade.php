@@ -1,4 +1,4 @@
-<div class="row py-3">
+<div class="row pt-5 pb-2">
     <div class="col-12 py-1">
         <select class="form-control" id="lista_items" data-minimuminputlength="2" data-maximumselectionlength="10" data-closeonselect="false" multiple style="width: 100%">
             <option value="">Elegir ítem</option>
@@ -18,6 +18,6 @@
         </select>
     </div>
     <div class="col-12 py-1 text-end">
-        <button class="btn btn-primary text-white" id="btn_add_items">Agregar ítems</button>
+        <button class="btn btn-primary text-white" id="btn_add_items" data-tipo_carrito={{ $tipo_carrito }}>Agregar ítems</button>
     </div>
 </div>

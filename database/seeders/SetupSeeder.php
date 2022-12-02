@@ -239,6 +239,18 @@ class SetupSeeder extends Seeder
             'estado' => 1,
             'id_usuareg' => $user->id_usuario
         ]);
+        $lista_medios_pago_orden_compra = TblDominio::create([
+            'nombre' => 'Listado de los medios de pago orden',
+            'descripcion' => 'Listado de los medios de pago orden',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
+        $lista_tipo_orden_compra = TblDominio::create([
+            'nombre' => 'Listado con los tipos de orden de compra',
+            'descripcion' => 'Listado con los tipos de orden de compra',
+            'estado' => 1,
+            'id_usuareg' => $user->id_usuario
+        ]);
         
         /* Creacioón dominios hijos tipo documentos */
             $cedula = TblDominio::create([
@@ -716,6 +728,40 @@ class SetupSeeder extends Seeder
             ]);
         /* Fin creación dominios hijos estados consolidado */
 
+        /* Creacion dominios hijos ordenes de compra */
+            $orden_credito = TblDominio::create([
+                'nombre' => 'Crédito',
+                'id_dominio_padre' => $lista_medios_pago_orden_compra->id_dominio,
+                'descripcion' => 'Crédito',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+            $orden_contado = TblDominio::create([
+                'nombre' => 'Contado',
+                'id_dominio_padre' => $lista_medios_pago_orden_compra->id_dominio,
+                'descripcion' => 'Contado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
+        /* Fin creacion dominios hijos ordenes de compra */
+
+        /* Creacion dominios hijos tipo orden de compra */
+            $orden_servicio = TblDominio::create([
+                'nombre' => 'Servicio',
+                'id_dominio_padre' => $lista_tipo_orden_compra->id_dominio,
+                'descripcion' => 'Servicio',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario
+            ]);
+            $orden_suministro = TblDominio::create([
+                'nombre' => 'Suministro',
+                'id_dominio_padre' => $lista_tipo_orden_compra->id_dominio,
+                'descripcion' => 'Suministro',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario
+            ]);
+        /* Fin creación dominios hijos tipo orden decompra */
+
         /* Creación parametros */
             // Creación parametro tipo documentos
             TblParametro::create([
@@ -1043,6 +1089,20 @@ class SetupSeeder extends Seeder
                 'llave' => 'id_dominio_consolidado_conciliado',
                 'valor' => $consolidado_conciliado->id_dominio,
                 'descripcion' => 'id_dominio_consolidado_conciliado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro medios de pago de ordenes de compra
+            TblParametro::create([
+                'llave' => 'id_dominio_medio_pago_orden_compra',
+                'valor' => $lista_medios_pago_orden_compra->id_dominio,
+                'descripcion' => 'id_dominio_medio_pago_orden_compra',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creacion parametros tipo de ordenes de compra
+            TblParametro::create([
+                'llave' => 'id_dominio_tipo_orden_compra',
+                'valor' => $lista_tipo_orden_compra->id_dominio,
+                'descripcion' => 'id_dominio_tipo_orden_compra',
                 'id_usuareg' => $user->id_usuario
             ]);
         /* Fin creación parametros */

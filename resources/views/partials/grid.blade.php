@@ -15,66 +15,69 @@
             </div>
         @endif
     </div>
-    <div id="div-submenus" class="col-sm-12 col-md-6 text-end">
-        @isset($view)
-            @if ($view)
-                <a href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-light border-white text-info font-weight-bolder fs-3 bg-update">
-                    <i class="fas fa-sync-alt"></i>
-                </a>
-            @endif
-        @endisset
-        @isset($export)
-            @if ($export)
-                <a data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn btn-outline-light border-white text-success font-weight-bolder fs-3 btn-export">
-                    <i class="fas fa-file-excel"></i>
-                </a>
-            @endif
-        @endisset
-        @isset($import)
-            @if ($import)
-                <div class="dropdown d-inline me-1">
-                    <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span data-toggle="tooltip" title="Importar" class="btn btn-outline-light border-white text-primary font-weight-bolder fs-3">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                        </span>
+    <div id="div-submenus" class="col-sm-12 col-md-6 text-center text-md-end">
+        <div class="d-inline-block">
+            @isset($view)
+                @if ($view)
+                    <a style="margin: 0.9px 0px 0.9px 0.9px;" href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-info border font-weight-bolder fs-4 bg-update">
+                        <i class="fas fa-sync-alt"></i>
                     </a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <span id="btn_upload" class="dropdown-item pl-3 btn">
-                                Subir archivo
+                @endif
+            @endisset
+            @isset($export)
+                @if ($export)
+                    <a style="margin: 0.9px 0px 0.9px 0px;" data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn btn-outline-success border font-weight-bolder fs-4 px-3 btn-export">
+                        <i class="fas fa-file-excel"></i>
+                    </a>
+                @endif
+            @endisset
+            @isset($import)
+                @if ($import)
+                    <div class="dropdown d-inline">
+                        <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span style="margin: 0.9px 0.9px 0.9px 0px;" data-toggle="tooltip" title="Importar" class="btn btn-outline-secondary border font-weight-bolder fs-4">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
                             </span>
-                            <form action="{{ route("$route.import") }}" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <input type="file" name="input_file" id="input_file" accept=".xlsx,.xls" class="d-none">
-                                <button class="d-none">Enviar</button>
-                            </form>
-                        </li>
-                        <li>
-                            <a data-route="{{$route}}" class="dropdown-item pl-3 btn btn-download">
-                                Descargar plantilla
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            @endif
-        @endisset
-        @isset($create)
-            @if ($create)
-                <button
-                    class="btn bg-primary bg-gradient bg-md modal-form text-white fw-bold rounded-pill px-4 py-2"
-                    data-title="{{ $btnOptionsCreate['title'] }}"
-                    data-header-class="{{ isset($btnOptionsCreate['header-class']) ? $btnOptionsCreate['header-class'] : '' }}"
-                    data-size="{{ $btnOptionsCreate['modal-size'] }}"
-                    data-action={{ $btnOptionsCreate['route'] }}
-                    data-toggle="tooltip"
-                    data-placement="top"
-                    data-modal='modalForm'
-                    title="{{ $btnOptionsCreate['title'] }}"
-                >
-                    <i class="fa-solid fa-plus"></i> Crear
-                </button>
-            @endif
-        @endisset
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <span id="btn_upload" class="dropdown-item pl-3 btn">
+                                    Subir archivo
+                                </span>
+                                <form action="{{ route("$route.import") }}" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    <input type="file" name="input_file" id="input_file" accept=".xlsx,.xls" class="d-none">
+                                    <button class="d-none">Enviar</button>
+                                </form>
+                            </li>
+                            <li>
+                                <a data-route="{{$route}}" class="dropdown-item pl-3 btn btn-download">
+                                    Descargar plantilla
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                @endif
+            @endisset
+            @isset($create)
+                @if ($create)
+                    <button
+                        style="margin: 0.9px 0px 0.9px 0.9px;"
+                        class="btn btn-outline-primary border font-weight-bolder fs-4 modal-form"
+                        data-title="{{ $btnOptionsCreate['title'] }}"
+                        data-header-class="{{ isset($btnOptionsCreate['header-class']) ? $btnOptionsCreate['header-class'] : '' }}"
+                        data-size="{{ $btnOptionsCreate['modal-size'] }}"
+                        data-action={{ $btnOptionsCreate['route'] }}
+                        data-toggle="tooltip"
+                        data-placement="top"
+                        data-modal='modalForm'
+                        title="{{ $btnOptionsCreate['title'] }}"
+                    >
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                @endif
+            @endisset
+        </div>
     </div>
 </div>
 
@@ -90,7 +93,7 @@
                 @forelse ($headers as $header)
                     <th
                         scope="col"
-                        class="align-middle text-center bg-primary bg-opacity-75 ps-2 py-2 text-white
+                        class="text-nowrap align-middle text-center bg-primary bg-opacity-75 ps-2 py-2 text-white
                             {{ $header === reset($headers) ? 'rounded-start' : '' }}
                             {{ $header === end($headers) ? 'rounded-end' : '' }}
                         "

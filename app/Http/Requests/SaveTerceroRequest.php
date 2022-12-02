@@ -50,8 +50,8 @@ class SaveTerceroRequest extends FormRequest
             ],
             'razon_social' => [
                 $this->get('id_dominio_tipo_documento') != session('id_dominio_nit')
-                ? 'nullable'
-                : 'required','string','max:255'
+                    ? 'nullable'
+                    : 'required','string','max:255'
             ],
             'nombres' => [
                 'required',

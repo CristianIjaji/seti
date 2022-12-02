@@ -53,7 +53,7 @@ Route::post('sites/import', [PuntosInteresController::class, 'import'])->name('s
 Route::get('priceList/export', [ListaPrecioController::class, 'export'])->name('priceList.export');
 Route::get('priceList/template', [ListaPrecioController::class, 'download_template'])->name('priceList.template');
 Route::resource('priceList', ListaPrecioController::class);
-Route::get('priceList/{type}/{client}', [ListaPrecioController::class, 'search'])->name('priceList.search');
+Route::get('priceList/{type}/{client}/{tipo_carrito}', [ListaPrecioController::class, 'search'])->name('priceList.search');
 Route::post('priceList/grid',[ListaPrecioController::class, 'grid'])->name('priceList.grid');
 Route::post('priceList/import', [ListaPrecioController::class, 'import'])->name('priceList.import');
 

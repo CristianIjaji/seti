@@ -166,9 +166,17 @@
                     @if ($create)
                         <select name="id_estado_actividad" id="id_estado_actividad" class="form-control {{ isset($activity->status[$activity->id_estado_actividad]) ? $activity->status[$activity->id_estado_actividad] : '' }}" style="width: 100%">
                             @foreach ($estados as $estado)
-                            <option value="{{ $estado->id_dominio}}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $estado->id_dominio ? 'selected' : '' }}>
-                                {{ $estado->nombre}}
-                            </option>
+                                @if ($existe_cotizacion)
+                                    <option value="{{ $estado->id_dominio }}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $estado->id_dominio ? 'selected' : '' }}>
+                                        {{ $estado->nombre}}
+                                    </option>
+                                @else
+                                    @if ($estado->id_dominio != session('id_dominio_actividad_programado'))
+                                        <option value="{{ $estado->id_dominio }}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $estado->id_dominio ? 'selected' : '' }}>
+                                            {{ $estado->nombre}}
+                                        </option>
+                                    @endif
+                                @endif
                             @endforeach
                         </select>
                     @else
@@ -186,9 +194,9 @@
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_resposable_contratista" class="required">Responsable</label>
                 @if ($edit)
-                    <div class="row pe-0 pe-md-3">
-                        <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
-                            <select class="form-control" name="id_resposable_contratista" id="id_resposable_contratista" style="width: 100%" @if ($edit) required @else readonly @endif>
+                    <div class="row pe-0 {{ !$existe_cotizacion ? 'pe-md-3' : ''}}">
+                        <div class="{{ $create_client && !$existe_cotizacion ? 'col-10 col-md-11' : 'col-12' }}">
+                            <select class="form-control" name="id_resposable_contratista" id="id_resposable_contratista" style="width: 100%" @if ($edit && !$existe_cotizacion) required @else readonly @endif>
                                 @forelse ($contratistas as $contratista)
                                     <option
                                         data-id_contratista="{{ (isset($contratista->tblterceroresponsable) ? $contratista->tblterceroresponsable->id_tercero : $contratista->id_tercero ) }}"
@@ -200,7 +208,7 @@
                                 @endforelse
                             </select>
                         </div>
-                        @if ($create_client)
+                        @if ($create_client && !$existe_cotizacion)
                             <div class="col-2 col-md-1 text-end">
                                 <i
                                     class="fa-solid fa-plus btn btn-outline-primary fs-6 fw-bold modal-form"
@@ -254,6 +262,19 @@
                 <label for="observaciones" class="required">Observaciones</label>
                 <textarea class="form-control" @if ($edit) name="observaciones" @endif id="observaciones" rows="2" style="resize: none" @if ($edit) required @else readonly @endif>{{ old('nombre', $activity->observaciones) }}</textarea>
             </div>
+
+            @if ($existe_cotizacion)
+                <div id="div_detalle_cotizacion" class="col-12 my-4 d-none">
+                    <div class="bg-info bg-opacity-25 rounded pt-1 mb-2"></div>
+                    @include('ordenes_compra._form', [
+                        'quote' => $quote,
+                        'proveedores' => $proveedores,
+                        'medios_pago_ordenes_compra' => $medios_pago_ordenes_compra,
+                        'tipos_ordenes_compra' => $tipos_ordenes_compra
+                    ])
+                    @include('cotizaciones.detalle', ['edit' => $create, 'editable' => false, 'cotizacion' => $quote, 'tipo_carrito' => 'orden'])
+                </div>
+            @endif
         </div>
 
         @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear actividad' : 'Editar actividad', 'modal' => 'modalForm'])
@@ -268,4 +289,25 @@
 
 <script type="application/javascript">
     datePicker();
+
+    table();
+    flexTable();
+
+    // var scrollTop = 0;
+
+    $('#id_estado_actividad').change(function() {
+        let comprando = "{!! session('id_dominio_actividad_comprando') !!}";
+        $('#div_detalle_cotizacion').addClass('d-none');
+        
+        if(parseInt($(this).val()) === parseInt(comprando)) {
+            $('#div_detalle_cotizacion').removeClass('d-none');
+
+            setTimeout(() => {
+                $('#modalForm-2 .modal-body').animate({
+                    scrollTop: $("#div_detalle_cotizacion").offset().top - $('.modal-header').height()
+                }, 'slow');
+            }, 100);
+            updateTextAreaSize();
+        }
+    });
 </script>

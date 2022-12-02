@@ -216,9 +216,9 @@
                 </div>
                 @if (!$create)
                     <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 my-auto text-center">
-                        <button id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-success btn-quote">
-                            <i class="fa-solid fa-file-excel fs-4"></i> Descargar cotización
-                        </button>
+                        <span id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-success btn-quote px-3">
+                            <i class="fa-solid fa-file-excel fs-4"></i>
+                        </span>
 
                         @can('createComment', $cotizacion)
                             @if ($edit)
@@ -233,7 +233,7 @@
                                     data-toggle="tooltip"
                                     title="Nuevo comentario"
                                 >
-                                    <i class="fa-solid fa-pen-clip fs-4"></i> Seguimiento
+                                    <i class="fa-solid fa-pen-clip fs-4"></i>
                                 </span>
                             @endif
                         @endcan
@@ -241,7 +241,7 @@
                         @if (isset($actividad->id_actividad))
                             @can('view', $actividad)
                                 <span
-                                    class="btn btn-info text-white modal-form"
+                                    class="btn btn-outline-info modal-form"
                                     data-title="Ver actividad"
                                     data-size="modal-fullscreen"
                                     data-header-class='bg-info text-white'
@@ -251,24 +251,24 @@
                                     data-toggle="tooltip"
                                     title="Ver actividad"
                                 >
-                                    <i class="fa-solid fa-circle-info"></i> Ver Actividad
+                                    <i class="fa-solid fa-circle-info fs-4"></i>
                                 </span>
                             @endcan
                         @endif
 
                         @can('createActivity', $cotizacion)
                             <span
-                                class="btn btn-primary text-white modal-form"
+                                class="btn btn-outline-primary modal-form"
                                 data-title="Nueva actividad"
                                 data-size="modal-fullscreen"
-                                data-header-class='bg-primary text-white'
+                                data-header-class='bg-primary bg-opacity-75 text-white'
                                 data-reload="true"
                                 data-action="{{ route('activities.create', "cotizacion=".$cotizacion->id_cotizacion) }}"
                                 data-modal="modalForm-2"
                                 data-toggle="tooltip"
                                 title="Crear actividad"
                             >
-                                <i class="fa-solid fa-circle-info"></i> Crear Actividad
+                                <i class="fa-solid fa-plus fs-4"></i>
                             </span>
                         @endcan
                     </div>
@@ -277,83 +277,8 @@
                 <input type="hidden" id="valor_actividad" value="{{ $cotizacion->valor }}">
                 <div class="clearfix"><hr></div>
 
-                <div class="table-responsive">
-                    @include('cotizaciones.detalle', ['edit' => $editable, 'cotizacion_detalle' => $cotizacion->tblcotizaciondetalle])
-                </div>
-
-                <div class="col-12 col-sm-12 col-md-6 co-lg-6 col-xl-7 my-auto pb-2"></div>
-                {{-- <div class="col-12 col-sm-12 col-md-6 co-lg-6 col-xl-7 my-auto pb-2">
-                    @can('createComment', $cotizacion)
-                        @if (!$create && $edit)
-                            <div class="border rounded p-3">
-                                <div class="row">
-                                    <div class="form-group col-12 text-start">
-                                        <label for="comentario">Nuevo comentario</label>
-                                        <textarea class="form-control" id="comentario" name="comentario" rows="3" style="resize: none"></textarea>
-                                    </div>
-
-                                    <div class="col-12 d-flex justify-content-evenly align-items-center">
-                                        @can('checkQuote', $cotizacion)
-                                            <button id="btn-check-quote" title="Aprobar cotización" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
-                                                <i class="fa-solid fa-thumbs-up"></i> Aprobar cotización
-                                            </button>
-                                        @endcan
-    
-                                        @can('denyQuote', $cotizacion)
-                                            <button id="btn-deny-quote" title="Devolver cotización" data-toggle="tooltip" class="btn bg-warning bg-opacity-75 bg-gradient text-white btn-quote">
-                                                <i class="fa-solid fa-thumbs-down"></i> Devolver cotización
-                                            </button>
-                                        @endcan
-    
-                                        @can('waitQuote', $cotizacion)
-                                            <button id="btn-wait-quote" title="Cotización se envió al cliente y está pendiente por su aprobación" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
-                                                <i class="fa-regular fa-clock"></i> Pendiente aprobación
-                                            </button>
-                                        @endcan
-    
-                                        @can('aproveQuote', $cotizacion)
-                                            <button id="btn-aprove-quote" title="Cliente reviso la cotización y la aprobó" data-toggle="tooltip" class="btn bg-success bg-gradient text-white btn-quote">
-                                                <i class="fa-regular fa-circle-check"></i> Cotización aprobada cliente
-                                            </button>
-                                        @endcan
-    
-                                        @can('rejectQuote', $cotizacion)
-                                            <button id="btn-reject-quote" title="Cliente rechazó la cotización" data-toggle="tooltip" class="btn bg-info bg-gradient text-white btn-quote">
-                                                <i class="fa-solid fa-xmark"></i> Cotización rechazada cliente
-                                            </button>
-                                        @endcan
-    
-                                        @can('cancelQuote', $cotizacion)
-                                            <button id="btn-cancel-quote" title="Se cancela proceso de cotización" data-toggle="tooltip" class="btn btn-danger bg-gradient text-white btn-quote">
-                                                <i class="fa-solid fa-handshake-slash"></i> Cancelar cotización
-                                            </button>
-                                        @endcan
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                    @endcan
-                </div> --}}
-
-                <div class="form-group col-12 col-md-6 co-lg-6 col-xl-5 my-auto">
-                    <div class="p-3">
-                        <div class="row fs-6">
-                            <label class="col-12 text-start">Total sin IVA:</label>
-                            <label id="lbl_total_sin_iva" class="col-12 text-end border-bottom">0</label>
-
-                            <label class="col-12 text-start">Total IVA:</label>
-                            <label id="lbl_total_iva" class="col-12 text-end border-bottom">0</label>
-
-                            <label class="col-12 text-start">Total con IVA:</label>
-                            <label id="lbl_total_con_iva" class="col-12 text-end border-bottom">0</label>
-                        </div>
-                    </div>
-                </div>
+                @include('cotizaciones.detalle', ['edit' => $editable, 'cotizacion' => $cotizacion, 'tipo_carrito' => 'cotizacion'])
             </div>
-
-            {{-- @php
-                $edit = $editable;
-            @endphp --}}
 
             @include('partials.buttons', [$create, 'edit' => $editable, 'label' => $create ? 'Crear cotización' : 'Editar cotización', 'modal' => 'modalForm'])
 
@@ -367,10 +292,4 @@
 
 <script type="application/javascript">
     datePicker();
-
-    carrito = <?= json_encode($carrito) ?>;
-    $('#table-cotizaciones').removeClass('d-none');
-    table();
-    flexTable();
-    totalCotizacion();
 </script>

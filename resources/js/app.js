@@ -470,11 +470,15 @@ const handleModal = (button) => {
                 selector: '[data-toggle="tooltip"]'
             });
 
+            $('[data-toggle="tooltip"]').on('click', function () {
+                $(this).tooltip('hide')
+            });
+
             setTimeout(() => {
                 // $(`#${modal} input:text, #${modal} textarea`).first().focus();
                 $(`#${modal}`).focus();
                 $('.money').inputmask(formatCurrency);
-            }, 200);
+            }, 300);
         }).always(function() {
             showLoader(false);
         });
@@ -491,7 +495,7 @@ const handleModal = (button) => {
 
 window.carrito = [];
 window.updateTextAreaSize = () => {
-    $('#table_items textarea').each(function(index, element){
+    $('.resize-textarea').each(function(index, element){
         element.style.height = "1px";
         element.style.height = `${25 + element.scrollHeight}px`;
     });
@@ -501,13 +505,13 @@ const responsiveTd = (id, i) => {
     let clase = ((i + 1) % 2 == 0 ? 'bg-light' : '');
     if ($(window).width() <= 768) {
         $(`#${id} td:nth-child(${(i + 1)})`).addClass(clase);
-        $(`#${id} td.btn-delete-item > i`).addClass('text-white');
-        $(`#${id} td.btn-delete-item`).addClass('btn bg-danger text-white').removeClass(clase);
+        $(`#${id} td.td-delete > i`).addClass('text-white');
+        $(`#${id} td.td-delete`).addClass('btn bg-danger text-white').removeClass(clase);
         
     } else {
         $(`#${id} td:nth-child(${(i + 1)})`).removeClass('bg-light');
-        $(`#${id} td.btn-delete-item > i`).removeClass('text-white');
-        $(`#${id} td.btn-delete-item`).removeClass('btn bg-danger text-white');
+        $(`#${id} td.td-delete > i`).removeClass('text-white');
+        $(`#${id} td.td-delete`).removeClass('btn bg-danger text-white');
     }
 }
 
@@ -549,48 +553,55 @@ window.onresize = function(event) {
     flexTable();
 };
 
-window.drawItems = (edit = true, type_item, id_item) => {
+window.drawItems = (edit = true, tipo_carrito, type_item, id_item) => {
     // type: tipo de item: mano de obra, transporte o suministro
     // item: ítem de la lista de precios
     if(!edit) {
         $('#th-delete').remove();
     }
 
-    if(typeof carrito[type_item][id_item] !== 'undefined') {
-        let element = carrito[type_item][id_item];
+    if(typeof carrito[tipo_carrito][type_item][id_item] !== 'undefined') {
+        let element = carrito[tipo_carrito][type_item][id_item];
+        let tooltip = (edit === true ? 'data-toggle="tooltip"' : '');
 
         if(typeof element !== 'undefined' && typeof element === 'object') {
             if(!$(`#tr_${type_item}_${id_item}`).length) {
                 let classname = `${$(`#caret_${type_item}`).hasClass(showIcon) ? 'show' : ''}`;
                 $(`
-                    <tr id="tr_${type_item}_${id_item}" class="tr_cotizacion border-bottom collapse ${classname} item_${type_item}">
+                    <tr id="${tipo_carrito}_${type_item}_${id_item}" class="border-bottom collapse ${classname} item_${type_item} detail-${type_item}">
                         <td class="col-1 my-auto border-0">
                             <input type='hidden' name="id_tipo_item[]" value="${type_item}" />
                             <input type='hidden' name="id_lista_precio[]" value="${id_item}" />
                             <input type="text" class="form-control text-md-center text-end text-uppercase border-0" id="item_${id_item}" value="${element['item']}" disabled>
                         </td>
                         <td class="col-4 my-auto border-0">
-                            <textarea class="form-control border-0" rows="2" name="descripcion_item[]" id="descripcion_item_${id_item}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
+                            <textarea class="form-control border-0 resize-textarea" rows="2" name="descripcion_item[]" id="descripcion_item_${id_item}" required ${edit ? '' : 'disabled'}>
+                                ${element['descripcion']}
+                            </textarea>
                         </td>
                         <td class="col-1 my-auto border-0">
-                            <input type="text" class="form-control text-md-start text-end border-0" data-toggle="tooltip" title="${element['unidad']}" name="unidad[]" id="unidad_${id_item}" value="${element['unidad']}" ${edit ? '' : 'disabled'}>
+                            <input type="text" class="form-control text-md-start text-end border-0" ${tooltip} title="${element['unidad']}" name="unidad[]" id="unidad_${id_item}"
+                                value="${element['unidad']}" ${edit ? '' : 'disabled'}>
                         </td>
                         <td class="col-1 my-auto border-0">
-                            <input type="number" min="0" class="form-control text-end border-0 txt-cotizaciones" name="cantidad[]" id="cantidad_${id_item}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
+                            <input type="number" min="1" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"
+                                class="form-control text-end border-0 txt-totales" name="cantidad[]" id="cantidad_${id_item}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
                         </td>
                         <td class="col-2 my-auto border-0">
-                            <input type="text" class="form-control text-end border-0 txt-cotizaciones money" data-toggle="tooltip" title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]" id="valor_unitario_${id_item}" value="${element['valor_unitario']}" required ${edit ? '' : 'disabled'}>
+                            <input type="text" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"
+                                class="form-control text-end border-0 txt-totales money" ${tooltip} title="${Inputmask.format(element['valor_unitario'], formatCurrency)}" name="valor_unitario[]"
+                                id="valor_unitario_${id_item}" value="${element['valor_unitario']}" required ${edit ? '' : 'disabled'}>
                         </td>
                         <td class="col-2 my-auto border-0">
-                            <input type="text" class="form-control text-end border-0 txt-cotizaciones txt_total_item_${type_item} money" name="valor_total[]" id="valor_total_${id_item}" value="${element['valor_total']}" disabled>
+                            <input type="text" data-id-tr="${tipo_carrito}_${type_item}_${id_item}" class="form-control text-end border-0 txt-totales txt_total_item_${type_item} money"
+                                name="valor_total[]" id="valor_total_${id_item}" value="${element['valor_total']}" disabled>
                         </td>
                         ${edit == true
-                            ? `<td id="${type_item}_${id_item}" class="text-center col-1 my-auto border-0 btn-delete-item"><i id="${type_item}_${id_item}" class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item"></i></td>`
+                            ? `<td class="text-center col-1 my-auto border-0 td-delete" ${tooltip} title='Quitar ítem'><i class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"></i></td>`
                             : ``
                         }
                     </tr>
-                `).insertAfter($(`.item_${type_item}`).last());
-                // `#tr_${type_item}`
+                `).insertAfter($(`.detail-${type_item}`).last());
                 $('.money').inputmask(formatCurrency);
             } else {
                 $(`#tr_${type_item}_${id_item} #valor_total_${id_item}`).val(element['valor_total']);
@@ -603,11 +614,11 @@ window.drawItems = (edit = true, type_item, id_item) => {
     }, 100);
 }
 
-const totalItemType = (type) => {
+const totalItemType = (tipo_carrito, type) => {
     let total = 0;
     let items = 0;
-    if(typeof carrito[type] !== 'undefined') {
-        $.each(carrito[type], (item, valores) => {
+    if(typeof carrito[tipo_carrito][type] !== 'undefined') {
+        $.each(carrito[tipo_carrito][type], (item, valores) => {
             items++;
             if($.isNumeric(valores['valor_total'])) {
                 total += parseFloat(valores['valor_total'], 2);
@@ -621,7 +632,7 @@ const totalItemType = (type) => {
     };
 }
 
-window.totalCotizacion = () => {
+window.totalCarrito = (tipo_carrito) => {
     let iva = parseFloat(
         $('#iva option:selected').length > 0
             ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '')
@@ -629,29 +640,35 @@ window.totalCotizacion = () => {
         , 0
     );
 
-    let id_materiales = $('.lbl_total_material').attr('id').replace('lbl_', '');
-    let id_mano_obra = $('.lbl_total_mano_obra').attr('id').replace('lbl_', '');
-    let id_transporte = $('.lbl_total_transporte').attr('id').replace('lbl_', '');
+    let id_materiales = ($(`#${tipo_carrito} .lbl_total_material`).length ? $(`#${tipo_carrito} .lbl_total_material`).attr('id').replace('lbl_', '') : 0);
+    let id_mano_obra = ($(`#${tipo_carrito} .lbl_total_mano_obra`).length ? $(`#${tipo_carrito} .lbl_total_mano_obra`).attr('id').replace('lbl_', '') : 0);
+    let id_transporte = ($(`#${tipo_carrito} .lbl_total_transporte`).length ? $(`#${tipo_carrito} .lbl_total_transporte`).attr('id').replace('lbl_', '') : 0);
 
-    let total_material = totalItemType(id_materiales);
-    let total_suministro = totalItemType(id_mano_obra);
-    let total_transporte = totalItemType(id_transporte);
+    let total_material = totalItemType(tipo_carrito, id_materiales);
+    let total_suministro = totalItemType(tipo_carrito, id_mano_obra);
+    let total_transporte = totalItemType(tipo_carrito, id_transporte);
 
     let total_sin_iva = (total_material.total + total_suministro.total + total_transporte.total);
     let total_iva = ((total_sin_iva * iva) / 100);
     let total_con_iva = (total_sin_iva + total_iva);
 
-    $(`#lbl_${id_materiales}`).text(`$ ${Inputmask.format(total_material.total, formatCurrency)}`);
-    $(`#lbl_${id_mano_obra}`).text(`$ ${Inputmask.format(total_suministro.total, formatCurrency)}`);
-    $(`#lbl_${id_transporte}`).text(`$ ${Inputmask.format(total_transporte.total, formatCurrency)}`);
+    $(`#${tipo_carrito} #lbl_${id_materiales}`).text(`$ ${Inputmask.format(total_material.total, formatCurrency)}`);
+    $(`#${tipo_carrito} #lbl_${id_mano_obra}`).text(`$ ${Inputmask.format(total_suministro.total, formatCurrency)}`);
+    $(`#${tipo_carrito} #lbl_${id_transporte}`).text(`$ ${Inputmask.format(total_transporte.total, formatCurrency)}`);
 
-    $(`#lbl_total_items_materiales`).text(`Total Ítems: ${total_material.items}`);
-    $(`#lbl_total_items_mano_obra`).text(`Total Ítems: ${total_suministro.items}`);
-    $(`#lbl_total_items_transporte`).text(`Total Ítems: ${total_transporte.items}`);
+    $(`#${tipo_carrito} #lbl_total_items_materiales`).text(`Total Ítems: ${total_material.items}`);
+    $(`#${tipo_carrito} #lbl_total_items_mano_obra`).text(`Total Ítems: ${total_suministro.items}`);
+    $(`#${tipo_carrito} #lbl_total_items_transporte`).text(`Total Ítems: ${total_transporte.items}`);
 
-    $('#lbl_total_sin_iva').text(`$ ${Inputmask.format(total_sin_iva, formatCurrency)}`);
-    $('#lbl_total_iva').text(`$ ${Inputmask.format(total_iva, formatCurrency)}`);
-    $('#lbl_total_con_iva').text(`$ ${Inputmask.format(total_con_iva, formatCurrency)}`);
+    $(`#${tipo_carrito}_lbl_total_sin_iva`).text(`$ ${Inputmask.format(total_sin_iva, formatCurrency)}`);
+    $(`#${tipo_carrito}_lbl_total_iva`).text(`$ ${Inputmask.format(total_iva, formatCurrency)}`);
+    $(`#${tipo_carrito}_lbl_total_con_iva`).text(`$ ${Inputmask.format(total_con_iva, formatCurrency)}`);
+
+    if($('#cupo').length > 0) {
+        let total_sin_transporte = total_material.total + total_suministro.total;
+        let total_iva_sin_transporte = ((total_sin_transporte * iva) / 100)
+        $('#cupo').val(total_sin_transporte + total_iva_sin_transporte);
+    }
 }
 
 const getItem = (item) => {
@@ -668,16 +685,16 @@ const getItem = (item) => {
     };
 };
 
-const addItems = (items) => {
+const addItems = (tipo_carrito, items) => {
     $.each(items, (index, item) => {
-        if(typeof carrito[$(item).data('type')] === 'undefined') {
-            carrito[$(item).data('type')] = {};
+        if(typeof carrito[tipo_carrito][$(item).data('type')] === 'undefined') {
+            carrito[tipo_carrito][$(item).data('type')] = {};
         }
 
-        if(typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
-            carrito[$(item).data('type')][$(item).val()] = getItem(item);
-            drawItems(true, $(item).data('type'), $(item).val());
-            totalCotizacion();
+        if(typeof carrito[tipo_carrito][$(item).data('type')][$(item).val()] === 'undefined') {
+            carrito[tipo_carrito][$(item).data('type')][$(item).val()] = getItem(item);
+            drawItems(true, tipo_carrito, $(item).data('type'), $(item).val());
+            totalCarrito(tipo_carrito);
             table();
             flexTable();
         }
@@ -822,7 +839,10 @@ $(document).ready(function() {
         }
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
+    // $('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').on('click', function () {
+        $(this).tooltip('hide')
+    });
     setupSelect2();
     timer();
     datePicker();
@@ -862,22 +882,6 @@ $(document).on('click', '.modal-form', function(e) {
     e.preventDefault();
     handleModal($(this));
 });
-
-// const updateGrid = (url, data) => {
-//     $.ajax({
-//         url: url,
-//         method: 'POST',
-//         data: data,
-//         beforeSend: () => {
-//             showLoader(true);
-//         }
-//     }).done(function(view) {
-//         $('#container').html(view);
-//     }).always(function() {
-//         showLoader(false);
-//         setupSelect2();
-//     });
-// }
 
 const getGrid = (url, id_form) => {
     $.ajax({
@@ -1072,63 +1076,68 @@ $(document).on('click', '#kvFileinputModal .btn-kv-close', function(e) {
 
 $(document).on('click', '#btn_add_items', function() {
     if($("#lista_items option:selected").length) {
-        addItems($('#lista_items option:selected'));
+        let tipo_carrito = $(this).data('tipo_carrito');
+        addItems(tipo_carrito, $('#lista_items option:selected'));
     }
     
     $(`#modalForm-2`).modal('hide');
 });
 
 $(document).on('click', '.btn-delete-item', function() {
-    let id_tr = new String($(this).attr('id'));
-    let id_item = id_tr.split('_')[0];
+    if(typeof $(this).data('id-tr') !== 'undefined') {
+        let id_tr = $(this).data('id-tr');
 
-    // Swal.fire({
-    //     icon: 'question',
-    //     title: `Eliminar ítem ${$(`#item_${id_item}`).val()}`,
-    //     reverseButtons: true,
-    //     showCancelButton: true,
-    //     confirmButtonText: 'Eliminar ítem',
-    //     confirmButtonColor: 'var(--bs-danger)',
-    //     cancelButtonText: 'Cancelar'
-    // }).then((result) => {
-    //     if(result.isConfirmed) {
-            $(`#tr_${id_tr}`).remove();
-            id_tr = id_tr.split('_');
-            delete carrito[id_tr[0]][id_tr[1]];
-            totalCotizacion();
-    //     }
-    // });
+        // Swal.fire({
+        //     icon: 'question',
+        //     title: `Eliminar ítem ${$(`#item_${id_item}`).val()}`,
+        //     reverseButtons: true,
+        //     showCancelButton: true,
+        //     confirmButtonText: 'Eliminar ítem',
+        //     confirmButtonColor: 'var(--bs-danger)',
+        //     cancelButtonText: 'Cancelar'
+        // }).then((result) => {
+        //     if(result.isConfirmed) {
+                $(`#${id_tr}`).remove();
+                id_tr = id_tr.split('_');
+
+                delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
+                totalCarrito(id_tr[0]);
+        //     }
+        // });
+    }
 });
 
-const fnc_totales_cot = (id) => {
+const fnc_totales = (id) => {
     let id_tr = new String(id).split('_');
-    if(typeof carrito[id_tr[1]][id_tr[2]] !== 'undefined') {
-        let id_row = `tr_${id_tr[1]}_${id_tr[2]}`;
-        let descripcion = $(`#${id_row} #descripcion_${id_tr[2]}`).val();
+    if(typeof carrito[id_tr[0]][id_tr[1]][id_tr[2]] !== 'undefined') {
+        let id_row = `${id_tr[0]}_${id_tr[1]}_${id_tr[2]}`;
+
+        // // let descripcion = $(`#${id_row} #descripcion_${id_tr[2]}`).val();
         let cantidad = parseFloat($.isNumeric($(`#${id_row} #cantidad_${id_tr[2]}`).val()) ? $(`#${id_row} #cantidad_${id_tr[2]}`).val() : 0);
         let valor_unitario = parseFloat($.isNumeric($(`#${id_row} #valor_unitario_${id_tr[2]}`).val().replace(regexCurrencyToFloat, "")) ? $(`#${id_row} #valor_unitario_${id_tr[2]}`).val().replace(regexCurrencyToFloat, "") : 0);
         let valor_total = (cantidad) * (valor_unitario);
 
-        carrito[id_tr[1]][id_tr[2]]['descripcion'] = descripcion;
-        carrito[id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
-        carrito[id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
-        carrito[id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
+        // carrito[id_tr[0]][id_tr[1]][id_tr[2]]['descripcion'] = descripcion;
+        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
+        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
+        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
 
-        $(`#valor_total_${id_tr[2]}`).val(valor_total);
-        totalCotizacion();
+        $(`#${id_tr[0]} #valor_total_${id_tr[2]}`).val(valor_total);
+
+        totalCarrito(id_tr[0]);
     }
 }
 
-$(document).on('keydown', '.txt-cotizaciones', function() {
-    fnc_totales_cot($(this).parent().parent().attr('id'));
+$(document).on('keydown', '.txt-totales', function() {
+    fnc_totales($(this).data('id-tr'));
 });
 
-$(document).on('keyup', '.txt-cotizaciones', function() {
-    fnc_totales_cot($(this).parent().parent().attr('id'));
+$(document).on('keyup', '.txt-totales', function() {
+    fnc_totales($(this).data('id-tr'));
 });
 
-$(document).on('change', '.txt-cotizaciones', function() {
-    fnc_totales_cot($(this).parent().parent().attr('id'));
+$(document).on('change', '.txt-totales', function() {
+    fnc_totales($(this).data('id-tr'));
 });
 
 $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', function() {    
@@ -1142,9 +1151,9 @@ $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', functi
         if(id_cliente !== '') {
             $('#table-cotizaciones').removeClass('d-none');
 
-            $(`.tr_cotizacion`).each((index, item) => {
+            $(`.tr_suministros`).each((index, item) => {
                 let action = new String($(item).data('action')).split('/');
-                action[action.length - 1] = id_cliente;
+                action[5] = id_cliente;
 
                 action = action.join('/');
                 $(item).data('action', action);
@@ -1169,7 +1178,7 @@ $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', functi
 
 $(document).on('change', '#iva', function() {
     if($(this).closest('form').attr('action').indexOf(url_cotizacion) > -1) {
-        totalCotizacion();
+        totalCarrito('cotizacion');
     }
 });
 

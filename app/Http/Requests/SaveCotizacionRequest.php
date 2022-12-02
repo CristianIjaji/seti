@@ -108,7 +108,7 @@ class SaveCotizacionRequest extends FormRequest
                 'required'
             ],
             'cantidad' => [
-                'required'
+                'required',
             ],
             'valor_unitario' => [
                 'required'
@@ -132,6 +132,7 @@ class SaveCotizacionRequest extends FormRequest
             'id_responsable_cliente.required' => 'El campo contratista es obligatorio.',
             'id_tipo_item.required' => 'Debe agregar un ítem a la cotización.',
             'id_lista_precio.required' => 'Debe agregar un ítem a la cotización.',
+            'descripcion_item.required' => 'El campo descripción es obligarorio.',
             'descripcion_item.required' => 'El campo descripción es obligarorio.',
             // 'unidad.required' => 'El campo unidad es obli',
         ];

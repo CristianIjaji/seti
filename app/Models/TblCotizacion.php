@@ -175,6 +175,24 @@ class TblCotizacion extends Model
             : null;
     }
 
+    public function getDetalleCotizacion() {
+        $carrito = [];
+        $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => (isset($this->attributes['id_cotizacion']) ? $this->attributes['id_cotizacion'] : -1)])->get();
+
+        foreach ($items as $item) {
+            $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
+                'item' => $item->tblListaprecio->codigo,
+                'descripcion' => $item->descripcion,
+                'cantidad' => $item->cantidad,
+                'unidad' => $item->unidad,
+                'valor_unitario' => $item->valor_unitario,
+                'valor_total' => $item->valor_total,
+            ];
+        }
+
+        return $carrito;
+    }
+
     public static function getRules() {
         return [
             '0' => 'nullable|max:20|unique:tbl_cotizaciones,ot_trabajo',

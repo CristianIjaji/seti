@@ -49,4 +49,8 @@ class TblOrdenCompra extends Model
     public function tblusuario() {
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');
     }
+
+    public function tbldetalleorden() {
+        return $this->hasMany(TblOrdenesCompraDetalle::class, 'id_orden_compra');
+    }
 }

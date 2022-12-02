@@ -10,6 +10,8 @@ use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use App\Models\TblEstadoActividad;
+use App\Models\TblOrdenCompra;
+use App\Models\TblOrdenesCompraDetalle;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -47,6 +49,20 @@ class ActividadController extends Controller
         }
 
         return $querybuilder;
+    }
+
+    private function getDetailOrden($activity) {
+        TblOrdenesCompraDetalle::where('id_orden', '=', $activity->id_orden_compra)->wherenotin('id_lista_precio', request()->id_lista_precio)->delete();
+
+        $total = 0;
+        foreach (request()->id_lista_precio as $index => $valor) {
+            $detalle = TblOrdenesCompraDetalle::where(['id_orden' => $activity->id_orden_compra, 'id_lista_precio' => request()->id_lista_precio[$index]])->first();
+            if(!$detalle) {
+                $detalle = new TblOrdenesCompraDetalle;
+            }
+
+            $detalle->id_lista_precio = request()->id_lista_precio[$index];
+        }
     }
 
     /**
@@ -92,6 +108,12 @@ class ActividadController extends Controller
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
             ])->where('id_responsable_cliente', '>', 0)->get(),
+            'proveedores' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_proveedor')
+            ])->get(),
+            'medios_pago_ordenes_compra' => TblDominio::getListaDominios(session('id_dominio_medio_pago_orden_compra')),
+            'tipos_ordenes_compra' => TblDominio::getListaDominios(session('id_dominio_tipo_orden_compra')),
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),

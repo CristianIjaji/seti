@@ -189,13 +189,14 @@ class ListaPrecioController extends Controller
         //
     }
 
-    public function search($type, $client) {
-        if(empty($type) || empty($client)) {
+    public function search($type, $client, $tipo_carrito) {
+        if(empty($type) || empty($client) || empty($tipo_carrito)) {
             return response()->json(['errors' => 'Error consultando lista de precios.']);
         }
 
         return view('lista_precios._search', [
             'type' => $type,
+            'tipo_carrito' => $tipo_carrito,
             'items' => TblListaPrecio::where(['estado' => 1, 'id_tipo_item' => $type, 'id_cliente' => $client])->get()
         ]);
     }

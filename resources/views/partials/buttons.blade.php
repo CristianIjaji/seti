@@ -1,17 +1,15 @@
-@if ($create || $edit)
-        <div class="modal-footer">
-            <button type="button" class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
-                <i class="fa-regular fa-circle-xmark"></i> Cerrar
-            </button>
-            <button id="btn-form-action" data-modal="{{ isset($modal) ? $modal : 'modalForm' }}" class="btn bg-primary bg-gradient text-white">
-                <i class="fa-regular fa-circle-check"></i> {{ $label }}
-            </button>
-        </div>
-    </form>
-@else
-    <div class="modal-footer">
+<div class="modal-footer justify-content-lg-end justify-content-center">
+    @if ($create || $edit)
         <button type="button" class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
             <i class="fa-regular fa-circle-xmark"></i> Cerrar
         </button>
-    </div>
-@endif
+        <button id="btn-form-action" data-modal="{{ isset($modal) ? $modal : 'modalForm' }}" class="btn bg-primary bg-gradient text-white">
+            <i class="fa-regular fa-circle-check"></i> {{ $label }}
+        </button>
+    </form>
+    @else
+        <button type="button" class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
+            <i class="fa-regular fa-circle-xmark"></i> Cerrar
+        </button>
+    @endif
+</div>

@@ -159,7 +159,6 @@ class CotizacionController extends Controller
 
         return view('cotizaciones._form', [
             'cotizacion' => new TblCotizacion,
-            'carrito' => [],
             'clientes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
@@ -226,7 +225,6 @@ class CotizacionController extends Controller
             'edit' => false,
             'cotizacion' => $quote,
             'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(9999999999),
-            'carrito' => $this->getDetalleCotizacion($quote),
             'actividad' => TblActividad::where(['id_cotizacion' => $quote->id_cotizacion])->first(),
         ]);
     }
@@ -250,7 +248,7 @@ class CotizacionController extends Controller
             'edit' => true,
             'cotizacion' => $quote,
             'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(9999999999),
-            'carrito' => $this->getDetalleCotizacion($quote),
+            'carrito' => $quote->getDetalleCotizacion($quote),
             'clientes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
@@ -434,24 +432,6 @@ class CotizacionController extends Controller
                 'error' => $th->getMessage()
             ]);
         }
-    }
-
-    private function getDetalleCotizacion($quote) {
-        $carrito = [];
-        $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $quote->id_cotizacion])->get();
-
-        foreach ($items as $item) {
-            $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
-                'item' => $item->tblListaprecio->codigo,
-                'descripcion' => $item->descripcion,
-                'cantidad' => $item->cantidad,
-                'unidad' => $item->unidad,
-                'valor_unitario' => $item->valor_unitario,
-                'valor_total' => $item->valor_total,
-            ];
-        }
-
-        return $carrito;
     }
 
     public function grid() {

@@ -81,7 +81,6 @@ class SaveActividadRequest extends FormRequest
                 'required',
                 'string',
             ],
-            
             'fecha_reprogramacion' => [
                 'nullable',
                 'date'
@@ -125,6 +124,30 @@ class SaveActividadRequest extends FormRequest
             'id_usuareg' => [
                 'required',
                 'exists:tbl_usuarios,id_usuario'
+            ],
+            'id_lista_precio' => [
+                'required',
+                'exists:tbl_lista_precios,id_lista_precio'
+            ],
+            'descripcion_item' => [
+                $this->get('id_estado_actividad') == session('id_dominio_actividad_comprando')
+                    ? 'required'
+                    : 'nullable'
+            ],
+            'cantidad' => [
+                $this->get('id_estado_actividad') == session('id_dominio_actividad_comprando')
+                    ? 'required'
+                    : 'nullable'
+            ],
+            'valor_unitario' => [
+                $this->get('id_estado_actividad') == session('id_dominio_actividad_comprando')
+                    ? 'required'
+                    : 'nullable'
+            ],
+            'valor_total' => [
+                $this->get('id_estado_actividad') == session('id_dominio_actividad_comprando')
+                    ? 'required'
+                    : 'nullable'
             ]
         ];
     }
@@ -144,6 +167,9 @@ class SaveActividadRequest extends FormRequest
             'descripcion.required' => 'El campo descripción es obligatorio.',
             'id_estado_actividad.required' => 'El campo estado actividad es obligatorio.',
             'id_cotizacion.unique' => 'Ya existe una actividad asociada a está cotización.',
+            'id_lista_precio.required' => 'Debe agregar un ítem a la ordén de compra.',
+            'descripcion_item.required' => 'El campo descripción es obligarorio.',
+            'descripcion_item.required' => 'El campo descripción es obligarorio.',
         ];
     }
 }

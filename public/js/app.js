@@ -9510,11 +9510,14 @@ var handleModal = function handleModal(button) {
       $('body').tooltip({
         selector: '[data-toggle="tooltip"]'
       });
+      $('[data-toggle="tooltip"]').on('click', function () {
+        $(this).tooltip('hide');
+      });
       setTimeout(function () {
         // $(`#${modal} input:text, #${modal} textarea`).first().focus();
         $("#".concat(modal)).focus();
         $('.money').inputmask(formatCurrency);
-      }, 200);
+      }, 300);
     }).always(function () {
       showLoader(false);
     });
@@ -9531,7 +9534,7 @@ var handleModal = function handleModal(button) {
 window.carrito = [];
 
 window.updateTextAreaSize = function () {
-  $('#table_items textarea').each(function (index, element) {
+  $('.resize-textarea').each(function (index, element) {
     element.style.height = "1px";
     element.style.height = "".concat(25 + element.scrollHeight, "px");
   });
@@ -9542,12 +9545,12 @@ var responsiveTd = function responsiveTd(id, i) {
 
   if ($(window).width() <= 768) {
     $("#".concat(id, " td:nth-child(").concat(i + 1, ")")).addClass(clase);
-    $("#".concat(id, " td.btn-delete-item > i")).addClass('text-white');
-    $("#".concat(id, " td.btn-delete-item")).addClass('btn bg-danger text-white').removeClass(clase);
+    $("#".concat(id, " td.td-delete > i")).addClass('text-white');
+    $("#".concat(id, " td.td-delete")).addClass('btn bg-danger text-white').removeClass(clase);
   } else {
     $("#".concat(id, " td:nth-child(").concat(i + 1, ")")).removeClass('bg-light');
-    $("#".concat(id, " td.btn-delete-item > i")).removeClass('text-white');
-    $("#".concat(id, " td.btn-delete-item")).removeClass('btn bg-danger text-white');
+    $("#".concat(id, " td.td-delete > i")).removeClass('text-white');
+    $("#".concat(id, " td.td-delete")).removeClass('btn bg-danger text-white');
   }
 };
 
@@ -9590,8 +9593,9 @@ window.onresize = function (event) {
 
 window.drawItems = function () {
   var edit = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
-  var type_item = arguments.length > 1 ? arguments[1] : undefined;
-  var id_item = arguments.length > 2 ? arguments[2] : undefined;
+  var tipo_carrito = arguments.length > 1 ? arguments[1] : undefined;
+  var type_item = arguments.length > 2 ? arguments[2] : undefined;
+  var id_item = arguments.length > 3 ? arguments[3] : undefined;
 
   // type: tipo de item: mano de obra, transporte o suministro
   // item: ítem de la lista de precios
@@ -9599,14 +9603,14 @@ window.drawItems = function () {
     $('#th-delete').remove();
   }
 
-  if (typeof carrito[type_item][id_item] !== 'undefined') {
-    var element = carrito[type_item][id_item];
+  if (typeof carrito[tipo_carrito][type_item][id_item] !== 'undefined') {
+    var element = carrito[tipo_carrito][type_item][id_item];
+    var tooltip = edit === true ? 'data-toggle="tooltip"' : '';
 
     if (typeof element !== 'undefined' && _typeof(element) === 'object') {
       if (!$("#tr_".concat(type_item, "_").concat(id_item)).length) {
         var classname = "".concat($("#caret_".concat(type_item)).hasClass(showIcon) ? 'show' : '');
-        $("\n                    <tr id=\"tr_".concat(type_item, "_").concat(id_item, "\" class=\"tr_cotizacion border-bottom collapse ").concat(classname, " item_").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            <textarea class=\"form-control border-0\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"text\" class=\"form-control text-md-start text-end border-0\" data-toggle=\"tooltip\" title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\" value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"0\" class=\"form-control text-end border-0 txt-cotizaciones\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones money\" data-toggle=\"tooltip\" title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\" id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" class=\"form-control text-end border-0 txt-cotizaciones txt_total_item_").concat(type_item, " money\" name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td id=\"".concat(type_item, "_").concat(id_item, "\" class=\"text-center col-1 my-auto border-0 btn-delete-item\"><i id=\"").concat(type_item, "_").concat(id_item, "\" class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\"></i></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".item_".concat(type_item)).last()); // `#tr_${type_item}`
-
+        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            <textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">\n                                ").concat(element['descripcion'], "\n                            </textarea>\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ").concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete\" ".concat(tooltip, " title='Quitar \xEDtem'><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"></i></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
         $('.money').inputmask(formatCurrency);
       } else {
         $("#tr_".concat(type_item, "_").concat(id_item, " #valor_total_").concat(id_item)).val(element['valor_total']);
@@ -9619,12 +9623,12 @@ window.drawItems = function () {
   }, 100);
 };
 
-var totalItemType = function totalItemType(type) {
+var totalItemType = function totalItemType(tipo_carrito, type) {
   var total = 0;
   var items = 0;
 
-  if (typeof carrito[type] !== 'undefined') {
-    $.each(carrito[type], function (item, valores) {
+  if (typeof carrito[tipo_carrito][type] !== 'undefined') {
+    $.each(carrito[tipo_carrito][type], function (item, valores) {
       items++;
 
       if ($.isNumeric(valores['valor_total'])) {
@@ -9639,26 +9643,32 @@ var totalItemType = function totalItemType(type) {
   };
 };
 
-window.totalCotizacion = function () {
+window.totalCarrito = function (tipo_carrito) {
   var iva = parseFloat($('#iva option:selected').length > 0 ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '') : $('#iva').val().replace('IVA ', '').replace('%', ''), 0);
-  var id_materiales = $('.lbl_total_material').attr('id').replace('lbl_', '');
-  var id_mano_obra = $('.lbl_total_mano_obra').attr('id').replace('lbl_', '');
-  var id_transporte = $('.lbl_total_transporte').attr('id').replace('lbl_', '');
-  var total_material = totalItemType(id_materiales);
-  var total_suministro = totalItemType(id_mano_obra);
-  var total_transporte = totalItemType(id_transporte);
+  var id_materiales = $("#".concat(tipo_carrito, " .lbl_total_material")).length ? $("#".concat(tipo_carrito, " .lbl_total_material")).attr('id').replace('lbl_', '') : 0;
+  var id_mano_obra = $("#".concat(tipo_carrito, " .lbl_total_mano_obra")).length ? $("#".concat(tipo_carrito, " .lbl_total_mano_obra")).attr('id').replace('lbl_', '') : 0;
+  var id_transporte = $("#".concat(tipo_carrito, " .lbl_total_transporte")).length ? $("#".concat(tipo_carrito, " .lbl_total_transporte")).attr('id').replace('lbl_', '') : 0;
+  var total_material = totalItemType(tipo_carrito, id_materiales);
+  var total_suministro = totalItemType(tipo_carrito, id_mano_obra);
+  var total_transporte = totalItemType(tipo_carrito, id_transporte);
   var total_sin_iva = total_material.total + total_suministro.total + total_transporte.total;
   var total_iva = total_sin_iva * iva / 100;
   var total_con_iva = total_sin_iva + total_iva;
-  $("#lbl_".concat(id_materiales)).text("$ ".concat(Inputmask.format(total_material.total, formatCurrency)));
-  $("#lbl_".concat(id_mano_obra)).text("$ ".concat(Inputmask.format(total_suministro.total, formatCurrency)));
-  $("#lbl_".concat(id_transporte)).text("$ ".concat(Inputmask.format(total_transporte.total, formatCurrency)));
-  $("#lbl_total_items_materiales").text("Total \xCDtems: ".concat(total_material.items));
-  $("#lbl_total_items_mano_obra").text("Total \xCDtems: ".concat(total_suministro.items));
-  $("#lbl_total_items_transporte").text("Total \xCDtems: ".concat(total_transporte.items));
-  $('#lbl_total_sin_iva').text("$ ".concat(Inputmask.format(total_sin_iva, formatCurrency)));
-  $('#lbl_total_iva').text("$ ".concat(Inputmask.format(total_iva, formatCurrency)));
-  $('#lbl_total_con_iva').text("$ ".concat(Inputmask.format(total_con_iva, formatCurrency)));
+  $("#".concat(tipo_carrito, " #lbl_").concat(id_materiales)).text("$ ".concat(Inputmask.format(total_material.total, formatCurrency)));
+  $("#".concat(tipo_carrito, " #lbl_").concat(id_mano_obra)).text("$ ".concat(Inputmask.format(total_suministro.total, formatCurrency)));
+  $("#".concat(tipo_carrito, " #lbl_").concat(id_transporte)).text("$ ".concat(Inputmask.format(total_transporte.total, formatCurrency)));
+  $("#".concat(tipo_carrito, " #lbl_total_items_materiales")).text("Total \xCDtems: ".concat(total_material.items));
+  $("#".concat(tipo_carrito, " #lbl_total_items_mano_obra")).text("Total \xCDtems: ".concat(total_suministro.items));
+  $("#".concat(tipo_carrito, " #lbl_total_items_transporte")).text("Total \xCDtems: ".concat(total_transporte.items));
+  $("#".concat(tipo_carrito, "_lbl_total_sin_iva")).text("$ ".concat(Inputmask.format(total_sin_iva, formatCurrency)));
+  $("#".concat(tipo_carrito, "_lbl_total_iva")).text("$ ".concat(Inputmask.format(total_iva, formatCurrency)));
+  $("#".concat(tipo_carrito, "_lbl_total_con_iva")).text("$ ".concat(Inputmask.format(total_con_iva, formatCurrency)));
+
+  if ($('#cupo').length > 0) {
+    var total_sin_transporte = total_material.total + total_suministro.total;
+    var total_iva_sin_transporte = total_sin_transporte * iva / 100;
+    $('#cupo').val(total_sin_transporte + total_iva_sin_transporte);
+  }
 };
 
 var getItem = function getItem(item) {
@@ -9674,16 +9684,16 @@ var getItem = function getItem(item) {
   };
 };
 
-var addItems = function addItems(items) {
+var addItems = function addItems(tipo_carrito, items) {
   $.each(items, function (index, item) {
-    if (typeof carrito[$(item).data('type')] === 'undefined') {
-      carrito[$(item).data('type')] = {};
+    if (typeof carrito[tipo_carrito][$(item).data('type')] === 'undefined') {
+      carrito[tipo_carrito][$(item).data('type')] = {};
     }
 
-    if (typeof carrito[$(item).data('type')][$(item).val()] === 'undefined') {
-      carrito[$(item).data('type')][$(item).val()] = getItem(item);
-      drawItems(true, $(item).data('type'), $(item).val());
-      totalCotizacion();
+    if (typeof carrito[tipo_carrito][$(item).data('type')][$(item).val()] === 'undefined') {
+      carrito[tipo_carrito][$(item).data('type')][$(item).val()] = getItem(item);
+      drawItems(true, tipo_carrito, $(item).data('type'), $(item).val());
+      totalCarrito(tipo_carrito);
       table();
       flexTable();
     }
@@ -9808,8 +9818,11 @@ $(document).ready(function () {
     } else {
       $('#lbl_input_file').removeClass('file_selected');
     }
+  }); // $('[data-toggle="tooltip"]').tooltip();
+
+  $('[data-toggle="tooltip"]').on('click', function () {
+    $(this).tooltip('hide');
   });
-  $('[data-toggle="tooltip"]').tooltip();
   setupSelect2();
   timer();
   datePicker();
@@ -9844,21 +9857,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 $(document).on('click', '.modal-form', function (e) {
   e.preventDefault();
   handleModal($(this));
-}); // const updateGrid = (url, data) => {
-//     $.ajax({
-//         url: url,
-//         method: 'POST',
-//         data: data,
-//         beforeSend: () => {
-//             showLoader(true);
-//         }
-//     }).done(function(view) {
-//         $('#container').html(view);
-//     }).always(function() {
-//         showLoader(false);
-//         setupSelect2();
-//     });
-// }
+});
 
 var getGrid = function getGrid(url, id_form) {
   $.ajax({
@@ -10032,57 +10031,59 @@ $(document).on('click', '#kvFileinputModal .btn-kv-close', function (e) {
 });
 $(document).on('click', '#btn_add_items', function () {
   if ($("#lista_items option:selected").length) {
-    addItems($('#lista_items option:selected'));
+    var tipo_carrito = $(this).data('tipo_carrito');
+    addItems(tipo_carrito, $('#lista_items option:selected'));
   }
 
   $("#modalForm-2").modal('hide');
 });
 $(document).on('click', '.btn-delete-item', function () {
-  var id_tr = new String($(this).attr('id'));
-  var id_item = id_tr.split('_')[0]; // Swal.fire({
-  //     icon: 'question',
-  //     title: `Eliminar ítem ${$(`#item_${id_item}`).val()}`,
-  //     reverseButtons: true,
-  //     showCancelButton: true,
-  //     confirmButtonText: 'Eliminar ítem',
-  //     confirmButtonColor: 'var(--bs-danger)',
-  //     cancelButtonText: 'Cancelar'
-  // }).then((result) => {
-  //     if(result.isConfirmed) {
+  if (typeof $(this).data('id-tr') !== 'undefined') {
+    var id_tr = $(this).data('id-tr'); // Swal.fire({
+    //     icon: 'question',
+    //     title: `Eliminar ítem ${$(`#item_${id_item}`).val()}`,
+    //     reverseButtons: true,
+    //     showCancelButton: true,
+    //     confirmButtonText: 'Eliminar ítem',
+    //     confirmButtonColor: 'var(--bs-danger)',
+    //     cancelButtonText: 'Cancelar'
+    // }).then((result) => {
+    //     if(result.isConfirmed) {
 
-  $("#tr_".concat(id_tr)).remove();
-  id_tr = id_tr.split('_');
-  delete carrito[id_tr[0]][id_tr[1]];
-  totalCotizacion(); //     }
-  // });
+    $("#".concat(id_tr)).remove();
+    id_tr = id_tr.split('_');
+    delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
+    totalCarrito(id_tr[0]); //     }
+    // });
+  }
 });
 
-var fnc_totales_cot = function fnc_totales_cot(id) {
+var fnc_totales = function fnc_totales(id) {
   var id_tr = new String(id).split('_');
 
-  if (typeof carrito[id_tr[1]][id_tr[2]] !== 'undefined') {
-    var id_row = "tr_".concat(id_tr[1], "_").concat(id_tr[2]);
-    var descripcion = $("#".concat(id_row, " #descripcion_").concat(id_tr[2])).val();
+  if (typeof carrito[id_tr[0]][id_tr[1]][id_tr[2]] !== 'undefined') {
+    var id_row = "".concat(id_tr[0], "_").concat(id_tr[1], "_").concat(id_tr[2]); // // let descripcion = $(`#${id_row} #descripcion_${id_tr[2]}`).val();
+
     var cantidad = parseFloat($.isNumeric($("#".concat(id_row, " #cantidad_").concat(id_tr[2])).val()) ? $("#".concat(id_row, " #cantidad_").concat(id_tr[2])).val() : 0);
     var valor_unitario = parseFloat($.isNumeric($("#".concat(id_row, " #valor_unitario_").concat(id_tr[2])).val().replace(regexCurrencyToFloat, "")) ? $("#".concat(id_row, " #valor_unitario_").concat(id_tr[2])).val().replace(regexCurrencyToFloat, "") : 0);
-    var valor_total = cantidad * valor_unitario;
-    carrito[id_tr[1]][id_tr[2]]['descripcion'] = descripcion;
-    carrito[id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
-    carrito[id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
-    carrito[id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
-    $("#valor_total_".concat(id_tr[2])).val(valor_total);
-    totalCotizacion();
+    var valor_total = cantidad * valor_unitario; // carrito[id_tr[0]][id_tr[1]][id_tr[2]]['descripcion'] = descripcion;
+
+    carrito[id_tr[0]][id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
+    carrito[id_tr[0]][id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
+    carrito[id_tr[0]][id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
+    $("#".concat(id_tr[0], " #valor_total_").concat(id_tr[2])).val(valor_total);
+    totalCarrito(id_tr[0]);
   }
 };
 
-$(document).on('keydown', '.txt-cotizaciones', function () {
-  fnc_totales_cot($(this).parent().parent().attr('id'));
+$(document).on('keydown', '.txt-totales', function () {
+  fnc_totales($(this).data('id-tr'));
 });
-$(document).on('keyup', '.txt-cotizaciones', function () {
-  fnc_totales_cot($(this).parent().parent().attr('id'));
+$(document).on('keyup', '.txt-totales', function () {
+  fnc_totales($(this).data('id-tr'));
 });
-$(document).on('change', '.txt-cotizaciones', function () {
-  fnc_totales_cot($(this).parent().parent().attr('id'));
+$(document).on('change', '.txt-totales', function () {
+  fnc_totales($(this).data('id-tr'));
 });
 $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', function () {
   if (typeof $(this).closest('form').attr('action') !== 'undefined') {
@@ -10093,9 +10094,9 @@ $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', functi
 
     if (id_cliente !== '') {
       $('#table-cotizaciones').removeClass('d-none');
-      $(".tr_cotizacion").each(function (index, item) {
+      $(".tr_suministros").each(function (index, item) {
         var action = new String($(item).data('action')).split('/');
-        action[action.length - 1] = id_cliente;
+        action[5] = id_cliente;
         action = action.join('/');
         $(item).data('action', action);
       });
@@ -10117,7 +10118,7 @@ $(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', functi
 });
 $(document).on('change', '#iva', function () {
   if ($(this).closest('form').attr('action').indexOf(url_cotizacion) > -1) {
-    totalCotizacion();
+    totalCarrito('cotizacion');
   }
 });
 var showIcon = 'fa-caret-down';
