@@ -10150,8 +10150,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
   var button = $(this);
   var form = button.closest('form');
   var data = new FormData(form[0]);
-  var cambio = $(this).attr('id') === 'btn-send-quote' ? $(this).attr('id') : $('#estado_cotizacion').val();
-  var modal = $(this).closest('.modal').attr('id');
+  var cambio = $(this).attr('id') === 'btn-send-quote' ? $(this).attr('id') : $('#estado_cotizacion').val(); // let modal = $(this).closest('.modal').attr('id');
 
   switch (cambio) {
     case 'btn-check-quote':
@@ -10303,7 +10302,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
         },
         success: function success(response, status, xhr) {
           if (response.success) {
-            $("#".concat(modal)).modal('hide');
+            $(".modal").modal('hide');
             Swal.fire({
               icon: 'success',
               title: 'Cambio realizado',

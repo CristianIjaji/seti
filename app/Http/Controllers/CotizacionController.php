@@ -425,7 +425,7 @@ class CotizacionController extends Controller
             }
 
             return response()->json([
-                'success' => 'Pruebas'//$response['success']
+                'success' => $response['success']
             ]);
         } catch (\Throwable $th) {
             return response()->json([

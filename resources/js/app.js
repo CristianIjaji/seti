@@ -1230,7 +1230,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
         ? $(this).attr('id')
         : $('#estado_cotizacion').val()
     );
-    let modal = $(this).closest('.modal').attr('id');
+    // let modal = $(this).closest('.modal').attr('id');
 
     switch (cambio) {
         case 'btn-check-quote':
@@ -1377,7 +1377,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
                 },
                 success: function(response, status, xhr) {
                     if(response.success) {
-                        $(`#${modal}`).modal('hide');
+                        $(`.modal`).modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Cambio realizado',
