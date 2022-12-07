@@ -14,7 +14,7 @@
         ['name' => 'codigo', 'label' => 'Código', 'col' => 'col-1'],
         ['name' => 'unidad', 'label' => 'Unidad', 'col' => 'col-1'],
         ['name' => 'cantidad', 'label' => 'Cantidad', 'col' => 'col-1','align'=>'text-end'],
-        ['name' => 'valor_unitario', 'label' => 'V. Unitario', 'col' => 'col-1','align'=>'text-end'],
+        ['name' => 'valor_unitario', 'label' => 'Valor Unitario', 'col' => 'col-1','align'=>'text-end'],
         // ['name' => 'id_dominio_tipo_tercero', 'label' => 'Tipo tercero', 'col' => 'col-2', 'options' => $tipo_terceros],
         ['name' => 'estado', 'label' => 'Estado', 'html' => true, 'align' => 'text-center', 'options' => [0 => 'Inactivo', 1 => 'Activo'], 'col' => 'col-1'],
         ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [

@@ -19,14 +19,14 @@
         <div class="d-inline-block">
             @isset($view)
                 @if ($view)
-                    <a style="margin: 0.9px 0px 0.9px 0.9px;" href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-info border font-weight-bolder fs-4 bg-update">
+                    <a style="margin: 0.9px 0px 0.9px 0.9px;" href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-info border border-rounded font-weight-bolder fs-4 bg-update">
                         <i class="fas fa-sync-alt"></i>
                     </a>
                 @endif
             @endisset
             @isset($export)
                 @if ($export)
-                    <a style="margin: 0.9px 0px 0.9px 0px;" data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn btn-outline-success border font-weight-bolder fs-4 px-3 btn-export">
+                    <a style="margin: 0.9px 0px 0.9px 0px;" data-route="{{$route}}" data-toggle="tooltip" title="Exportar a Excel" class="btn btn-outline-success border border-rounded font-weight-bolder fs-4 px-3 btn-export">
                         <i class="fas fa-file-excel"></i>
                     </a>
                 @endif
@@ -34,8 +34,8 @@
             @isset($import)
                 @if ($import)
                     <div class="dropdown d-inline">
-                        <a class="dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <span style="margin: 0.9px 0.9px 0.9px 0px;" data-toggle="tooltip" title="Importar" class="btn btn-outline-secondary border font-weight-bolder fs-4">
+                        <a role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span style="margin: 0.9px 0.9px 0.9px 0px;" data-toggle="tooltip" title="Importar" class="btn btn-outline-secondary border border-rounded font-weight-bolder fs-4">
                                 <i class="fa-solid fa-cloud-arrow-up"></i>
                             </span>
                         </a>
@@ -62,15 +62,14 @@
             @isset($create)
                 @if ($create)
                     <button
-                        style="margin: 0.9px 0px 0.9px 0.9px;"
-                        class="btn btn-outline-primary border font-weight-bolder fs-4 modal-form"
+                        style="margin: 0.9px 0px 0.9px 0px;"
+                        class="btn btn-outline-primary border border-rounded font-weight-bolder fs-4 modal-form"
                         data-title="{{ $btnOptionsCreate['title'] }}"
                         data-header-class="{{ isset($btnOptionsCreate['header-class']) ? $btnOptionsCreate['header-class'] : '' }}"
                         data-size="{{ $btnOptionsCreate['modal-size'] }}"
                         data-action={{ $btnOptionsCreate['route'] }}
                         data-toggle="tooltip"
                         data-placement="top"
-                        data-modal='modalForm'
                         title="{{ $btnOptionsCreate['title'] }}"
                     >
                         <i class="fa-solid fa-plus"></i>
@@ -116,7 +115,7 @@
                                     @if (!isset($header['type']) && (!isset($header['filter']) || $header['filter'] == true))
                                         @if (isset($header['options']))
                                             <select class="form-control" name="{{ $header['name'] }}" style="width: 100%">
-                                                <option value="">&nbsp;</option>
+                                                <option value="">Todos</option>
                                                 @foreach ($header['options'] as $id => $name)
                                                     <option value="={{$id}}" @if (isset($request[$header['name']])) {{ $request[$header['name']] == "=$id" ? 'selected' : '' }} @endif>
                                                         {{$name}}

@@ -29,7 +29,7 @@
                             name='valor_total[]' id='valor_total_$detail->id_lista_precio' value='$detail->valor_total' disabled>
                     </td>
                     ".($edit
-                        ? "<td class='text-center col-1 my-auto border-0 td-delete' ".($edit ? "data-toggle='tooltip' title='Quitar ítem'" : "")."><i class='fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item' data-id-tr='$tipo_carrito".'_'."$detail->id_tipo_item".'_'."$detail->id_lista_precio'></i></td>"
+                        ? "<td class='text-center col-1 my-auto border-0 td-delete btn-delete-item' ".($edit ? "data-toggle='tooltip' title='Quitar ítem'" : "")." data-id-tr='$tipo_carrito".'_'."$detail->id_tipo_item".'_'."$detail->id_lista_precio'><i class='fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item' data-id-tr='$tipo_carrito".'_'."$detail->id_tipo_item".'_'."$detail->id_lista_precio'></i></td>"
                         : ""
                     )."
                 </tr>
@@ -66,7 +66,6 @@
                         data-size='modal-xl'
                         data-header-class='bg-primary bg-opacity-75 text-white'
                         data-action='{{ route('priceList.search', ['type' => session('id_dominio_materiales'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1, 'tipo_carrito' => $tipo_carrito]) }}'
-                        data-modal="modalForm-2"
                         data-toggle="tooltip"
                     >
                         <label>SUMINISTRO DE MATERIALES</label>
@@ -99,7 +98,6 @@
                         data-size='modal-xl'
                         data-header-class='bg-primary bg-opacity-75 text-white'
                         data-action='{{ route('priceList.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1, 'tipo_carrito' => $tipo_carrito]) }}'
-                        data-modal="modalForm-2"
                         data-toggle="tooltip"
                     >
                         <label>MANO DE OBRA</label>
@@ -133,7 +131,6 @@
                             data-size='modal-xl'
                             data-header-class='bg-primary bg-opacity-75 text-white'
                             data-action='{{ route('priceList.search', ['type' => session('id_dominio_transporte'), 'client' => isset($cotizacion->tblCliente->id_responsable_cliente) ? $cotizacion->tblCliente->id_responsable_cliente : 1, 'tipo_carrito' => $tipo_carrito]) }}'
-                            data-modal="modalForm-2"
                             data-toggle="tooltip"
                         >
                             <label>TRANSPORTE Y PEAJES</label>

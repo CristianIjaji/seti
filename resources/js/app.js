@@ -385,7 +385,7 @@ const sendAjaxForm = (action, data, reload, select, modal) => {
                 confirmButtonColor: 'var(--bs-primary)',
             }).then(function() {
                 if(typeof response.errors === 'undefined') {
-                    if(reload.toString() !== 'false') {
+                    if(typeof reload === 'undefined' || reload.toString() !== 'false') {
                         location.reload();
                     } else {
                         if($(`#${select}`).length && typeof response.response !== 'undefined') {
@@ -421,6 +421,28 @@ const sendAjaxForm = (action, data, reload, select, modal) => {
     });
 }
 
+const createModal = () => {
+    // Se genera id aleatorio
+    let id = new Date().getUTCMilliseconds();
+
+    let modal = `
+        <div class="modal fade" id="${id}" tabindex="-1" aria-labelledby="modalTitle-${id}" aria-hidden="true" data-bs-backdrop="static">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content shadow-lg">
+                    <div class="modal-header border-bottom border-2">
+                        <h5 class="modal-title fw-bold" id="modalTitle-${id}"></h5>
+                        <i class="fa-solid fa-xmark fs-3 px-2" data-bs-dismiss="modal" style="cursor: pointer"></i>
+                    </div>
+                    <div class="modal-body px-4 pt-4"></div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    $('body').append(modal);
+    return id;
+}
+
 const handleModal = (button) => {
     let size = new String(button.data('size')).trim();
     let title = new String(button.data('title')).trim();
@@ -440,7 +462,7 @@ const handleModal = (button) => {
     btnSave = (btnSave !== 'undefined' ? btnSave : 'Guardad');
     reload = (reload !== 'undefined' ? reload : 'true');
     select = (select !== 'undefined' ? select : '');
-    modal = (modal !== 'undefined' ? modal : 'modalForm');
+    modal = createModal();
 
     if(action !== 'undefined') {
         $.ajax({
@@ -475,9 +497,9 @@ const handleModal = (button) => {
             });
 
             setTimeout(() => {
-                // $(`#${modal} input:text, #${modal} textarea`).first().focus();
                 $(`#${modal}`).focus();
                 $('.money').inputmask(formatCurrency);
+                setupSelect2(`${modal}`);
             }, 300);
         }).always(function() {
             showLoader(false);
@@ -575,9 +597,7 @@ window.drawItems = (edit = true, tipo_carrito, type_item, id_item) => {
                             <input type="text" class="form-control text-md-center text-end text-uppercase border-0" id="item_${id_item}" value="${element['item']}" disabled>
                         </td>
                         <td class="col-4 my-auto border-0">
-                            <textarea class="form-control border-0 resize-textarea" rows="2" name="descripcion_item[]" id="descripcion_item_${id_item}" required ${edit ? '' : 'disabled'}>
-                                ${element['descripcion']}
-                            </textarea>
+                            <textarea class="form-control border-0 resize-textarea" rows="2" name="descripcion_item[]" id="descripcion_item_${id_item}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
                         </td>
                         <td class="col-1 my-auto border-0">
                             <input type="text" class="form-control text-md-start text-end border-0" ${tooltip} title="${element['unidad']}" name="unidad[]" id="unidad_${id_item}"
@@ -597,7 +617,7 @@ window.drawItems = (edit = true, tipo_carrito, type_item, id_item) => {
                                 name="valor_total[]" id="valor_total_${id_item}" value="${element['valor_total']}" disabled>
                         </td>
                         ${edit == true
-                            ? `<td class="text-center col-1 my-auto border-0 td-delete" ${tooltip} title='Quitar ítem'><i class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"></i></td>`
+                            ? `<td class="text-center col-1 my-auto border-0 td-delete btn-delete-item" ${tooltip} title='Quitar ítem' data-id-tr="${tipo_carrito}_${type_item}_${id_item}"><i class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"></i></td>`
                             : ``
                         }
                     </tr>
@@ -932,7 +952,7 @@ $(document).on('click', '#btn-form-action', function(e){
     let button = $(this);
 
     let action = button.closest('form').attr('action');
-    let modal = (button.data('modal') !== 'undefined' ? button.data('modal') : 'modalForm');
+    let modal = $(this).closest('.modal').attr('id');
     let reload = $(`#${modal}`).data('reload');
     let form = button.closest('form');
     let select = $(`#${modal}`).data('select');
@@ -1079,8 +1099,9 @@ $(document).on('click', '#btn_add_items', function() {
         let tipo_carrito = $(this).data('tipo_carrito');
         addItems(tipo_carrito, $('#lista_items option:selected'));
     }
-    
-    $(`#modalForm-2`).modal('hide');
+
+    let id = $('#btn_add_items').closest('.modal').attr('id');
+    $(`#${id}`).modal('hide');
 });
 
 $(document).on('click', '.btn-delete-item', function() {
@@ -1209,6 +1230,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
         ? $(this).attr('id')
         : $('#estado_cotizacion').val()
     );
+    let modal = $(this).closest('.modal').attr('id');
 
     switch (cambio) {
         case 'btn-check-quote':
@@ -1355,7 +1377,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
                 },
                 success: function(response, status, xhr) {
                     if(response.success) {
-                        $('#modalForm').modal('hide');
+                        $(`#${modal}`).modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Cambio realizado',
@@ -1388,9 +1410,6 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
                 }
                 showLoader(false);
             });
-
-            $('#modalForm-2').modal('hide');
-            // return false;
         }
     });
 });
@@ -1506,4 +1525,10 @@ $(document).on('click', '#btn_download_consolidado', () => {
     }).always(function () {
         showLoader(false);
     });
+});
+
+$(document).on('hide.bs.modal', '.modal', function() {
+    if($(this).attr('id').length) {
+        $(this).remove();
+    }
 });

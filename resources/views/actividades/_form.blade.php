@@ -71,7 +71,6 @@
                                     data-reload="false"
                                     data-select="id_encargado_cliente"
                                     data-action='{{ route('clients.create', "tipo_tercero=".session('id_dominio_representante_cliente')."") }}'
-                                    data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear cliente"
                                 ></i>
@@ -107,7 +106,6 @@
                                     data-reload="false"
                                     data-select="id_estacion"
                                     data-action='{{ route('sites.create')}}'
-                                    data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear punto de interés"
                                 ></i>
@@ -217,7 +215,6 @@
                                     data-reload="false"
                                     data-select="id_resposable_contratista"
                                     data-action='{{ route('clients.create', "tipo_tercero=".session('id_dominio_coordinador')."") }}'
-                                    data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Crear aprobador"
                                 ></i>
@@ -277,7 +274,7 @@
             @endif
         </div>
 
-        @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear actividad' : 'Editar actividad', 'modal' => 'modalForm'])
+        @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear actividad' : 'Editar actividad'])
 
         @if (!$create)
             </div>
@@ -293,17 +290,16 @@
     table();
     flexTable();
 
-    // var scrollTop = 0;
-
     $('#id_estado_actividad').change(function() {
         let comprando = "{!! session('id_dominio_actividad_comprando') !!}";
+        let modal = $(this).closest('.modal').attr('id');
         $('#div_detalle_cotizacion').addClass('d-none');
         
         if(parseInt($(this).val()) === parseInt(comprando)) {
             $('#div_detalle_cotizacion').removeClass('d-none');
 
             setTimeout(() => {
-                $('#modalForm-2 .modal-body').animate({
+                $(`#${modal} .modal-body`).animate({
                     scrollTop: $("#div_detalle_cotizacion").offset().top - $('.modal-header').height()
                 }, 'slow');
             }, 100);

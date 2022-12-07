@@ -66,7 +66,6 @@
                                                 data-size="modal-fullscreen"
                                                 data-reload="false"
                                                 data-action={{ route("activities.show", $item->id_actividad) }}
-                                                data-modal="modalForm-2"
                                                 data-toggle="tooltip"
                                                 data-header-class="bg-info text-white"
                                                 data-placement="top"

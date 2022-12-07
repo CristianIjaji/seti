@@ -21073,18 +21073,6 @@ body {
           animation-delay: 0;
 }
 
-.modal {
-  z-index: 1051 !important;
-}
-
-.modal:nth-of-type(even) {
-  z-index: 1052 !important;
-}
-
-.modal-backdrop.show:nth-of-type(even) {
-  z-index: 1051 !important;
-}
-
 .services {
   height: 320px;
   margin: 10px 0;

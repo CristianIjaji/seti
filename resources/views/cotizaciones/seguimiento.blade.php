@@ -43,7 +43,7 @@
             <button type="button" class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
                 <i class="fa-regular fa-circle-xmark"></i> Cerrar
             </button>
-            <button id="btn-quote" data-modal="modalForm'" class="btn bg-primary bg-gradient text-white">
+            <button id="btn-quote" class="btn bg-primary bg-gradient text-white">
                 <i class="fa-regular fa-circle-check"></i> Crear comentario
             </button>
         </div>

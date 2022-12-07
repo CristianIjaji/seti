@@ -68,7 +68,6 @@
                                         data-reload="false"
                                         data-select="id_cliente"
                                         data-action='{{ route('clients.create', "tipo_tercero=".session('id_dominio_representante_cliente')."") }}'
-                                        data-modal="modalForm-2"
                                         data-toggle="tooltip"
                                         title="Crear cliente"
                                     ></i>
@@ -105,7 +104,6 @@
                                         data-reload="false"
                                         data-select="id_estacion"
                                         data-action='{{ route('sites.create')}}'
-                                        data-modal="modalForm-2"
                                         data-toggle="tooltip"
                                         title="Crear punto de interés"
                                     ></i>
@@ -193,7 +191,6 @@
                                         data-reload="false"
                                         data-select="id_responsable"
                                         data-action='{{ route('clients.create', "tipo_tercero=".session('id_dominio_coordinador')."") }}'
-                                        data-modal="modalForm-2"
                                         data-toggle="tooltip"
                                         title="Crear aprobador"
                                     ></i>
@@ -229,7 +226,6 @@
                                     data-header-class='bg-primary bg-opacity-75 text-white'
                                     data-reload="false"
                                     data-action="{{ route('quotes.seguimiento', $cotizacion->id_cotizacion) }}"
-                                    data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Nuevo comentario"
                                 >
@@ -247,7 +243,6 @@
                                     data-header-class='bg-info text-white'
                                     data-reload="false"
                                     data-action="{{ route('activities.show', $actividad->id_actividad) }}"
-                                    data-modal="modalForm-2"
                                     data-toggle="tooltip"
                                     title="Ver actividad"
                                 >
@@ -264,7 +259,6 @@
                                 data-header-class='bg-primary bg-opacity-75 text-white'
                                 data-reload="true"
                                 data-action="{{ route('activities.create', "cotizacion=".$cotizacion->id_cotizacion) }}"
-                                data-modal="modalForm-2"
                                 data-toggle="tooltip"
                                 title="Crear actividad"
                             >
@@ -280,7 +274,7 @@
                 @include('cotizaciones.detalle', ['edit' => $editable, 'cotizacion' => $cotizacion, 'tipo_carrito' => 'cotizacion'])
             </div>
 
-            @include('partials.buttons', [$create, 'edit' => $editable, 'label' => $create ? 'Crear cotización' : 'Editar cotización', 'modal' => 'modalForm'])
+            @include('partials.buttons', [$create, 'edit' => $editable, 'label' => $create ? 'Crear cotización' : 'Editar cotización'])
 
             @if (!$create)
                 </div>

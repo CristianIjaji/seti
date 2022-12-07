@@ -9437,7 +9437,7 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
         confirmButtonColor: 'var(--bs-primary)'
       }).then(function () {
         if (typeof response.errors === 'undefined') {
-          if (reload.toString() !== 'false') {
+          if (typeof reload === 'undefined' || reload.toString() !== 'false') {
             location.reload();
           } else {
             if ($("#".concat(select)).length && typeof response.response !== 'undefined') {
@@ -9464,6 +9464,14 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
   });
 };
 
+var createModal = function createModal() {
+  // Se genera id aleatorio
+  var id = new Date().getUTCMilliseconds();
+  var modal = "\n        <div class=\"modal fade\" id=\"".concat(id, "\" tabindex=\"-1\" aria-labelledby=\"modalTitle-").concat(id, "\" aria-hidden=\"true\" data-bs-backdrop=\"static\">\n            <div class=\"modal-dialog modal-dialog-centered\">\n                <div class=\"modal-content shadow-lg\">\n                    <div class=\"modal-header border-bottom border-2\">\n                        <h5 class=\"modal-title fw-bold\" id=\"modalTitle-").concat(id, "\"></h5>\n                        <i class=\"fa-solid fa-xmark fs-3 px-2\" data-bs-dismiss=\"modal\" style=\"cursor: pointer\"></i>\n                    </div>\n                    <div class=\"modal-body px-4 pt-4\"></div>\n                </div>\n            </div>\n        </div>\n    ");
+  $('body').append(modal);
+  return id;
+};
+
 var handleModal = function handleModal(button) {
   var size = new String(button.data('size')).trim();
   var title = new String(button.data('title')).trim();
@@ -9481,7 +9489,7 @@ var handleModal = function handleModal(button) {
   btnSave = btnSave !== 'undefined' ? btnSave : 'Guardad';
   reload = reload !== 'undefined' ? reload : 'true';
   select = select !== 'undefined' ? select : '';
-  modal = modal !== 'undefined' ? modal : 'modalForm';
+  modal = createModal();
 
   if (action !== 'undefined') {
     $.ajax({
@@ -9514,9 +9522,9 @@ var handleModal = function handleModal(button) {
         $(this).tooltip('hide');
       });
       setTimeout(function () {
-        // $(`#${modal} input:text, #${modal} textarea`).first().focus();
         $("#".concat(modal)).focus();
         $('.money').inputmask(formatCurrency);
+        setupSelect2("".concat(modal));
       }, 300);
     }).always(function () {
       showLoader(false);
@@ -9610,7 +9618,7 @@ window.drawItems = function () {
     if (typeof element !== 'undefined' && _typeof(element) === 'object') {
       if (!$("#tr_".concat(type_item, "_").concat(id_item)).length) {
         var classname = "".concat($("#caret_".concat(type_item)).hasClass(showIcon) ? 'show' : '');
-        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            <textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">\n                                ").concat(element['descripcion'], "\n                            </textarea>\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ").concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete\" ".concat(tooltip, " title='Quitar \xEDtem'><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"></i></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
+        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            <textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ").concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete btn-delete-item\" ".concat(tooltip, " title='Quitar \xEDtem' data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"></i></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
         $('.money').inputmask(formatCurrency);
       } else {
         $("#tr_".concat(type_item, "_").concat(id_item, " #valor_total_").concat(id_item)).val(element['valor_total']);
@@ -9903,7 +9911,7 @@ $(document).on('click', '#btn-form-action', function (e) {
   e.preventDefault();
   var button = $(this);
   var action = button.closest('form').attr('action');
-  var modal = button.data('modal') !== 'undefined' ? button.data('modal') : 'modalForm';
+  var modal = $(this).closest('.modal').attr('id');
   var reload = $("#".concat(modal)).data('reload');
   var form = button.closest('form');
   var select = $("#".concat(modal)).data('select');
@@ -10035,7 +10043,8 @@ $(document).on('click', '#btn_add_items', function () {
     addItems(tipo_carrito, $('#lista_items option:selected'));
   }
 
-  $("#modalForm-2").modal('hide');
+  var id = $('#btn_add_items').closest('.modal').attr('id');
+  $("#".concat(id)).modal('hide');
 });
 $(document).on('click', '.btn-delete-item', function () {
   if (typeof $(this).data('id-tr') !== 'undefined') {
@@ -10142,6 +10151,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
   var form = button.closest('form');
   var data = new FormData(form[0]);
   var cambio = $(this).attr('id') === 'btn-send-quote' ? $(this).attr('id') : $('#estado_cotizacion').val();
+  var modal = $(this).closest('.modal').attr('id');
 
   switch (cambio) {
     case 'btn-check-quote':
@@ -10293,7 +10303,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
         },
         success: function success(response, status, xhr) {
           if (response.success) {
-            $('#modalForm').modal('hide');
+            $("#".concat(modal)).modal('hide');
             Swal.fire({
               icon: 'success',
               title: 'Cambio realizado',
@@ -10324,7 +10334,6 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
 
         showLoader(false);
       });
-      $('#modalForm-2').modal('hide'); // return false;
     }
   });
 });
@@ -10433,6 +10442,11 @@ $(document).on('click', '#btn_download_consolidado', function () {
   }).always(function () {
     showLoader(false);
   });
+});
+$(document).on('hide.bs.modal', '.modal', function () {
+  if ($(this).attr('id').length) {
+    $(this).remove();
+  }
 });
 
 /***/ }),
