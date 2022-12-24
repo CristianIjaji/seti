@@ -113,7 +113,7 @@
         });
 
         updatePermiso();
-    }, 100);
+    }, 500);
 
     $('#id_menu_to').change(function() {
         $.each($(this).val(), (index, menu) => {

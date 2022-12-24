@@ -72,8 +72,11 @@ Route::resource('statequotes', EstadoCotizacionController::class);
 Route::post('statequotes/grid', [EstadoCotizacionController::class, 'grid'])->name('statequotes.grid');
 
 // Controlador de actividades
+Route::get('activities/{activity}/seguimiento', [ActividadController::class, 'seguimiento'])->name('activities.seguimiento');
+Route::get('activities/{activity}/client_quote', [ActividadController::class, 'cotizacionesCliente'])->name('activities.client_quote');
 Route::resource('activities', ActividadController::class);
 Route::post('activities/grid', [ActividadController::class, 'grid'])->name('activities.grid');
+Route::post('activities/{activity}/handleActivity', [ActividadController::class, 'handleActivity'])->name('activities.handleActivity');
 
 // Controlador estado activities
 Route::resource('stateactivities', EstadoActividadController::class);

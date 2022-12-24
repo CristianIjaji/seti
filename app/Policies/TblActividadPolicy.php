@@ -100,9 +100,52 @@ class TblActividadPolicy
         return isset($tblUsuario->getPermisosMenu('activities.index')->import) ? $tblUsuario->getPermisosMenu('activities.index')->import : false;
     }
 
+    // public function sheduleActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+    //     if(in_array($tblActividad->estado, [session('id_dominio_actividad_pausada')])) {
+    //         return false;
+    //     }
 
+    //     return true;
+    // }
+
+    public function resheduleActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        if(!in_array($tblActividad->estado, [session('id_dominio_actividad_reprogramado'), session('id_dominio_actividad_ejecutado'), session('id_dominio_actividad_liquidado'), session('id_dominio_actividad_conciliado')])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function pauseActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        if(!in_array($tblActividad->estado, [session('id_dominio_actividad_pausada'), session('id_dominio_actividad_ejecutado'), session('id_dominio_actividad_liquidado'), session('id_dominio_actividad_conciliado')])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function executedActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        if(!in_array($tblActividad->estado, [session('id_dominio_actividad_ejecutado'), session('id_dominio_actividad_liquidado'), session('id_dominio_actividad_conciliado')])) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function liquidatedActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        return true;
+    }
+
+    public function reconciledActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        return true;
+    }
+
+    public function uploadReport(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+
+    }
 
     public function createComment(TblUsuario $tblUsuario, TblActividad $tblActividad) {
-        
+        // TODO: validar si la actividad ya se encuentra conciliada
+        return true;
     }
 }

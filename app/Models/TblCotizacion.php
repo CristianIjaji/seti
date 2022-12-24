@@ -101,9 +101,10 @@ class TblCotizacion extends Model
     }
 
     public function getTotalSinIvaAttribute() {
-        $total = TblCotizacionDetalle::where([
+        $total = isset($this->attributes['id_cotizacion'])
+            ? TblCotizacionDetalle::where([
             'id_cotizacion' => $this->attributes['id_cotizacion']
-        ])->sum('valor_total');
+        ])->sum('valor_total') : 0;
         return ($total > 0 ? $total : 0);
     }
 
@@ -130,14 +131,14 @@ class TblCotizacion extends Model
 
     public function getStatusAttribute() {
         return [
-            session('id_dominio_cotizacion_creada') => 'bg-gradient',
-            session('id_dominio_cotizacion_devuelta') => 'bg-warning bg-gradient bg-opacity-75 text-dark fw-normal',
-            session('id_dominio_cotizacion_revisada') => 'bg-info bg-gradient bg-opacity-50 text-dark fw-normal',
-            // session('id_dominio_cotizacion_enviada') => 'bg-table-success bg-gradient',
-            session('id_dominio_cotizacion_pendiente_aprobacion') => 'bg-success bg-gradient bg-opacity-75',
-            session('id_dominio_cotizacion_rechazada') => 'bg-gradient text-danger',
-            session('id_dominio_cotizacion_cancelada') => 'bg-gradient text-danger',
-            session('id_dominio_cotizacion_aprobada') => 'bg-gradient text-success',
+            session('id_dominio_cotizacion_creada') => '',
+            session('id_dominio_cotizacion_devuelta') => 'bg-warning bg-opacity-50 text-dark fw-normal',
+            session('id_dominio_cotizacion_revisada') => 'bg-info bg-opacity-50 text-dark fw-normal',
+            // session('id_dominio_cotizacion_enviada') => 'bg-table-success ',
+            session('id_dominio_cotizacion_pendiente_aprobacion') => 'bg-success bg-opacity-75',
+            session('id_dominio_cotizacion_rechazada') => 'text-danger',
+            session('id_dominio_cotizacion_cancelada') => 'text-danger',
+            session('id_dominio_cotizacion_aprobada') => 'text-success',
         ];
     }
 

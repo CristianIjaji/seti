@@ -11,7 +11,7 @@
         $activity->id_estacion = $quote->id_estacion;
         $activity->id_tipo_actividad = $quote->id_tipo_trabajo;
         $activity->fecha_solicitud = $quote->fecha_solicitud;
-        $activity->valor = $quote->valor;
+        $activity->valor = $quote->total_sin_iva;
         $activity->id_resposable_contratista = $quote->id_responsable_cliente;
         $activity->descripcion = $quote->descripcion;
     }
@@ -42,7 +42,7 @@
     @endif
         <div class="row">
             <input type="hidden" id="id_actividad" value="{{ $activity->id_actividad }}">
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                 <label for="ot">OT</label>
                 <input type="text" class="form-control text-uppercase" @if ($edit) name="ot" @endif id="ot" value="{{ old('ot', $activity->ot) }}" @if (!$edit) readonly @endif >
             </div>
@@ -116,7 +116,7 @@
                     <input type="text" class="form-control" id="id_estacion" value="{{ $activity->tblEstacion->nombre }}" readonly>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                 <label for="id_tipo_actividad" class="required">Tipo trabajo</label>
                 @if ($edit)
                     <select name="id_tipo_actividad" id="id_tipo_actividad" class="form-control" style="width: 100%" @if ($edit && !$existe_cotizacion) required @else readonly @endif>
@@ -131,7 +131,7 @@
                     <input type="text" class="form-control" id="id_tipo_actividad" value="{{ $activity->tbltipoactividad->nombre }}" readonly>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                 <label for="id_subsistema" class="required">Subsistema</label>
                 @if ($edit)
                     <select name="id_subsistema" id="id_subsistema" class="form-control" style="width: 100%" @if ($edit) required @else readonly @endif>
@@ -146,35 +146,27 @@
                     <input type="text" class="form-control" id="id_subsistema" value="{{ $activity->tblsubsistema->nombre }}" readonly>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 {{ !$existe_cotizacion ? 'input-date' : '' }}">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2 {{ $create ? 'input-date' : '' }}">
                 <label for="fecha_solicitud" class="required">Fecha solicitud</label>
-                <input type="text" class="form-control" @if ($edit) name="fecha_solicitud" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $activity->fecha_solicitud) }}" @if ($edit && !$existe_cotizacion) required @else readonly @endif readonly>
+                <input type="text" class="form-control" @if ($edit) name="fecha_solicitud" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $activity->fecha_solicitud) }}" readonly>
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 input-date">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2 {{ $create ? 'input-date' : '' }}">
                 <label for="fecha_programacion" class="required">Fecha programación</label>
-                <input type="text" class="form-control" data-min-date="{{ date('Y-m-d') }}" @if ($edit) name="fecha_programacion" @endif id="fecha_programacion" value="{{ old('fecha_programacion', $activity->fecha_programacion) }}" @if ($edit) required @else readonly @endif readonly>
+                <input type="text" class="form-control" data-min-date="{{ date('Y-m-d') }}" @if ($edit) name="fecha_programacion" @endif id="fecha_programacion" value="{{ old('fecha_programacion', $activity->fecha_programacion) }}" readonly>
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="permiso_acceso">ID Permiso</label>
                 <input type="text" class="form-control" @if ($edit) name="permiso_acceso" @endif id="permiso_acceso" value="{{ old('permiso_acceso', $activity->permiso_acceso) }}" @if (!$edit) readonly @endif >
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                <label for="id_estado_actividad" class="required">Estado actividad</label>
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
+                <label for="id_estado_actividad" class="required">Estado</label>
                 @if ($edit)
                     @if ($create)
                         <select name="id_estado_actividad" id="id_estado_actividad" class="form-control {{ isset($activity->status[$activity->id_estado_actividad]) ? $activity->status[$activity->id_estado_actividad] : '' }}" style="width: 100%">
                             @foreach ($estados as $estado)
-                                @if ($existe_cotizacion)
-                                    <option value="{{ $estado->id_dominio }}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $estado->id_dominio ? 'selected' : '' }}>
-                                        {{ $estado->nombre}}
-                                    </option>
-                                @else
-                                    @if ($estado->id_dominio != session('id_dominio_actividad_programado'))
-                                        <option value="{{ $estado->id_dominio }}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $estado->id_dominio ? 'selected' : '' }}>
-                                            {{ $estado->nombre}}
-                                        </option>
-                                    @endif
-                                @endif
+                                <option value="{{ $estado->id_dominio }}" {{ old('id_estado_actividad', $activity->id_estado_actividad) == $estado->id_dominio ? 'selected' : '' }}>
+                                    {{ $estado->nombre}}
+                                </option>
                             @endforeach
                         </select>
                     @else
@@ -185,7 +177,7 @@
                 <label class="form-control {{ isset($activity->status[$activity->id_estado_actividad]) ? $activity->status[$activity->id_estado_actividad] : '' }}">{{ $activity->tblestadoactividad->nombre }}</label>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                 <label for="valor" class="required">Valor actividad</label>
                 <input type="text" class="form-control money" @if ($edit) name="valor" @endif id="valor" value="{{ old('valor', $activity->valor) }}" @if ($edit) required @else readonly @endif>
             </div>
@@ -225,32 +217,7 @@
                     <input type="text" class="form-control" id="id_cliente_cotizacion" value="{{ $activity->tblresposablecontratista->full_name }} {{ (isset($activity->tblresposablecontratista->tblterceroresponsable) ? ' - '.$activity->tblresposablecontratista->tblterceroresponsable->razon_social : '') }}" readonly>
                 @endif
             </div>
-            @if (!$create && !$existe_cotizacion)
-                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
-                    <label for="id_cotizacion">Cotización</label>
-                    @if ($edit)
-                        <select name="id_cotizacion" id="id_cotizacion" class="form-control" style="width: 100%">
-                            <option value="">Elegir Cotización</option>
-                            @foreach ($cotizaciones as $cotizacion)
-                                <option value="{{ $cotizacion->id_cotizacion }}" {{ old('id_cotizacion', $activity->id_cotizacion) == $cotizacion->id_cotizacion ? 'selected' : '' }}>
-                                    {{ $cotizacion->cotizacion }}
-                                </option>
-                            @endforeach
-                            @isset($activity->id_cotizacion)
-                                <option value="{{ $activity->id_cotizacion }}" {{ 'selected' }}>
-                                    {{ $activity->tblcotizacion->cotizacion }}
-                                </option>
-                            @endisset
-                        </select>
-                    @else
-                        <input type="text" class="form-control" id="id_cotizacion" value="{{ isset($activity->tblcotizacion) ? $activity->tblcotizacion->cotizacion : '' }}" readonly>
-                        <input type="hidden" name="id_cotizacion" value="{{ $activity->id_cotizacion }}">
-                    @endif
-                </div>
-            @else
-                <input type="hidden" name="id_cotizacion" value="{{ $activity->id_cotizacion }}">
-            @endif
-            <div class="clearfix"></div>
+
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                 <label for="descripcion" class="required">Descripción actividad</label>
                 <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else readonly @endif>{{ old('nombre', $activity->descripcion) }}</textarea>
@@ -259,17 +226,39 @@
                 <label for="observaciones" class="required">Observaciones</label>
                 <textarea class="form-control" @if ($edit) name="observaciones" @endif id="observaciones" rows="2" style="resize: none" @if ($edit) required @else readonly @endif>{{ old('nombre', $activity->observaciones) }}</textarea>
             </div>
+            @if (!$create)
+                <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2 my-auto text-center">
+                    <input type="hidden" name="id_cotizacion" id="id_cotizacion_actividad" value="{{ $activity->id_cotizacion }}">
+                    <span
+                        class="btn btn-outline-{{!$existe_cotizacion ? 'danger' : 'info'}} border modal-form"
+                        data-title="{{ !$existe_cotizacion ? 'Elegir cotización' : 'Cotización #'.$quote->id_cotizacion }}"
+                        data-size="{{ !$existe_cotizacion ? 'modal-xl' : 'modal-fullscreen' }}"
+                        data-header-class='bg-{{ !$existe_cotizacion ? 'primary' : 'info'}} bg-opacity-75 text-white'
+                        data-reload="false"
+                        data-action="{{ $existe_cotizacion ? route('quotes.show', $quote->id_cotizacion) : route('activities.client_quote', $activity->id_actividad) }}"
+                        data-toggle="tooltip"
+                        data-html="true"
+                        title="{{ !$existe_cotizacion ? 'Cotización pendiente' : 'Ver cotización' }}"
+                    >
+                        {!! !$existe_cotizacion ? '<i class="fa-solid fa-list fs-4"></i>' : '<i class="fa-solid fa-circle-info fs-4"></i>' !!}
+                    </span>
 
-            @if ($existe_cotizacion)
-                <div id="div_detalle_cotizacion" class="col-12 my-4 d-none">
-                    <div class="bg-info bg-opacity-25 rounded pt-1 mb-2"></div>
-                    @include('ordenes_compra._form', [
-                        'quote' => $quote,
-                        'proveedores' => $proveedores,
-                        'medios_pago_ordenes_compra' => $medios_pago_ordenes_compra,
-                        'tipos_ordenes_compra' => $tipos_ordenes_compra
-                    ])
-                    @include('cotizaciones.detalle', ['edit' => $create, 'editable' => false, 'cotizacion' => $quote, 'tipo_carrito' => 'orden'])
+                    @can('createComment', $activity)
+                        @if ($edit)
+                            <span
+                                class="btn btn-outline-secondary border modal-form"
+                                data-title="Nuevo comentario"
+                                data-size="modal-md"
+                                data-header-class='bg-primary bg-opacity-75 text-white'
+                                data-reload="true"
+                                data-action="{{ route('activities.seguimiento', $activity->id_actividad) }}"
+                                data-toggle="tooltip"
+                                title="Nuevo comentario"
+                            >
+                                <i class="fa-solid fa-pen-clip fs-4"></i>
+                            </span>
+                        @endif
+                    @endcan
                 </div>
             @endif
         </div>
@@ -289,21 +278,4 @@
 
     table();
     flexTable();
-
-    $('#id_estado_actividad').change(function() {
-        let comprando = "{!! session('id_dominio_actividad_comprando') !!}";
-        let modal = $(this).closest('.modal').attr('id');
-        $('#div_detalle_cotizacion').addClass('d-none');
-        
-        if(parseInt($(this).val()) === parseInt(comprando)) {
-            $('#div_detalle_cotizacion').removeClass('d-none');
-
-            setTimeout(() => {
-                $(`#${modal} .modal-body`).animate({
-                    scrollTop: $("#div_detalle_cotizacion").offset().top - $('.modal-header').height()
-                }, 'slow');
-            }, 100);
-            updateTextAreaSize();
-        }
-    });
 </script>

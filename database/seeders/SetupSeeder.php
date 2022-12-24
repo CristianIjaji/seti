@@ -688,6 +688,13 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            $actividad_informe_cargado = TblDominio::create([
+                'nombre' => 'Informe cargado',
+                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
+                'descripcion' => 'Informe cargado',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
             $actividad_pausada = TblDominio::create([
                 'nombre' => 'Pausada',
                 'id_dominio_padre' => $lista_estados_actividad->id_dominio,
@@ -1047,6 +1054,13 @@ class SetupSeeder extends Seeder
                 'llave' => 'id_dominio_actividad_ejecutado',
                 'valor' => $actividad_ejecutado->id_dominio,
                 'descripcion' => 'id_dominio_actividad_ejecutado',
+                'id_usuareg' => $user->id_usuario
+            ]);
+            // Creación parametro actividad informe cargado
+            TblParametro::create([
+                'llave' => 'id_dominio_actividad_informe_cargado',
+                'valor' => $actividad_informe_cargado->id_dominio,
+                'descripcion' => 'id_dominio_actividad_informe_cargado',
                 'id_usuareg' => $user->id_usuario
             ]);
             // Creación parametro actividad pausada

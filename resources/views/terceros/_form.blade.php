@@ -1,7 +1,3 @@
-<head>
-    {{-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> --}}
-    <script type="text/javascript" src="https://www.tutorialrepublic.com/examples/js/typeahead/0.11.1/typeahead.bundle.js"></script>
-</head>
 <?php
     $create = isset($tercero->id_tercero) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);

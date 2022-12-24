@@ -1,39 +1,63 @@
 <header class="header-menu border-bottom" id="header">
-{{-- <header class="fixed-top d-flex justify-content-between align-items-center border" id="header"> --}}
     <div class="header_toggle">
         <i class="fa-solid fa-bars" id="header-toggle"></i>
     </div>
-    <li class="dropdown d-flex justify-content-center">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            @isset(Auth::user()->usuario)
-                {{ Auth::user()->usuario }}
-            @endisset
-        </a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li>
-                <a class="dropdown-item pl-3" href="{{ route('logout') }}" onclick="event.preventDefault();
-                    closeConnection();
-                    document.getElementById('logout-form').submit();">
-                    <i class="fas fa-power-off"></i> {{ __('Logout') }}
-                </a>
-        
-                <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                    @csrf
-                </form>
-            </li>
-            <li>
-                <a
-                    class="dropdown-item ps-3 modal-form" href="#"
-                    data-toggle="modal-md"
-                    data-title="Cambiar contraseña"
-                    data-reload="false"
-                    data-action={{ route('users.password', Auth::user()->id_tercero) }}
-                >
-                    <i class="fa-solid fa-key"></i> Cambiar contraseña
-                </a>
-            </li>
-        </ul>
-    </li>
+    <div class="d-flex justify-content-center align-items-center">
+        <li class="dropdown list-group">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @isset(Auth::user()->usuario)
+                    {{ Auth::user()->usuario }}
+                @endisset
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li>
+                    <a class="dropdown-item pl-3" href="{{ route('logout') }}" onclick="event.preventDefault();
+                        closeConnection();
+                        document.getElementById('logout-form').submit();">
+                        <i class="fas fa-power-off"></i> {{ __('Logout') }}
+                    </a>
+            
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                        @csrf
+                    </form>
+                </li>
+                <li>
+                    <a
+                        class="dropdown-item ps-3 modal-form" href="#"
+                        data-toggle="modal-md"
+                        data-title="Cambiar contraseña"
+                        data-reload="false"
+                        data-action={{ route('users.password', Auth::user()->id_tercero) }}
+                    >
+                        <i class="fa-solid fa-key"></i> Cambiar contraseña
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+        <li class="dropdown list-group ps-3">
+            <button class="btn btn-link nav-link py-2 px-2 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
+                <svg class="bi my-1 theme-icon-active"><use href="#moon-stars-fill"></use></svg>
+                {{-- <span class="d-lg-none ms-2">Cambiar tema</span> --}}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="bd-theme" style="--bs-dropdown-min-width: 8rem;">
+                <li>
+                    <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light">
+                        <svg class="bi me-2 opacity-50 theme-icon"><use href="#sun-fill"></use></svg>
+                        Light
+                        <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="dark">
+                        <svg class="bi me-2 opacity-50 theme-icon"><use href="#moon-stars-fill"></use></svg>
+                        Dark
+                        <svg class="bi ms-auto d-none"><use href="#check2"></use></svg>
+                    </button>
+                </li>
+            </ul>
+        </li>
+    </div>
 </header>
 <div class="l-navbar" id="nav-bar">
     <nav class="nav">

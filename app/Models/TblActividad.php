@@ -87,11 +87,12 @@ class TblActividad extends Model
 
     public function getStatusAttribute() {
         return [
-            session('id_dominio_actividad_programado') => 'bg-danger bg-gradient bg-opacity-25 text-danger',
-            session('id_dominio_actividad_comprando') => ' bg-gradient',
+            session('id_dominio_actividad_programado') => 'bg-danger bg-opacity-25 text-danger',
+            session('id_dominio_actividad_comprando') => '',
             session('id_dominio_actividad_reprogramado') => '',
-            session('id_dominio_actividad_ejecutado') => 'bg-success bg-gradient bg-opacity-75',
-            session('id_dominio_actividad_pausada') => 'bg-danger bg-gradient',
+            session('id_dominio_actividad_ejecutado') => 'bg-success bg-opacity-50',
+            session('id_dominio_actividad_informe_cargado') => '',
+            session('id_dominio_actividad_pausada') => 'bg-danger',
             session('id_dominio_actividad_liquidado') => '',
             session('id_dominio_actividad_conciliado') => '',
         ];

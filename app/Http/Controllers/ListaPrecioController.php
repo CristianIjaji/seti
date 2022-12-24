@@ -194,7 +194,7 @@ class ListaPrecioController extends Controller
             return response()->json(['errors' => 'Error consultando lista de precios.']);
         }
 
-        return view('lista_precios._search', [
+        return view('partials._search', [
             'type' => $type,
             'tipo_carrito' => $tipo_carrito,
             'items' => TblListaPrecio::where(['estado' => 1, 'id_tipo_item' => $type, 'id_cliente' => $client])->get()

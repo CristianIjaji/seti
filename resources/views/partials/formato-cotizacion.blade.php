@@ -1,3 +1,6 @@
+@php
+    $rows = 13;
+@endphp
 <table border="2" style="font-family: Arial; font-size: 10px; border: 2px single black; border-collapse: collapse;">
     <tr>
         <td style="width: 80px;"></td>
@@ -74,7 +77,7 @@
             CONTRATISTA
         </td>
         <td colspan="6" style="{{ $bordernone.$borderbottom.$borderright.$textcenter.$bold.$black }}">
-            {{ $quote->tblContratista->full_name }}
+            {{ isset($quote->tblContratista->tblterceroresponsable) ? $quote->tblContratista->tblterceroresponsable->full_name : $quote->tblContratista->full_name }}
         </td>
     </tr>
     <tr>
@@ -104,12 +107,6 @@
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$bgblue }}">VR TOTAL</td>
     </tr>
 
-    {!! $row !!}
-
-    <tr>
-        <td></td>
-        <td colspan="8" style="{{  $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$bgblue }}">SUMINISTRO DE MATERIALES</td>
-    </tr>
     @foreach ($quote->getmaterialescotizacion($quote->id_cotizacion) as $detalle)
         <tr>
             <td></td>
@@ -122,30 +119,11 @@
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->valor_unitario }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->cantidad * $detalle->valor_unitario }}</td>
         </tr>
+        @php
+            $rows++;
+        @endphp
     @endforeach
-    <tr>
-        <td></td>
-        <td style="{{ $bordernone.$borderleft }}"></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            @if ($quote->total_material)
-                =sum(I15:I{{ $items_material }})
-            @else
-                0
-            @endif
-        </td>
-    </tr>
-    {!! $row !!}
 
-    <tr>
-        <td></td>
-        <td colspan="8" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$bgblue }}">MANO DE OBRA</td>
-    </tr>
     @foreach ($quote->getmanoobracotizacion($quote->id_cotizacion) as $detalle)
         <tr>
             <td></td>
@@ -158,30 +136,11 @@
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->valor_unitario }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->cantidad * $detalle->valor_unitario }}</td>
         </tr>
+        @php
+            $rows++;
+        @endphp
     @endforeach
-    <tr>
-        <td></td>
-        <td style="{{ $bordernone.$borderleft }}"></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            @if ($quote->total_mano_obra > 0)
-                =sum(I{{ $items_material + 4 }}:I{{ ($items_material + 4) + $items_mano_obra }})
-            @else
-                0
-            @endif
-        </td>
-    </tr>
-    {!! $row !!}
 
-    <tr>
-        <td></td>
-        <td colspan="8" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$bgblue }}">TRANSPORTE Y PEAJES</td>
-    </tr>
     @foreach ($quote->gettransportecotizacion($quote->id_cotizacion) as $detalle)
         <tr>
             <td></td>
@@ -194,32 +153,17 @@
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->valor_unitario }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->cantidad * $detalle->valor_unitario }}</td>
         </tr>
+        @php
+            $rows++;
+        @endphp
     @endforeach
-    <tr>
-        <td></td>
-        <td style="{{ $bordernone.$borderleft }}"></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            @if ($quote->total_transporte > 0)
-                =sum(I{{ $items_material + 4 + $items_mano_obra + 4 }}:I{{ ($items_material + 4 + $items_mano_obra + 4) + $items_transporte }})
-            @else
-                0
-            @endif
-        </td>
-    </tr>
-    {!! $row !!}
 
     <tr>
         <td></td>
         <td style="{{ $bordernone.$borderleft }}"></td>
         <td colspan="6" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold }}">TOTAL SIN IVA</td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            =I{{ ($items_material + 1) }}+I{{ ($items_material + 4) + ($items_mano_obra + 1) }}+I{{ ( $items_material + $items_mano_obra + 9 + $items_transporte) }}
+            =sum(I13:I{{ ($rows - 1) }})
         </td>
     </tr>
     <tr>
@@ -227,7 +171,7 @@
         <td style="{{ $bordernone.$borderleft }}"></td>
         <td colspan="6" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold }}">{{ $quote->tblIva->nombre }}</td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            =I{{ ( $items_material + $items_mano_obra + 11 + $items_transporte) }}*{{ doubleval($quote->tblIva->descripcion) / 100 }}
+            =I{{ $rows }}*{{ doubleval($quote->tblIva->descripcion) / 100 }}
         </td>
     </tr>
     <tr>
@@ -235,7 +179,7 @@
         <td style="{{ $bordernone.$borderleft.$borderbottom }}"></td>
         <td colspan="6" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold.$bgblue }}">TOTAL CON IVA</td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            =I{{ ( $items_material + $items_mano_obra + 11 + $items_transporte) }}+I{{ ( $items_material + $items_mano_obra + 12 + $items_transporte) }}
+            =I{{ $rows }}+I{{ ( $rows + 1 ) }}
         </td>
     </tr>
 </table>

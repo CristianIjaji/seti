@@ -509,7 +509,6 @@ class CotizacionController extends Controller
     }
 
     public function export() {
-    
         $headers = ['#', 'OT', 'Proveedor', 'Estación', 'Descripción Orden', 'Fecha Solicitud', 'Fecha Envio',
             'Tipo Trabajo', 'Prioridad', 'Estado', 'Encargado', 'IVA', 'Valor', 
         ];
@@ -581,8 +580,9 @@ class CotizacionController extends Controller
     }
 
     public function seguimiento(TblCotizacion $quote) {
-        return view('cotizaciones.seguimiento', [
-            'cotizacion' => $quote
+        return view('partials.seguimiento', [
+            'model' => $quote,
+            'route' => 'quotes.handleQuote'
         ]);
     }
 }

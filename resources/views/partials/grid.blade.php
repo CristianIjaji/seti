@@ -88,24 +88,22 @@
     <table id="table__{{$route}}" class="table table-hover table-sm">
         <thead class="col-12">
             <tr>
-            @isset($headers)
-                @forelse ($headers as $header)
-                    <th
-                        scope="col"
-                        class="text-nowrap align-middle text-center bg-primary bg-opacity-75 ps-2 py-2 text-white
-                            {{ $header === reset($headers) ? 'rounded-start' : '' }}
-                            {{ $header === end($headers) ? 'rounded-end' : '' }}
-                        "
-                    >
-                        {{ isset($header['label']) ? $header['label'] : '' }}
-                    </th>
-                @empty
-                    <td class="bg-danger font-weight-bolder text-white">No se han definido las cabeceras de la tabla</td>
-                @endforelse
-            @endisset
+                @isset($headers)
+                    @forelse ($headers as $header)
+                        <th
+                            scope="col"
+                            class="text-nowrap align-middle text-center bg-primary bg-opacity-75 ps-2 py-2 text-white
+                                {{ $header === reset($headers) ? 'rounded-start' : '' }}
+                                {{ $header === end($headers) ? 'rounded-end' : '' }}
+                            "
+                        >
+                            {{ isset($header['label']) ? $header['label'] : '' }}
+                        </th>
+                    @empty
+                        <td class="bg-danger font-weight-bolder text-white">No se han definido las cabeceras de la tabla</td>
+                    @endforelse
+                @endisset
             </tr>
-        </thead>
-        <tbody class="col-12">
             @isset($filters)
                 @if ($filters)
                     <tr>
@@ -152,12 +150,12 @@
                     </tr>
                 @endif
             @endisset
+        </thead>
+        <tbody class="col-12">
             @forelse ($models as $key => $model)
                 <tr class="{{ isset($status) ? $status[$model->estado] : '' }}">
                     @forelse ($headers as $header)
-                        <td 
-                            data-value="{{ $model->{$header['name']} }}"
-                            class="align-middle {{ isset($header['align']) ? $header['align'] : '' }} {{ isset($header['col']) ? $header['col'] : '' }} {{ isset($header['class']) && isset($status) ? $header['class'] : '' }}">
+                        <td data-value="{{ $model->{$header['name']} }}" class="align-middle {{ isset($header['align']) ? $header['align'] : '' }} {{ isset($header['col']) ? $header['col'] : '' }} {{ isset($header['class']) && isset($status) ? $header['class'] : '' }}">
                             @if (isset($model->{$header['name']}))
                                 @if (!isset($header['options']))
                                     @if (!isset($header['foreign']))
@@ -188,10 +186,10 @@
                                 @endif
                             @else
                                 @isset($header['actions'])
-                                    <div class="h-100 w-100 text-center">
+                                    <div class="d-flex flex-nowrap justify-content-center">
                                         @isset($header['actions']['btnOptions']['view'])
-                                            <i
-                                                class="fas fa-eye btn modal-form text-info fs-5 fw-bold"
+                                            <span
+                                                class="btn modal-form"
                                                 data-toggle="tooltip"
                                                 data-placement="top"
                                                 data-toggle="modal"
@@ -200,12 +198,14 @@
                                                 data-header-class="{{ isset($header['actions']['btnOptions']['header-view-class']) ? $header['actions']['btnOptions']['header-view-class'] : '' }}"
                                                 data-reload="false"
                                                 data-action={{ route("$route.show", $model) }}
-                                                title="Ver">
-                                            </i>
+                                                title="Ver"
+                                            >
+                                                <i class="fas fa-eye text-info fs-5 fw-bold"></i>
+                                            </span>
                                         @endisset
                                         @isset($header['actions']['btnOptions']['edit'])
-                                            <i
-                                                class="fas fa-pencil-alt btn modal-form text-warning fs-5 fw-bold"
+                                            <span
+                                                class="btn modal-form"
                                                 data-toggle="tooltip"
                                                 data-placement="top"
                                                 data-toggle="modal"
@@ -213,12 +213,14 @@
                                                 data-size="{{ $header['actions']['btnOptions']['modal-edit-size'] }}"
                                                 data-header-class="{{ isset($header['actions']['btnOptions']['header-edit-class']) ? $header['actions']['btnOptions']['header-edit-class'] : '' }}"
                                                 data-action={{ route("$route.edit", $model) }}
-                                                title="Editar">
-                                            </i>
+                                                title="Editar"
+                                            >
+                                                <i class="fas fa-pencil-alt text-warning fs-5 fw-bold"></i>
+                                            </span>
                                         @endisset
                                         @isset($header['actions']['btnOptions']{'delete'})
-                                            <i
-                                                class="fa-solid fa-trash-can btn modal-form-2 text-danger fs-5 fw-bold"
+                                            <span
+                                                class="btn modal-form-2"
                                                 data-toggle="tooltip"
                                                 data-placement="top"
                                                 data-toggle="modal"
@@ -227,8 +229,9 @@
                                                 {{-- data-header-class="{{ isset($header['actions']['btnOptions']['header-delete-class']) ? $header['actions']['btnOptions']['header-delete-class'] : '' }}" --}}
                                                 {{-- data-action={{ route("$route.edit", $model) }} --}}
                                                 title="Eliminar"
-                                                >
-                                            </i>
+                                            >
+                                                <i class="fa-solid fa-trash-can text-danger fs-5 fw-bold"></i>
+                                            </span>
                                         @endisset
                                     </div>
                                 @endisset

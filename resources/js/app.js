@@ -6,7 +6,6 @@
 
 require('./bootstrap');
 require('./multiselect.min');
-// require('typeahead.js');
 
 import Push from 'push.js';
 window.Pusher = require('pusher-js');
@@ -56,6 +55,9 @@ var pusher = new Pusher('c27a0f7fb7b0efd70263', {
 
 let url_cotizacion = 'quotes';
 let form_cotizacion = 'form_quotes';
+
+let url_actividad = 'activities';
+let form_actividad = 'form_activities';
 
 const createChannel = (evento, canal, text, location, urlGrid, formData, audio = '') => {
     var channel = pusher.subscribe(`user-${canal}`);
@@ -360,6 +362,25 @@ const setupDatePicker = (element, setup, format) => {
     return picker;
 }
 
+const procesarErrores = (modal, title, errores) => {
+    let errors = '';
+    $.each(errores, function(i, item){
+        errors += `<li>${item}</li>`;
+    });
+    $(`#${modal} .alert-danger`).html(
+        `<h6 class="alert-heading fw-bold">${title}: </h6>
+        <ul>${errors}</ul>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        `
+    )
+    .fadeTo(10000, 1000)
+    .slideUp(1000, function(){
+        $(`.alert-danger`).slideUp(1000);
+    });
+}
+
 const sendAjaxForm = (action, data, reload, select, modal) => {
     $.ajax({
         url: action,
@@ -399,22 +420,7 @@ const sendAjaxForm = (action, data, reload, select, modal) => {
             });
         },
         error: function(response) {
-            let errors = '';
-            $.each(response.responseJSON.errors, function(i, item){
-                errors += `<li>${item}</li>`;
-            });
-            $(`#${modal} .alert-danger`)
-                .html(`
-                    <h6 class="alert-heading fw-bold">Por favor corrija los siguientes campos:</h6>
-                    <ol>${errors}</ol>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                `)
-                .fadeTo(10000, 1000)
-                .slideUp(1000, function(){
-                    $(`#${modal} .alert-danger`).slideUp(1000);
-                });
+            procesarErrores(modal, 'Por favor corrija los siguientes campos:', response.responseJSON.errors);
         }
     }).always(function () {
         showLoader(false);
@@ -489,6 +495,7 @@ const handleModal = (button) => {
             }
 
             $('body').tooltip({
+                html: true,
                 selector: '[data-toggle="tooltip"]'
             });
 
@@ -500,6 +507,8 @@ const handleModal = (button) => {
                 $(`#${modal}`).focus();
                 $('.money').inputmask(formatCurrency);
                 setupSelect2(`${modal}`);
+
+                updateThemeColor();
             }, 300);
         }).always(function() {
             showLoader(false);
@@ -515,6 +524,71 @@ const handleModal = (button) => {
     $(`#${modal}`).modal('show');
 }
 
+const getSwalConfig = (icon, title, text, reverseButtons, showCancelButton, confirmButtonColor, confirmButtonText, cancelButtonText = 'Cancelar') => {
+    return {
+        icon,
+        title,
+        text,
+        reverseButtons,
+        showCancelButton,
+        confirmButtonColor,
+        confirmButtonText,
+        cancelButtonText
+    };
+}
+
+const downloadExcel = (url, data, defaultName) => {
+    $.ajax({
+        xhrFields: {
+            responseType: 'blob',
+        },
+        type: 'GET',
+        url: url,
+        data: data,
+        beforeSend: () => {
+            showLoader(true);
+        },
+        success: (result, status, xhr) => {
+            let disposition = xhr.getResponseHeader('content-disposition');
+            let matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+            let filename = (matches != null && matches[1] ? matches[1] : defaultName).replace(/"/g,'');
+
+            // The actual download
+            let blob = new Blob([result], {
+                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            });
+
+            let link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            link.text = filename;
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }).always(() => {
+        showLoader(false);
+    });
+}
+
+const getGrid = (url, id_form) => {
+    $.ajax({
+        url: `${url}/grid`,
+        method: 'POST',
+        data: $(`#${id_form}`).serialize(),
+        beforeSend: function() {
+            showLoader(true);
+        }
+    }).done(function(view) {
+        $(`#${id_form}`).parent().html(view);
+    }).always(function() {
+        showLoader(false);
+        setupSelect2();
+        updateThemeColor();
+    });
+};
+
 window.carrito = [];
 window.updateTextAreaSize = () => {
     $('.resize-textarea').each(function(index, element){
@@ -524,16 +598,17 @@ window.updateTextAreaSize = () => {
 }
 
 const responsiveTd = (id, i) => {
-    let clase = ((i + 1) % 2 == 0 ? 'bg-light' : '');
+    let clase = 'border';//((i + 1) % 2 == 0 ? 'bg-light' : '');
     if ($(window).width() <= 768) {
-        $(`#${id} td:nth-child(${(i + 1)})`).addClass(clase);
-        $(`#${id} td.td-delete > i`).addClass('text-white');
+        $(`#${id} td:nth-child(${(i + 1)})`).removeClass('border-0').addClass(clase);
+        $(`#${id} td.td-delete > span > i`).addClass('text-white');
         $(`#${id} td.td-delete`).addClass('btn bg-danger text-white').removeClass(clase);
         
     } else {
-        $(`#${id} td:nth-child(${(i + 1)})`).removeClass('bg-light');
-        $(`#${id} td.td-delete > i`).removeClass('text-white');
+        $(`#${id} td:nth-child(${(i + 1)})`).removeClass('bg-light').addClass('border-0');
+        $(`#${id} td.td-delete > span > i`).removeClass('text-white');
         $(`#${id} td.td-delete`).removeClass('btn bg-danger text-white');
+        
     }
 }
 
@@ -554,6 +629,9 @@ window.flexTable = () => {
             let id = $(this).attr('id');
             $(this).find(".table-responsive-stack-thead").show();
             $(this).find('thead').hide();
+            $(this).find('tr.show').each(function(i) {
+                $(`#${id} tr:nth-child(${(i + 1)})`).addClass('border border-light border-rounded');
+            });
             $(this).find("th").each(function(i) {
                 responsiveTd(id, i);
             });
@@ -564,6 +642,9 @@ window.flexTable = () => {
             let id = $(this).attr('id');
             $(this).find(".table-responsive-stack-thead").hide();
             $(this).find('thead').show();
+            $(this).find('tr.show').each(function(i) {
+                $(`#${id} tr:nth-child(${(i + 1)})`).removeClass('border border-light border-rounded');
+            });
             $(this).find("th").each(function(i) {
                 responsiveTd(id, i);
             });
@@ -617,7 +698,7 @@ window.drawItems = (edit = true, tipo_carrito, type_item, id_item) => {
                                 name="valor_total[]" id="valor_total_${id_item}" value="${element['valor_total']}" disabled>
                         </td>
                         ${edit == true
-                            ? `<td class="text-center col-1 my-auto border-0 td-delete btn-delete-item" ${tooltip} title='Quitar ítem' data-id-tr="${tipo_carrito}_${type_item}_${id_item}"><i class="fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"></i></td>`
+                            ? `<td class="text-center col-1 my-auto border-0 td-delete btn-delete-item" ${tooltip} title='Quitar ítem' data-id-tr="${tipo_carrito}_${type_item}_${id_item}"><span class="btn btn-delete-item" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"><i class="fa-solid fa-trash-can text-danger fs-5 fs-bold"></i></span></td>`
                             : ``
                         }
                     </tr>
@@ -721,7 +802,29 @@ const addItems = (tipo_carrito, items) => {
     });
 }
 
+const fnc_totales = (id) => {
+    let id_tr = new String(id).split('_');
+    if(typeof carrito[id_tr[0]][id_tr[1]][id_tr[2]] !== 'undefined') {
+        let id_row = `${id_tr[0]}_${id_tr[1]}_${id_tr[2]}`;
+
+        // // let descripcion = $(`#${id_row} #descripcion_${id_tr[2]}`).val();
+        let cantidad = parseFloat($.isNumeric($(`#${id_row} #cantidad_${id_tr[2]}`).val()) ? $(`#${id_row} #cantidad_${id_tr[2]}`).val() : 0);
+        let valor_unitario = parseFloat($.isNumeric($(`#${id_row} #valor_unitario_${id_tr[2]}`).val().replace(regexCurrencyToFloat, "")) ? $(`#${id_row} #valor_unitario_${id_tr[2]}`).val().replace(regexCurrencyToFloat, "") : 0);
+        let valor_total = (cantidad) * (valor_unitario);
+
+        // carrito[id_tr[0]][id_tr[1]][id_tr[2]]['descripcion'] = descripcion;
+        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
+        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
+        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
+
+        $(`#${id_tr[0]} #valor_total_${id_tr[2]}`).val(valor_total);
+
+        totalCarrito(id_tr[0]);
+    }
+}
+
 $('body').tooltip({
+    html: true,
     selector: '[data-toggle="tooltip"]'
 });
 
@@ -787,26 +890,6 @@ $(document).ready(function() {
         $(this).parent().find('i').removeClass('focus');
     });
 
-    const procesarErrores = (title, errores) => {
-        let errors = '';
-        $.each(errores, function(i, item){
-            errors += `<li>${item}</li>`;
-        });
-        $('.alert-danger')
-            .html(
-                `<h6 class="alert-heading fw-bold">${title}: </h6>
-                <ul>${errors}</ul>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-                `
-            )
-            .fadeTo(10000, 1000)
-            .slideUp(1000, function(){
-                $(`.alert-danger`).slideUp(1000);
-            });;
-    }
-
     $('#login-form').submit(function(e){
         e.preventDefault();
 
@@ -823,7 +906,7 @@ $(document).ready(function() {
                 window.location.href = "home";
             },
             error: function(response) {
-                procesarErrores('Error de inicio de sesión', (typeof response.responseJSON.errors !== 'undefined' ? response.responseJSON.errors : ['Por favor actualice la página']));
+                procesarErrores('login-form', 'Error de inicio de sesión', (typeof response.responseJSON.errors !== 'undefined' ? response.responseJSON.errors : ['Por favor actualice la página']));
                 $('#login-form #email, #login-form #password').addClass('is-invalid');
             }
         }).always(function () {
@@ -859,13 +942,14 @@ $(document).ready(function() {
         }
     });
 
-    // $('[data-toggle="tooltip"]').tooltip();
     $('[data-toggle="tooltip"]').on('click', function () {
         $(this).tooltip('hide')
     });
     setupSelect2();
     timer();
     datePicker();
+
+    updateThemeColor();
 });
 
 jQuery(window).ready(function () {
@@ -903,22 +987,6 @@ $(document).on('click', '.modal-form', function(e) {
     handleModal($(this));
 });
 
-const getGrid = (url, id_form) => {
-    $.ajax({
-        url: `${url}/grid`,
-        method: 'POST',
-        data: $(`#${id_form}`).serialize(),
-        beforeSend: function() {
-            showLoader(true);
-        }
-    }).done(function(view) {
-        $(`#${id_form}`).parent().html(view);
-    }).always(function() {
-        showLoader(false);
-        setupSelect2();
-    });
-};
-
 $(document).on('submit', `.search_form`, function(e){
     e.preventDefault();
 });
@@ -949,12 +1017,11 @@ $(document).on('click', '.page-item', function(e) {
 
 $(document).on('click', '#btn-form-action', function(e){
     e.preventDefault();
-    let button = $(this);
 
-    let action = button.closest('form').attr('action');
+    let action = $(this).closest('form').attr('action');
     let modal = $(this).closest('.modal').attr('id');
     let reload = $(`#${modal}`).data('reload');
-    let form = button.closest('form');
+    let form = $(this).closest('form');
     let select = $(`#${modal}`).data('select');
     
     if($('#campos_reporte').length){
@@ -987,75 +1054,15 @@ $(document).on("click", ".btn-export", function(e) {
     let action = $(this).data('route');
     let data = $(`#form_${action}`).serialize();
 
-    $.ajax({
-        xhrFields: {
-            responseType: 'blob',
-        },
-        type: 'GET',
-        url: `${action}/export`,
-        data: data,
-        beforeSend: () => {
-            showLoader(true);
-        },
-        success: (result, status, xhr) => {
-            var disposition = xhr.getResponseHeader('content-disposition');
-            var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-            var filename = (matches != null && matches[1] ? matches[1] : 'Reporte.xlsx').replace(/"/g,'');
-
-            // The actual download
-            var blob = new Blob([result], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            });
-
-            var link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            link.text = filename;
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }).always(function () {
-        showLoader(false);
-    });
+    downloadExcel(`${action}/export`, data, 'Reporte.xlsx');
 });
 
 $(document).on("click", ".btn-download", function(e) {
     e.preventDefault();
     
     let action = $(this).data('route');
-    $.ajax({
-        xhrFields: {
-            responseType: 'blob',
-        },
-        type: 'GET',
-        url: `${action}/template`,
-        beforeSend: () => {
-            showLoader(true);
-        },
-        success: (result, status, xhr) => {
-            var disposition = xhr.getResponseHeader('content-disposition');
-            var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-            var filename = (matches != null && matches[1] ? matches[1] : 'Template.xlsx').replace(/"/g,'');
 
-            // The actual download
-            var blob = new Blob([result], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            });
-
-            var link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            link.text = filename;
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }).always(function () {
-        showLoader(false);
-    });
+    downloadExcel(`${action}/template`, '', 'Template.xlsx');
 });
 
 $(document).on('click', '#btn_upload', function() {
@@ -1104,50 +1111,29 @@ $(document).on('click', '#btn_add_items', function() {
     $(`#${id}`).modal('hide');
 });
 
+$(document).on('click', '#btn_select_quote', function() {
+    if($('#lista_items').val() !== '') {
+        $('#id_cotizacion_actividad').val($('#lista_items').val());
+        let id = $('#btn_select_quote').closest('.modal').attr('id');
+        $(`#${id}`).modal('hide');
+    }
+});
+
 $(document).on('click', '.btn-delete-item', function() {
     if(typeof $(this).data('id-tr') !== 'undefined') {
         let id_tr = $(this).data('id-tr');
 
-        // Swal.fire({
-        //     icon: 'question',
-        //     title: `Eliminar ítem ${$(`#item_${id_item}`).val()}`,
-        //     reverseButtons: true,
-        //     showCancelButton: true,
-        //     confirmButtonText: 'Eliminar ítem',
-        //     confirmButtonColor: 'var(--bs-danger)',
-        //     cancelButtonText: 'Cancelar'
-        // }).then((result) => {
-        //     if(result.isConfirmed) {
-                $(`#${id_tr}`).remove();
-                id_tr = id_tr.split('_');
+        $(`#${id_tr}`).remove();
+        id_tr = id_tr.split('_');
 
-                delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
-                totalCarrito(id_tr[0]);
-        //     }
-        // });
+        delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
+        totalCarrito(id_tr[0]);
+
+        $('[data-toggle="tooltip"]').on('click', function () {
+            $(this).tooltip('hide')
+        });
     }
 });
-
-const fnc_totales = (id) => {
-    let id_tr = new String(id).split('_');
-    if(typeof carrito[id_tr[0]][id_tr[1]][id_tr[2]] !== 'undefined') {
-        let id_row = `${id_tr[0]}_${id_tr[1]}_${id_tr[2]}`;
-
-        // // let descripcion = $(`#${id_row} #descripcion_${id_tr[2]}`).val();
-        let cantidad = parseFloat($.isNumeric($(`#${id_row} #cantidad_${id_tr[2]}`).val()) ? $(`#${id_row} #cantidad_${id_tr[2]}`).val() : 0);
-        let valor_unitario = parseFloat($.isNumeric($(`#${id_row} #valor_unitario_${id_tr[2]}`).val().replace(regexCurrencyToFloat, "")) ? $(`#${id_row} #valor_unitario_${id_tr[2]}`).val().replace(regexCurrencyToFloat, "") : 0);
-        let valor_total = (cantidad) * (valor_unitario);
-
-        // carrito[id_tr[0]][id_tr[1]][id_tr[2]]['descripcion'] = descripcion;
-        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['cantidad'] = cantidad;
-        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['valor_unitario'] = valor_unitario;
-        carrito[id_tr[0]][id_tr[1]][id_tr[2]]['valor_total'] = valor_total;
-
-        $(`#${id_tr[0]} #valor_total_${id_tr[2]}`).val(valor_total);
-
-        totalCarrito(id_tr[0]);
-    }
-}
 
 $(document).on('keydown', '.txt-totales', function() {
     fnc_totales($(this).data('id-tr'));
@@ -1208,82 +1194,166 @@ let hideIcon = 'fa-caret-up';
 
 $(document).on('click', '.show-more', function() {    
     setTimeout(() => {
-        $(this).toggleClass(`${showIcon} ${hideIcon}`);
+        $('.show-more > i').toggleClass(`${showIcon} ${hideIcon}`);
     }, 100);
+});
+
+$(document).on('change', '#estado_seguimiento', function() {
+    $('#div_fecha_seguimiento').addClass('d-none');
+
+    if($.inArray($(this).val(), ['btn-reshedule-activity', 'btn-executed-activity']) > -1){
+        $('#div_fecha_seguimiento').removeClass('d-none');
+    }
 });
 
 $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
     e.preventDefault();
 
     let action = '';
-    let title = '';
-    let text = '';
-    let buttonColor = '';
-    let confirmButtonColor = '';
-    let confirmButtonText = '';
-
-    let button = $(this);
-    let form = button.closest('form');
+    let form = $(this).closest('form');
 
     let data = new FormData(form[0]);
     let cambio = ($(this).attr('id') === 'btn-send-quote'
         ? $(this).attr('id')
-        : $('#estado_cotizacion').val()
+        : $('#estado_seguimiento').val()
     );
-    // let modal = $(this).closest('.modal').attr('id');
+
+    let setupSwal = {};
+    let url = '';
 
     switch (cambio) {
         case 'btn-check-quote':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-success'>Aprobar cotización</h2>`,
+                `¿Seguro quiere aprobar está cotización?`,
+                true,
+                true,
+                `var(--bs-success)`,
+                `Sí, aprobar cotización`
+            );
             action = 'check';
-            title = `<h2 class='fw-bold text-success'>Aprobar cotización</h2>`;
-            text = `¿Seguro quiere aprobar está cotización?`;
-            confirmButtonColor = `var(--bs-success)`;
-            confirmButtonText = `Sí, aprobar cotización`;
+            url = `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`;
             break;
         case 'btn-deny-quote':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-danger'>Regresar cotización</h2>`,
+                `¿Seguro quiere regresar está cotización?`,
+                true,
+                true,
+                `var(--bs-danger)`,
+                `Sí, regresar cotización`
+            );
             action = 'deny';
-            title = `<h2 class='fw-bold text-danger'>Regresar cotización</h2>`;
-            text = `¿Seguro quiere regresar está cotización?`;
-            confirmButtonColor = `var(--bs-danger)`;
-            confirmButtonText = `Sí, regresar cotización`;
+            url = `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`;
             break;
         case 'btn-wait-quote':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-success'>Cotización pendiente aprobación</h2>`,
+                `¿Seguro quiere dejar la cotización en pendiente aprobación?`,
+                true,
+                true,
+                `var(--bs-success)`,
+                `Sí, dejar en Cotización pendiente aprobación`
+            );
             action = 'wait';
-            title = `<h2 class='fw-bold text-success'>Cotización pendiente aprobación</h2>`;
-            text = `¿Seguro quiere dejar la cotización en pendiente aprobación?`;
-            confirmButtonColor = `var(--bs-success)`;
-            confirmButtonText = `Sí, dejar en Cotización pendiente aprobación`;
+            url = `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`;
             break;
         case 'btn-aprove-quote':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-success'>Cotización aprobada cliente</h2>`,
+                `¿Seguro quiere dejar la cotización en aprobada cliente?`,
+                true,
+                true,
+                `var(--bs-success)`,
+                `Sí, dejar en Cotización aprobada cliente`,
+            );
             action = 'aprove';
-            title = `<h2 class='fw-bold text-success'>Cotización aprobada cliente</h2>`;
-            text = `¿Seguro quiere dejar la cotización en aprobada cliente?`;
-            confirmButtonColor = `var(--bs-success)`;
-            confirmButtonText = `Sí, dejar en Cotización aprobada cliente`;
+            url = `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`;
             break;
         case 'btn-reject-quote':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-danger'>Cliente rechaza cotización</h2>`,
+                `¿Seguro quiere dejar la cotización rechazada?`,
+                true,
+                true,
+                `var(--bs-danger)`,
+                `Sí, dejar en Cotización rechazada`
+            );
             action = 'reject';
-            title = `<h2 class='fw-bold text-danger'>Cliente rechaza cotización</h2>`;
-            text = `¿Seguro quiere dejar la cotización rechazada?`;
-            confirmButtonColor = `var(--bs-danger)`;
-            confirmButtonText = `Sí, dejar en Cotización rechazada`;
+            url = `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`;
             break;
         case 'btn-cancel-quote':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-danger'>Cotización cancelada</h2>`,
+                `¿Seguro quiere cancelar la cotización?`,
+                true,
+                true,
+                `var(--bs-danger)`,
+                `Sí, cancelar cotización`
+            );
             action = 'cancel';
-            title = `<h2 class='fw-bold text-danger'>Cotización cancelada</h2>`;
-            text = `¿Seguro quiere cancelar la cotización?`;
-            confirmButtonColor = `var(--bs-danger)`;
-            confirmButtonText = `Sí, cancelar cotización`;
+            url = `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`;
             break;
         case 'btn-send-quote':
             action = 'send';
             break;
         case 'btn-create-activity':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-primary'>Crear actividad</h2>`,
+                `¿Seguro quiere crear la actividad?`,
+                true,
+                true,
+                `var(--bs-primary)`,
+                `Sí, crear actividad`
+            );
             action = 'create-activity';
-            title = `<h2 class='fw-bold text-primary'>Crear actividad</h2>`;
-            text = `¿Seguro quiere crear la actividad?`;
-            confirmButtonColor = `var(--bs-primary)`;
-            confirmButtonText = `Sí, crear actividad`;
+            url = `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`;
+            break;
+        case 'btn-reshedule-activity':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-primary'>Reprogramar actividad</h2>`,
+                `¿Seguro quiere reprogramar la actividad?`,
+                true,
+                true,
+                `var(--bs-primary)`,
+                `Sí, reprogramar actividad`
+            );
+            action = 'reshedule-activity';
+            url = `${url_actividad}/${$('#id_actividad').val()}/handleActivity`;
+            break;
+        case 'btn-pause-activity':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-primary'>Pausar actividad</h2>`,
+                `¿Seguro quiere pausar la actividad?`,
+                true,
+                true,
+                `var(--bs-primary)`,
+                `Sí, pausar actividad`
+            );
+            action = 'pause-activity';
+            url = `${url_actividad}/${$('#id_actividad').val()}/handleActivity`;
+            break;
+        case 'btn-executed-activity':
+            setupSwal = getSwalConfig(
+                'question',
+                `<h2 class='fw-bold text-primary'>Ejecutar actividad</h2>`,
+                `¿Seguro quiere ejecutar la actividad?`,
+                true,
+                true,
+                `var(--bs-primary)`,
+                `Sí, ejecutar actividad`
+            );
+            action = 'executed-activity';
+            url = `${url_actividad}/${$('#id_actividad').val()}/handleActivity`;
             break;
         default:
             break;
@@ -1292,41 +1362,19 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
     if(action === '') return false;
 
     if(action === 'send') {
-        $.ajax({
-            xhrFields: {
-                responseType: 'blob',
-            },
-            type: 'GET',
-            url: `${url_cotizacion}/exportQuote?quote=${$('#id_cotizacion').val()}`,
-            beforeSend: () => {
-                showLoader(true);
-            },
-            success: (result, status, xhr) => {
-                var disposition = xhr.getResponseHeader('content-disposition');
-                var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-                var filename = (matches != null && matches[1] ? matches[1] : 'Reporte.xlsx').replace(/"/g,'');
-    
-                // The actual download
-                var blob = new Blob([result], {
-                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                });
-    
-                var link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = filename;
-                link.text = filename;
-    
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }).always(function () {
-            showLoader(false);
-        });
+        downloadExcel(`${url_cotizacion}/exportQuote?quote=${$('#id_cotizacion').val()}`, '', 'Reporte.xlsx');
         return false;
     }
 
-    if(action === 'cancel' || action === 'deny') {
+    if(action === 'reshedule-activity') {
+        $('#input_fecha').removeClass('is-invalid');
+        if($('#input_fecha').val().trim() === '') {
+            $('#input_fecha').addClass('is-invalid');
+            return false;
+        }
+    }
+
+    if(jQuery.inArray(action, ['cancel', 'deny', 'reshedule-activity', 'pause-activity']) > -1) {
         $('#comentario').removeClass('is-invalid');
         if($('#comentario').val().trim() === '') {
             $('#comentario').addClass('is-invalid');
@@ -1337,19 +1385,11 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
     data.append('action', action);
     data.delete('_method');
 
-    Swal.fire({
-        icon: 'question',
-        title,
-        text,
-        reverseButtons: true,
-        showCancelButton: true,
-        confirmButtonColor,
-        confirmButtonText,
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if(result.isConfirmed) {
-            let url = `${url_cotizacion}/${$('#id_cotizacion').val()}/handleQuote`;
+    let modal = $(this).closest('.modal').attr('id');
+    let reload = $(`#${modal}`).data('reload');
 
+    Swal.fire(setupSwal).then((result) => {
+        if(result.isConfirmed) {
             if(action == 'create-activity') {
                 url = 'activities';
                 data.append('id_encargado_cliente', $('#id_cliente').val());
@@ -1372,17 +1412,21 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
                 contentType: false,
                 cache: false,
                 beforeSend: function() {
-                    $('.alert-success, .alert-danger').fadeOut().html('');
+                    $(`#${modal} .alert-success, .alert-danger`).fadeOut().html('');
                     showLoader(true);
                 },
                 success: function(response, status, xhr) {
                     if(response.success) {
-                        $(`.modal`).modal('hide');
+                        $(`#${modal}`).modal('hide');
                         Swal.fire({
                             icon: 'success',
                             title: 'Cambio realizado',
                             text: response.success,
                             confirmButtonColor: 'var(--bs-primary)'
+                        }).then(function() {
+                            if(typeof reload === 'undefined' || reload.toString() !== 'false') {
+                                location.reload();
+                            }
                         });
                     } else {
                         Swal.fire({
@@ -1397,7 +1441,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
                     $.each(response.responseJSON.errors, function(i, item){
                         errors += `<li>${item}</li>`;
                     });
-                    $('.alert-danger')
+                    $(`#${modal} .alert-danger`)
                         .html(`<h6 class="alert-heading fw-bold">Por favor corrija los siguientes campos:</h6> <ol>${errors}</ol>`)
                         .fadeTo(10000, 1000)
                         .slideUp(1000, function(){
@@ -1405,9 +1449,13 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
                         });
                 }
             }).always(function () {
+                let url_grid = (url.indexOf(url_cotizacion) > -1 ? url_cotizacion : url_actividad);
+                let form_grid = (url.indexOf(url_cotizacion) > -1 ? form_cotizacion : form_actividad);
+
                 if(action !== 'create-activity') {
-                    getGrid(url_cotizacion, form_cotizacion);
+                    getGrid(url_grid, form_grid);
                 }
+
                 showLoader(false);
             });
         }
@@ -1494,41 +1542,15 @@ $(document).on('click', '.menuToggle', () => {
 $(document).on('click', '#btn_download_consolidado', () => {
     let id_consolidado = $('#btn_download_consolidado').data('consolidado');
 
-    $.ajax({
-        xhrFields: {
-            responseType: 'blob',
-        },
-        type: 'GET',
-        url: `deals/exportDeal?deal=${id_consolidado}`,
-        beforeSend: () => {
-            showLoader(true);
-        },
-        success: (result, status, xhr) => {
-            var disposition = xhr.getResponseHeader('content-disposition');
-            var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-            var filename = (matches != null && matches[1] ? matches[1] : 'Reporte.xlsx').replace(/"/g,'');
-
-            // The actual download
-            var blob = new Blob([result], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            });
-
-            var link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = filename;
-            link.text = filename;
-
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }).always(function () {
-        showLoader(false);
-    });
+    downloadExcel(`deals/exportDeal?deal=${id_consolidado}`, '', 'Reporte.xlsx');
 });
 
 $(document).on('hide.bs.modal', '.modal', function() {
     if($(this).attr('id').length) {
         $(this).remove();
+
+        $('.modal').each((i, element) => {
+            $(element).focus();
+        });
     }
 });

@@ -213,18 +213,18 @@
                 </div>
                 @if (!$create)
                     <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 my-auto text-center">
-                        <span id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-success btn-quote px-3">
+                        <span id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-success border btn-quote px-3">
                             <i class="fa-solid fa-file-excel fs-4"></i>
                         </span>
 
                         @can('createComment', $cotizacion)
                             @if ($edit)
                                 <span
-                                    class="btn btn-outline-info modal-form"
+                                    class="btn btn-outline-secondary border modal-form"
                                     data-title="Nuevo comentario"
                                     data-size="modal-md"
                                     data-header-class='bg-primary bg-opacity-75 text-white'
-                                    data-reload="false"
+                                    data-reload="true"
                                     data-action="{{ route('quotes.seguimiento', $cotizacion->id_cotizacion) }}"
                                     data-toggle="tooltip"
                                     title="Nuevo comentario"
@@ -237,8 +237,8 @@
                         @if (isset($actividad->id_actividad))
                             @can('view', $actividad)
                                 <span
-                                    class="btn btn-outline-info modal-form"
-                                    data-title="Ver actividad"
+                                    class="btn btn-outline-info border modal-form"
+                                    data-title="Actividad #{{ $actividad->id_actividad }}"
                                     data-size="modal-fullscreen"
                                     data-header-class='bg-info text-white'
                                     data-reload="false"
@@ -253,7 +253,7 @@
 
                         @can('createActivity', $cotizacion)
                             <span
-                                class="btn btn-outline-primary modal-form"
+                                class="btn btn-outline-primary border modal-form"
                                 data-title="Nueva actividad"
                                 data-size="modal-fullscreen"
                                 data-header-class='bg-primary bg-opacity-75 text-white'
@@ -268,7 +268,7 @@
                     </div>
                 @endif
 
-                <input type="hidden" id="valor_actividad" value="{{ $cotizacion->valor }}">
+                <input type="hidden" id="valor_actividad" value="{{ $cotizacion->total_sin_iva }}">
                 <div class="clearfix"><hr></div>
 
                 @include('cotizaciones.detalle', ['edit' => $editable, 'cotizacion' => $cotizacion, 'tipo_carrito' => 'cotizacion'])

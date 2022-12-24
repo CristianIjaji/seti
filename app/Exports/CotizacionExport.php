@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
@@ -101,29 +102,11 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
         $drawing2->setDescription('Logo contratista');
         $drawing2->setPath(public_path($logo_contratista));
         $drawing2->setHeight(52);
-        $drawing2->setOffsetX(32);
+        $drawing2->setOffsetX(20);
         $drawing2->setOffsetY(2);
         $drawing2->setCoordinates('H2');
         
         return [$drawing, $drawing2];
-    }
-
-    function aplicarFormato($event, $column, $row, $suma, $items, $stylesArray) {
-        $event->sheet->getDelegate()->getStyleByColumnAndRow(2, $row, 9, $row)->applyFromArray($stylesArray);
-        $row++;
-
-        // Se aplica formato numero a las celdas de VR UNIT y VR TOTAL.
-        $event->sheet->getDelegate()->getStyleByColumnAndRow(8, $row, 9, ($row + $items))->applyFromArray($stylesArray['formato_numero']);
-        $row += $items;
-
-        if($items > 0 && $suma > 0) {
-            // Se aplica formato a la lista de Ítems
-            $event->sheet->getDelegate()->getStyleByColumnAndRow($column, $row, 9, ($row + $suma))->applyFromArray($stylesArray);
-        }
-
-        $event->sheet->getDelegate()->getStyle("I$row")->applyFromArray($stylesArray);
-
-        return $row += 2;
     }
 
     function getRowcount($text, $width=55) {
@@ -182,29 +165,18 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
                 // Formato celdas: Ítem, Descripción, Un., Cant., VR UNIT, VR TOTAL
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(2, 12, 9, 12)->applyFromArray($stylesArray);
 
-                $event->sheet->getDelegate()->getStyleByColumnAndRow(2, 13, 9, 13)->applyFromArray($stylesArray);
-                $row = 14;
-                // Suministro de materiales
-                $items = count($this->model->getmaterialescotizacion($this->model->id_cotizacion));
-                $row = $this->aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
-                // Mano de obra
-                $items = count($this->model->getmanoobracotizacion($this->model->id_cotizacion));
-                $row = $this->aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
-                // Transporte y peaje
-                $items = count($this->model->gettransportecotizacion($this->model->id_cotizacion));
-                $row = $this->aplicarFormato($event, 2, $row, 1, $items, $stylesArray);
+                $row = 12 + count($this->model->tblcotizaciondetalle);
+                $event->sheet->getDelegate()->getStyleByColumnAndRow(2, 13, 9, $row)->applyFromArray($stylesArray);
+                $row += 3;
+                $event->sheet->getDelegate()->getStyleByColumnAndRow(8, 13, 9, $row)->applyFromArray($stylesArray['formato_numero']);
 
-                $event->sheet->getDelegate()->getStyleByColumnAndRow(3, $row, 8, $row)->applyFromArray($stylesArray);
-                $event->sheet->getDelegate()->getStyleByColumnAndRow(9, $row, 9, $row)->applyFromArray($stylesArray);
-                $event->sheet->getDelegate()->getStyleByColumnAndRow(9, $row, 9, $row)->applyFromArray($stylesArray['formato_numero']);
+                $event->sheet->getDelegate()->getStyleByColumnAndRow(3, ($row - 2), 8, ($row - 2))->applyFromArray($stylesArray);
+                $event->sheet->getDelegate()->getStyleByColumnAndRow(9, ($row - 2), 9, ($row - 2))->applyFromArray($stylesArray);
+                $event->sheet->getDelegate()->getStyleByColumnAndRow(9, ($row - 2), 9, ($row - 2))->applyFromArray($stylesArray['formato_numero']);
 
-                $row++;
-
-                $event->sheet->getDelegate()->getStyleByColumnAndRow(3, $row, 8, $row)->applyFromArray($stylesArray);
-                $event->sheet->getDelegate()->getStyleByColumnAndRow(9, $row, 9, $row)->applyFromArray($stylesArray);
-                $event->sheet->getDelegate()->getStyleByColumnAndRow(9, $row, 9, $row)->applyFromArray($stylesArray['formato_numero']);
-
-                $row++;
+                $event->sheet->getDelegate()->getStyleByColumnAndRow(3, ($row - 1), 8, ($row - 1))->applyFromArray($stylesArray);
+                $event->sheet->getDelegate()->getStyleByColumnAndRow(9, ($row - 1), 9, ($row - 1))->applyFromArray($stylesArray);
+                $event->sheet->getDelegate()->getStyleByColumnAndRow(9, ($row - 1), 9, ($row - 1))->applyFromArray($stylesArray['formato_numero']);
 
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(3, $row, 8, $row)->applyFromArray($stylesArray);
                 $event->sheet->getDelegate()->getStyleByColumnAndRow(9, $row, 9, $row)->applyFromArray($stylesArray);

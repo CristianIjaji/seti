@@ -12,11 +12,13 @@ use App\Models\TblUsuario;
 use App\Models\TblEstadoActividad;
 use App\Models\TblOrdenCompra;
 use App\Models\TblOrdenesCompraDetalle;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Pusher\Pusher;
 
 class ActividadController extends Controller
 {
@@ -49,6 +51,27 @@ class ActividadController extends Controller
         }
 
         return $querybuilder;
+    }
+
+    private function sendNotification($actividad, $channel, $event) {
+        // $activity
+        $options = [
+            'cluster' => 'us2',
+            'useTLS' => true
+        ];
+
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            $options
+        );
+
+        $pusher->trigger(
+            $channel,
+            $event,
+            $actividad
+        );
     }
 
     private function getDetailOrden($activity) {
@@ -134,7 +157,9 @@ class ActividadController extends Controller
             $actividad = TblActividad::create($request->validated());
             $this->authorize('create', $actividad);
 
-            $this->createTrak($actividad, $actividad->id_estado_actividad);
+            $actividad->comentarios = $actividad->observaciones;
+            $this->createTrack($actividad, $actividad->id_estado_actividad);
+
             return response()->json([
                 'success' => 'Actividad creada exitosamente!',
                 'response' => [
@@ -163,7 +188,7 @@ class ActividadController extends Controller
             'edit' => false,
             'activity' => $activity,
             'estados_actividad' => TblEstadoActividad::where(['id_actividad' =>$activity->id_actividad])->orderby('created_at', 'desc')->paginate(10),
-            'quote' => isset(request()->cotizacion) ? TblCotizacion::find(request()->cotizacion) : [],
+            'quote' => isset($activity->id_cotizacion) ? $activity->tblcotizacion : []
         ]);
     }
 
@@ -210,6 +235,7 @@ class ActividadController extends Controller
             ->get(),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
+            'quote' => isset($activity->id_cotizacion) ? $activity->tblcotizacion : []
         ]);
     }
 
@@ -225,12 +251,14 @@ class ActividadController extends Controller
         try {
             $this->authorize('update', $activity);
             $activity->update($request->validated());
-            $this->createTrak($actividad, $actividad->id_estado_actividad);
 
-            if($activity->valor !== $activity->tblcotizacion->valor) {
+            if($activity->valor !== $activity->tblcotizacion->total_sin_iva) {
                 $activity->valor = $activity->tblcotizacion->valor;
                 $activity->update();
             }
+
+            $activity->comentario = $activity->observaciones;
+            $this->createTrack($activity, $activity->id_estado_actividad);
 
             return response()->json([
                 'success' => 'Cotización actualizada correctamente!'
@@ -251,6 +279,73 @@ class ActividadController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function handleActivity(TblActividad $activity) {
+        try {
+            $response = '';
+            switch (request()->action) {
+                case 'reshedule-activity':
+                    $activity->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                            ? request()->comentario
+                            : "Actividad reprogramada."
+                    )."\nFecha: ".request()->input_fecha;
+                    $activity->fecha_reprogramacion = request()->input_fecha;
+                    $response = $this->updateActivity(
+                        $activity,
+                        [session('id_dominio_actividad_programado'), session('id_dominio_actividad_pausada')],
+                        session('id_dominio_actividad_reprogramado'),
+                        'Actividad reprogramada!',
+                        ''
+                    );
+                    break;
+                case 'pause-activity':
+                    $activity->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                            ? request()->comentario
+                            : "Actividad pausada."
+                    )." ".request()->input_fecha;
+                    $response = $this->updateActivity(
+                        $activity,
+                        [session('id_dominio_actividad_programado'), session('id_dominio_actividad_reprogramado')],
+                        session('id_dominio_actividad_pausada'),
+                        'Actividad pausada!',
+                        ''
+                    );
+                    break;
+                case 'executed-activity':
+                    $activity->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                            ? request()->comentario
+                            : "Actividad ejecutada."
+                    )."\nFecha: ".request()->input_fecha;
+                    $activity->fecha_ejecucion = request()->input_fecha;
+                    $response = $this->updateActivity(
+                        $activity,
+                        [session('id_dominio_actividad_programado'), session('id_dominio_actividad_reprogramado'), session('id_dominio_actividad_pausada')],
+                        session('id_dominio_actividad_ejecutado'),
+                        'Actividad ejecutada',
+                        ''
+                    );
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+
+            if(!isset($response['success'])) {
+                throw new Exception($response['error']);
+            }
+
+            return response()->json([
+                'success' => $response['success']
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'error' => $th->getMessage()
+            ]);
+        }
     }
 
     public function grid() {
@@ -278,17 +373,67 @@ class ActividadController extends Controller
         ]);
     }
 
-    private function createTrak($activity, $action) {
+    private function updateActivity($activity, $estados, $nuevoEstado, $msg, $notification, $usuarioFinal = '') {
+        try {
+            if(in_array($activity->id_estado_actividad, $estados)) {
+                $activity->id_estado_actividad = $nuevoEstado;
+
+                $this->createTrack($activity, $nuevoEstado);
+                unset($activity->comentario);
+                $activity->save();
+            }
+
+            $id_usuario = TblActividad::find($activity->id_actividad)->id_usuareg;
+
+            if($notification !== '') {
+                $channel = 'user-'.(intval(Auth::user()->id_usuario) != intval($id_usuario)
+                    ? $id_usuario
+                    : (isset($activity->tblresposablecontratista->tbluser->idu_usuario) ? $activity->tblresposablecontratista->tbluser->idu_usuario : null)
+                );
+
+                $this->sendNotification($activity, $channel, $notification);
+            }
+
+            return ['success' => $msg];
+        } catch (\Throwable $th) {
+            Log::error($th->__toString());
+            return ['error' => $th->getMessage()];
+        }
+    }
+
+    private function createTrack($activity, $action) {
         try {
             TblEstadoActividad::create([
                 'id_actividad' => $activity->id_actividad,
                 'estado' => $action,
-                'comentario' => $activity->observaciones,
+                'comentario' => $activity->comentario,
                 'id_usuareg' => Auth::id()
             ]);
             
         } catch (\Throwable $th) {
             Log::error("Error creando track de actividad: ".$th->getMessage());
         }
+    }
+
+    public function cotizacionesCliente(TblActividad $activity) {
+        return view('partials._search', [
+            'cotizaciones' => TblCotizacion::select(DB::raw('DISTINCT tbl_cotizaciones.*'))
+            ->leftjoin('tbl_actividades as act', 'tbl_cotizaciones.id_cotizacion', '=', 'act.id_cotizacion')
+            ->where('act.id_cotizacion')
+            ->where([
+                'tbl_cotizaciones.id_cliente' => $activity->id_encargado_cliente,
+                'tbl_cotizaciones.id_estacion' => $activity->id_estacion,
+                'tbl_cotizaciones.id_tipo_trabajo' => $activity->id_tipo_actividad,
+                'tbl_cotizaciones.estado' => session('id_dominio_cotizacion_aprobada')
+            ])
+            ->get(),
+        ]);
+    }
+
+    public function seguimiento(TblActividad $activity) {
+        return view('partials.seguimiento', [
+            'model' => $activity,
+            'route' => 'activities.handleActivity'
+        ]);
     }
 }

@@ -59,9 +59,9 @@
                                 </td>
                                 @if ($edit)
                                     <td class="col-1 my-auto border-0">
-                                        <div class="h-100 w-100 text-center">
-                                            <i
-                                                class="fas fa-eye btn modal-form text-info fs-5 fw-bold"
+                                        <div class="d-flex flex-nowrap justify-content-center">
+                                            <span
+                                                class="btn modal-form"
                                                 data-title="{{ "Detalle actividad ".$item->id_actividad }}"
                                                 data-size="modal-fullscreen"
                                                 data-reload="false"
@@ -69,18 +69,21 @@
                                                 data-toggle="tooltip"
                                                 data-header-class="bg-info text-white"
                                                 data-placement="top"
-                                                title="{{ "Ver Actividad ".$item->id_actividad }}">
-                                            </i>
-                                            <i
+                                                title="{{ "Ver Actividad ".$item->id_actividad }}"
+                                            >
+                                                <i class="fas fa-eye text-info fs-5 fw-bold"></i>
+                                            </span>
+                                            <span
+                                                class="btn delete-item modal-form-2"
                                                 id="{{ $item->item }}"
-                                                class="fa-solid fa-trash-can btn delete-item modal-form-2 text-danger fs-5 fw-bold"
                                                 data-toggle="tooltip"
                                                 data-placement="top"
                                                 data-toggle="modal"
                                                 data-title="{{ "Quitar activdad ".$item->id_actividad }}"
                                                 title="Eliminar"
-                                                >
-                                            </i>
+                                            >
+                                                <i class="fa-solid fa-trash-can text-danger fs-5 fw-bold"></i>
+                                            </span>
                                         </div>
                                     </td>
                                 @endif

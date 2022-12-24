@@ -29,7 +29,7 @@
                             name='valor_total[]' id='valor_total_$detail->id_lista_precio' value='$detail->valor_total' disabled>
                     </td>
                     ".($edit
-                        ? "<td class='text-center col-1 my-auto border-0 td-delete btn-delete-item' ".($edit ? "data-toggle='tooltip' title='Quitar ítem'" : "")." data-id-tr='$tipo_carrito".'_'."$detail->id_tipo_item".'_'."$detail->id_lista_precio'><i class='fa-solid fa-trash-can text-danger fs-5 fs-bold btn btn-delete-item' data-id-tr='$tipo_carrito".'_'."$detail->id_tipo_item".'_'."$detail->id_lista_precio'></i></td>"
+                        ? "<td class='text-center col-1 my-auto border-0 td-delete btn-delete-item' ".($edit ? "data-toggle='tooltip' title='Quitar ítem'" : "")." data-id-tr='$tipo_carrito".'_'."$detail->id_tipo_item".'_'."$detail->id_lista_precio'><span class='btn btn-delete-item' data-id-tr='$tipo_carrito".'_'."$detail->id_tipo_item".'_'."$detail->id_lista_precio'><i class='fa-solid fa-trash-can text-danger fs-5 fs-bold'></i></span></td>"
                         : ""
                     )."
                 </tr>
@@ -77,11 +77,11 @@
                         <div class="my-auto">
                             <label id="lbl_{{ session('id_dominio_materiales') }}" class="lbl_total_material">$ 0.00</label>
                             <span
-                                class="btn"
+                                class="btn show-more"
                                 data-bs-toggle="collapse"
                                 data-bs-target=".item_{{ session('id_dominio_materiales') }}"
                                 >
-                                <i id="caret_{{ session('id_dominio_materiales') }}" class="show-more fa-solid fa-caret-down"></i>
+                                <i id="caret_{{ session('id_dominio_materiales') }}" class="fa-solid fa-caret-down"></i>
                             </span>
                         </div>
                     </div>
@@ -109,11 +109,11 @@
                         <div class="my-auto">
                             <label id="lbl_{{ session('id_dominio_mano_obra') }}" class="lbl_total_mano_obra">$ 0.00</label>
                             <span
-                                class="btn"
+                                class="btn show-more"
                                 data-bs-toggle="collapse"
                                 data-bs-target=".item_{{ session('id_dominio_mano_obra') }}"
                                 >
-                                <i id="caret_{{ session('id_dominio_mano_obra') }}" class="show-more fa-solid fa-caret-down"></i>
+                                <i id="caret_{{ session('id_dominio_mano_obra') }}" class="fa-solid fa-caret-down"></i>
                             </span>
                         </div>
                     </div>
@@ -142,11 +142,11 @@
                             <div class="my-auto">
                                 <label id="lbl_{{ session('id_dominio_transporte') }}" class="lbl_total_transporte">$ 0.00</label>
                                 <span
-                                    class="btn"
+                                    class="btn show-more"
                                     data-bs-toggle="collapse"
                                     data-bs-target=".item_{{ session('id_dominio_transporte') }}"
                                     >
-                                    <i id="caret_{{ session('id_dominio_transporte') }}" class="show-more fa-solid fa-caret-down"></i>
+                                    <i id="caret_{{ session('id_dominio_transporte') }}" class="fa-solid fa-caret-down"></i>
                                 </span>
                             </div>
                         </div>

@@ -45,7 +45,7 @@
     <div id="app">
         @include('partials.loader')
 
-        <main id="main" class="bg-white">
+        <main id="main">
             @yield('content')
         </main>
     </div>
