@@ -62,7 +62,7 @@
 <div class="l-navbar" id="nav-bar">
     <nav class="nav">
         <div>
-            <a href="home" class="nav_logo {{ request()->routeIs('home.index') ? 'active rounded' : '' }}">
+            <a href="home" class="nav_logo {{ request()->routeIs('home.index') ? 'active rounded my-2' : '' }}">
                 <i class="fa-solid fa-house-chimney nav_logo-icon {{ request()->routeIs('home.index') ? 'text-primary' : 'text-white' }}" style="margin-left: -5px;"></i>
                 <span class="nav_logo-name {{ request()->routeIs('home.index') ? 'text-primary' : 'text-white' }}">{{ config('app.name', 'Laravel') }}</span>
             </a>

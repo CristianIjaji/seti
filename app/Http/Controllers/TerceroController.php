@@ -50,6 +50,7 @@ class TerceroController extends Controller
                 } else if($key == 'full_name' && $value) {
                     $querybuilder->where('tbl_terceros.nombres', 'like', strtolower("%$value%"));
                     $querybuilder->orWhere('tbl_terceros.apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->orWhere('tbl_terceros.razon_social', 'like', strtolower("%$value%"));
                 }
             }
             $this->filtros[$key] = $value;
@@ -67,7 +68,7 @@ class TerceroController extends Controller
     }
 
     private function getTipoTerceros() {
-        $tipo_terceros = TblDominio::getListaDominios(session('id_dominio_tipo_tercero'));
+        $tipo_terceros = TblDominio::getListaDominios(session('id_dominio_tipo_tercero'), 'nombre');
         if(Auth::user()->role !== session('id_dominio_super_administrador')) {
             $tipo_terceros = $tipo_terceros->filter(function($value, $key) {
                 return $key != session('id_dominio_super_administrador');
@@ -103,7 +104,7 @@ class TerceroController extends Controller
         $this->authorize('create', new TblTercero);
         return view('terceros._form', [
             'tercero' => new TblTercero,
-            'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento')),
+            'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento'), 'nombre'),
             'tipo_terceros' => $this->getTipoTerceros(),
             'tipo_documento' => isset(request()->tipo_documento)
                 ? TblDominio::where('id_dominio', '=', request()->tipo_documento)->first() 

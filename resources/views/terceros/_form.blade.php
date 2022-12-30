@@ -16,6 +16,27 @@
         @endif
 @endif
     <div class="row">
+        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 {{ $tipo_tercero ? 'd-none' : '' }}">
+            <label for="id_dominio_tipo_tercero" class="required">Tipo tercero</label>
+            @if ($edit)
+                @if (!$tipo_tercero)
+                    <select class="form-control" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" style="width: 100%" @if ($edit) required @else disabled @endif>
+                        <option value="">Elegir tipo tercero</option>
+                        @foreach ($tipo_terceros as $id => $nombre)
+                            <option value="{{ $id }}" {{ old('id_dominio_tipo_tercero', $tercero->id_dominio_tipo_tercero) == $id ? 'selected' : '' }}>
+                                {{$nombre}}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="text" class="form-control" value="{{ $tipo_tercero->nombre }}" disabled readonly>
+                    <input type="hidden" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" value="{{ $tipo_tercero->id_dominio }}">
+                @endif
+            @else
+                <input type="text" class="form-control" value="{{ $tercero->tbldominiotercero->nombre }}" disabled>
+                <input type="hidden" id="id_dominio_tipo_tercero" value="{{ $tercero->id_dominio_tipo_tercero }}">
+            @endif
+        </div>
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="id_dominio_tipo_documento" class="required">Tipo documento</label>
             @if ($edit)
@@ -81,27 +102,6 @@
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="telefono" class="required">Teléfono / Celular</label>
             <input type="tel" class="form-control" @if ($edit) name="telefono" @endif id="telefono" value="{{ old('telefono', $tercero->telefono) }}" @if ($edit) required @else disabled @endif>
-        </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 {{ $tipo_tercero ? 'd-none' : '' }}">
-            <label for="id_dominio_tipo_tercero" class="required">Tipo tercero</label>
-            @if ($edit)
-                @if (!$tipo_tercero)
-                    <select class="form-control" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" style="width: 100%" @if ($edit) required @else disabled @endif>
-                        <option value="">Elegir tipo tercero</option>
-                        @foreach ($tipo_terceros as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('id_dominio_tipo_tercero', $tercero->id_dominio_tipo_tercero) == $id ? 'selected' : '' }}>
-                                {{$nombre}}
-                            </option>
-                        @endforeach
-                    </select>
-                @else
-                    <input type="text" class="form-control" value="{{ $tipo_tercero->nombre }}" disabled readonly>
-                    <input type="hidden" name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" value="{{ $tipo_tercero->id_dominio }}">
-                @endif
-            @else
-                <input type="text" class="form-control" value="{{ $tercero->tbldominiotercero->nombre }}" disabled>
-                <input type="hidden" id="id_dominio_tipo_tercero" value="{{ $tercero->id_dominio_tipo_tercero }}">
-            @endif
         </div>
         <div id="div_dependencia" class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
             <label for="id_responsable_cliente" class="required">Dependencia</label>
@@ -171,6 +171,12 @@
         }
     </style>
     <script type="application/javascript">
+        function uid() {
+            let a = new Uint32Array(3);
+            window.crypto.getRandomValues(a);
+            return (performance.now().toString(36)+Array.from(a).map(A => A.toString(36)).join("")).replace(/./g,""+Math.random()+Intl.DateTimeFormat().resolvedOptions().timeZone+Date.now());
+        };
+
         $('#id_dominio_tipo_documento').change(function() {
             $('#div_dv, #div_razon_social').addClass('d-none');
             let valor = parseInt($(this).val());
@@ -195,6 +201,13 @@
 
             if($.inArray(valor, [representante_cliente, coordinador]) > -1) {
                 $('#div_dependencia').removeClass('d-none');
+            }
+
+            if(valor == {!! session('id_dominio_almacen') !!}) {
+                $('#id_dominio_tipo_documento').val({!! session('id_dominio_cedula') !!}).change();
+                // $('#documento').val(new Generator());
+
+                console.log(uid());
             }
         });
 

@@ -50,16 +50,6 @@
                         element.classList.remove(btn_remove_class);
                         element.classList.add(btn_add_class);
                     });
-
-                    let element = document.getElementById('nav-bar');
-
-                    if(element) {
-                        let backgroundimage = (theme === 'dark' ? 'none' : 'linear-gradient(195deg, var(--bs-secondary) 0%, var(--bs-primary) 100%)');
-                        let backgroundColor = (theme === 'dark' ? '#2c2f32' : 'var(--bs-primary)');
-
-                        element.style.backgroundImage = backgroundimage;
-                        element.style.backgroundColor = backgroundColor;
-                    }
                 }
 
                 setTheme(getPreferredTheme())

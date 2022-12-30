@@ -16,6 +16,7 @@ use App\Models\TblParametro;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
+use App\Policies\TblMenuTipoTerceroPolicy;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -339,6 +340,13 @@ class SetupSeeder extends Seeder
                 'descripcion' => 'Tipo usuario analista',
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
+            ]);
+            $almacen = TblDominio::create([
+                'nombre' => 'Almacén',
+                'id_dominio_padre' => $tipo_terceros->id_dominio,
+                'descripcion' => 'Tipo usuario almacén',
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario
             ]);
         /* Fin creación dominios hijos tipo terceros */
 
@@ -840,6 +848,13 @@ class SetupSeeder extends Seeder
                 'descripcion' => 'id_dominio_analista',
                 'id_usuareg' => $user->id_usuario,
             ]);
+            // Creación parametro usuario almacen
+            TblParametro::create([
+                'llave' => 'id_dominio_almacen',
+                'valor' => $almacen->id_dominio,
+                'descripcion' => 'id_dominio_almacen',
+                'id_usuareg' => $user->id_usuario
+            ]);
             // Creacion parametros tipos plantillas correo
             TblParametro::create([
                 'llave' => 'id_dominio_plantilla_correo',
@@ -1164,11 +1179,27 @@ class SetupSeeder extends Seeder
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
+            $menuInventario = TblMenu::create([
+                'url' => 'stores.index',
+                'icon' => 'fa-solid fa-boxes-stacked nav_icon',
+                'nombre' => 'Almacén',
+                'orden' => 4,
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario
+            ]);
+            $menuOrden = TblMenu::create([
+                'url' => 'purchases.index',
+                'icon' => 'fa-solid fa-truck-arrow-right nav_icon',
+                'nombre' => 'Orden compra',
+                'orden' => 5,
+                'estado' => 1,
+                'id_usuareg' => $user->id_usuario,
+            ]);
             $menuCotizaciones = TblMenu::create([
                 'url' => 'quotes.index',
                 'icon' => 'fa-solid fa-clipboard-list nav_icon',
                 'nombre' => 'Cotizaciones',
-                'orden' => 4,
+                'orden' => 6,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -1176,7 +1207,7 @@ class SetupSeeder extends Seeder
                 'url' => 'activities.index',
                 'icon' => 'fa-solid fa-person-digging nav_icon',
                 'nombre' => 'Actividades',
-                'orden' => 5,
+                'orden' => 7,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario
             ]);
@@ -1184,7 +1215,7 @@ class SetupSeeder extends Seeder
                 'url' => 'deals.index',
                 'icon' => 'fa-solid fa-handshake nav_icon',
                 'nombre' => 'Consolidados',
-                'orden' => 6,
+                'orden' => 8,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario
             ]);
@@ -1192,7 +1223,7 @@ class SetupSeeder extends Seeder
                 'url' => 'users.index',
                 'icon' => 'fa-solid fa-chalkboard-user nav_icon',
                 'nombre' => 'Usuarios',
-                'orden' => 7,
+                'orden' => 9,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -1200,7 +1231,7 @@ class SetupSeeder extends Seeder
                 'url' => 'profiles.index',
                 'icon' => 'fa-solid fa-list-check nav_icon',
                 'nombre' => 'Perfiles',
-                'orden' => 8,
+                'orden' => 10,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -1208,7 +1239,7 @@ class SetupSeeder extends Seeder
                 'url' => 'domains.index',
                 'icon' => 'fa-solid fa-screwdriver nav_icon',
                 'nombre' => 'Dominios',
-                'orden' => 9,
+                'orden' => 11,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -1216,7 +1247,7 @@ class SetupSeeder extends Seeder
                 'url' => 'params.index',
                 'icon' => 'fa-solid fa-sliders nav_icon',
                 'nombre' => 'Parámetros',
-                'orden' => 10,
+                'orden' => 12,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
@@ -1243,6 +1274,24 @@ class SetupSeeder extends Seeder
             ]);
             TblMenuTipoTercero::create([
                 'id_menu' => $menuPrecios->id_menu,
+                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
+                'crear' => true,
+                'editar' => true,
+                'ver' => true,
+                'importar' => true,
+                'exportar' => true,
+            ]);
+            TblMenuTipoTercero::create([
+                'id_menu' => $menuInventario->id_menu,
+                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
+                'crear' => true,
+                'editar' => true,
+                'ver' => true,
+                'importar' => true,
+                'exportar' => true,
+            ]);
+            TblMenuTipoTercero::create([
+                'id_menu' => $menuOrden->id_menu,
                 'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
                 'crear' => true,
                 'editar' => true,

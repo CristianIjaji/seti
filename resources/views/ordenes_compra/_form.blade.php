@@ -3,10 +3,6 @@
     <label class="col-12 my-4">Datos para la orden compra</label>
 
     <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
-        <label for="codigo_orden">Código Orden</label>
-        <input type="text" class="form-control text-uppercase" name="codigo_orden" id="codigo_orden">
-    </div>
-    <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
         <label for="id_tipo" class="required">Tipo</label>
         <select class="form-control" name="id_tipo" id="id_tipo" style="width: 100%">
             <option value="">Elegir tipo</option>

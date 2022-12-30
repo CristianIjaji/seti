@@ -14,7 +14,6 @@ class TblOrdenCompra extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'codigo_orden',
         'id_tipo',
         'descripcion',
         'id_proveedor',

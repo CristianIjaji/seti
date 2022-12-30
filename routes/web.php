@@ -4,11 +4,14 @@ use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\ConsolidadoController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
+use App\Http\Controllers\EstadoActividadController;
 use App\Http\Controllers\EstadoCotizacionController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MenuTipoTerceroController;
 use App\Http\Controllers\MessagesController;
+use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ParametroController;
 use App\Http\Controllers\PuntosInteresController;
 use App\Http\Controllers\TerceroController;
@@ -106,5 +109,11 @@ Route::post('domains/grid', [DominioController::class, 'grid'])->name('domains.g
 // Controlador parametros
 Route::resource('params', ParametroController::class);
 Route::post('params/grid', [ParametroController::class, 'grid'])->name('params.grid');
+
+// Controlador de orden de compra
+Route::resource('purchases', OrdenController::class);
+
+// Controlador de inventario
+Route::resource('stores', InventarioController::class);
 
 Auth::routes();

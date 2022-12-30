@@ -243,6 +243,19 @@
                         {!! !$existe_cotizacion ? '<i class="fa-solid fa-list fs-4"></i>' : '<i class="fa-solid fa-circle-info fs-4"></i>' !!}
                     </span>
 
+                    <span
+                        class="btn btn-outline-danger border modal-form"
+                        data-title="Orden compra"
+                        data-size="modal-fullscreen"
+                        data-header-class='bg-primary bg-opacity-75 text-white'
+                        data-reload="true"
+                        data-action="{{ route('purchases.create') }}"
+                        data-toggle="tooltip"
+                        title="Orden compra"
+                    >
+                        <i class="fa-solid fa-cart-shopping fs-4"></i>
+                    </span>
+
                     @can('createComment', $activity)
                         @if ($edit)
                             <span

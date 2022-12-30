@@ -15,7 +15,6 @@ class CreateTblOrdenesCompraTable extends Migration
     {
         Schema::create('tbl_ordenes_compra', function (Blueprint $table) {
             $table->bigIncrements('id_orden_compra');
-            $table->string('codigo_orden')->uniqid();
             $table->unsignedBigInteger('id_tipo');
             $table->text('descripcion');
             $table->unsignedBigInteger('id_proveedor');
