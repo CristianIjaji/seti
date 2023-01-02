@@ -15,8 +15,9 @@ class CreateTblMenusTable extends Migration
     {
         Schema::create('tbl_menus', function (Blueprint $table) {
             $table->bigIncrements('id_menu');
-            $table->string('url');
-            $table->string('icon');
+            $table->unsignedBigInteger('id_menu_padre')->nullable();
+            $table->string('url')->nullable();
+            $table->string('icon')->nullable();
             $table->string('nombre');
             $table->integer('orden');
             $table->smallInteger('estado')->default(1);

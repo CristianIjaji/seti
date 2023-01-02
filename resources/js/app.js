@@ -945,42 +945,39 @@ $(document).ready(function() {
     $('[data-toggle="tooltip"]').on('click', function () {
         $(this).tooltip('hide')
     });
+
     setupSelect2();
     timer();
     datePicker();
 
     updateThemeColor();
+    initShowIcon();
 });
 
 jQuery(window).ready(function () {
     showLoader(false);
 });
 
-document.addEventListener("DOMContentLoaded", function(event) {
-    const showNavbar = (toggleId, navId, bodyId, headerId) =>{
-        const toggle = document.getElementById(toggleId),
-        nav = document.getElementById(navId),
-        bodypd = document.getElementById(bodyId),
-        headerpd = document.getElementById(headerId)
-        
-        // Validate that all variables exist
-        if(toggle && nav && bodypd && headerpd) {
-            toggle.addEventListener('click', () => {
-                // show navbar
-                nav.classList.toggle('show-panel');
-                $('.nav_list *[title]').tooltip(`${$('#nav-bar').hasClass('show-panel') ? 'disable' : 'enable'}`);
-                // change icon
-                toggle.classList.toggle('fa-xmark');
-                // add padding to body
-                bodypd.classList.toggle('body-pd');
-                // add padding to header
-                headerpd.classList.toggle('body-pd');
-            });
-        }
-    }
-    
-    showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
-});
+const initShowIcon = () => {
+    let icon_hide = 'fa-solid fa-angle-down';
+    let icon_show = 'fa-solid fa-angle-up';
+    let activemenu = 'activemenu';
+
+    $('.submenu_icon').each((i, e) => {
+        $(e).addClass(icon_hide);
+
+        let menu = document.getElementById($(e).closest('a').data('bs-target').replace('#', ''));
+        menu.addEventListener('hide.bs.collapse', event => {
+            $(e).removeClass(icon_show).addClass(icon_hide);
+            $(e).closest('a').removeClass(activemenu);
+        });
+
+        menu.addEventListener('show.bs.collapse', event => {
+            $(e).removeClass(icon_hide).addClass(icon_show);
+            $(e).closest('a').addClass(activemenu);
+        });
+    });
+}
 
 $(document).on('click', '.modal-form', function(e) {
     e.preventDefault();

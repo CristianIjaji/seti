@@ -16,12 +16,15 @@ use App\Models\TblParametro;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
-use App\Policies\TblMenuTipoTerceroPolicy;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class SetupSeeder extends Seeder
 {
+    private function createRegister($model, $params) {
+        return $model::create($params);
+    }
+
     /**
      * Run the database seeds.
      *
@@ -149,996 +152,220 @@ class SetupSeeder extends Seeder
             'id_usuareg' => 1
         ]);
 
-        // Se crean los dominios padres de la tabla tbl_dominios
-        $tipo_documentos = TblDominio::create([
-            'nombre' => 'Tipo documentos',
-            'descripcion' => 'Lista con los tipos de documentos',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario,
-        ]);
-        $tipo_terceros = TblDominio::create([
-            'nombre' => 'Tipo terceros',
-            'descripcion' => 'Lista con los tipos de usuarios',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario,
-        ]);
-        $tipo_plantilla_correo = TblDominio::create([
-            'nombre' => 'Tipo plantillas correo',
-            'descripcion' => 'Lista con los tipos de plantillas de correo',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario,
-        ]);
-        $tipos_impuestos = TblDominio::create([
-            'nombre' => 'Listado de impuestos',
-            'descripcion' => 'Listado de impuestos',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_zonas = TblDominio::create([
-            'nombre' => 'Listado de zonas de las estaciones',
-            'descripcion' => 'Listado de zonas de las estaciones',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_transportes = TblDominio::create([
-            'nombre' => 'Listado de transportes de las estaciones',
-            'descripcion' => 'Listado de transportes de las estaciones',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_accesos = TblDominio::create([
-            'nombre' => 'Listado de accesos de las estaciones',
-            'descripcion' => 'Listado de accesos de las estaciones',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_tipo_items = TblDominio::create([
-            'nombre' => 'Listado de los tipos de items',
-            'descripcion' => 'Listado de los tipos de items',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_tipo_trabajo = TblDominio::create([
-            'nombre' => 'Listado de los tipos de trabajo',
-            'descripcion' => 'Listado de los tipos de trabajo',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_prioridad = TblDominio::create([
-            'nombre' => 'Listado de los tipos de prioridades',
-            'descripcion' => 'Listado de los tipos de prioridades',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_procesos = TblDominio::create([
-            'nombre' => 'Listado de los estados de la cotización',
-            'descripcion' => 'Listado de los estados de la cotización',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_tipo_items = TblDominio::create([
-            'nombre' => 'Listado de los tipos de items',
-            'descripcion' => 'Listado de los tipos de items',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_subsistemas = TblDominio::create([
-            'nombre' => 'Listado de los subsistemas',
-            'descripcion' => 'Listado de los subsistemas',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_estados_actividad = TblDominio::create([
-            'nombre' => 'Listado de los estados de la actividad',
-            'descripcion' => 'Listado de los estados de la actividad',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_estados_consolidado = TblDominio::create([
-            'nombre' => 'Listado de los estados del consolidado',
-            'descripcion' => 'Listado de los estados del consolidado',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_medios_pago_orden_compra = TblDominio::create([
-            'nombre' => 'Listado de los medios de pago orden',
-            'descripcion' => 'Listado de los medios de pago orden',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        $lista_tipo_orden_compra = TblDominio::create([
-            'nombre' => 'Listado con los tipos de orden de compra',
-            'descripcion' => 'Listado con los tipos de orden de compra',
-            'estado' => 1,
-            'id_usuareg' => $user->id_usuario
-        ]);
-        
-        /* Creacioón dominios hijos tipo documentos */
-            $cedula = TblDominio::create([
-                'nombre' => 'Cédula',
-                'id_dominio_padre' => $tipo_documentos->id_dominio,
-                'descripcion' => 'Tipo documento cédula',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cedula_extranjeria = TblDominio::create([
-                'nombre' => 'Cédula extranjeria',
-                'id_dominio_padre' => $tipo_documentos->id_dominio,
-                'descripcion' => 'Tipo documento cédula extranjeria',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $pasaporte = TblDominio::create([
-                'nombre' => 'Pasaporte',
-                'id_dominio_padre' => $tipo_documentos->id_dominio,
-                'descripcion' => 'Tipo documento cédula',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $nit = TblDominio::create([
-                'nombre' => 'NIT',
-                'id_dominio_padre' => $tipo_documentos->id_dominio,
-                'descripcion' => 'Tipo documento NIT',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijo tipo documentos */
+        $modelDominio = new TblDominio;
+        $modelParametro = new TblParametro;
+        $modelMenu = new TblMenu;
+        $modelMenuTercero = new TblMenuTipoTercero;
 
-        /* Creación dominios hijos tipo terceros */
-            $superAdministrador = TblDominio::create([
-                'nombre' => 'Super Administrador',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario super administrador',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $administrador = TblDominio::create([
-                'nombre' => 'Administrador',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario administrador',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $proveedor = TblDominio::create([
-                'nombre' => 'Proveedor',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario proveedor',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cliente = TblDominio::create([
-                'nombre' => 'Cliente',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario cliente',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $representante_cliente = TblDominio::create([
-                'nombre' => 'Representante cliente',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario representante cliente',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $contratista = TblDominio::create([
-                'nombre' => 'Contratista',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario contratista',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $coordinador = TblDominio::create([
-                'nombre' => 'Coordinador',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario coordinador',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $analista = TblDominio::create([
-                'nombre' => 'Analista',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario analista',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $almacen = TblDominio::create([
-                'nombre' => 'Almacén',
-                'id_dominio_padre' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Tipo usuario almacén',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario
-            ]);
-        /* Fin creación dominios hijos tipo terceros */
+        $dominios_padres = [
+            'Tipo documentos' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_tipo_documento', 
+                'childs' => [
+                    'Cédula' => ['id_dominio' => null, 'key' => 'id_dominio_cedula'],
+                    'Cédula extranjeria' => ['id_dominio' => null, 'key' => 'id_dominio_cedula_extrangeria'],
+                    'Pasaporte' => ['id_dominio' => null, 'key' => 'id_dominio_pasaporte'],
+                    'NIT' => ['id_dominio' => null, 'key' => 'id_dominio_nit']
+                ]
+            ],
+            'Tipo terceros' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_tipo_tercero',
+                'childs' => [
+                    'Super Administrador' => ['id_dominio' => null, 'key' => 'id_dominio_super_administrador'],
+                    'Administrador' => ['id_dominio' => null, 'key' => 'id_dominio_administrador'],
+                    'Proveedor' => ['id_dominio' => null, 'key' => 'id_dominio_proveedor'],
+                    'Cliente' => ['id_dominio' => null, 'key' => 'id_dominio_cliente'],
+                    'Representante cliente' => ['id_dominio' => null, 'key' => 'id_dominio_representante_cliente'],
+                    'Contratista' => ['id_dominio' => null, 'key' => 'id_dominio_contratista'],
+                    'Coordinador' => ['id_dominio' => null, 'key' => 'id_dominio_coordinador'],
+                    'Analista' => ['id_dominio' => null, 'key' => 'id_dominio_analista'],
+                    'Almacén' => ['id_dominio' => null, 'key' => 'id_dominio_almacen'],
+                ]
+            ],
+            'Tipo plantillas correo' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_plantilla_correo',
+                'childs' => [
+                    'Correo' => ['id_dominio' => null, 'key' => 'id_dominio_plantilla_correo_default', 'descripcion' => $plantilla_correo]
+                ]
+            ],
+            'Listado de impuestos' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_impuestos',
+                'childs' => [
+                    'IVA 19%' => ['id_dominio' => null, 'key' => '', 'descripcion' => '19%']
+                ]
+            ],
+            'Listado de zonas de las estaciones' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_zonas',
+                'childs' => [
+                    'Oriente' => ['id_dominio' => null, 'key' => ''],
+                    'Suroccidente' => ['id_dominio' => null, 'key' => ''],
+                    'Centro' => ['id_dominio' => null, 'key' => ''],
+                    'Noroccidente' => ['id_dominio' => null, 'key' => ''],
+                ]
+            ],
+            'Listado de transportes de las estaciones' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_transportes',
+                'childs' => [
+                    'Mular' => ['id_dominio' => null, 'key' => ''],
+                    'Aéreo' => ['id_dominio' => null, 'key' => ''],
+                    'Marítimo' => ['id_dominio' => null, 'key' => ''],
+                    'Fluvial' => ['id_dominio' => null, 'key' => ''],
+                    'No convencional' => ['id_dominio' => null, 'key' => ''],
+                ]
+            ],
+            'Listado de accesos de las estaciones' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_accesos',
+                'childs' => [
+                    'Difícil acceso' => ['id_dominio' => null, 'key' => ''],
+                    'Fácil acceso' => ['id_dominio' => null, 'key' => ''],
+                ]
+            ],
+            'Listado de los tipos de trabajo' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_tipos_trabajo',
+                'childs' => [
+                    'Preventivo' => ['id_dominio' => null, 'key' => ''],
+                    'Correctivo' => ['id_dominio' => null, 'key' => ''],
+                    'Emergencia' => ['id_dominio' => null, 'key' => ''],
+                ]
+            ],
+            'Listado de los tipos de prioridades' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_tipos_prioridad',
+                'childs' => [
+                    'Urgente' => ['id_dominio' => null, 'key' => ''],
+                    'Alta' => ['id_dominio' => null, 'key' => ''],
+                    'Media' => ['id_dominio' => null, 'key' => ''],
+                    'Baja' => ['id_dominio' => null, 'key' => ''],
+                ]
+            ],
+            'Listado de los estados de la cotización' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_tipos_proceso',
+                'childs' => [
+                    'Cotización creada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_creada'],
+                    'Cotización devuelta' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_devuelta'],
+                    'Cotización revisada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_revisada'],
+                    'Cotización enviada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_enviada'],
+                    'Cotización pendiente aprobación' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_pendiente_aprobacion'],
+                    'Cotización rechazada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_rechazada'],
+                    'Cotización cancelada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_cancelada'],
+                    'Cotización aprobada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_aprobada'],
+                ]
+            ],
+            'Listado de los tipos de items' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_tipo_items',
+                'childs' => [
+                    'Mano de obra' => ['id_dominio' => null, 'key' => 'id_dominio_mano_obra'],
+                    'Materiales' => ['id_dominio' => null, 'key' => 'id_dominio_materiales'],
+                    'Transporte' => ['id_dominio' => null, 'key' => 'id_dominio_transporte'],
+                ]
+            ],
+            'Listado de los subsistemas' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_subsistemas',
+                'childs' => [
+                    'Motogenerador' => ['id_dominio' => null, 'key' => ''],
+                    'Aires acondicionados' => ['id_dominio' => null, 'key' => ''],
+                    'Sistema puesta tierra' => ['id_dominio' => null, 'key' => ''],
+                    'Baja tensión' => ['id_dominio' => null, 'key' => ''],
+                    'Media tensión' => ['id_dominio' => null, 'key' => ''],
+                    'Obra civil' => ['id_dominio' => null, 'key' => ''],
+                    'Sistema regulado' => ['id_dominio' => null, 'key' => ''],
+                    'ATS' => ['id_dominio' => null, 'key' => ''],
+                    'SPT/MT/BT' => ['id_dominio' => null, 'key' => ''],
+                    'Power' => ['id_dominio' => null, 'key' => ''],
+                ]
+            ],
+            'Listado de los estados de la actividad' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_estados_actividad',
+                'childs' => [
+                    'Programado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_programado'],
+                    'Comprando' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_comprando'],
+                    'Reprogramado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_reprogramado'],
+                    'Ejecutado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_ejecutado'],
+                    'Informe cargado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_informe_cargado'],
+                    'Pausada' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_pausada'],
+                    'Liquidado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_liquidado'],
+                    'Conciliado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_conciliado'],
+                ]
+            ],
+            'Listado de los estados del consolidado' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_estados_consolidado',
+                'childs' => [
+                    'Consolidado creado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_creado'],
+                    'Consolidado conciliado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_conciliado'],
+                ]
+            ],
+            'Listado de los medios de pago orden' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_medio_pago_orden_compra',
+                'childs' => [
+                    'Crédito' => ['id_dominio' => null, 'key' => 'id_dominio_medio_pago_credito'],
+                    'Contado' => ['id_dominio' => null, 'key' => 'id_dominio_megio_pago_contado'],
+                ]
+            ],
+            'Listado con los tipos de orden de compra' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_tipo_orden_compra',
+                'childs' => [
+                    'Servicio' => ['id_dominio' => null, 'key' => 'id_dominio_orden_servicio'],
+                    'Suministro' => ['id_dominio' => null, 'key' => 'id_dominio_orden_suministro'],
+                ]
+            ]
+        ];
 
-        /* Creación dominios hijos tipo plantllas*/
-            $correo = TblDominio::create([
-                'nombre' => 'Correo',
-                'id_dominio_padre' => $tipo_plantilla_correo->id_dominio,
-                'descripcion' => $plantilla_correo,
+        foreach ($dominios_padres as $dominio_padre => $dominios_hijos) {
+            $params = [
+                'nombre' => $dominio_padre,
+                'descripcion' => $dominio_padre,
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos tipo plantllas */
+            ];
 
-        /* Creación dominios hijos tipo de impuestos */
-            TblDominio::create([
-                'nombre' => 'IVA 19%',
-                'id_dominio_padre' => $tipos_impuestos->id_dominio,
-                'descripcion' => '19%',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creacipon dominios hijos tipo de impuestos */
+            $dominios_padres[$dominio_padre]['id_dominio'] = $this->createRegister($modelDominio, $params)->id_dominio;
 
-        /* Creación dominios hijos zonas */
-            TblDominio::create([
-                'nombre' => 'Oriente',
-                'id_dominio_padre' => $lista_zonas->id_dominio,
-                'descripcion' => 'Oriente',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
+            $this->createRegister($modelParametro, [
+                'llave' => $dominios_padres[$dominio_padre]['key'],
+                'valor' => $dominios_padres[$dominio_padre]['id_dominio'],
+                'descripcion' => $dominios_padres[$dominio_padre]['key'],
+                'id_usuareg' => $user->id_usuario
             ]);
-            TblDominio::create([
-                'nombre' => 'Suroccidente',
-                'id_dominio_padre' => $lista_zonas->id_dominio,
-                'descripcion' => 'Suroccidente',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Centro',
-                'id_dominio_padre' => $lista_zonas->id_dominio,
-                'descripcion' => 'Centro',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Noroccidente',
-                'id_dominio_padre' => $lista_zonas->id_dominio,
-                'descripcion' => 'Noroccidente',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos zonas */
 
-        /* Creación dominios hijos transportes */
-            TblDominio::create([
-                'nombre' => 'Mular',
-                'id_dominio_padre' => $lista_transportes->id_dominio,
-                'descripcion' => 'Mular',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Aéreo',
-                'id_dominio_padre' => $lista_transportes->id_dominio,
-                'descripcion' => 'Aéreo',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Marítimo',
-                'id_dominio_padre' => $lista_transportes->id_dominio,
-                'descripcion' => 'Marítimo',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Fluvial',
-                'id_dominio_padre' => $lista_transportes->id_dominio,
-                'descripcion' => 'Fluvial',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'No convencional',
-                'id_dominio_padre' => $lista_transportes->id_dominio,
-                'descripcion' => 'No convencional',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos transportes */
+            foreach ($dominios_hijos['childs'] as $nombre_dominio => $dominio) {
+                $params = [
+                    'id_dominio_padre' => $dominios_padres[$dominio_padre]['id_dominio'],
+                    'nombre' => $nombre_dominio,
+                    'descripcion' => isset($dominio['descripcion']) ? $dominio['descripcion'] : $nombre_dominio,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario,
+                ];
 
-        /* Creación dominios hijos accesos */
-            TblDominio::create([
-                'nombre' => 'Difícil acceso',
-                'id_dominio_padre' => $lista_accesos->id_dominio,
-                'descripcion' => 'Difícil acceso',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Fácil acceso',
-                'id_dominio_padre' => $lista_accesos->id_dominio,
-                'descripcion' => 'Fácil acceso',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos accesos */
+                $dominios_padres[$dominio_padre]['childs'][$nombre_dominio]['id_dominio'] = $this->createRegister($modelDominio, $params)->id_dominio;
 
-        /* Creación dominios hijos tipos de items */
-            $manoObra = TblDominio::create([
-                'nombre' => 'Mano de obra',
-                'id_dominio_padre' => $lista_tipo_items->id_dominio,
-                'descripcion' => 'Item tipo mano de obra',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $materiales = TblDominio::create([
-                'nombre' => 'Materiales',
-                'id_dominio_padre' => $lista_tipo_items->id_dominio,
-                'descripcion' => 'Item tipo materiales',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $transporte = TblDominio::create([
-                'nombre' => 'Transporte',
-                'id_dominio_padre' => $lista_tipo_items->id_dominio,
-                'descripcion' => 'Item tipo transporte',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos tipo de items */
+                if(!empty($dominio['key'])) {
+                    $this->createRegister($modelParametro, [
+                        'llave' => $dominio['key'],
+                        'valor' => $dominios_padres[$dominio_padre]['childs'][$nombre_dominio]['id_dominio'],
+                        'descripcion' => $dominio['key'],
+                        'id_usuareg' => $user->id_usuario
+                    ]);
+                }
+            }
+        }
 
-        /* Creación dominios hijos tipos de trabajo */
-            TblDominio::create([
-                'nombre' => 'Preventivo',
-                'id_dominio_padre' => $lista_tipo_trabajo->id_dominio,
-                'descripcion' => 'Tipo de trabajo preventivo',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Correctivo',
-                'id_dominio_padre' => $lista_tipo_trabajo->id_dominio,
-                'descripcion' => 'Tipo de trabajo correctivo',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Emergencia',
-                'id_dominio_padre' => $lista_tipo_trabajo->id_dominio,
-                'descripcion' => 'Tipo de trabajo emergencia',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos tipo de trabajo */
-
-        /* Creación dominios hijos tipos de prioridad */
-            TblDominio::create([
-                'nombre' => 'Urgente',
-                'id_dominio_padre' => $lista_prioridad->id_dominio,
-                'descripcion' => 'Tipo de prioridad urgente',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Alta',
-                'id_dominio_padre' => $lista_prioridad->id_dominio,
-                'descripcion' => 'Tipo de prioridad alta',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Media',
-                'id_dominio_padre' => $lista_prioridad->id_dominio,
-                'descripcion' => 'Tipo de prioridad media',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Baja',
-                'id_dominio_padre' => $lista_prioridad->id_dominio,
-                'descripcion' => 'Tipo de prioridad baja',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos tipo de prioridad */
-
-        /* Creación dominios hijos tipos de procesos */
-            $cotizacion_creada = TblDominio::create([
-                'nombre' => 'Cotización creada',
-                'id_dominio_padre' => $lista_procesos->id_dominio,
-                'descripcion' => 'Cotización creada',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cotizacion_devuelta = TblDominio::create([
-                'nombre' => 'Cotización devuelta',
-                'id_dominio_padre' => $lista_procesos->id_dominio,
-                'descripcion' => 'Cotización devuelta',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cotizacion_revisada = TblDominio::create([
-                'nombre' => 'Cotización revisada',
-                'id_dominio_padre' => $lista_procesos->id_dominio,
-                'descripcion' => 'Cotización revisada',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cotizacion_enviada = TblDominio::create([
-                'nombre' => 'Cotización enviada',
-                'id_dominio_padre' => $lista_procesos->id_dominio,
-                'descripcion' => 'Cotización enviada',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cotizacion_pendiente_aprobacion = TblDominio::create([
-                'nombre' => 'Cotización pendiente aprobación',
-                'id_dominio_padre' => $lista_procesos->id_dominio,
-                'descripcion' => 'Cotización pendiente aprobación',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cotizacion_rechazada = TblDominio::create([
-                'nombre' => 'Cotización rechazada',
-                'id_dominio_padre' => $lista_procesos->id_dominio,
-                'descripcion' => 'Cotización rechazada',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cotizacion_cancelada = TblDominio::create([
-                'nombre' => 'Cotización cancelada',
-                'id_dominio_padre' => $lista_procesos->id_dominio,
-                'descripcion' => 'Cotización cancelada',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $cotizacion_aprobada = TblDominio::create([
-                'nombre' => 'Cotización aprobada',
-                'id_dominio_padre' => $lista_procesos->id_dominio,
-                'descripcion' => 'Cotización aprobada',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos tipo de prioridad */
-
-        /* Creación dominios hijos tipos de subsistemas */
-            TblDominio::create([
-                'nombre' => 'Motogenerador',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Motogenerador',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Aires acondicionados',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Aires acondicionados',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Sistema puesta tierra',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Sistema puesta tierra',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Baja tensión',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Baja Tensión',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Media tensión',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Media tensión',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Obra civil',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Obra civil',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Sistema regulado',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Sistema regulado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'ATS',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'ATS',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'SPT/MT/BT',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Sistema puesta atierra, media tensión y baja tensión',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblDominio::create([
-                'nombre' => 'Power',
-                'id_dominio_padre' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'Sistema de respaldo power',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos tipos de subsistemas */
-
-        /* Creación dominios hijos estados actividad */
-            $actividad_programado = TblDominio::create([
-                'nombre' => 'Programado',
-                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'Programado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $actividad_comprando = TblDominio::create([
-                'nombre' => 'Comprando',
-                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'Comprando',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $actividad_reprogramado = TblDominio::create([
-                'nombre' => 'Reprogramado',
-                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'Reprogramado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $actividad_ejecutado = TblDominio::create([
-                'nombre' => 'Ejecutado',
-                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'Ejecutado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $actividad_informe_cargado = TblDominio::create([
-                'nombre' => 'Informe cargado',
-                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'Informe cargado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $actividad_pausada = TblDominio::create([
-                'nombre' => 'Pausada',
-                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'Pausada',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $actividad_liquidado = TblDominio::create([
-                'nombre' => 'Liquidado',
-                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'Liquidado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $actividad_conciliado = TblDominio::create([
-                'nombre' => 'Conciliado',
-                'id_dominio_padre' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'Conciliado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos estados actividad */
-
-        /* Creación dominios hijos estado consolidado */
-            $consolidado_creado = TblDominio::create([
-                'nombre' => 'Consolidado creado',
-                'id_dominio_padre' => $lista_estados_consolidado->id_dominio,
-                'descripcion' => 'Consolidado creado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $consolidado_conciliado = TblDominio::create([
-                'nombre' => 'Consolidado conciliado',
-                'id_dominio_padre' => $lista_estados_consolidado->id_dominio,
-                'descripcion' => 'Consolidado conciliado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación dominios hijos estados consolidado */
-
-        /* Creacion dominios hijos ordenes de compra */
-            $orden_credito = TblDominio::create([
-                'nombre' => 'Crédito',
-                'id_dominio_padre' => $lista_medios_pago_orden_compra->id_dominio,
-                'descripcion' => 'Crédito',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $orden_contado = TblDominio::create([
-                'nombre' => 'Contado',
-                'id_dominio_padre' => $lista_medios_pago_orden_compra->id_dominio,
-                'descripcion' => 'Contado',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creacion dominios hijos ordenes de compra */
-
-        /* Creacion dominios hijos tipo orden de compra */
-            $orden_servicio = TblDominio::create([
-                'nombre' => 'Servicio',
-                'id_dominio_padre' => $lista_tipo_orden_compra->id_dominio,
-                'descripcion' => 'Servicio',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario
-            ]);
-            $orden_suministro = TblDominio::create([
-                'nombre' => 'Suministro',
-                'id_dominio_padre' => $lista_tipo_orden_compra->id_dominio,
-                'descripcion' => 'Suministro',
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario
-            ]);
-        /* Fin creación dominios hijos tipo orden decompra */
-
-        /* Creación parametros */
-            // Creación parametro tipo documentos
-            TblParametro::create([
-                'llave' => 'id_dominio_tipo_documento',
-                'valor' => $tipo_documentos->id_dominio,
-                'descripcion' => 'Lista con los tipos de documentos',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro tipo terceros
-            TblParametro::create([
-                'llave' => 'id_dominio_tipo_tercero',
-                'valor' => $tipo_terceros->id_dominio,
-                'descripcion' => 'Lista con los tipos de usuarios',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro usuario super administrador
-            TblParametro::create([
-                'llave' => 'id_dominio_super_administrador',
-                'valor' => $superAdministrador->id_dominio,
-                'descripcion' => 'id_dominio_super_administrador',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro usuario administrador
-            TblParametro::create([
-                'llave' => 'id_dominio_administrador',
-                'valor' => $administrador->id_dominio,
-                'descripcion' => 'id_dominio_administrador',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro usuario proveedor
-            TblParametro::create([
-                'llave' => 'id_dominio_proveedor',
-                'valor' => $proveedor->id_dominio,
-                'descripcion' => 'id_dominio_proveedor',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro usuario cliente
-            TblParametro::create([
-                'llave' => 'id_dominio_cliente',
-                'valor' => $cliente->id_dominio,
-                'descripcion' => 'id_dominio_cliente',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblParametro::create([
-                'llave' => 'id_dominio_representante_cliente',
-                'valor' => $representante_cliente->id_dominio,
-                'descripcion' => 'id_dominio_representante_cliente',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro usuario representante cliente
-            // Creación parametro usuario contratista
-            TblParametro::create([
-                'llave' => 'id_dominio_contratista',
-                'valor' => $contratista->id_dominio,
-                'descripcion' => 'id_dominio_contratista',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro usuario coordinador
-            TblParametro::create([
-                'llave' => 'id_dominio_coordinador',
-                'valor' => $coordinador->id_dominio,
-                'descripcion' => 'id_dominio_coordinador',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro usuario contratista
-            TblParametro::create([
-                'llave' => 'id_dominio_analista',
-                'valor' => $analista->id_dominio,
-                'descripcion' => 'id_dominio_analista',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro usuario almacen
-            TblParametro::create([
-                'llave' => 'id_dominio_almacen',
-                'valor' => $almacen->id_dominio,
-                'descripcion' => 'id_dominio_almacen',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creacion parametros tipos plantillas correo
-            TblParametro::create([
-                'llave' => 'id_dominio_plantilla_correo',
-                'valor' => $tipo_plantilla_correo->id_dominio,
-                'descripcion' => 'id_dominio_plantilla_correo',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacion parametros tipos de impuestos
-            TblParametro::create([
-                'llave' => 'id_dominio_impuestos',
-                'valor' => $tipos_impuestos->id_dominio,
-                'descripcion' => 'id_dominio_impuestos',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro plantilla correo
-            TblParametro::create([
-                'llave' => 'id_dominio_plantilla_correo_default',
-                'valor' => $correo->id_dominio,
-                'descripcion' => 'id_dominio_plantilla_correo_default',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro lista de las zonas
-            TblParametro::create([
-                'llave' => 'id_dominio_zonas',
-                'valor' => $lista_zonas->id_dominio,
-                'descripcion' => 'id_dominio_zonas',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro lista de transportes
-            TblParametro::create([
-                'llave' => 'id_dominio_transportes',
-                'valor' => $lista_transportes->id_dominio,
-                'descripcion' => 'id_dominio_transportes',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro lista de accesos
-            TblParametro::create([
-                'llave' => 'id_dominio_accesos',
-                'valor' => $lista_accesos->id_dominio,
-                'descripcion' => 'id_dominio_accesos',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            TblParametro::create([
-                'llave' => 'id_dominio_tipo_items',
-                'valor' => $lista_tipo_items->id_dominio,
-                'descripcion' => 'id_dominio_tipo_items',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creacón parametro mano de obra
-            TblParametro::create([
-                'llave' => 'id_dominio_mano_obra',
-                'valor' => $manoObra->id_dominio,
-                'descripcion' => 'id_dominio_mano_obra',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro materiales
-            TblParametro::create([
-                'llave' => 'id_dominio_materiales',
-                'valor' => $materiales->id_dominio,
-                'descripcion' => 'id_dominio_materiales',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro materiales
-            TblParametro::create([
-                'llave' => 'id_dominio_transporte',
-                'valor' => $transporte->id_dominio,
-                'descripcion' => 'id_dominio_transporte',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro tipos de trabajo
-            TblParametro::create([
-                'llave' => 'id_dominio_tipos_trabajo',
-                'valor' => $lista_tipo_trabajo->id_dominio,
-                'descripcion' => 'id_dominio_tipos_trabajo',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro tipos de proceso
-            TblParametro::create([
-                'llave' => 'id_dominio_tipos_proceso',
-                'valor' => $lista_procesos->id_dominio,
-                'descripcion' => 'id_dominio_tipos_proceso',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro tipos de prioridad
-            TblParametro::create([
-                'llave' => 'id_dominio_tipos_prioridad',
-                'valor' => $lista_prioridad->id_dominio,
-                'descripcion' => 'id_dominio_tipos_prioridad',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro cotización creada
-            TblParametro::create([
-                'llave' => 'id_dominio_cotizacion_creada',
-                'valor' => $cotizacion_creada->id_dominio,
-                'descripcion' => 'id_dominio_cotizacion_creada',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro cotización devuelta
-            TblParametro::create([
-                'llave' => 'id_dominio_cotizacion_devuelta',
-                'valor' => $cotizacion_devuelta->id_dominio,
-                'descripcion' => 'id_dominio_cotizacion_devuelta',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro cotización revisada
-            TblParametro::create([
-                'llave' => 'id_dominio_cotizacion_revisada',
-                'valor' => $cotizacion_revisada->id_dominio,
-                'descripcion' => 'id_dominio_cotizacion_revisada',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro cotización enviada
-            TblParametro::create([
-                'llave' => 'id_dominio_cotizacion_enviada',
-                'valor' => $cotizacion_enviada->id_dominio,
-                'descripcion' => 'id_dominio_cotizacion_enviada',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro cotización pendiente aprobación
-            TblParametro::create([
-                'llave' => 'id_dominio_cotizacion_pendiente_aprobacion',
-                'valor' => $cotizacion_pendiente_aprobacion->id_dominio,
-                'descripcion' => 'id_dominio_cotizacion_pendiente_aprobacion',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro cotización rechazada
-            TblParametro::create([
-                'llave' => 'id_dominio_cotizacion_rechazada',
-                'valor' => $cotizacion_rechazada->id_dominio,
-                'descripcion' => 'id_dominio_cotizacion_rechazada',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro cotización cancelada
-            TblParametro::create([
-                'llave' => 'id_dominio_cotizacion_cancelada',
-                'valor' => $cotizacion_cancelada->id_dominio,
-                'descripcion' => 'id_dominio_cotizacion_cancelada',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creacón parametro cotización cancelada
-            TblParametro::create([
-                'llave' => 'id_dominio_cotizacion_aprobada',
-                'valor' => $cotizacion_aprobada->id_dominio,
-                'descripcion' => 'id_dominio_cotizacion_aprobada',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro cédula
-            TblParametro::create([
-                'llave' => 'id_dominio_cedula',
-                'valor' => $cedula->id_dominio,
-                'descripcion' => 'id_dominio_cedula',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro cédula extrangeria
-            TblParametro::create([
-                'llave' => 'id_dominio_cedula_extrangeria',
-                'valor' => $cedula_extranjeria->id_dominio,
-                'descripcion' => 'id_dominio_cedula_extrangeria',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro pasaporte
-            TblParametro::create([
-                'llave' => 'id_dominio_pasaporte',
-                'valor' => $pasaporte->id_dominio,
-                'descripcion' => 'id_dominio_pasaporte',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro nit
-            TblParametro::create([
-                'llave' => 'id_dominio_nit',
-                'valor' => $nit->id_dominio,
-                'descripcion' => 'id_dominio_nit',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro lista subsistemas
-            TblParametro::create([
-                'llave' => 'id_dominio_subsistemas',
-                'valor' => $lista_subsistemas->id_dominio,
-                'descripcion' => 'id_dominio_subsistemas',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creacón parametro estados de la actividad
-            TblParametro::create([
-                'llave' => 'id_dominio_estados_actividad',
-                'valor' => $lista_estados_actividad->id_dominio,
-                'descripcion' => 'id_dominio_estados_actividad',
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            // Creación parametro actividad programado
-            TblParametro::create([
-                'llave' => 'id_dominio_actividad_programado',
-                'valor' => $actividad_programado->id_dominio,
-                'descripcion' => 'id_dominio_actividad_programado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro actividad comprando
-            TblParametro::create([
-                'llave' => 'id_dominio_actividad_comprando',
-                'valor' => $actividad_comprando->id_dominio,
-                'descripcion' => 'id_dominio_actividad_comprando',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro actividad reprogramado
-            TblParametro::create([
-                'llave' => 'id_dominio_actividad_reprogramado',
-                'valor' => $actividad_reprogramado->id_dominio,
-                'descripcion' => 'id_dominio_actividad_reprogramado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro actividad ejecutado
-            TblParametro::create([
-                'llave' => 'id_dominio_actividad_ejecutado',
-                'valor' => $actividad_ejecutado->id_dominio,
-                'descripcion' => 'id_dominio_actividad_ejecutado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro actividad informe cargado
-            TblParametro::create([
-                'llave' => 'id_dominio_actividad_informe_cargado',
-                'valor' => $actividad_informe_cargado->id_dominio,
-                'descripcion' => 'id_dominio_actividad_informe_cargado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro actividad pausada
-            TblParametro::create([
-                'llave' => 'id_dominio_actividad_pausada',
-                'valor' => $actividad_pausada->id_dominio,
-                'descripcion' => 'id_dominio_actividad_pausada',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro actividad liquidado
-            TblParametro::create([
-                'llave' => 'id_dominio_actividad_liquidado',
-                'valor' => $actividad_liquidado->id_dominio,
-                'descripcion' => 'id_dominio_actividad_liquidado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro actividad conciliado
-            TblParametro::create([
-                'llave' => 'id_dominio_actividad_conciliado',
-                'valor' => $actividad_conciliado->id_dominio,
-                'descripcion' => 'id_dominio_actividad_conciliado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro estados consolidado
-            TblParametro::create([
-                'llave' => 'id_dominio_estados_consolidado',
-                'valor' => $lista_estados_consolidado->id_dominio,
-                'descripcion' => 'id_dominio_estados_consolidado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro consolidado creado
-            TblParametro::create([
-                'llave' => 'id_dominio_consolidado_creado',
-                'valor' => $consolidado_creado->id_dominio,
-                'descripcion' => 'id_dominio_consolidado_creado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro consolidado conciliado
-            TblParametro::create([
-                'llave' => 'id_dominio_consolidado_conciliado',
-                'valor' => $consolidado_conciliado->id_dominio,
-                'descripcion' => 'id_dominio_consolidado_conciliado',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creación parametro medios de pago de ordenes de compra
-            TblParametro::create([
-                'llave' => 'id_dominio_medio_pago_orden_compra',
-                'valor' => $lista_medios_pago_orden_compra->id_dominio,
-                'descripcion' => 'id_dominio_medio_pago_orden_compra',
-                'id_usuareg' => $user->id_usuario
-            ]);
-            // Creacion parametros tipo de ordenes de compra
-            TblParametro::create([
-                'llave' => 'id_dominio_tipo_orden_compra',
-                'valor' => $lista_tipo_orden_compra->id_dominio,
-                'descripcion' => 'id_dominio_tipo_orden_compra',
-                'id_usuareg' => $user->id_usuario
-            ]);
-        /* Fin creación parametros */
-
-        /* Se crean terceros del sistema */
+        /* Se crea administrador de la página */
             $administrador_pagina = TblTercero::create([
-                'id_dominio_tipo_documento' => $cedula->id_dominio,
+                'id_dominio_tipo_documento' => $dominios_padres['Tipo documentos']['childs']['Cédula']['id_dominio'],
                 'documento' => '1083870826',
                 'dv' => '',
                 'razon_social' => '',
@@ -1148,114 +375,178 @@ class SetupSeeder extends Seeder
                 'direccion' => 'Calle 180 # 54 - 57',
                 'correo' => 'candres651@gmail.com',
                 'telefono' => '3165163721',
-                'id_dominio_tipo_tercero' => $superAdministrador->id_dominio,
+                'id_dominio_tipo_tercero' => $dominios_padres['Tipo terceros']['childs']['Super Administrador']['id_dominio'],
                 'estado' => 1,
                 'id_usuareg' => $user->id_usuario,
             ]);
         /* FIn creación terceros del sistema */
 
-        /* Se crean los menús */
-            $menuTerceros = TblMenu::create([
-                'url' => 'clients.index',
-                'icon' => 'fa-solid fa-address-book nav_icon',
-                'nombre' => 'Terceros',
-                'orden' => 1,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $menuSitios = TblMenu::create([
-                'url' => 'sites.index',
-                'icon' => 'fa-solid fa-tower-cell nav_icon',
-                'nombre' => 'Puntos interés',
-                'orden' => 2,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $menuPrecios = TblMenu::create([
-                'url' => 'priceList.index',
-                'icon' => 'fa-solid fa-list-ol nav_icon',
-                'nombre' => 'Lista precios',
-                'orden' => 3,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $menuInventario = TblMenu::create([
-                'url' => 'stores.index',
-                'icon' => 'fa-solid fa-boxes-stacked nav_icon',
-                'nombre' => 'Almacén',
-                'orden' => 4,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario
-            ]);
-            $menuOrden = TblMenu::create([
-                'url' => 'purchases.index',
-                'icon' => 'fa-solid fa-truck-arrow-right nav_icon',
-                'nombre' => 'Orden compra',
-                'orden' => 5,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $menuCotizaciones = TblMenu::create([
-                'url' => 'quotes.index',
-                'icon' => 'fa-solid fa-clipboard-list nav_icon',
-                'nombre' => 'Cotizaciones',
-                'orden' => 6,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $menuActividades = TblMenu::create([
-                'url' => 'activities.index',
-                'icon' => 'fa-solid fa-person-digging nav_icon',
-                'nombre' => 'Actividades',
-                'orden' => 7,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario
-            ]);
-            $menuConsolidados = TblMenu::create([
-                'url' => 'deals.index',
-                'icon' => 'fa-solid fa-handshake nav_icon',
-                'nombre' => 'Consolidados',
-                'orden' => 8,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario
-            ]);
-            $menuUsuarios = TblMenu::create([
-                'url' => 'users.index',
-                'icon' => 'fa-solid fa-chalkboard-user nav_icon',
-                'nombre' => 'Usuarios',
-                'orden' => 9,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $menuPerfiles = TblMenu::create([
-                'url' => 'profiles.index',
-                'icon' => 'fa-solid fa-list-check nav_icon',
-                'nombre' => 'Perfiles',
-                'orden' => 10,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $menuDominios = TblMenu::create([
-                'url' => 'domains.index',
-                'icon' => 'fa-solid fa-screwdriver nav_icon',
-                'nombre' => 'Dominios',
-                'orden' => 11,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-            $menuParametros = TblMenu::create([
-                'url' => 'params.index',
-                'icon' => 'fa-solid fa-sliders nav_icon',
-                'nombre' => 'Parámetros',
-                'orden' => 12,
-                'estado' => 1,
-                'id_usuareg' => $user->id_usuario,
-            ]);
-        /* Fin creación de los menús */
+        $menus = [
+            'Terceros' => [
+                'id_menu' => null,
+                'menu' => [
+                    'url' => 'clients.index',
+                    'icon' => 'fa-solid fa-address-book nav_icon',
+                    'nombre' => 'Terceros',
+                    'orden' => 1,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario,
+                ]
+            ],
+            'Puntos interés' => [
+                'id_menu' => null,
+                'menu' => [
+                    'url' => 'sites.index',
+                    'icon' => 'fa-solid fa-tower-cell nav_icon',
+                    'nombre' => 'Puntos interés',
+                    'orden' => 2,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario,
+                ]
+            ],
+            'Lista precios' => [
+                'id_menu' => null,
+                'menu' => [
+                    'url' => 'priceList.index',
+                    'icon' => 'fa-solid fa-list-ol nav_icon',
+                    'nombre' => 'Lista precios',
+                    'orden' => 3,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario,
+                ]
+            ],
+            'Almacén' => [
+                'id_menu' => null,
+                'menu' => [
+                    'icon' => 'fa-solid fa-store nav_icon',
+                    'nombre' => 'Almacén',
+                    'orden' => 4,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario
+                ],
+                'submenu' => [
+                    0 => [
+                        'id_menu' => null,
+                        'menu' => [
+                            'id_menu_padre' => null,
+                            'url' => 'stores.index',
+                            'icon' => 'fa-solid fa-boxes-stacked nav_icon',
+                            'nombre' => 'Inventario',
+                            'orden' => 1,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario
+                        ]
+                    ],
+                    1 => [
+                        'id_menu' => null,
+                        'menu' => [
+                            'id_menu_padre' => null,
+                            'url' => 'purchases.index',
+                            'icon' => 'fa-solid fa-truck-arrow-right nav_icon',
+                            'nombre' => 'Orden compra',
+                            'orden' => 2,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario,
+                        ]
+                    ]
+                ]
+            ],
+            'Cotizaciones' => [
+                'id_menu' => null,
+                'menu' => [
+                    'url' => 'quotes.index',
+                    'icon' => 'fa-solid fa-clipboard-list nav_icon',
+                    'nombre' => 'Cotizaciones',
+                    'orden' => 5,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario,
+                ]
+            ],
+            'Actividades' => [
+                'id_menu' => null,
+                'menu' => [
+                    'url' => 'activities.index',
+                    'icon' => 'fa-solid fa-person-digging nav_icon',
+                    'nombre' => 'Actividades',
+                    'orden' => 6,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario
+                ]
+            ],
+            'Consolidados' => [
+                'id_menu' => null,
+                'menu' => [
+                    'url' => 'deals.index',
+                    'icon' => 'fa-solid fa-handshake nav_icon',
+                    'nombre' => 'Consolidados',
+                    'orden' => 7,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario
+                ]
+            ],
+            'Configuración' => [
+                'id_dominio' => null,
+                'menu' => [
+                    'icon' => 'fa-solid fa-gears nav_icon',
+                    'nombre' => 'Configuración',
+                    'orden' => 8,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario
+                ],
+                'submenu' => [
+                    0 => [
+                        'id_menu' => null,
+                        'menu' => [
+                            'url' => 'users.index',
+                            'icon' => 'fa-solid fa-chalkboard-user nav_icon',
+                            'nombre' => 'Usuarios',
+                            'orden' => 1,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario,
+                        ]
+                    ],
+                    1 => [
+                        'id_menu' => null,
+                        'menu' => [
+                            'url' => 'profiles.index',
+                            'icon' => 'fa-solid fa-list-check nav_icon',
+                            'nombre' => 'Perfiles',
+                            'orden' => 2,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario,
+                        ]
+                    ],
+                    2 => [
+                        'id_menu' => null,
+                        'menu' => [
+                            'url' => 'domains.index',
+                            'icon' => 'fa-solid fa-screwdriver nav_icon',
+                            'nombre' => 'Dominios',
+                            'orden' => 3,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario,
+                        ]
+                    ],
+                    3 => [
+                        'id_menu' => null,
+                        'menu' => [
+                            'url' => 'params.index',
+                            'icon' => 'fa-solid fa-sliders nav_icon',
+                            'nombre' => 'Parámetros',
+                            'orden' => 4,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario,
+                        ]
+                    ]
+                ]
+            ]
+        ];
 
-        /* Se crean los menús del perfil super administrador */
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuTerceros->id_menu,
+        foreach ($menus as $nombre => $menu) {
+            $menus[$nombre]['id_menu'] = $this->createRegister($modelMenu, $menu['menu'])->id_menu;
+
+            $this->createRegister($modelMenuTercero, [
+                'id_menu' => $menus[$nombre]['id_menu'],
                 'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
                 'crear' => true,
                 'editar' => true,
@@ -1263,106 +554,24 @@ class SetupSeeder extends Seeder
                 'importar' => true,
                 'exportar' => true,
             ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuSitios->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuPrecios->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuInventario->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuOrden->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuCotizaciones->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuActividades->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuConsolidados->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuUsuarios->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuPerfiles->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuDominios->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-            TblMenuTipoTercero::create([
-                'id_menu' => $menuParametros->id_menu,
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
-                'ver' => true,
-                'importar' => true,
-                'exportar' => true,
-            ]);
-        /* */
+
+            if(isset($menu['submenu'])) {
+                foreach ($menu['submenu'] as $key => $submenu) {
+                    $submenu['menu']['id_menu_padre'] = $menus[$nombre]['id_menu'];
+                    $menus[$nombre]['submenu'][$key]['id_menu'] = $this->createRegister($modelMenu, $submenu['menu'])->id_menu;
+
+                    $this->createRegister($modelMenuTercero, [
+                        'id_menu' => $menus[$nombre]['submenu'][$key]['id_menu'],
+                        'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
+                        'crear' => true,
+                        'editar' => true,
+                        'ver' => true,
+                        'importar' => true,
+                        'exportar' => true,
+                    ]);
+                }
+            }
+        }
 
         $user->id_tercero = $administrador_pagina->id_tercero;
         $user->save();

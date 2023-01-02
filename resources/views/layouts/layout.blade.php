@@ -135,98 +135,54 @@
 
     updateThemeColor();
 
-    // (() => {
-    //     'use strict'
+    // se obtiene el menu activo
+    let menu_padre = document.querySelector('#nav-bar .active').closest('ul')
+    if(menu_padre) {
+        menu_padre.classList.add('show');
+        let parent = document.querySelector(`[data-bs-target="#${menu_padre.id}"`);
+        parent.classList.add('activemenu');
 
-    //     const storedTheme = localStorage.getItem('theme')
+        parent.querySelector(':scope > .submenu_icon').classList.add('fa-solid');
+        parent.querySelector(':scope > .submenu_icon').classList.add('fa-angle-up');
+    }
 
-    //     const getPreferredTheme = () => {
-    //         if (storedTheme) {
-    //             return storedTheme
-    //         }
+    document.addEventListener("DOMContentLoaded", function(event) {
+        const showNavbar = (toggleId, navId, bodyId, headerId) =>{
+            const toggle = document.getElementById(toggleId),
+            nav = document.getElementById(navId),
+            bodypd = document.getElementById(bodyId),
+            headerpd = document.getElementById(headerId)
+            
+            // Validate that all variables exist
+            if(toggle && nav && bodypd && headerpd) {
+                toggle.addEventListener('click', () => {
+                    // show navbar
+                    nav.classList.toggle('show-panel');
+                    $('.nav_list *[title]').tooltip(`${$('#nav-bar').hasClass('show-panel') ? 'disable' : 'enable'}`);
+                    // change icon
+                    toggle.classList.toggle('fa-xmark');
+                    // add padding to body
+                    bodypd.classList.toggle('body-pd');
+                    // add padding to header
+                    headerpd.classList.toggle('body-pd');
 
-    //         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    //     }
+                    if(window.innerWidth >= 768) {
+                        localStorage.setItem('menu-toggle', $('#nav-bar').hasClass('show-panel'));
+                    }
+                });
+            }
+        }
+        
+        showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
 
-    //     const setTheme = function (theme) {
-    //         if (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    //             document.documentElement.setAttribute('data-bs-theme', 'dark')
-    //         } else {
-    //             document.documentElement.setAttribute('data-bs-theme', theme)
-    //         }
-
-    //         let btn_remove_class = (theme === 'dark' ? 'btn-outline-primary' : 'btn-outline-light');
-    //         let btn_add_class = (theme === 'dark' ? 'btn-outline-light' : 'btn-outline-primary');
-
-    //         let backgroundimage = (theme === 'dark' ? 'none' : 'linear-gradient(195deg, var(--bs-secondary) 0%, var(--bs-primary) 100%)');
-    //         let backgroundColor = (theme === 'dark' ? '#2c2f32' : 'var(--bs-primary)');
-
-    //         document.querySelectorAll(`.${btn_remove_class}`).forEach(element => {
-    //             element.classList.remove(btn_remove_class);
-    //             element.classList.add(btn_add_class);
-    //         });
-
-    //         let element = document.getElementById('nav-bar');
-
-    //         element.style.backgroundImage = backgroundimage;
-    //         element.style.backgroundColor = backgroundColor;
-    //     }
-
-    //     setTheme(getPreferredTheme())
-
-    //     const showActiveTheme = theme => {
-    //         const activeThemeIcon = document.querySelector('.theme-icon-active use')
-    //         const btnToActive = document.querySelector(`[data-bs-theme-value="${theme}"]`)
-    //         try {
-    //         const svgOfActiveBtn = btnToActive.querySelector('svg use').getAttribute('href')
-
-    //         document.querySelectorAll('[data-bs-theme-value]').forEach(element => {
-    //             element.classList.remove('active')
-    //         })
-
-    //         btnToActive.classList.add('active')
-    //         if (activeThemeIcon !== null) {
-    //             activeThemeIcon.setAttribute('href', svgOfActiveBtn)
-    //         }
-    //         } catch {
-    //             // Using different theme names. Not just dark and light.
-    //         }
-    //     }
-
-    //     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    //         if (storedTheme !== 'light' || storedTheme !== 'dark') {
-    //             setTheme(getPreferredTheme())
-    //         }
-    //     })
-
-    //     window.addEventListener('load', () => {
-    //         showActiveTheme(getPreferredTheme())
-
-    //         document.querySelectorAll('[data-bs-theme-value]').
-    //             forEach(toggle => {
-    //                 toggle.addEventListener('click', () => {
-    //                 const theme = toggle.getAttribute('data-bs-theme-value')
-    //                 localStorage.setItem('theme', theme)
-    //                 setTheme(theme)
-    //                 showActiveTheme(theme)
-
-    //                 // After changing the theme, hide offcanvas
-    //                 const oc = document.querySelector('[aria-modal][class*=show][class*=offcanvas-]')
-    //                 if (oc !== null) {
-    //                     bootstrap.Offcanvas.getInstance(oc).hide()
-    //                 }
-    //             })
-    //         })
-    //     })
-    // })()
-
-    // let theme = localStorage.getItem('theme');
-    // let backgroundimage = (theme === 'dark' ? 'none' : 'linear-gradient(195deg, var(--bs-secondary) 0%, var(--bs-primary) 100%)');
-    // let backgroundColor = (theme === 'dark' ? '#2c2f32' : 'var(--bs-primary)');
-
-    // let element = document.getElementById('nav-bar');
-
-    // element.style.backgroundImage = backgroundimage;
-    // element.style.backgroundColor = backgroundColor;
+        if(localStorage.getItem('menu-toggle') === 'true' && window.innerWidth >= 768) {
+            document.getElementById('nav-bar').classList.toggle('show-panel');
+            document.getElementById('header-toggle').classList.toggle('fa-xmark');
+            document.getElementById('header').classList.toggle('body-pd');
+            document.getElementById('body-pd').classList.toggle('body-pd')
+        }
+    });
+    
+    // document.getElementById('header-toggle').click()
 </script>
 </html>

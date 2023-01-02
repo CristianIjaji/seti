@@ -59,24 +59,52 @@
         </li>
     </div>
 </header>
-<div class="l-navbar" id="nav-bar">
+<div id="nav-bar" class="l-navbar">
     <nav class="nav">
         <div>
-            <a href="home" class="nav_logo {{ request()->routeIs('home.index') ? 'active rounded my-2' : '' }}">
+            <a href="home" class="nav_logo {{ setActive('home.index') }} rounded">
                 <i class="fa-solid fa-house-chimney nav_logo-icon {{ request()->routeIs('home.index') ? 'text-primary' : 'text-white' }}" style="margin-left: -5px;"></i>
                 <span class="nav_logo-name {{ request()->routeIs('home.index') ? 'text-primary' : 'text-white' }}">{{ config('app.name', 'Laravel') }}</span>
             </a>
             <hr class="bg-white">
-            <div class="nav_list">
+            <div class="nav_list accordion">
                 @foreach (Auth::user()->getMenusPerfil() as $menu)
-                    <a href="{{ route($menu->url) }}" title="{{$menu->nombre}}" data-toggle="tooltip" data-bs-placement="right" class="nav_link {{ setActive($menu->url) }} rounded my-2">
+                    <a
+                        @isset($menu->url) href="{{ route($menu->url) }}" @endisset
+                        title="{{$menu->nombre}}"
+                        data-toggle="tooltip"
+                        data-bs-placement="right"
+                        @isset($menu->submenu)
+                            data-bs-toggle="collapse"
+                            data-bs-target="#__menu_{{ $menu->id_menu }}"
+                        @endisset
+                        class="nav_link {{ setActive($menu->url) }} rounded {{ !isset($menu->submenu) ? 'my-2' : 'my-0' }}"
+                    >
                         <i class="{{ $menu->icon }} fs-5 text-center"></i>
                         <span class="nav_name">{{$menu->nombre}}</span>
+                        {!! !isset($menu->url) ? '<i class="text-center submenu_icon fs-6" style="margin-left: -6px;"></i>' : '' !!}
                     </a>
+                    @isset($menu->submenu)
+                        <ul class="list-group border-top-0 rounded-0 rounded-bottom collapse" id="__menu_{{ $menu->id_menu }}" data-bs-parent=".accordion">
+                            @foreach ($menu->submenu as $submenu)
+                                <li>
+                                    <a
+                                        @isset($submenu->url) href="{{ route($submenu->url) }}" @endisset
+                                        title="{{$submenu->nombre}}"
+                                        data-toggle="tooltip"
+                                        data-bs-placement="right"
+                                        data-menu="__menu_{{ $menu->id_menu }}"
+                                        class="nav_link {{ setActive($submenu->url) }} rounded-bottom m-0">
+                                        <i class="{{ $submenu->icon }} text-center"></i>
+                                        <span class="nav_name">{{$submenu->nombre}}</span>
+                                    </a>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endisset
                 @endforeach
             </div>
         </div>
-    </nav>
 </div>
 <div id="container">
     @yield('content')

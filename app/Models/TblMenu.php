@@ -14,6 +14,7 @@ class TblMenu extends Model
     protected $guarded = [];
 
     protected $fillable = [
+        'id_menu_padre',
         'url',
         'icon',
         'nombre',
@@ -21,6 +22,10 @@ class TblMenu extends Model
         'orden',
         'id_usuareg'
     ];
+
+    public function tblmenupadre() {
+        return $this->belongsTo(TblMenu::class, 'id_menu_padre');
+    }
 
     public function tblusuario() {
         return $this->belongsTo(TblUsuario::class, 'id_usuareg');

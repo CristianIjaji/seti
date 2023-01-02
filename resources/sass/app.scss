@@ -90,10 +90,6 @@ body{
     opacity: 0.5;
 }
 
-#navbar_top {
-    z-index: 10;
-}
-
 .nav-item {
     cursor: pointer;
 }
@@ -126,76 +122,6 @@ body{
 	flex-grow: 0 !important;
 }
 
-#home {
-    background-image: url(/images/bg_1.png);
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: bottom;
-}
-
-.circle::before {
-    content: '';
-    position: absolute;
-    left: -24%;
-    height: 60%;
-    width: 30%;
-    background: var(--bs-primary);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, var(--bs-primary)), color-stop(99%, #19d0de));
-    background: linear-gradient(to bottom, var(--bs-primary) 0, var(--bs-secondary) 99%);
-    border-radius: 100%;
-}
-
-#contact {
-    background-image: url(/images/bg_3.png);
-    background-repeat: no-repeat;
-    background-size: cover;
-}
-
-.about-img {
-    background: var(--bs-primary);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, var(--bs-primary)), color-stop(99%, #19d0de));
-    background: linear-gradient(to bottom, var(--bs-primary) 0, #19d0de 99%);
-    border-radius: 100%;
-    height: 60vh;
-    width: 60vh;
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
-}
-
-.list-services li :hover .list-icon {
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, var(--bs-primary)), to(#19d0de));
-    background: linear-gradient(to bottom, var(--bs-primary) 0, #19d0de 100%);
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
-}
-
-.list-services li :hover .list-icon i {
-    color: white !important;
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
-}
-
-.list-icon {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.title-grid {
-    font-family: "AlteHaasGroteskBold";
-    font-weight: bolder;
-    color: var(--bs-primary);
-}
-
 .title {
     line-height: 28px;
     font-size: 30px;
@@ -204,27 +130,6 @@ body{
     color: #444;
     text-transform: uppercase;
     letter-spacing: 4px;
-}
-
-.form-control:focus {
-    box-shadow: none !important;
-}
-
-.focus {
-    color: var(--bs-secondary);
-    font-weight: bolder;
-}
-
-.cuco {
-    font-family: 'Gotham';
-    color: var(--bs-primary);
-}
-
-.customer {
-    font-family: 'Playlist Script', sans-serif;
-}
-.connection {
-    font-family: 'BebasNeue-Regular';
 }
 
 .lds-loader {
@@ -259,83 +164,8 @@ body{
     animation-delay: 0;
 }
 
-.services {
-    // width: 100%;
-    height: 320px;
-    margin: 10px 0;
-    text-align: center;
-    border: 1px solid #ddd;
-    -webkit-transition: all 0.3s ease;
-    transition: all 0.3s ease;
-}
-
-.services .icon {
-    position: relative;
-    top: 100px;
-    display: inline-block;
-    margin-bottom: 40px;
-    padding: 10px;
-    background: white;
-    font-size: 40px;
-    border: 1px solid var(--bs-secondary);
-    background-image:  linear-gradient(180deg, var(--bs-info) 0%, var(--bs-secondary) 100%);
-    background-clip: text;
-    color: transparent;
-    -webkit-transition: all 0.3s ease;
-    transition: all 0.3s ease;
-}
-
-.services .heading {
-    position: relative;
-    top: 80px;
-    -webkit-transition: all 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    transition: all 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.services .description {
-    width: 80%;
-    margin: 0 auto;
-    opacity: 0;
-    -webkit-transition: all 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    transition: all 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    -webkit-transform: scale(0);
-    -ms-transform: scale(0);
-    transform: scale(0);
-}
-
-.services:hover {
-    border-color: #00a8ff !important;
-}
-
-.services:hover .icon {
-    border: none;
-    border-radius: 10px;
-    background: var(--bs-secondary);
-    color: var(--bs-white);
-    box-shadow: 1px 1px 4px var(--bs-primary);
-    background-image: var(--bs-gradient) !important;
-}
-
-.services:hover .icon,
-.services:hover .heading {
-    top: -30px !important;
-}
-
-
-.services:hover .description {
-    opacity: 1;
-    -webkit-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-}
-
 .text-justify {
     text-align: justify !important;
-}
-
-.slider-img {
-    min-width: 40vw;
-    padding: 4vw;
 }
 
 .alert {
@@ -390,6 +220,7 @@ button.close {
     margin: var(--header-height) 0 0 0;
     padding: 0 1rem;
     transition: all 0.5s ease-in-out;
+    // padding-left: calc(var(--nav-width) + 10px);
 }
 
 .nav_logo {
@@ -498,13 +329,19 @@ button.close {
 }
 
 #nav-bar.l-navbar .nav_list, .nav_logo {
-    width: 49px;
+    width: 45px;
     transition: width 0.5s ease-in-out;
 }
 
 #nav-bar.l-navbar .active {
     color: var(--bs-primary) !important;
     background-color: var(--bs-white) !important;
+}
+
+#nav-bar.l-navbar .activemenu {
+    color: var(--bs-primary) !important;
+    background-color: rgba(var(--bs-white-rgb), 0.9);
+    border-radius: var(--bs-border-radius) var(--bs-border-radius) 0px 0px !important;
 }
 
 #nav-bar.l-navbar.show-panel .nav_list, #nav-bar.l-navbar.show-panel .nav_logo {
@@ -627,31 +464,6 @@ label.required::after {
     background-color: var(--bs-body-bg) !important;
 }
 
-@media screen and (min-width: 768px) {
-    #body-pd {
-        margin: calc(var(--header-height) + 1rem) 0 0 0;
-        padding-left: calc(var(--nav-width) + 2rem)
-    }
-
-    .header-menu {
-        height: calc(var(--header-height) + 1rem);
-        padding: 0 2rem 0 calc(var(--nav-width) + 2rem);
-    }
-
-    .l-navbar {
-        left: 0;
-        // padding: 1rem 0 0 0
-    }
-
-    .show-panel {
-        width: calc(var(--nav-width) + 156px)
-    }
-
-    .body-pd {
-        padding-left: calc(var(--nav-width) + 188px) !important;
-    }
-}
-
 .bg-table-primary {
     --bs-bg-opacity: 0.4;
     background: rgba(var(--bs-primary-rgb), var(--bs-bg-opacity));
@@ -743,59 +555,6 @@ label.required::after {
     color: var(--bs-nav-tabs-link-active-color);
     background-color: var(--bs-nav-tabs-link-active-bg);
     border-color: var(--bs-nav-tabs-link-active-border-color);
-}
-
-@media screen and (max-width: 768px) {
-    .table-responsive-stack tr {
-        -webkit-box-orient: vertical;
-        -webkit-box-direction: normal;
-        -ms-flex-direction: column;
-        flex-direction: column;
-        border-bottom: 3px solid #ccc;
-        display:block;
-    }
-    /*  IE9 FIX   */
-    .table-responsive-stack td {
-        float: left\9;
-        width:100%;
-    }
-}
-
-@keyframes blinker {
-    50% {
-      opacity: 0;
-    }
-}
-
-@keyframes lds-loader {
-    0% {
-        top: 8px;
-        height: 64px;
-    }
-    50%, 100% {
-        top: 24px;
-        height: 32px;
-    }
-}
-
-@media (max-width: 1300px) {
-    .circle::before {
-        left: -25%;
-    }
-}
-
-@media (max-width: 1000px) {
-    .circle::before {
-        left: -33%;
-    }
-}
-
-@media (max-width: 768px) {
-    #navbarSupportedContent {
-        --bs-bg-opacity: 1;
-        background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
-        box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 8%) !important;
-    }
 }
 
 :root, [data-bs-theme=light] {
@@ -949,4 +708,108 @@ label.required::after {
 
 .show-more {
     color: var(--bs-body-color-rgb) !important;
+}
+
+.collapse.show {
+    background-color: #ffffff4a;
+}
+
+@media screen and (min-width: 768px) {
+    #body-pd {
+        margin: calc(var(--header-height) + 1rem) 0 0 0;
+        padding-left: calc(var(--nav-width) + 2rem)
+    }
+
+    .header-menu {
+        height: calc(var(--header-height) + 1rem);
+        padding: 0 2rem 0 calc(var(--nav-width) + 2rem);
+    }
+
+    .l-navbar {
+        left: 0;
+        // padding: 1rem 0 0 0
+    }
+
+    .show-panel {
+        width: calc(var(--nav-width) + 156px)
+    }
+
+    .body-pd {
+        padding-left: calc(var(--nav-width) + 188px) !important;
+    }
+
+    #nav-bar.show-panel .nav_list a .submenu_icon {
+        display: block;
+        width: 20px;
+        height: 20px;
+        // content: "";
+        -webkit-transition: all .3s;
+        transition: all .3s;
+        -webkit-transform: translateY(-50%);
+        transform: translateY(-50%);
+        -webkit-transform-origin: center center;
+        transform-origin: center center;
+        // background: url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' aria-labelledby='title' aria-describedby='desc' role='img' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3EAngle Left%3C/title%3E%3Cdesc%3EA line styled icon from Orion Icon Library.%3C/desc%3E%3Cpath data-name='layer1' fill='none' stroke='%23aaa' stroke-miterlimit='10' stroke-width='5' d='M39 20.006L25 32l14 12.006' stroke-linejoin='round' stroke-linecap='round'%3E%3C/path%3E%3C/svg%3E);
+        background-position: right center;
+        position: absolute;
+        top: 50%;
+        right: 20px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .table-responsive-stack tr {
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+        flex-direction: column;
+        border-bottom: 3px solid #ccc;
+        display:block;
+    }
+    /*  IE9 FIX   */
+    .table-responsive-stack td {
+        float: left\9;
+        width:100%;
+    }
+
+    #nav-bar.l-navbar.show-panel .nav_list, #nav-bar.l-navbar.show-panel .nav_logo {
+        width: 45px;
+    }
+}
+
+@keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+}
+
+@keyframes lds-loader {
+    0% {
+        top: 8px;
+        height: 64px;
+    }
+    50%, 100% {
+        top: 24px;
+        height: 32px;
+    }
+}
+
+@media (max-width: 1300px) {
+    .circle::before {
+        left: -25%;
+    }
+}
+
+@media (max-width: 1000px) {
+    .circle::before {
+        left: -33%;
+    }
+}
+
+@media (max-width: 768px) {
+    #navbarSupportedContent {
+        --bs-bg-opacity: 1;
+        background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
+        box-shadow: 0 0.125rem 0.25rem rgb(0 0 0 / 8%) !important;
+    }
 }

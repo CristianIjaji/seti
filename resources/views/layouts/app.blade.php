@@ -41,7 +41,7 @@
         'callback_catch' => 'callbackCatch'
     ]) !!} --}}
 </head>
-<body data-bs-spy="scroll" data-bs-target="#navbar_top">
+<body>
     <div id="app">
         @include('partials.loader')
 

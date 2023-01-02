@@ -95,12 +95,30 @@ class TblUsuario extends Authenticatable
     }
 
     public function getMenusPerfil() {
-        return DB::table('tbl_menu_tipo_tercero', 't')
+        $menus = DB::table('tbl_menu_tipo_tercero', 't')
             ->join('tbl_menus as m', 't.id_menu', '=', 'm.id_menu')
-            ->select('m.url', 'm.icon', 'm.nombre')
+            ->select('m.id_menu', 'm.url', 'm.icon', 'm.nombre', 'm.id_menu_padre', 'm.orden')
             ->where(['m.estado' => 1, 't.id_tipo_tercero' => Auth::user()->role])
-            ->orderBy('orden', 'asc')
+            ->orderBy(DB::raw('COALESCE(id_menu_padre, orden)', 'asc'))
             ->get();
+        
+        $menus_asignados = [];
+        foreach ($menus as $menu) {
+            if(!isset($menus_asignados[$menu->id_menu]) && !$menu->id_menu_padre) {
+                $menus_asignados[$menu->id_menu] = [];
+                $menus_asignados[$menu->id_menu] = $menu;
+            }
+
+            if($menu->id_menu_padre) {
+                if(!isset($menus_asignados[$menu->id_menu_padre]->submenu)) {
+                    $menus_asignados[$menu->id_menu_padre]->submenu = [];
+                }
+
+                $menus_asignados[$menu->id_menu_padre]->submenu[] = $menu;
+            }
+        }
+
+        return $menus_asignados;
     }
 
     public static function getPermisosMenu($menu) {

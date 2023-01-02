@@ -9964,34 +9964,30 @@ $(document).ready(function () {
   timer();
   datePicker();
   updateThemeColor();
+  initShowIcon();
 });
 jQuery(window).ready(function () {
   showLoader(false);
 });
-document.addEventListener("DOMContentLoaded", function (event) {
-  var showNavbar = function showNavbar(toggleId, navId, bodyId, headerId) {
-    var toggle = document.getElementById(toggleId),
-        nav = document.getElementById(navId),
-        bodypd = document.getElementById(bodyId),
-        headerpd = document.getElementById(headerId); // Validate that all variables exist
 
-    if (toggle && nav && bodypd && headerpd) {
-      toggle.addEventListener('click', function () {
-        // show navbar
-        nav.classList.toggle('show-panel');
-        $('.nav_list *[title]').tooltip("".concat($('#nav-bar').hasClass('show-panel') ? 'disable' : 'enable')); // change icon
+var initShowIcon = function initShowIcon() {
+  var icon_hide = 'fa-solid fa-angle-down';
+  var icon_show = 'fa-solid fa-angle-up';
+  var activemenu = 'activemenu';
+  $('.submenu_icon').each(function (i, e) {
+    $(e).addClass(icon_hide);
+    var menu = document.getElementById($(e).closest('a').data('bs-target').replace('#', ''));
+    menu.addEventListener('hide.bs.collapse', function (event) {
+      $(e).removeClass(icon_show).addClass(icon_hide);
+      $(e).closest('a').removeClass(activemenu);
+    });
+    menu.addEventListener('show.bs.collapse', function (event) {
+      $(e).removeClass(icon_hide).addClass(icon_show);
+      $(e).closest('a').addClass(activemenu);
+    });
+  });
+};
 
-        toggle.classList.toggle('fa-xmark'); // add padding to body
-
-        bodypd.classList.toggle('body-pd'); // add padding to header
-
-        headerpd.classList.toggle('body-pd');
-      });
-    }
-  };
-
-  showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
-});
 $(document).on('click', '.modal-form', function (e) {
   e.preventDefault();
   handleModal($(this));
