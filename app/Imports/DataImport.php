@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithStartRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 
-class DataImport implements ToModel, WithValidation, WithStartRow, WithBatchInserts, WithChunkReading
+class DataImport implements ToModel, WithValidation, WithStartRow, WithChunkReading
 {
     use Importable;
 
@@ -44,10 +44,10 @@ class DataImport implements ToModel, WithValidation, WithStartRow, WithBatchInse
         return $this->model::getProperties();
     }
 
-    public function batchSize(): int
-    {
-        return 1000;
-    }
+    // public function batchSize(): int
+    // {
+    //     return 1000;
+    // }
 
     public function chunkSize(): int
     {

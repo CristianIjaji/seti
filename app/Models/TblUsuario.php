@@ -109,7 +109,7 @@ class TblUsuario extends Authenticatable
                 $menus_asignados[$menu->id_menu] = $menu;
             }
 
-            if($menu->id_menu_padre) {
+            if($menu->id_menu_padre && isset($menus_asignados[$menu->id_menu_padre])) {
                 if(!isset($menus_asignados[$menu->id_menu_padre]->submenu)) {
                     $menus_asignados[$menu->id_menu_padre]->submenu = [];
                 }

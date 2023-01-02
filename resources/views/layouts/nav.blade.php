@@ -62,12 +62,14 @@
 <div id="nav-bar" class="l-navbar">
     <nav class="nav">
         <div>
-            <a href="home" class="nav_logo {{ setActive('home.index') }} rounded">
-                <i class="fa-solid fa-house-chimney nav_logo-icon {{ request()->routeIs('home.index') ? 'text-primary' : 'text-white' }}" style="margin-left: -5px;"></i>
-                <span class="nav_logo-name {{ request()->routeIs('home.index') ? 'text-primary' : 'text-white' }}">{{ config('app.name', 'Laravel') }}</span>
-            </a>
-            <hr class="bg-white">
             <div class="nav_list accordion">
+                <a href="home" class="nav_link {{ setActive('home.index') }} rounded my-2">
+                    <i class="fa-solid fa-house-chimney nav-icon fs-5 text-center" style="margin-left: -5px;"></i>
+                    <span class="nav-name">{{ config('app.name', 'Laravel') }}</span>
+                </a>
+
+                <hr class="border-light p-0 m-0 mb-2">
+
                 @foreach (Auth::user()->getMenusPerfil() as $menu)
                     <a
                         @isset($menu->url) href="{{ route($menu->url) }}" @endisset
@@ -78,7 +80,7 @@
                             data-bs-toggle="collapse"
                             data-bs-target="#__menu_{{ $menu->id_menu }}"
                         @endisset
-                        class="nav_link {{ setActive($menu->url) }} rounded {{ !isset($menu->submenu) ? 'my-2' : 'my-0' }}"
+                        class="nav_link {{ setActive($menu->url) }} rounded {{ !isset($menu->submenu) ? 'my-1' : 'my-0 btn' }}"
                     >
                         <i class="{{ $menu->icon }} fs-5 text-center"></i>
                         <span class="nav_name">{{$menu->nombre}}</span>
@@ -106,6 +108,14 @@
             </div>
         </div>
 </div>
+<script type="application/javascript">
+    if(localStorage.getItem('menu-toggle') === 'true' && window.innerWidth >= 768) {
+        document.getElementById('nav-bar').classList.add('show-panel');
+        document.getElementById('header-toggle').classList.add('fa-xmark');
+        document.getElementById('header').classList.add('body-pd');
+        document.getElementById('body-pd').classList.add('body-pd')
+    }
+</script>
 <div id="container">
     @yield('content')
 </div>

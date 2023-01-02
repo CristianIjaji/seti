@@ -28896,7 +28896,7 @@ body {
   left: 50%;
   position: absolute;
   background: var(--bs-secondary);
-  transition: width 0.3s ease 0s, left 0.3s ease 0s;
+  transition: width 0.2s ease 0s, left 0.2s ease 0s;
   width: 0;
 }
 
@@ -29014,11 +29014,7 @@ button.close {
   position: relative;
   margin: var(--header-height) 0 0 0;
   padding: 0 1rem;
-  transition: all 0.5s ease-in-out;
-}
-
-.nav_logo {
-  text-decoration: none !important;
+  transition: all 0.2s;
 }
 
 #header {
@@ -29036,7 +29032,7 @@ button.close {
   justify-content: space-between;
   padding: 0 1rem;
   z-index: var(--z-fixed);
-  transition: all 0.5s ease-in-out;
+  transition: all 0.2s;
 }
 
 .header-menu .header_toggle {
@@ -29057,7 +29053,7 @@ button.close {
   padding-left: 0.5rem;
   padding-right: 0.6rem;
   z-index: var(--z-fixed);
-  transition: width 0.5s ease-in-out;
+  transition: width 0.2s;
 }
 
 .l-navbar .nav {
@@ -29069,7 +29065,6 @@ button.close {
   padding: 0px 1px;
 }
 
-#nav-bar .nav_logo,
 #nav-bar .nav_link {
   display: grid;
   grid-template-columns: -webkit-max-content -webkit-max-content;
@@ -29079,24 +29074,14 @@ button.close {
        column-gap: 1rem;
   padding: 0.5rem 0 0.5rem 1.2rem;
   text-decoration: none !important;
-  transition: all 0.5s ease-in-out;
-}
-
-#nav-bar .nav_logo-icon {
-  font-size: 1.25rem;
-  color: var(--bs-primary);
-}
-
-#nav-bar .nav_logo-name {
-  color: var(--bs-dark);
-  font-weight: 700;
+  transition: all 0.2s;
 }
 
 #nav-bar .nav_link {
   position: relative;
   color: var(--bs-white);
   margin-bottom: 1.5rem;
-  transition: all 0.5s ease-in-out;
+  transition: all 0.2s;
 }
 
 #nav-bar .nav_link:hover {
@@ -29120,9 +29105,9 @@ button.close {
   padding-left: calc(var(--nav-width) + 1rem);
 }
 
-#nav-bar.l-navbar .nav_list, .nav_logo {
+#nav-bar.l-navbar .nav_list {
   width: 45px;
-  transition: width 0.5s ease-in-out;
+  transition: width 0.2s;
 }
 
 #nav-bar.l-navbar .active {
@@ -29136,7 +29121,7 @@ button.close {
   border-radius: var(--bs-border-radius) var(--bs-border-radius) 0px 0px !important;
 }
 
-#nav-bar.l-navbar.show-panel .nav_list, #nav-bar.l-navbar.show-panel .nav_logo {
+#nav-bar.l-navbar.show-panel .nav_list {
   width: 100%;
 }
 
@@ -29517,7 +29502,7 @@ label.required::after {
     display: block;
     width: 20px;
     height: 20px;
-    transition: all 0.3s;
+    transition: all 0.2s;
     transform: translateY(-50%);
     transform-origin: center center;
     background-position: right center;
@@ -29539,7 +29524,7 @@ label.required::after {
     width: 100%;
   }
 
-  #nav-bar.l-navbar.show-panel .nav_list, #nav-bar.l-navbar.show-panel .nav_logo {
+  #nav-bar.l-navbar.show-panel .nav_list {
     width: 45px;
   }
 }

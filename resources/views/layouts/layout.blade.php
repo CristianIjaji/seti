@@ -175,12 +175,12 @@
         
         showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header');
 
-        if(localStorage.getItem('menu-toggle') === 'true' && window.innerWidth >= 768) {
-            document.getElementById('nav-bar').classList.toggle('show-panel');
-            document.getElementById('header-toggle').classList.toggle('fa-xmark');
-            document.getElementById('header').classList.toggle('body-pd');
-            document.getElementById('body-pd').classList.toggle('body-pd')
-        }
+        // if(localStorage.getItem('menu-toggle') === 'true' && window.innerWidth >= 768) {
+        //     document.getElementById('nav-bar').classList.toggle('show-panel');
+        //     document.getElementById('header-toggle').classList.toggle('fa-xmark');
+        //     document.getElementById('header').classList.toggle('body-pd');
+        //     document.getElementById('body-pd').classList.toggle('body-pd')
+        // }
     });
     
     // document.getElementById('header-toggle').click()

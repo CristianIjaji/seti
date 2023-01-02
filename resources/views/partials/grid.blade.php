@@ -5,7 +5,7 @@
         @endisset
 
         @if ($errors->any())
-            <div class="alert-danger alert-dismissible text-start p-4 rounded">
+            <div class="alert alert-danger alert-dismissible text-start p-4 rounded" style="display: block;">
                 <h6 class="text-danger fw-bold">Se encontraron errores en el archivo.</h5>
                 <ol>
                     @foreach ($errors->all() as $error)
