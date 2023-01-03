@@ -29,151 +29,235 @@
                     <input type="text" class="form-control" id="id_tipo_tercero" value="{{ $profile->tbltipotercero->nombre }}" disabled>
                 @endif
             </div>
-            @if ($edit)
-                <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5">
-                    <label for="id_menu">Menús disponibles</label>
-                    <select id="id_menu" size="10" class="form-control" multiple style="width: 100%;">
-                        @foreach ($menus_disponibles as $menu)
-                            <option value="{{ $menu->id_menu }}">{{ $menu->nombre_form }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-12 col-sm-12 col-md-12 col-lg-2 col-xl-2 d-grid gap-2">
-                    <button type="button" id="id_menu_rightSelected" class="btn btn-light rounded"><i class="fa-solid fa-chevron-right"></i></button>
-                    <button type="button" id="id_menu_leftSelected" class="btn btn-light rounded"><i class="fa-solid fa-chevron-left"></i></button>
-                </div>
-            @endif
-            <div class="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5">
-                <label for="id_menu_to" class="required">Menús asignados</label>
-                <select id="id_menu_to" size="10" class="form-control" multiple style="width: 100%;">
-                    @foreach ($menus_asignados as $id => $menu)
-                        <option value="{{ $id }}">{{ print_r($menu['nombre'], 1) }}</option>
+            <div class="form-group col-12 col-md-6">
+                <ul class="list-unstyled accordion border rounded p-3 user-select-none">
+                    @foreach ($menus_disponibles as $menu)
+                        <li class="accordion-item row menu-item-perfil border-0" @isset($menu->submenu) data-child="{{ $menu->id_menu }}" @endisset>
+                            @if (isset($menu->submenu))
+                                <span
+                                    class="p-0 border-0 btn show-more col-1 pt-1"
+                                    data-bs-target="#_{{ $menu->id_menu }}"
+                                    data-bs-toggle="collapse"
+                                >
+                                    <i class="text-center fs-6 fa-solid fa-angle-up"></i>
+                                </span>
+                            @else
+                                <div class="col-1"></div>
+                            @endif
+
+                            <div class="col-11 p-0">
+                                <input type="checkbox" id="{{ $menu->id_menu }}" class="btn btn-out-primary menu_tercero {{ (!$create && !$edit ? 'disabled' : '') }}"
+                                    {{ (!$create && $menus_asignados->where('id_menu', $menu->id_menu)->first() ? 'checked' : '') }}
+                                >
+                                <label class="btn p-0 border-0" style="color: var(--bs-bg-color)"
+                                    @isset($menu->submenu)
+                                        data-bs-target="#_{{ $menu->id_menu }}"
+                                        data-bs-toggle="collapse"
+                                    @endisset
+                                >
+                                    {{ $menu->nombre }}
+                                </label>
+                            </div>
+                            
+                            @isset($menu->submenu)
+                                <ul class="list-unstyled ms-4 ps-4 accordion-collapse collapse show" id="_{{ $menu->id_menu }}">
+                                    @foreach ($menu->submenu as $submenu)
+                                        <li class="accordion-item menu-item-perfil border-0 row"
+                                            data-parent="{{ $submenu->id_menu_padre }}"
+                                        >
+                                            <div class="col-12">
+                                                <input type="checkbox" id="{{ $submenu->id_menu }}" class="btn btn-out-primary menu_tercero {{ (!$create && !$edit ? 'disabled' : '') }}"
+                                                    {{ (!$create && $menus_asignados->where('id_menu', $submenu->id_menu)->first() ? 'checked' : '') }}
+                                                >
+                                                <label class="btn p-0 border-0" style="color: var(--bs-bg-color)">{{ $submenu->nombre }}</label>
+                                            </div>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endisset
+                        </li>
                     @endforeach
-                </select>
+                </ul>
             </div>
-            @if ($edit)
-                <div class="col-12 col-sm-12 col-md-7 col-lg-7 col-xl-7"></div>    
-            @endif
-            
-            <div class="{{ $edit ? 'col-12 col-sm-12 col-md-5 col-lg-5 col-xl-5' : 'col-7 m-auto' }} py-3">
-                <label for="">Permisos del menú</label>
-                <div class="row m-auto">
-                    <div class="col-4"><label for="chk_crear">Crear</label></div>
-                    <div class="col-4"><input id="chk_crear" type="checkbox"></div>
-                    <div class="clearfix"></div>
-                    <div class="col-4"><label for="chk_editar">Editar</label></div>
-                    <div class="col-4"><input id="chk_editar" type="checkbox"></div>
-                    <div class="clearfix"></div>
-                    <div class="col-4"><label for="chk_importar">Importar</label></div>
-                    <div class="col-4"><input id="chk_importar" type="checkbox"></div>
-                    <div class="clearfix"></div>
-                    <div class="col-4"><label for="chk_exportar">Exportar</label></div>
-                    <div class="col-4"><input id="chk_exportar" type="checkbox"></div>
-                    <div class="clearfix"></div>
-                </div>
+            <div class="form-group col-12 col-md-6 m-auto mx-auto">
+                <ul class="list-unstyled user-select-none">
+                    <li>
+                        <input type="checkbox" id="ckb-crear" class="btn btn-out-primary opciones-menu {{ (!$create && !$edit ? 'disabled' : '') }}">
+                        <label for="ckb-crear" class="p-0 border-0 btn" style="color: var(--bs-bg-color)">Crear</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="ckb-editar" class="btn btn-out-primary opciones-menu {{ (!$create && !$edit ? 'disabled' : '') }}">
+                        <label for="ckb-editar" class="p-0 border-0 btn" style="color: var(--bs-bg-color)">Editar</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="ckb-importar" class="btn btn-out-primary opciones-menu {{ (!$create && !$edit ? 'disabled' : '') }}">
+                        <label for="ckb-importar" class="p-0 border-0 btn" style="color: var(--bs-bg-color)">Importar</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="ckb-exportar" class="btn btn-out-primary opciones-menu {{ (!$create && !$edit ? 'disabled' : '') }}">
+                        <label for="ckb-exportar" class="p-0 border-0 btn" style="color: var(--bs-bg-color)">Exportar</label>
+                    </li>
+                </ul>
             </div>
 
-            <div class="row d-none" id="div-permisos">
-
-            </div>
+            <div class="row d-none" id="div-permisos"></div>
         </div>
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear permisos' : 'Editar permisos'])
 
 <script type="application/javascript">
+    var list_permisos = ['crear', 'editar', 'ver', 'importar', 'exportar'];
+    var id_menu = 0;
     var permisos = <?= json_encode($menus_asignados) ?>;
 
-    setTimeout(() => {
-        $('#id_menu, #id_menu_to').select2('destroy');
+    updatePermiso();
 
-        $('#id_menu').multiselect({
-            afterMoveToRight: function($left, $right, $options) {
-                $.each($options, (index, element) => {
-                    permisos[element.value] = {
-                        'nombre': element.text,
-                        'permisos': {
-                            'crear': 0,
-                            'editar': 0,
-                            'ver': 1,
-                            'importar': 0,
-                            'exportar': 0
-                        }
-                    };
-                });
+    $('.menu_tercero').click(function() {
+        id_menu = parseInt($(this).attr('id'));
+        let checked = $(this).prop('checked');
+        let child = $(this).closest('.accordion-item').data('child');
+        let parent = $(this).closest('.accordion-item').data('parent');
 
-                updatePermiso();
-            },
-            afterMoveToLeft: function($left, $right, $options) {
-                $.each($options, (index, element) => {
-                    delete permisos[element.value];
-                });
-
-                updatePermiso();
+        $.each(list_permisos, (i, p) => {
+            if(i !== 2) {
+                setPermiso(id_menu, p, false);
+            } else {
+                setPermiso(id_menu, p, checked);
             }
         });
 
-        updatePermiso();
-    }, 500);
+        if(typeof child !== 'undefined') {
+            $.each($(`[data-parent="${child}"] > div > .menu_tercero `), (i, e) => {
+                $(e).prop('checked', checked);
+                setPermiso(parseInt($(e).attr('id')), list_permisos[2], checked);
+            });
+        }
 
-    $('#id_menu_to').change(function() {
-        $.each($(this).val(), (index, menu) => {
-            $('#chk_crear').prop('checked', permisos[menu]['permisos']['crear'] ? true : false);
-            $('#chk_editar').prop('checked', permisos[menu]['permisos']['editar'] ? true : false);
-            $('#chk_importar').prop('checked', permisos[menu]['permisos']['importar'] ? true : false);
-            $('#chk_exportar').prop('checked', permisos[menu]['permisos']['exportar'] ? true : false);
-        });
-    });
+        if(typeof parent !== 'undefined') {
+            let keepChecked = false;
+            $.each($(`[data-parent="${parent}"] > div > .menu_tercero`), (i, e) => {
+                if($(e).prop('checked')) {
+                    keepChecked = true
+                }
+            });
 
-    $('#chk_crear').change(function() {
-        let checked = this.checked;
-        $('#id_menu_to option:selected').each(function() {
-            permisos[$(this).val()]['permisos']['crear'] = checked ? 1 : 0;
-        });
-
-        updatePermiso();
-    });
-
-    $('#chk_editar').change(function() {
-        let checked = this.checked;
-        $('#id_menu_to option:selected').each(function() {
-            permisos[$(this).val()]['permisos']['editar'] = checked ? 1 : 0;
-        });
+            $(`[data-child="${parent}"] > div > .menu_tercero`).prop('checked', keepChecked);
+            setPermiso(parent, list_permisos[2], checked);
+        }
 
         updatePermiso();
+        showPermiso(getPermiso(id_menu));
     });
 
-    $('#chk_importar').change(function() {
-        let checked = this.checked;
-        $('#id_menu_to option:selected').each(function() {
-            permisos[$(this).val()]['permisos']['importar'] = checked ? 1 : 0;
+    $('.opciones-menu').click(function() {
+        if(id_menu > 0 && $(`.accordion #${id_menu}`).prop('checked')) {
+            let opcion = $(this).attr('id').replace('ckb-', '');
+            setPermiso(id_menu, opcion, $(this).prop('checked'));
+            updatePermiso();
+            showPermiso(getPermiso(id_menu));
+        }
+    });
+
+    $('.menu-item-perfil label').click(function() {
+        $('.menu-item-perfil label').each((i, e) => {
+            $(e).removeClass('text-success');
+        });
+        
+        $(this).toggleClass('text-success');
+
+        $(this).closest('li').find('.show-more').click();
+
+        id_menu = $(this).closest('div').find('input').attr('id');
+        showPermiso(getPermiso(id_menu));
+
+        // if(typeof $(this).closest('.menu-item-perfil').data('parent') !== 'undefined') {
+        //     let parent = $(this).closest('.menu-item-perfil').data('parent');
+        //     $(`[data-child="${parent}"] > div > label`).toggleClass('text-success');
+        // }
+
+        // if(typeof $(this).closest('.menu-item-perfil').data('child') !== 'undefined') {
+        //     let childs = $(this).closest('.menu-item-perfil').data('child');
+
+        //     $(`[data-parent="${childs}"] > div > label`).toggleClass('text-success');
+        // }
+    });
+
+    function showPermiso(data_permiso) {
+        if(typeof data_permiso['permiso'] !== 'undefined') {
+            $('#ckb-crear').prop('checked', data_permiso['permiso'][list_permisos[0]]);
+            $('#ckb-editar').prop('checked', data_permiso['permiso'][list_permisos[1]]);
+            $('#ckb-importar').prop('checked', data_permiso['permiso'][list_permisos[3]]);
+            $('#ckb-exportar').prop('checked', data_permiso['permiso'][list_permisos[4]]);
+        }
+    }
+
+    function getPermiso(id_menu) {
+        let data_permiso = {};
+        $.each(permisos, (index, permiso) => {
+            if(parseInt(id_menu) === parseInt(permiso['id_menu'])) {
+                permiso[list_permisos[0]] = (permiso[list_permisos[0]]);
+                permiso[list_permisos[1]] = (permiso[list_permisos[1]]);
+                permiso[list_permisos[2]] = (permiso[list_permisos[2]]);
+                permiso[list_permisos[3]] = (permiso[list_permisos[3]]);
+                permiso[list_permisos[4]] = (permiso[list_permisos[4]]);
+
+                data_permiso = {
+                    index,
+                    permiso
+                };
+
+                return false;
+            }
         });
 
-        updatePermiso();
-    });
+        return data_permiso;
+    }
 
-    $('#chk_exportar').change(function() {
-        let checked = this.checked;
-        $('#id_menu_to option:selected').each(function() {
-            permisos[$(this).val()]['permisos']['exportar'] = checked ? 1 : 0;
-        });
+    function setPermiso(id_menu, permiso, value) {
+        let data_permiso = getPermiso(id_menu);
 
-        updatePermiso();
-    });
+        if(typeof permisos[data_permiso['index']] !== 'undefined') {
+            permisos[data_permiso['index']][permiso] = value;
+        } else {
+            permisos.push({
+                id_menu,
+                'crear' : false,
+                'editar' : false,
+                'ver' : true,
+                'importar' : false,
+                'exportar' : false,
+            });
+        }
+    }
 
     function updatePermiso() {
         let inputs = '';
         $.each(permisos, (index, permiso) => {
+            let add = false;
             if(typeof permiso !== 'undefined') {
-                inputs += `
-                    <div class="col-2"><input type="integer" class="form-control" name="id_menu[]" value="${index}"></div>
-                    <div class="col-2"><input type="integer" class="form-control" name="crear[]" value="${permiso['permisos']['crear']}"></div>
-                    <div class="col-2"><input type="integer" class="form-control" name="editar[]" value="${permiso['permisos']['editar']}"></div>
-                    <div class="col-2"><input type="integer" class="form-control" name="ver[]" value="${permiso['permisos']['ver']}"></div>
-                    <div class="col-2"><input type="integer" class="form-control" name="importar[]" value="${permiso['permisos']['importar']}"></div>
-                    <div class="col-2"><input type="integer" class="form-control" name="exportar[]" value="${permiso['permisos']['exportar']}"></div>
-                `;
+                $.each(list_permisos, (i, p) => {
+                    if(typeof permiso[p] !== 'boolean') {
+                        permiso[p] = (permiso[p] === '<i class="fa-solid fa-check fw-bolder fs-4 text-success"></i>' ? true : false);
+                    }
+
+                    if(permiso[p]) {
+                        add = true;
+                    }
+                });
+
+                if(add) {
+                    inputs += `
+                        <div class="col-2"><input type="integer" class="form-control" name="id_menu[]" value="${permiso['id_menu']}"></div>
+                        <div class="col-2"><input type="integer" class="form-control" name="crear[]" value="${permiso[list_permisos[0]] ? 1 : 0}"></div>
+                        <div class="col-2"><input type="integer" class="form-control" name="editar[]" value="${permiso[list_permisos[1]]  ? 1 : 0}"></div>
+                        <div class="col-2"><input type="integer" class="form-control" name="ver[]" value="${permiso[list_permisos[2]]  ? 1 : 0}"></div>
+                        <div class="col-2"><input type="integer" class="form-control" name="importar[]" value="${permiso[list_permisos[3]]  ? 1 : 0}"></div>
+                        <div class="col-2"><input type="integer" class="form-control" name="exportar[]" value="${permiso[list_permisos[4]]  ? 1 : 0}"></div>
+                    `;
+                }
             }
         });
+
         $('#div-permisos').html(inputs);
     }
 </script>

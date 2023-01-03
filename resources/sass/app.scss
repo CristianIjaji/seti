@@ -287,14 +287,14 @@ button.close {
 
 #nav-bar .nav_link {
     position: relative;
-    color: var(--bs-white);
+    color: var(--bs-white) !important;
     margin-bottom: 1.5rem;
     transition: all 0.2s;
 }
 
 #nav-bar .nav_link:hover {
-    color: var(--bs-secondary);
-    background-color: var(--bs-white);
+    color: var(--bs-secondary) !important;
+    background-color: var(--bs-white) !important;
     border-radius: 0.375rem;
 }
 
@@ -542,6 +542,15 @@ label.required::after {
     border-color: var(--bs-nav-tabs-link-active-border-color);
 }
 
+.form-check-input{
+    border: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+.accordion-item {
+    background-color: var(--bs-bg-body);
+    color: var(--bs-bg-color);
+}
+
 :root, [data-bs-theme=light] {
     --bs-blue: #0d6efd;
     --bs-indigo: #6610f2;
@@ -695,8 +704,14 @@ label.required::after {
     color: var(--bs-body-color-rgb) !important;
 }
 
-.collapse.show {
+#nav-bar .collapse.show {
     background-color: #ffffff4a;
+}
+
+.accordion-button::after{
+    width: 14px;
+    height: 14px;
+    background-size: 14px;   
 }
 
 @media screen and (min-width: 768px) {
@@ -724,18 +739,12 @@ label.required::after {
     }
 
     #nav-bar.show-panel .nav_list a .submenu_icon {
-        display: block;
-        width: 20px;
-        height: 20px;
-        // content: "";
         -webkit-transition: all .2s;
         transition: all .2s;
         -webkit-transform: translateY(-50%);
         transform: translateY(-50%);
         -webkit-transform-origin: center center;
         transform-origin: center center;
-        // background: url(data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' aria-labelledby='title' aria-describedby='desc' role='img' xmlns:xlink='http://www.w3.org/1999/xlink'%3E%3Ctitle%3EAngle Left%3C/title%3E%3Cdesc%3EA line styled icon from Orion Icon Library.%3C/desc%3E%3Cpath data-name='layer1' fill='none' stroke='%23aaa' stroke-miterlimit='10' stroke-width='5' d='M39 20.006L25 32l14 12.006' stroke-linejoin='round' stroke-linecap='round'%3E%3C/path%3E%3C/svg%3E);
-        background-position: right center;
         position: absolute;
         top: 50%;
         right: 20px;

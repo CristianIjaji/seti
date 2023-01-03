@@ -94,7 +94,7 @@ class TblUsuario extends Authenticatable
         return $status;
     }
 
-    public function getMenusPerfil() {
+    public static function getMenusPerfil() {
         $menus = DB::table('tbl_menu_tipo_tercero', 't')
             ->join('tbl_menus as m', 't.id_menu', '=', 'm.id_menu')
             ->select('m.id_menu', 'm.url', 'm.icon', 'm.nombre', 'm.id_menu_padre', 'm.orden')

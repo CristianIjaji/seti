@@ -871,7 +871,7 @@ window.setupSelect2 = function(modal = '') {
     $('.select2-selection__rendered').data('toggle', 'tooltip');
 }
 
-$(document).ready(function() {
+$(function() {
     AOS.init();
 
     $('.nav-item > .nav-link').click(function(e) {
@@ -951,29 +951,25 @@ $(document).ready(function() {
     datePicker();
 
     updateThemeColor();
-    initShowIcon();
+    openMainSubMenu();
 });
 
 jQuery(window).ready(function () {
     showLoader(false);
 });
 
-const initShowIcon = () => {
-    let icon_hide = 'fa-solid fa-angle-down';
-    let icon_show = 'fa-solid fa-angle-up';
+const openMainSubMenu = () => {
     let activemenu = 'activemenu';
 
     $('.submenu_icon').each((i, e) => {
-        $(e).addClass(icon_hide);
-
         let menu = document.getElementById($(e).closest('a').data('bs-target').replace('#', ''));
         menu.addEventListener('hide.bs.collapse', event => {
-            $(e).removeClass(icon_show).addClass(icon_hide);
+            $(e).removeClass(showIcon).addClass(hideIcon);
             $(e).closest('a').removeClass(activemenu);
         });
 
         menu.addEventListener('show.bs.collapse', event => {
-            $(e).removeClass(icon_hide).addClass(icon_show);
+            $(e).removeClass(hideIcon).addClass(showIcon);
             $(e).closest('a').addClass(activemenu);
         });
     });
@@ -1186,13 +1182,11 @@ $(document).on('change', '#iva', function() {
     }
 });
 
-let showIcon = 'fa-caret-down';
-let hideIcon = 'fa-caret-up';
+let showIcon = 'fa-solid fa-angle-down';
+let hideIcon = 'fa-solid fa-angle-up';
 
 $(document).on('click', '.show-more', function() {    
-    setTimeout(() => {
-        $('.show-more > i').toggleClass(`${showIcon} ${hideIcon}`);
-    }, 100);
+    $(this).find('i').toggleClass(`${showIcon} ${hideIcon}`);
 });
 
 $(document).on('change', '#estado_seguimiento', function() {

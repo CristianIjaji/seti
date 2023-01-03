@@ -16,7 +16,7 @@
         @endif
     </div>
     <div id="div-submenus" class="col-sm-12 col-md-6 text-center text-md-end">
-        <div class="d-inline-block">
+        <div class="d-inline-block user-select-none">
             @isset($view)
                 @if ($view)
                     <a style="margin: 0.9px 0px 0.9px 0.9px;" href="{{ route($btnRefresh ?? "$route.index") }}" data-toggle="tooltip" title="Actualizar" class="btn btn-outline-info border border-rounded font-weight-bolder fs-4 bg-update">
@@ -204,19 +204,21 @@
                                             </span>
                                         @endisset
                                         @isset($header['actions']['btnOptions']['edit'])
-                                            <span
-                                                class="btn modal-form"
-                                                data-toggle="tooltip"
-                                                data-placement="top"
-                                                data-toggle="modal"
-                                                data-title="{{ $header['actions']['btnOptions']['modal-edit-title'] }}"
-                                                data-size="{{ $header['actions']['btnOptions']['modal-edit-size'] }}"
-                                                data-header-class="{{ isset($header['actions']['btnOptions']['header-edit-class']) ? $header['actions']['btnOptions']['header-edit-class'] : '' }}"
-                                                data-action={{ route("$route.edit", $model) }}
-                                                title="Editar"
-                                            >
-                                                <i class="fas fa-pencil-alt text-warning fs-5 fw-bold"></i>
-                                            </span>
+                                            @if ($edit)
+                                                <span
+                                                    class="btn modal-form"
+                                                    data-toggle="tooltip"
+                                                    data-placement="top"
+                                                    data-toggle="modal"
+                                                    data-title="{{ $header['actions']['btnOptions']['modal-edit-title'] }}"
+                                                    data-size="{{ $header['actions']['btnOptions']['modal-edit-size'] }}"
+                                                    data-header-class="{{ isset($header['actions']['btnOptions']['header-edit-class']) ? $header['actions']['btnOptions']['header-edit-class'] : '' }}"
+                                                    data-action={{ route("$route.edit", $model) }}
+                                                    title="Editar"
+                                                >
+                                                    <i class="fas fa-pencil-alt text-warning fs-5 fw-bold"></i>
+                                                </span>
+                                            @endif
                                         @endisset
                                         @isset($header['actions']['btnOptions']{'delete'})
                                             <span

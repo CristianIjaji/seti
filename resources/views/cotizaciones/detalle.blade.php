@@ -81,7 +81,7 @@
                                 data-bs-toggle="collapse"
                                 data-bs-target=".item_{{ session('id_dominio_materiales') }}"
                                 >
-                                <i id="caret_{{ session('id_dominio_materiales') }}" class="fa-solid fa-caret-down"></i>
+                                <i id="caret_{{ session('id_dominio_materiales') }}" class="fa-solid fa-angle-down"></i>
                             </span>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                                 data-bs-toggle="collapse"
                                 data-bs-target=".item_{{ session('id_dominio_mano_obra') }}"
                                 >
-                                <i id="caret_{{ session('id_dominio_mano_obra') }}" class="fa-solid fa-caret-down"></i>
+                                <i id="caret_{{ session('id_dominio_mano_obra') }}" class="fa-solid fa-angle-down"></i>
                             </span>
                         </div>
                     </div>
@@ -146,7 +146,7 @@
                                     data-bs-toggle="collapse"
                                     data-bs-target=".item_{{ session('id_dominio_transporte') }}"
                                     >
-                                    <i id="caret_{{ session('id_dominio_transporte') }}" class="fa-solid fa-caret-down"></i>
+                                    <i id="caret_{{ session('id_dominio_transporte') }}" class="fa-solid fa-angle-down"></i>
                                 </span>
                             </div>
                         </div>

@@ -38,6 +38,10 @@ class TblMenu extends Model
         </div>";
     }
 
+    // public function getSubmenuAttribute() {
+    //     return $this->belongsTo(TblMenu::class, )
+    // }
+
     public function getNombreFormAttribute() {
         return $this->attributes['nombre'];
     }

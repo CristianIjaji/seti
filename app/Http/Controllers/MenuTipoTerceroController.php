@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveMenuTipoTerceroRequest;
 use App\Models\TblDominio;
-use App\Models\TblMenu;
 use App\Models\TblMenuTipoTercero;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -81,6 +80,34 @@ class MenuTipoTerceroController extends Controller
         return $this->getView('menus.index');
     }
 
+    private function getMenusDisponibles() {
+        $menus = DB::table('tbl_menus', 'm')
+        ->select('m.id_menu', 'm.url', 'm.icon', 'm.nombre', 'm.id_menu_padre', 'm.orden')
+        ->where(['m.estado' => 1])
+        ->wherenotin('m.id_menu', (Auth::user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))
+        ->orderBy(DB::raw('COALESCE(id_menu_padre, orden)', 'asc'))
+        ->get();
+        
+        $menus_disponibles = [];
+
+        foreach ($menus as $menu) {
+            if(!isset($menus_disponibles[$menu->id_menu]) && !$menu->id_menu_padre) {
+                $menus_disponibles[$menu->id_menu] = [];
+                $menus_disponibles[$menu->id_menu] = $menu;
+            }
+
+            if($menu->id_menu_padre && isset($menus_disponibles[$menu->id_menu_padre])) {
+                if(!isset($menus_disponibles[$menu->id_menu_padre]->submenu)) {
+                    $menus_disponibles[$menu->id_menu_padre]->submenu = [];
+                }
+
+                $menus_disponibles[$menu->id_menu_padre]->submenu[] = $menu;
+            }
+        }
+
+        return $menus_disponibles;
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -93,8 +120,7 @@ class MenuTipoTerceroController extends Controller
         return view('menus._form', [
             'profile' => new TblMenuTipoTercero,
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
-            'menus_disponibles' => TblMenu::where('estado', '=', 1)
-            ->wherenotin('id_menu', (Auth::user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))->orderBy('orden')->get(),
+            'menus_disponibles' => $this->getMenusDisponibles(),
             'menus_asignados' => []
         ]);
     }
@@ -138,8 +164,7 @@ class MenuTipoTerceroController extends Controller
             'edit' => false,
             'profile' => $profile,
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
-            'menus_disponibles' => TblMenu::where('estado', '=', 1)
-            ->wherenotin('id_menu', (Auth::user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))->orderBy('orden')->get(),
+            'menus_disponibles' => $this->getMenusDisponibles(),
             'menus_asignados' => $this->getPermisosMenu($profile),
         ]);
     }
@@ -158,8 +183,7 @@ class MenuTipoTerceroController extends Controller
             'edit' => true,
             'profile' => $profile,
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
-            'menus_disponibles' => TblMenu::where('estado', '=', 1)
-            ->wherenotin('id_menu', (Auth::user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))->orderBy('orden')->get(),
+            'menus_disponibles' => $this->getMenusDisponibles(),
             'menus_asignados' => $this->getPermisosMenu($profile),
         ]);
     }
@@ -202,35 +226,7 @@ class MenuTipoTerceroController extends Controller
     }
 
     private function getPermisosMenu($profile) {
-        $menus_asignados = [];
-        $menus = TblMenu::select(
-            'tbl_menus.id_menu',
-            'tbl_menus.nombre',
-            'tbl_menus.nombre as nombre_form',
-            'tbl_menus.icon',
-            'ttm.crear',
-            'ttm.editar',
-            'ttm.ver',
-            'ttm.importar',
-            'ttm.exportar'
-        )->join('tbl_menu_tipo_tercero as ttm', 'tbl_menus.id_menu', '=', 'ttm.id_menu')
-        ->where(['tbl_menus.estado' => 1, 'ttm.id_tipo_tercero' => $profile->id_tipo_tercero])
-        ->orderBy('tbl_menus.orden')->get();
-
-        foreach ($menus as $menu) {
-            $menus_asignados[$menu->id_menu] = [
-                'nombre' => $menu->nombre_form,
-                'permisos' => [
-                    "crear" => $menu->crear,
-                    "editar" => $menu->editar,
-                    "ver" => $menu->ver,
-                    "importar" => $menu->importar,
-                    "exportar" => $menu->exportar
-                ]
-            ];
-        }
-
-        return $menus_asignados;
+        return TblMenuTipoTercero::where(['id_tipo_tercero' => $profile->id_tipo_tercero])->get();
     }
 
     public function grid() {

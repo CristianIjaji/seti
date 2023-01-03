@@ -1,4 +1,4 @@
-<header class="header-menu border-bottom" id="header">
+<header id="header" class="header-menu border-bottom user-select-none">
     <div class="header_toggle">
         <i class="fa-solid fa-bars" id="header-toggle"></i>
     </div>
@@ -59,7 +59,7 @@
         </li>
     </div>
 </header>
-<div id="nav-bar" class="l-navbar">
+<div id="nav-bar" class="l-navbar user-select-none">
     <nav class="nav">
         <div>
             <div class="nav_list accordion">
@@ -80,11 +80,11 @@
                             data-bs-toggle="collapse"
                             data-bs-target="#__menu_{{ $menu->id_menu }}"
                         @endisset
-                        class="nav_link {{ setActive($menu->url) }} rounded {{ !isset($menu->submenu) ? 'my-1' : 'my-0 btn' }}"
+                        class="nav_link {{ setActive($menu->url) }} rounded {{ !isset($menu->submenu) ? 'my-1' : 'my-0 btn show-more' }}"
                     >
                         <i class="{{ $menu->icon }} fs-5 text-center"></i>
                         <span class="nav_name">{{$menu->nombre}}</span>
-                        {!! !isset($menu->url) ? '<i class="text-center submenu_icon fs-6" style="margin-left: -6px;"></i>' : '' !!}
+                        {!! !isset($menu->url) ? '<i class="text-center fs-6 submenu_icon fa-solid fa-angle-down" style="margin-left: -6px;"></i>' : '' !!}
                     </a>
                     @isset($menu->submenu)
                         <ul class="list-group border-top-0 rounded-0 rounded-bottom collapse" id="__menu_{{ $menu->id_menu }}" data-bs-parent=".accordion">
