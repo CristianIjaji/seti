@@ -32,7 +32,7 @@ class TblCotizacionPolicy
      */
     public function view(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
-        return isset($tblUsuario->getPermisosMenu('quotes.index')->view) ? $tblUsuario->getPermisosMenu('quotes.index')->view : false;
+        return $tblUsuario->getPermisosMenu('quotes.index')->view;
     }
 
     /**
@@ -43,7 +43,7 @@ class TblCotizacionPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('quotes.index')->create) ? $tblUsuario->getPermisosMenu('quotes.index')->create : false;
+        return $tblUsuario->getPermisosMenu('quotes.index')->create;
     }
 
     /**
@@ -55,7 +55,7 @@ class TblCotizacionPolicy
      */
     public function update(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
-        return isset($tblUsuario->getPermisosMenu('quotes.index')->update) ? $tblUsuario->getPermisosMenu('quotes.index')->update : false;
+        return $tblUsuario->getPermisosMenu('quotes.index')->update;
     }
 
     /**
@@ -95,11 +95,11 @@ class TblCotizacionPolicy
     }
 
     public function export(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        return isset($tblUsuario->getPermisosMenu('quotes.index')->export) ? $tblUsuario->getPermisosMenu('quotes.index')->export : false;
+        return $tblUsuario->getPermisosMenu('quotes.index')->export;
     }
 
     public function import(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        return isset($tblUsuario->getPermisosMenu('quotes.index')->import) ? $tblUsuario->getPermisosMenu('quotes.index')->import : false;
+        return $tblUsuario->getPermisosMenu('quotes.index')->import;
     }
 
 
@@ -172,6 +172,6 @@ class TblCotizacionPolicy
             return false;
         }
 
-        return isset($tblUsuario->getPermisosMenu('activities.index')->create) ? $tblUsuario->getPermisosMenu('activities.index')->create : false;
+        return $tblUsuario->getPermisosMenu('activities.index')->create;
     }
 }

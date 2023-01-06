@@ -30,7 +30,7 @@ class TblMenuTipoTerceroPolicy
      */
     public function view(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
     {
-        return isset($tblUsuario->getPermisosMenu('profiles.index')->view) ? $tblUsuario->getPermisosMenu('profiles.index')->view : false;
+        return $tblUsuario->getPermisosMenu('profiles.index')->view;
     }
 
     /**
@@ -41,7 +41,7 @@ class TblMenuTipoTerceroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('profiles.index')->create) ? $tblUsuario->getPermisosMenu('profiles.index')->create : false;
+        return $tblUsuario->getPermisosMenu('profiles.index')->create;
     }
 
     /**
@@ -53,7 +53,7 @@ class TblMenuTipoTerceroPolicy
      */
     public function update(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
     {
-        return isset($tblUsuario->getPermisosMenu('profiles.index')->update) ? $tblUsuario->getPermisosMenu('profiles.index')->update : false;
+        return $tblUsuario->getPermisosMenu('profiles.index')->update;
     }
 
     /**

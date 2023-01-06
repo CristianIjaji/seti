@@ -8,6 +8,7 @@ use App\Http\Controllers\EstadoActividadController;
 use App\Http\Controllers\EstadoCotizacionController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\KardexController;
 use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MenuTipoTerceroController;
 use App\Http\Controllers\MessagesController;
@@ -38,7 +39,7 @@ Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
 
 // Controlador terceros
 Route::get('clients/export', [TerceroController::class, 'export'])->name('clients.export');
-Route::get('clients/template', [TerceroController::class, 'download_template'])->name('clients.template');
+Route::get('clients/template', [TerceroController::class, 'downloadTemplate'])->name('clients.template');
 Route::get('/clients/search', [TerceroController::class, 'search'])->name('clients.search');
 Route::resource('clients', TerceroController::class);
 Route::post('clients/grid', [TerceroController::class, 'grid'])->name('clients.grid');
@@ -46,7 +47,7 @@ Route::post('clients/import', [TerceroController::class, 'import'])->name('clien
 
 // Controlador puntos interes
 Route::get('sites/export', [PuntosInteresController::class, 'export'])->name('sites.export');
-Route::get('sites/template', [PuntosInteresController::class, 'download_template'])->name('sites.template');
+Route::get('sites/template', [PuntosInteresController::class, 'downloadTemplate'])->name('sites.template');
 Route::get('sites/{client}/get_puntos_interes_client', [PuntosInteresController::class, 'get_puntos_interes_client'])->name('sites.get_puntos_interes_client');
 Route::resource('sites', PuntosInteresController::class);
 Route::post('sites/grid', [PuntosInteresController::class, 'grid'])->name('sites.grid');
@@ -54,16 +55,30 @@ Route::post('sites/import', [PuntosInteresController::class, 'import'])->name('s
 
 // Controlador lista de precios
 Route::get('priceList/export', [ListaPrecioController::class, 'export'])->name('priceList.export');
-Route::get('priceList/template', [ListaPrecioController::class, 'download_template'])->name('priceList.template');
+Route::get('priceList/template', [ListaPrecioController::class, 'downloadTemplate'])->name('priceList.template');
 Route::resource('priceList', ListaPrecioController::class);
 Route::get('priceList/{type}/{client}/{tipo_carrito}', [ListaPrecioController::class, 'search'])->name('priceList.search');
 Route::post('priceList/grid',[ListaPrecioController::class, 'grid'])->name('priceList.grid');
 Route::post('priceList/import', [ListaPrecioController::class, 'import'])->name('priceList.import');
 
+// Controlador de inventario
+Route::get('stores/export', [InventarioController::class, 'export'])->name('stores.export');
+Route::get('stores/template', [InventarioController::class, 'downloadTemplate'])->name('stores.template');
+Route::resource('stores', InventarioController::class);
+Route::post('stores/grid', [InventarioController::class, 'grid'])->name('stores.grid');
+Route::post('stores/import', [InventarioController::class, 'import'])->name('stores.import');
+
+// Controlador del kardex
+Route::resource('kardex', KardexController::class);
+Route::post('kardex/grid', [KardexController::class, 'grid'])->name('kardex.grid');
+
+// Controlador de orden de compra
+Route::resource('purchases', OrdenController::class);
+
 // Controlador cotizaciones
 Route::get('quotes/exportQuote', [CotizacionController::class, 'exportQuote'])->name('quotes.exportQuote');
 Route::get('quotes/export', [CotizacionController::class, 'export'])->name('quotes.export');
-Route::get('quotes/template', [CotizacionController::class, 'download_template'])->name('quotes.template');
+Route::get('quotes/template', [CotizacionController::class, 'downloadTemplate'])->name('quotes.template');
 Route::get('quotes/{quote}/seguimiento', [CotizacionController::class, 'seguimiento'])->name('quotes.seguimiento');
 Route::get('quotes/{quote}/getquote', [CotizacionController::class, 'getCotizacion'])->name('quotes.getquote');
 Route::resource('quotes', CotizacionController::class);
@@ -110,10 +125,5 @@ Route::post('domains/grid', [DominioController::class, 'grid'])->name('domains.g
 Route::resource('params', ParametroController::class);
 Route::post('params/grid', [ParametroController::class, 'grid'])->name('params.grid');
 
-// Controlador de orden de compra
-Route::resource('purchases', OrdenController::class);
-
-// Controlador de inventario
-Route::resource('stores', InventarioController::class);
 
 Auth::routes();

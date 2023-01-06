@@ -88,7 +88,7 @@ class SaveTerceroRequest extends FormRequest
                 'exists:tbl_dominios,id_dominio'
             ],
             'id_responsable_cliente' => [
-                !in_array($this->get('id_dominio_tipo_tercero'), [session('id_dominio_representante_cliente'), session('id_dominio_coordinador')])
+                !in_array($this->get('id_dominio_tipo_tercero'), [session('id_dominio_representante_cliente'), session('id_dominio_coordinador'), session('id_dominio_almacen')])
                 ? 'nullable'
                 : 'required','exists:tbl_terceros,id_tercero'
             ],

@@ -516,7 +516,7 @@ class CotizacionController extends Controller
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte cotizaciones.xlsx');
     }
 
-    public function download_template() {
+    public function downloadTemplate() {
         $headers = ['OT', 'Proveedor', 'Estación', 'Descripción Orden', 'Fecha Solicitud', 'Fecha Envio',
             'Tipo Trabajo', 'Prioridad', 'Estado', 'Encargado', 'IVA', 'Valor'
         ];

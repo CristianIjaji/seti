@@ -30,7 +30,7 @@ class TblListaPrecioPolicy
      */
     public function view(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio)
     {
-        return isset($tblUsuario->getPermisosMenu('priceList.index')->view) ? $tblUsuario->getPermisosMenu('priceList.index')->view : false;
+        return $tblUsuario->getPermisosMenu('priceList.index')->view;
     }
 
     /**
@@ -41,7 +41,7 @@ class TblListaPrecioPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('priceList.index')->create) ? $tblUsuario->getPermisosMenu('priceList.index')->create : false;
+        return $tblUsuario->getPermisosMenu('priceList.index')->create;
     }
 
     /**
@@ -53,7 +53,7 @@ class TblListaPrecioPolicy
      */
     public function update(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio)
     {
-        return isset($tblUsuario->getPermisosMenu('priceList.index')->update) ? $tblUsuario->getPermisosMenu('priceList.index')->update : false;
+        return $tblUsuario->getPermisosMenu('priceList.index')->update;
     }
 
     /**
@@ -93,10 +93,10 @@ class TblListaPrecioPolicy
     }
 
     public function export(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio) {
-        return isset($tblUsuario->getPermisosMenu('sites.index')->export) ? $tblUsuario->getPermisosMenu('sites.index')->export : false;        
+        return $tblUsuario->getPermisosMenu('sites.index')->export;
     }
 
     public function import(TblUsuario $tblUsuario, TblListaPrecio $tblListaPrecio) {
-        return isset($tblUsuario->getPermisosMenu('sites.index')->import) ? $tblUsuario->getPermisosMenu('sites.index')->import : false;        
+        return $tblUsuario->getPermisosMenu('sites.index')->import;
     }
 }

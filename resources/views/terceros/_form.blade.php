@@ -41,14 +41,17 @@
             <label for="id_dominio_tipo_documento" class="required">Tipo documento</label>
             @if ($edit)
                 @if (!$tipo_documento)
-                    <select class="form-control" name="id_dominio_tipo_documento" id="id_dominio_tipo_documento" style="width: 100%" @if ($edit) required @else disabled @endif>
-                        <option value="">Elegir tipo documento</option>
-                        @foreach ($tipo_documentos as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('id_dominio_tipo_documento', $tercero->id_dominio_tipo_documento) == $id ? 'selected' : '' }}>
-                                {{$nombre}}
-                            </option>
-                        @endforeach
-                    </select>
+                    <div id="div-select-tipo-documento">
+                        <select class="form-control" name="id_dominio_tipo_documento" id="id_dominio_tipo_documento" style="width: 100%" @if ($edit) required @else disabled @endif>
+                            <option value="">Elegir tipo documento</option>
+                            @foreach ($tipo_documentos as $id => $nombre)
+                                <option value="{{ $id }}" {{ old('id_dominio_tipo_documento', $tercero->id_dominio_tipo_documento) == $id ? 'selected' : '' }}>
+                                    {{$nombre}}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <label class="form-control fw-normal d-none" id="lbl-tipo-documento"></label>
                 @else
                     <input type="text" class="form-control" value="{{ $tipo_documento->nombre }}" disabled readonly>
                     <input type="hidden" name="id_dominio_tipo_documento" id="id_dominio_tipo_documento" value="{{ $tipo_documento->id_dominio }}">
@@ -135,7 +138,7 @@
                 @endif
             </div>
         @endif
-        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente'), session('id_dominio_proveedor')]) ? '' : 'd-none' }} ">
+        <div id="div_logo" class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4 {{ in_array($tercero->id_dominio_tipo_tercero, [session('id_dominio_cliente')]) ? '' : 'd-none' }} ">
             <label for="logo" class="required col-12">Logo cotización</label>
             <div class="file-loading">
                 <input id="logo" name="logo" type="file" class="file" data-allowed-file-extensions='["img", "jpg", "jpeg", "png"]' accept=".jpg, .jpeg, .png">
@@ -171,12 +174,6 @@
         }
     </style>
     <script type="application/javascript">
-        function uid() {
-            let a = new Uint32Array(3);
-            window.crypto.getRandomValues(a);
-            return (performance.now().toString(36)+Array.from(a).map(A => A.toString(36)).join("")).replace(/./g,""+Math.random()+Intl.DateTimeFormat().resolvedOptions().timeZone+Date.now());
-        };
-
         $('#id_dominio_tipo_documento').change(function() {
             $('#div_dv, #div_razon_social').addClass('d-none');
             let valor = parseInt($(this).val());
@@ -188,26 +185,31 @@
         });
 
         $('#id_dominio_tipo_tercero').change(function() {
-            $('#div_logo, #div_dependencia').addClass('d-none');
+            $('#div_logo, #div_dependencia, #lbl-tipo-documento').addClass('d-none');
+            $('#div-select-tipo-documento').removeClass('d-none');
+
             let valor = parseInt($(this).val());
             let cliente = parseInt({!! session('id_dominio_cliente') !!});
             let representante_cliente = parseInt({!! session('id_dominio_representante_cliente') !!});
             let coordinador = parseInt({!! session('id_dominio_coordinador') !!});
             let proveedor = parseInt({!! session('id_dominio_contratista') !!});
+            let almacen = parseInt({!! session('id_dominio_almacen') !!});
 
             if($.inArray(valor, [cliente, proveedor]) > -1) {
                 $('#div_logo').removeClass('d-none');
             }
 
-            if($.inArray(valor, [representante_cliente, coordinador]) > -1) {
+            if($.inArray(valor, [representante_cliente, coordinador, almacen]) > -1) {
                 $('#div_dependencia').removeClass('d-none');
             }
 
-            if(valor == {!! session('id_dominio_almacen') !!}) {
-                $('#id_dominio_tipo_documento').val({!! session('id_dominio_cedula') !!}).change();
-                // $('#documento').val(new Generator());
+            $('#documento').val('');
 
-                console.log(uid());
+            if(valor == {!! session('id_dominio_almacen') !!}) {
+                $('#div-select-tipo-documento').addClass('d-none');
+                $('#id_dominio_tipo_documento').val({!! session('id_dominio_documento_almacen') !!}).change();
+                $('#lbl-tipo-documento').removeClass('d-none').text($('#id_dominio_tipo_documento option:selected').text());
+                $('#documento').val(RandomString());
             }
         });
 

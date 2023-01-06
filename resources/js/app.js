@@ -12,6 +12,7 @@ window.Pusher = require('pusher-js');
 
 import moment from 'moment';
 import { TempusDominus, Namespace } from '@eonasdan/tempus-dominus';
+import { random } from 'lodash';
 
 const Swal = require('sweetalert2');
 
@@ -871,6 +872,28 @@ window.setupSelect2 = function(modal = '') {
     $('.select2-selection__rendered').data('toggle', 'tooltip');
 }
 
+window.RandomString = (length = 10, uc = false, n = false, sc = false) => {
+    let source = '123456789';
+    let str = '';
+
+    if(!uc) {
+        source += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    }
+    if(n) {
+        source += 'abcdefghijklmnopqrstuvwxyz';
+    }
+    if(sc) {
+        source += '|@#~$%()=^*+[]{}-_';
+    }
+    if(length > 0) {
+        for (let index = 0; index < length; index++) {
+            str += source[random(0, source.length - 1)];
+        }
+    }
+
+    return str;
+}
+
 $(function() {
     AOS.init();
 
@@ -935,6 +958,8 @@ $(function() {
                 if(result.isConfirmed) {
                     showLoader(true);
                     $('#input_file').parent().submit();
+                } else {
+                    $('#input_file').val('');
                 }
             });
         } else {

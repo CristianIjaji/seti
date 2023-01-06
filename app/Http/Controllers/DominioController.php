@@ -138,8 +138,8 @@ class DominioController extends Controller
     public function update(TblDominio $domain, SaveDominioRequest $request)
     {
         try {
-            $domain->update($request->validated());
             $this->authorize('update', $domain);
+            $domain->update($request->validated());
 
             return response()->json([
                 'success' => 'Dominio actualizado correctamente!',

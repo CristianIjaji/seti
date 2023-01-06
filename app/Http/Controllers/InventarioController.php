@@ -2,16 +2,62 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Exports\ReportsExport;
+use App\Http\Requests\SaveInventarioRequest;
+use App\Imports\DataImport;
+use App\Models\TblInventario;
+use App\Models\TblListaPrecio;
+use App\Models\TblTercero;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Excel;
 
 class InventarioController extends Controller
 {
     protected $filtros;
+    protected $excel;
 
-    public function __construct()
+    public function __construct(Excel $excel)
     {
         $this->middleware('auth');
+        $this->excel = $excel;
     }
+
+    private function dinamyFilters($querybuilder, $fields = []) {
+        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
+
+        foreach (request()->all() as $key => $value) {
+            if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
+                $operador = [];
+
+                foreach ($operadores as $item) {
+                    $operador = explode($item, trim($value));
+
+                    if(count($operador) > 1){
+                        $operador[0] = $item;
+                        break;
+                    }
+                }
+
+                $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
+
+                if(!in_array($key, ['full_name'])){
+                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                } else if($key == 'full_name' && $value) {
+                    $querybuilder->whereHas('tblterceroalmacen', function($q) use($value){
+                        $q->where('tbl_terceros.razon_social', 'like', strtolower("%$value%"));
+                        $q->orwhere('tbl_terceros.nombres', 'like', strtolower("%$value%"));
+                        $q->orwhere('tbl_terceros.apellidos', 'like', strtolower("%$value%"));
+                    });
+                }
+            }
+            $this->filtros[$key] = $value;
+        }
+
+        return $querybuilder;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -29,7 +75,23 @@ class InventarioController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', new TblInventario);
+        
+        $unidades1 = TblListaPrecio::pluck('unidad', 'unidad');
+        $unidades2 = TblInventario::pluck('unidad', 'unidad')->union($unidades1);
+
+        return view('inventario._form', [
+            'inventario' => new TblInventario,
+            'almacenes' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_almacen'),
+                'id_responsable_cliente' => auth()->id()
+            ])->get(),
+            'clasificaciones' => TblInventario::pluck('clasificacion', 'clasificacion'),
+            'unidades' => $unidades2,
+            'ubicaciones' => TblInventario::pluck('ubicacion', 'ubicacion'),
+            'marcas' => TblInventario::pluck('marca', 'marca'),
+        ]);
     }
 
     /**
@@ -38,9 +100,24 @@ class InventarioController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SaveInventarioRequest $request)
     {
-        //
+        try {
+            $inventario = TblInventario::create($request->validated());
+            $this->authorize('create', $inventario);
+
+            return response()->json([
+                'success' => 'Producto creado exitosamente!',
+                'reponse' => [
+                    'value' => $inventario->id_inventario,
+                    'option' => $inventario->descripcion
+                ],
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -49,9 +126,14 @@ class InventarioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(TblInventario $store)
     {
-        //
+        $this->authorize('view', $store);
+
+        return view('inventario._form', [
+            'edit' => false,
+            'inventario' => $store
+        ]);
     }
 
     /**
@@ -60,9 +142,30 @@ class InventarioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(TblInventario $store)
     {
-        //
+        $this->authorize('update', $store);
+
+        $unidades1 = TblListaPrecio::pluck('unidad', 'unidad');
+        $unidades2 = TblInventario::pluck('unidad', 'unidad')->union($unidades1);
+
+        return view('inventario._form', [
+            'edit' => true,
+            'inventario' => $store,
+            'almacenes' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_almacen'),
+                'id_responsable_cliente' => auth()->id()
+            ])->get(),
+            'clasificaciones' => TblInventario::pluck('clasificacion', 'clasificacion'),
+            'unidades' => $unidades2,
+            'ubicaciones' => TblInventario::pluck('ubicacion', 'ubicacion'),
+            'marcas' => TblInventario::pluck('marca', 'marca'),
+            'estados' => [
+                0 => 'Inactivo',
+                1 => 'Activo'
+            ],
+        ]);
     }
 
     /**
@@ -72,9 +175,20 @@ class InventarioController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TblInventario $store, SaveInventarioRequest $request)
     {
-        //
+        try {
+            $this->authorize('update', $store);
+            $store->update($request->validated());
+
+            return response()->json([
+                'success' => 'Producto actualizado correctamente!'
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -93,8 +207,69 @@ class InventarioController extends Controller
     }
 
     private function getView($view) {
+        $inventario = new TblInventario;
+
         return view($view, [
-            
+            'model' => TblInventario::with(['tblterceroalmacen', 'tblusuario'])
+                ->where(function ($q) {
+                    $this->dinamyFilters($q);
+                })->orderBy('id_inventario', 'desc')->paginate(10),
+            'export' => Gate::allows('export', $inventario),
+            'import' => Gate::allows('import', $inventario),
+            'create' => Gate::allows('create', $inventario),
+            'edit' => Gate::allows('update', $inventario),
+            'view' => Gate::allows('view', $inventario),
+            'request' => $this->filtros,
         ]);
+    }
+
+    private function generateDownload($option) {
+        return TblInventario::select(
+            DB::raw("
+                tbl_inventario.id_inventario,
+                CONCAT(t.nombres, ' ', t.apellidos) as almacen,
+                tbl_inventario.clasificacion,
+                tbl_inventario.descripcion,
+                tbl_inventario.marca,
+                tbl_inventario.cantidad,
+                tbl_inventario.unidad,
+                tbl_inventario.valor_unitario,
+                tbl_inventario.ubicacion,
+                tbl_inventario.cantidad_minima,
+                tbl_inventario.cantidad_maxima,
+                CASE WHEN tbl_inventario.estado = 1 THEN 'Activo' ELSE 'Inactivo' END estado_inventario
+            ")
+        )->join('tbl_terceros as t', 'tbl_inventario.id_tercero_almacen', '=', 't.id_tercero')
+        ->where(function ($q) use($option) {
+            if($option == 1) {
+                $this->dinamyFilters($q, [
+                    'tbl_inventario.estado' => 'estado'
+                ]);
+            } else {
+                $q->where('tbl_inventario.estado', '=', '-1');
+            }
+        })
+        ->get();
+    }
+
+    public function export() {
+        $headers = ['#', 'Almacén', 'Clasificación', 'Descripción', 'Marca', 'Cantidad', 'Unidad', 'Valor unitario',
+            'Ubicación', 'Cantidad mínima', 'Cantidad máxima', 'Estado'
+        ];
+
+        return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte inventario.xlsx');
+    }
+
+    public function downloadTemplate() {
+        $headers = ['Documento encargado', 'Clasificación', 'Descripción', 'Marca', 'Cantidad', 'Unidad', 'Valor unitario',
+            'Ubicación', 'Cantidad mínima', 'Cantidad máxima'
+        ];
+
+        return $this->excel->download(new ReportsExport($headers, $this->generateDownload(2)), 'Template inventario.xlsx');
+    }
+
+    public function import() {
+        (new DataImport(new TblInventario))->import(request()->file('input_file'));
+        return back();
     }
 }

@@ -166,8 +166,8 @@ class PuntosInteresController extends Controller
     public function update(TblPuntosInteres $site, SavePuntosInteresRequest $request)
     {
         try {
-            $site->update($request->validated());
             $this->authorize('update', $site);
+            $site->update($request->validated());
 
             return response()->json([
                 'success' => 'Punto de interés actualizado correctamente!'
@@ -261,7 +261,7 @@ class PuntosInteresController extends Controller
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte sitios.xlsx');
     }
 
-    public function download_template() {
+    public function downloadTemplate() {
         $headers = ['Documento cliente', 'Zona', 'Sitio', 'Latitud', 'Longitud', 'Descripción', 'Tipo transporte', 'Tipo acceso'];
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(2)), 'Template puntos interes.xlsx');
     }

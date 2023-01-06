@@ -165,8 +165,8 @@ class ListaPrecioController extends Controller
     public function update(TblListaPrecio $priceList, SaveListaPrecioRequest $request)
     {
         try {
-            $priceList->update($request->validated());
             $this->authorize('update', $priceList);
+            $priceList->update($request->validated());
 
             return response()->json([
                 'success' => 'Ítem actualizado correctamente!'
@@ -256,7 +256,7 @@ class ListaPrecioController extends Controller
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte lista precios.xlsx');
     }
 
-    public function download_template() {
+    public function downloadTemplate() {
         $headers = ['Documento cliente', 'Tipo ítem', 'Código', 'Descripción', 'Unidad', 'Cantidad', 'Valor unitario'];
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(2)), 'Template lista precios.xlsx');
     }

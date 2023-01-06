@@ -2,12 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Models\TblActividad;
 use App\Models\TblConsolidado;
 use App\Models\TblCotizacion;
 use App\Models\TblConsolidadoDetalle;
 use App\Models\TblDominio;
+use App\Models\TblEstadoActividad;
+use App\Models\TblEstadoCotizacion;
 use App\Models\TblFactura;
 use App\Models\TblHallazgo;
+use App\Models\TblInventario;
+use App\Models\TblKardex;
 use App\Models\TblListaPrecio;
 use App\Models\TblMenu;
 use App\Models\TblMenuTipoTercero;
@@ -117,6 +122,8 @@ class SetupSeeder extends Seeder
             </html>
         ';
 
+        TblKardex::truncate();
+        TblInventario::truncate();
         TblConsolidadoDetalle::truncate();
         TblConsolidado::truncate();
         TblHallazgo::truncate();
@@ -126,7 +133,10 @@ class SetupSeeder extends Seeder
         TblMenu::truncate();
         TblPuntosInteres::truncate();
         TblListaPrecio::truncate();
+        TblEstadoCotizacion::truncate();
         TblCotizacion::truncate();
+        TblEstadoActividad::truncate();
+        TblActividad::truncate();
         TblTercero::truncate();
         TblParametro::truncate();
         TblDominio::truncate();
@@ -165,7 +175,8 @@ class SetupSeeder extends Seeder
                     'Cédula' => ['id_dominio' => null, 'key' => 'id_dominio_cedula'],
                     'Cédula extranjeria' => ['id_dominio' => null, 'key' => 'id_dominio_cedula_extrangeria'],
                     'Pasaporte' => ['id_dominio' => null, 'key' => 'id_dominio_pasaporte'],
-                    'NIT' => ['id_dominio' => null, 'key' => 'id_dominio_nit']
+                    'NIT' => ['id_dominio' => null, 'key' => 'id_dominio_nit'],
+                    'Almacén' => ['id_dominio' => null, 'key' => 'id_dominio_documento_almacen']
                 ]
             ],
             'Tipo terceros' => [
@@ -441,10 +452,22 @@ class SetupSeeder extends Seeder
                         'id_menu' => null,
                         'menu' => [
                             'id_menu_padre' => null,
+                            'url' => 'kardex.index',
+                            'icon' => 'fa-solid fa-chart-column nav_icon',
+                            'nombre' => 'Kardex',
+                            'orden' => 2,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario
+                        ]
+                    ],
+                    2 => [
+                        'id_menu' => null,
+                        'menu' => [
+                            'id_menu_padre' => null,
                             'url' => 'purchases.index',
                             'icon' => 'fa-solid fa-truck-arrow-right nav_icon',
                             'nombre' => 'Orden compra',
-                            'orden' => 2,
+                            'orden' => 3,
                             'estado' => 1,
                             'id_usuareg' => $user->id_usuario,
                         ]

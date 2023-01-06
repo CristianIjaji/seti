@@ -112,7 +112,12 @@ class TerceroController extends Controller
             'tipo_tercero' => isset(request()->tipo_tercero)
                 ? TblDominio::where('id_dominio', '=', request()->tipo_tercero)->first()
                 : '',
-            'terceros' => TblTercero::where(['estado' => 1])->wherein('id_dominio_tipo_tercero', [session('id_dominio_cliente'), session('id_dominio_contratista')])->get(),
+            'terceros' => TblTercero::where(['estado' => 1])->wherein('id_dominio_tipo_tercero', [
+                session('id_dominio_cliente'),
+                session('id_dominio_contratista'),
+                session('id_dominio_analista'),
+                session('id_dominio_coordinador')
+            ])->get(),
             'ciudades' => TblTercero::pluck('ciudad', 'ciudad'),
         ]);
     }
@@ -176,7 +181,7 @@ class TerceroController extends Controller
             'tercero' => $client,
             'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento')),
             'tipo_terceros' => $this->getTipoTerceros(),
-            'terceros' => TblTercero::where(['estado' => 1])->where('id_tercero', '<>', $client->id_tercero)->wherein('id_dominio_tipo_tercero', [session('id_dominio_cliente'), session('id_dominio_contratista')])->get(),
+            'terceros' => TblTercero::where(['estado' => 1])->where('id_tercero', '<>', $client->id_tercero)->wherein('id_dominio_tipo_tercero', [session('id_dominio_cliente'), session('id_dominio_contratista'), session('id_dominio_coordinador')])->get(),
             'estados' => [
                 0 => 'Inactivo',
                 1 => 'Activo'
@@ -310,7 +315,7 @@ class TerceroController extends Controller
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte terceros.xlsx');
     }
 
-    public function download_template() {
+    public function downloadTemplate() {
         $headers = ['Tipo documento', 'Documento', 'Dígito Verificación', 'Razón social', 'Nombres', 'Apellidos', 'Ciudad', 'Dirección',
             'Correo', 'Teléfono', 'Tipo tercero', 'Dependencia'
         ];

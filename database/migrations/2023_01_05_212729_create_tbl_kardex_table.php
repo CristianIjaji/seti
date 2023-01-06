@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class TblListaPrecios extends Migration
+class CreateTblKardexTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,22 +13,21 @@ class TblListaPrecios extends Migration
      */
     public function up()
     {
-        Schema::create('tbl_lista_precios', function (Blueprint $table) {
-            $table->bigIncrements('id_lista_precio');
-            $table->unsignedBigInteger('id_cliente');
-            $table->unsignedBigInteger('id_tipo_item');
-            $table->string('codigo');
-            $table->text('descripcion');
-            $table->string('unidad');
+        Schema::create('tbl_kardex', function (Blueprint $table) {
+            $table->bigIncrements('id_kardex');
+            $table->unsignedBigInteger('id_inventario');
+            $table->string('concepto');
+            $table->integer('documento');
             $table->decimal('cantidad');
             $table->decimal('valor_unitario', 20, 2);
-            $table->smallInteger('estado')->default(1);
+            $table->decimal('valor_total', 20, 2);
+            $table->decimal('saldo_cantidad');
+            $table->decimal('saldo_valor_unitario', 20, 2);
+            $table->decimal('saldo_valor_total', 20, 2);
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros')
-                ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_tipo_item')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_inventario')->references('id_inventario')->on('tbl_inventario')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');
@@ -42,6 +41,6 @@ class TblListaPrecios extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tbl_lista_precios');
+        Schema::dropIfExists('tbl_kardex');
     }
 }

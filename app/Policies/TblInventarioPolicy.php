@@ -2,13 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\TblMenu;
-use App\Models\TblTercero;
+use App\Models\TblInventario;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
-class TblTerceroPolicy
+class TblInventarioPolicy
 {
     use HandlesAuthorization;
 
@@ -27,12 +25,12 @@ class TblTerceroPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblInventario  $tblInventario
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function view(TblUsuario $tblUsuario, TblInventario $tblInventario)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->view;
+        return $tblUsuario->getPermisosMenu('stores.index')->view;
     }
 
     /**
@@ -43,29 +41,29 @@ class TblTerceroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->create;
+        return $tblUsuario->getPermisosMenu('stores.index')->create;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblInventario  $tblInventario
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function update(TblUsuario $tblUsuario, TblInventario $tblInventario)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->update;
+        return $tblUsuario->getPermisosMenu('stores.index')->update;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblInventario  $tblInventario
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function delete(TblUsuario $tblUsuario, TblInventario $tblInventario)
     {
         //
     }
@@ -74,10 +72,10 @@ class TblTerceroPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblInventario  $tblInventario
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function restore(TblUsuario $tblUsuario, TblInventario $tblInventario)
     {
         //
     }
@@ -86,19 +84,19 @@ class TblTerceroPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblInventario  $tblInventario
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function forceDelete(TblUsuario $tblUsuario, TblInventario $tblInventario)
     {
         //
     }
 
-    public function export(TblUsuario $tblUsuario, TblTercero $tblTercero) {
-        return $tblUsuario->getPermisosMenu('clients.index')->export;
+    public function export(TblUsuario $tblUsuario, TblInventario $tblInventario) {
+        return $tblUsuario->getPermisosMenu('stores.index')->export;
     }
 
-    public function import(TblUsuario $tblUsuario, TblTercero $tblTercero) {
-        return $tblUsuario->getPermisosMenu('clients.index')->import;
+    public function import(TblUsuario $tblUsuario, TblInventario $tblInventario) {
+        return $tblUsuario->getPermisosMenu('stores.index')->import;
     }
 }

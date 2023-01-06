@@ -30,7 +30,7 @@ class TblParametroPolicy
      */
     public function view(TblUsuario $tblUsuario, TblParametro $tblParametro)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->view) ? $tblUsuario->getPermisosMenu('params.index')->view : false;
+        return $tblUsuario->getPermisosMenu('params.index')->view;
     }
 
     /**
@@ -41,7 +41,7 @@ class TblParametroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->create) ? $tblUsuario->getPermisosMenu('params.index')->create : false;
+        return $tblUsuario->getPermisosMenu('params.index')->create;
     }
 
     /**
@@ -53,7 +53,7 @@ class TblParametroPolicy
      */
     public function update(TblUsuario $tblUsuario, TblParametro $tblParametro)
     {
-        return isset($tblUsuario->getPermisosMenu('params.index')->update) ? $tblUsuario->getPermisosMenu('params.index')->update : false;
+        return $tblUsuario->getPermisosMenu('params.index')->update;
     }
 
     /**

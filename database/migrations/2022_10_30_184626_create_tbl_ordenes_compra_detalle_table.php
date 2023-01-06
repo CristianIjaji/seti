@@ -19,7 +19,7 @@ class CreateTblOrdenesCompraDetalleTable extends Migration
             $table->unsignedBigInteger('id_cotizacion_detalle');
             $table->unsignedBigInteger('id_lista_precio');
             $table->string('descripcion');
-            $table->decimal('cantidad', 5, 2);
+            $table->decimal('cantidad');
             $table->decimal('valor_unitario', 20, 2);
             $table->decimal('valor_total', 20, 2);
             $table->timestamps();

@@ -9111,6 +9111,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _eonasdan_tempus_dominus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @eonasdan/tempus-dominus */ "./node_modules/@eonasdan/tempus-dominus/dist/js/tempus-dominus.esm.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+/* harmony import */ var lodash__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(lodash__WEBPACK_IMPORTED_MODULE_3__);
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 /**
@@ -9124,6 +9126,7 @@ __webpack_require__(/*! ./multiselect.min */ "./resources/js/multiselect.min.js"
 
 
 window.Pusher = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
+
 
 
 
@@ -9895,6 +9898,35 @@ window.setupSelect2 = function () {
   $('.select2-selection__rendered').data('toggle', 'tooltip');
 };
 
+window.RandomString = function () {
+  var length = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 10;
+  var uc = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+  var n = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+  var sc = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+  var source = '123456789';
+  var str = '';
+
+  if (!uc) {
+    source += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  }
+
+  if (n) {
+    source += 'abcdefghijklmnopqrstuvwxyz';
+  }
+
+  if (sc) {
+    source += '|@#~$%()=^*+[]{}-_';
+  }
+
+  if (length > 0) {
+    for (var index = 0; index < length; index++) {
+      str += source[(0,lodash__WEBPACK_IMPORTED_MODULE_3__.random)(0, source.length - 1)];
+    }
+  }
+
+  return str;
+};
+
 $(function () {
   AOS.init();
   $('.nav-item > .nav-link').click(function (e) {
@@ -9951,6 +9983,8 @@ $(function () {
         if (result.isConfirmed) {
           showLoader(true);
           $('#input_file').parent().submit();
+        } else {
+          $('#input_file').val('');
         }
       });
     } else {

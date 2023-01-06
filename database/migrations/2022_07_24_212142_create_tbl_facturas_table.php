@@ -18,7 +18,7 @@ class CreateTblFacturasTable extends Migration
             $table->string('numero_factura');
             $table->unsignedBigInteger('id_estado_factura');
             $table->unsignedBigInteger('id_proveedor');
-            $table->decimal('dias_pago', 5, 2);
+            $table->decimal('dias_pago');
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 

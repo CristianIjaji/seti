@@ -30,7 +30,7 @@ class TblDominioPolicy
      */
     public function view(TblUsuario $tblUsuario, TblDominio $tblDominio)
     {
-        return isset($tblUsuario->getPermisosMenu('domains.index')->view) ? $tblUsuario->getPermisosMenu('domains.index')->view : false;
+        return $tblUsuario->getPermisosMenu('domains.index')->view;
     }
 
     /**
@@ -41,7 +41,7 @@ class TblDominioPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('domains.index')->create) ? $tblUsuario->getPermisosMenu('domains.index')->create : false;
+        return $tblUsuario->getPermisosMenu('domains.index')->create;
     }
 
     /**
@@ -53,7 +53,7 @@ class TblDominioPolicy
      */
     public function update(TblUsuario $tblUsuario, TblDominio $tblDominio)
     {
-        return isset($tblUsuario->getPermisosMenu('domains.index')->update) ? $tblUsuario->getPermisosMenu('domains.index')->update : false;
+        return $tblUsuario->getPermisosMenu('domains.index')->update;
     }
 
     /**

@@ -145,8 +145,8 @@ class ParametroController extends Controller
     public function update(TblParametro $param, SaveParametroRequest $request)
     {
         try {
-            $param->update($request->validated());
             $this->authorize('update', $param);
+            $param->update($request->validated());
 
             return response()->json([
                 'success' => 'Parametro actualizado correctamente!',

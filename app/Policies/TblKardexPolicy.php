@@ -2,13 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\TblMenu;
-use App\Models\TblTercero;
+use App\Models\TblKardex;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
-class TblTerceroPolicy
+class TblKardexPolicy
 {
     use HandlesAuthorization;
 
@@ -27,12 +25,12 @@ class TblTerceroPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblKardex  $tblKardex
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function view(TblUsuario $tblUsuario, TblKardex $tblKardex)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->view;
+        return $tblUsuario->getPermisosMenu('kardex.index')->view;
     }
 
     /**
@@ -43,29 +41,29 @@ class TblTerceroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->create;
+        return false;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblKardex  $tblKardex
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function update(TblUsuario $tblUsuario, TblKardex $tblKardex)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->update;
+        return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblKardex  $tblKardex
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function delete(TblUsuario $tblUsuario, TblKardex $tblKardex)
     {
         //
     }
@@ -74,10 +72,10 @@ class TblTerceroPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblKardex  $tblKardex
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function restore(TblUsuario $tblUsuario, TblKardex $tblKardex)
     {
         //
     }
@@ -86,19 +84,19 @@ class TblTerceroPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblTercero  $tblTercero
+     * @param  \App\Models\TblKardex  $tblKardex
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(TblUsuario $tblUsuario, TblTercero $tblTercero)
+    public function forceDelete(TblUsuario $tblUsuario, TblKardex $tblKardex)
     {
         //
     }
 
-    public function export(TblUsuario $tblUsuario, TblTercero $tblTercero) {
-        return $tblUsuario->getPermisosMenu('clients.index')->export;
+    public function import(TblUsuario $tblUsuario, TblKardex $tblKardex) {
+        return false;
     }
-
-    public function import(TblUsuario $tblUsuario, TblTercero $tblTercero) {
-        return $tblUsuario->getPermisosMenu('clients.index')->import;
+    
+    public function export(TblUsuario $tblUsuario, TblKardex $tblKardex) {
+        return $tblUsuario->getPermisosMenu('kardex.index')->import;
     }
 }
