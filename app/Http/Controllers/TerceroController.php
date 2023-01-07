@@ -67,21 +67,6 @@ class TerceroController extends Controller
         return $querybuilder;
     }
 
-    private function getTipoTerceros() {
-        $tipo_terceros = TblDominio::getListaDominios(session('id_dominio_tipo_tercero'), 'nombre');
-        if(Auth::user()->role !== session('id_dominio_super_administrador')) {
-            $tipo_terceros = $tipo_terceros->filter(function($value, $key) {
-                return $key != session('id_dominio_super_administrador');
-            });
-        } else if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
-            $tipo_terceros = $tipo_terceros->filter(function($value, $key) {
-                return $key != session('id_dominio_administrador');
-            });
-        }
-
-        return $tipo_terceros;
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -105,7 +90,7 @@ class TerceroController extends Controller
         return view('terceros._form', [
             'tercero' => new TblTercero,
             'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento'), 'nombre'),
-            'tipo_terceros' => $this->getTipoTerceros(),
+            'tipo_terceros' => TblTercero::getTipoTerceros(),
             'tipo_documento' => isset(request()->tipo_documento)
                 ? TblDominio::where('id_dominio', '=', request()->tipo_documento)->first() 
                 : '',
@@ -180,7 +165,7 @@ class TerceroController extends Controller
             'edit' => true,
             'tercero' => $client,
             'tipo_documentos' => TblDominio::getListaDominios(session('id_dominio_tipo_documento')),
-            'tipo_terceros' => $this->getTipoTerceros(),
+            'tipo_terceros' => TblTercero::getTipoTerceros(),
             'terceros' => TblTercero::where(['estado' => 1])->where('id_tercero', '<>', $client->id_tercero)->wherein('id_dominio_tipo_tercero', [session('id_dominio_cliente'), session('id_dominio_contratista'), session('id_dominio_coordinador')])->get(),
             'estados' => [
                 0 => 'Inactivo',
@@ -258,7 +243,7 @@ class TerceroController extends Controller
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('id_tercero', 'desc')->paginate(10),
-            'tipo_terceros' => $this->getTipoTerceros(),
+            'tipo_terceros' => TblTercero::getTipoTerceros(),
             'export' => Gate::allows('export', $tercero),
             'import' => Gate::allows('import', $tercero),
             'create' => Gate::allows('create', $tercero),

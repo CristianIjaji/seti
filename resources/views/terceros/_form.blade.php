@@ -203,8 +203,6 @@
                 $('#div_dependencia').removeClass('d-none');
             }
 
-            $('#documento').val('');
-
             if(valor == {!! session('id_dominio_almacen') !!}) {
                 $('#div-select-tipo-documento').addClass('d-none');
                 $('#id_dominio_tipo_documento').val({!! session('id_dominio_documento_almacen') !!}).change();

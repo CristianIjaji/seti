@@ -49,7 +49,7 @@ class TblInventario extends Model
         return [
             '0' => 'required|exists:tbl_terceros,documento',
             '1' => 'required|string|max:255',
-            '2' => 'required||string|max:255',
+            '2' => 'required|string|max:255',
             '3' => 'nullable|string:max:255',
             '4' => 'required',
             '5' => 'required|string:max:255',
@@ -110,8 +110,10 @@ class TblInventario extends Model
                 'id_usuareg' => auth()->id()
             ]);
 
-            return new  TblKardex([
+            return new TblKardex([
                 'id_inventario' => $producto->id_inventario,
+                'id_tercero_entrega' => auth()->id(),
+                'id_tercero_recibe' => $producto->id_tercero_almacen,
                 'concepto' => 'Inventario inicial',
                 'documento' => $producto->id_inventario,
                 'cantidad' => $producto->cantidad,

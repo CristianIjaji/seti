@@ -76,12 +76,34 @@ class TblTercero extends Model
         return $status;
     }
 
-    public static function getClientesTipo($type) {
+    public static function getTipoTerceros() {
+        $tipo_terceros = TblDominio::getListaDominios(session('id_dominio_tipo_tercero'), 'nombre');
+        if(auth()->user()->role !== session('id_dominio_super_administrador')) {
+            $tipo_terceros = $tipo_terceros->filter(function($value, $key) {
+                return $key != session('id_dominio_super_administrador');
+            });
+        } else if(!in_array(auth()->user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
+            $tipo_terceros = $tipo_terceros->filter(function($value, $key) {
+                return $key != session('id_dominio_administrador');
+            });
+        }
+
+        return $tipo_terceros;
+    }
+
+    public static function getTercerosTipo($id_dominio_tipo) {
+        $nombre_tercero = (in_array($id_dominio_tipo, [session('id_dominio_cliente')])
+            ? "COALESCE(razon_social, CONCAT(nombres, ' ', apellidos))"
+            : "CONCAT(t.nombres, ' ', t.apellidos)"
+        );
+
         return DB::table('tbl_terceros', 't')
             ->join('tbl_dominios as doc', 't.id_dominio_tipo_documento', '=', 'doc.id_dominio')
             ->select('t.id_tercero',
-                DB::raw("CONCAT(t.nombres, ' ', t.apellidos) as nombre")
-            )->where(['t.estado' => 1, 't.id_dominio_tipo_tercero' => $type])->pluck('nombre', 'id_tercero');
+                DB::raw("$nombre_tercero as nombre")
+            )->where(['t.estado' => 1, 't.id_dominio_tipo_tercero' => $id_dominio_tipo])
+            ->orderBy(DB::raw($nombre_tercero), 'asc')
+            ->pluck('nombre', 'id_tercero');
     }
 
     public static function getRules() {

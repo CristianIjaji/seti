@@ -361,9 +361,9 @@ class ActividadController extends Controller
                 ->where(function($q) {
                     $this->dinamyFilters($q);
                 })->latest()->paginate(10),
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_representante_cliente')),
+            'clientes' => TblTercero::getTercerosTipo(session('id_dominio_representante_cliente')),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
-            'contratistas' => TblTercero::getClientesTipo(session('id_dominio_coordinador')),
+            'contratistas' => TblTercero::getTercerosTipo(session('id_dominio_coordinador')),
             'estados_actividad' => TblDominio::getListaDominios(session('id_dominio_estados_actividad')),
             'status' => $actividad->status,
             'create' => Gate::allows('create', $actividad),

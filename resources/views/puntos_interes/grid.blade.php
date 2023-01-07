@@ -11,7 +11,7 @@
     ],
     'headers' => [
         ['name' => 'id_punto_interes', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
-        ['name' => 'tblcliente', 'label' => 'Cliente', 'col' => 'col-2','foreign' => 'full_name'],
+        ['name' => 'id_cliente', 'label' => 'Cliente', 'col' => 'col-2', 'options' => $clientes],
         ['name' => 'id_zona', 'label' => 'Zona', 'col' => 'col-2', 'options' => $zonas],
         ['name' => 'nombre', 'label' => 'Nombre Sitio', 'col' => 'col-2'],
         ['name' => 'id_tipo_transporte', 'label' => 'Tipo transporte', 'col' => 'col-1', 'options' => $transportes],

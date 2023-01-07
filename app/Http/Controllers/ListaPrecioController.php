@@ -80,7 +80,9 @@ class ListaPrecioController extends Controller
 
         return view('lista_precios._form', [
             'lista_precio' => new TblListaPrecio, //modelo
-            'clientes' => TblTercero::where(['estado' => 1, 'id_dominio_tipo_tercero' => session('id_dominio_cliente')])->get(),
+            'clientes' => TblTercero::where(['estado' => 1, 'id_dominio_tipo_tercero' => session('id_dominio_cliente')])
+                ->orderBy(DB::raw("COALESCE(razon_social, CONCAT(nombres, ' ', apellidos))"), 'asc')
+                ->get(),
             'tipo_items' => TblDominio::where('estado', "=", 1)
                 ->where('id_dominio_padre', "=", session('id_dominio_tipo_items'))
                 ->pluck('nombre', 'id_dominio'),
@@ -213,7 +215,8 @@ class ListaPrecioController extends Controller
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('id_lista_precio', 'desc')->paginate(10),
-            'listaTipoItemPrecio' => TblDominio::getListaDominios(session('id_dominio_tipo_items')),
+            'listaTipoItemPrecio' => TblDominio::getListaDominios(session('id_dominio_tipo_items'), 'nombre'),
+            'clientes' => TblTercero::getTercerosTipo(session('id_dominio_cliente')),
             'export' => Gate::allows('export', $listaPrecios),
             'import' => Gate::allows('import', $listaPrecios),
             'create' => Gate::allows('create', $listaPrecios),

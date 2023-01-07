@@ -214,6 +214,8 @@ class InventarioController extends Controller
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('id_inventario', 'desc')->paginate(10),
+            'almacenes' => TblTercero::getTercerosTipo(session('id_dominio_almacen')),
+            'clasificaciones' => TblInventario::pluck('clasificacion', 'clasificacion'),
             'export' => Gate::allows('export', $inventario),
             'import' => Gate::allows('import', $inventario),
             'create' => Gate::allows('create', $inventario),

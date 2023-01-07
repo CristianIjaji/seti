@@ -15,6 +15,8 @@ class TblKardex extends Model
 
     protected $fillable = [
         'id_inventario',
+        'id_tercero_entrega',
+        'id_tercero_recibe',
         'concepto',
         'documento',
         'cantidad',
@@ -28,6 +30,14 @@ class TblKardex extends Model
 
     public function tblinventario() {
         return $this->belongsTo(TblInventario::class, 'id_inventario');
+    }
+
+    public function tblterceroentrega() {
+        return $this->belongsTo(TblTercero::class, 'id_tercero_entrega');
+    }
+
+    public function tbltercerorecibo() {
+        return $this->belongsTo(TblTercero::class, 'id_tercero_recibe');
     }
 
     public function tblusuario() {

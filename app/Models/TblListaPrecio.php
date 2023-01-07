@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -58,7 +59,7 @@ class TblListaPrecio extends Model
         return [
             '0' => 'required|exists:tbl_terceros,documento',
             '1' => 'required|exists:tbl_dominios,nombre',
-            '2' => 'required|max:20|unique:tbl_lista_precios,codigo',
+            '2' => 'required|max:20',
             '3' => 'required',
             '4' => 'required|max:50',
             '5' => 'required|numeric|min:0',
@@ -92,15 +93,22 @@ class TblListaPrecio extends Model
         $cliente = TblTercero::where(['documento' => $documento])->first();
         $item = TblDominio::where(['nombre' => $tipo_item, 'id_dominio_padre' => $parametro_items])->first();
 
-        return new TblListaPrecio([
+        $existe = TblListaPrecio::where([
             'id_cliente' => $cliente->id_tercero,
-            'id_tipo_item' => $item->id_dominio,
-            'codigo' => $codigo,
-            'descripcion' => $descripcion,
-            'unidad' => $unidad,
-            'cantidad' => $cantidad,
-            'valor_unitario' => $valor_unitario,
-            'id_usuareg' => auth()->id()
-        ]);
+            'codigo' => $codigo
+        ])->first();
+
+        if(!$existe) {
+            return new TblListaPrecio([
+                'id_cliente' => $cliente->id_tercero,
+                'id_tipo_item' => $item->id_dominio,
+                'codigo' => $codigo,
+                'descripcion' => $descripcion,
+                'unidad' => $unidad,
+                'cantidad' => $cantidad,
+                'valor_unitario' => $valor_unitario,
+                'id_usuareg' => auth()->id()
+            ]);
+        }
     }
 }

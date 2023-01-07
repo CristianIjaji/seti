@@ -9,7 +9,7 @@
     ],
     'headers' => [
         ['name' => 'id_kardex', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
-        ['name' => 'fecha_kardex', 'label' => 'Fecha', 'class' => 'input-date'],
+        ['name' => 'fecha_kardex', 'label' => 'Fecha registro', 'class' => 'input-date'],
         ['name' => 'tblinventario', 'label' => 'Producto', 'foreign' => 'descripcion'],
         ['name' => 'concepto', 'label' => 'Concepto'],
         ['name' => 'documento', 'label' => 'Documento'],

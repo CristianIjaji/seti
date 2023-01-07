@@ -134,6 +134,7 @@ class SetupSeeder extends Seeder
         TblPuntosInteres::truncate();
         TblListaPrecio::truncate();
         TblEstadoCotizacion::truncate();
+        TblConsolidado::truncate();
         TblCotizacion::truncate();
         TblEstadoActividad::truncate();
         TblActividad::truncate();

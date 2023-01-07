@@ -1207,8 +1207,8 @@ $(document).on('change', '#iva', function() {
     }
 });
 
-let showIcon = 'fa-solid fa-angle-down';
-let hideIcon = 'fa-solid fa-angle-up';
+let showIcon = 'fa-solid fa-angle-up';
+let hideIcon = 'fa-solid fa-angle-down';
 
 $(document).on('click', '.show-more', function() {    
     $(this).find('i').toggleClass(`${showIcon} ${hideIcon}`);

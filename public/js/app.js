@@ -10194,8 +10194,8 @@ $(document).on('change', '#iva', function () {
     totalCarrito('cotizacion');
   }
 });
-var showIcon = 'fa-solid fa-angle-down';
-var hideIcon = 'fa-solid fa-angle-up';
+var showIcon = 'fa-solid fa-angle-up';
+var hideIcon = 'fa-solid fa-angle-down';
 $(document).on('click', '.show-more', function () {
   $(this).find('i').toggleClass("".concat(showIcon, " ").concat(hideIcon));
 });

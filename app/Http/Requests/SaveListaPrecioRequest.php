@@ -46,7 +46,10 @@ class SaveListaPrecioRequest extends FormRequest
                 'required',
                 'string',
                 'max:20',
-                Rule::unique('tbl_lista_precios')->ignore($this->route('priceList'))
+                Rule::unique('tbl_lista_precios')->where(function($query) {
+                    return $query->where('id_cliente', '=', $this->get('id_cliente'))
+                        ->where('codigo', '=', $this->get('codigo'));
+                })->ignore($this->route('priceList'))
             ],
             'descripcion'=>[
                 'required',

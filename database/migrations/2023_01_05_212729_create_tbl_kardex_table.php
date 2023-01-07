@@ -16,6 +16,8 @@ class CreateTblKardexTable extends Migration
         Schema::create('tbl_kardex', function (Blueprint $table) {
             $table->bigIncrements('id_kardex');
             $table->unsignedBigInteger('id_inventario');
+            $table->unsignedBigInteger('id_tercero_entrega');
+            $table->unsignedBigInteger('id_tercero_recibe');
             $table->string('concepto');
             $table->integer('documento');
             $table->decimal('cantidad');
@@ -28,6 +30,10 @@ class CreateTblKardexTable extends Migration
             $table->timestamps();
 
             $table->foreign('id_inventario')->references('id_inventario')->on('tbl_inventario')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_tercero_entrega')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_tercero_recibe')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

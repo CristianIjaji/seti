@@ -9,8 +9,8 @@
     ],
     'headers' => [
         ['name' => 'id_inventario', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
-        ['name' => 'tblterceroalmacen', 'label' => 'Almacén', 'col' => 'col-2', 'foreign' => 'full_name'],
-        ['name' => 'clasificacion', 'label' => 'Clasificación', 'col' => 'col-2'],
+        ['name' => 'id_tercero_almacen', 'label' => 'Almacén', 'col' => 'col-2', 'options' => $almacenes],
+        ['name' => 'clasificacion', 'label' => 'Clasificación', 'col' => 'col-2', 'options' => $clasificaciones],
         ['name' => 'descripcion', 'label' => 'Descripción', 'col' => 'col-2'],
         ['name' => 'cantidad', 'label' => 'Cantidad', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'unidad', 'label' => 'Unidad', 'col' => 'col-1'],

@@ -289,7 +289,7 @@ class ConsolidadoController extends Controller
             ->where(function ($q) {
                 $this->dinamyFilters($q);
             })->orderBy('id_consolidado', 'desc')->paginate(10),
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_representante_cliente')),
+            'clientes' => TblTercero::getTercerosTipo(session('id_dominio_representante_cliente')),
             'estados' => TblDominio::getListaDominios(session('id_dominio_estados_consolidado')),
             'create' => Gate::allows('create', $consolidado),
             'edit' => Gate::allows('update', $consolidado),

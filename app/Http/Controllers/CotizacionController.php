@@ -446,11 +446,11 @@ class CotizacionController extends Controller
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('id_cotizacion', 'desc')->paginate(10),
-            'clientes' => TblTercero::getClientesTipo(session('id_dominio_representante_cliente')),
+            'clientes' => TblTercero::getTercerosTipo(session('id_dominio_representante_cliente')),
             'estaciones' => TblPuntosInteres::where('estado', '=', 1)->pluck('nombre', 'id_punto_interes'),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'procesos' => TblDominio::getListaDominios(session('id_dominio_tipos_proceso')),
-            'contratistas' => TblTercero::getClientesTipo(session('id_dominio_coordinador')),
+            'contratistas' => TblTercero::getTercerosTipo(session('id_dominio_coordinador')),
             'status' => $cotizacion->status,
             'export' => Gate::allows('export', $cotizacion),
             'import' => Gate::allows('import', $cotizacion),
