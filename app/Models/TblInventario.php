@@ -45,6 +45,14 @@ class TblInventario extends Model
         return $status;
     }
 
+    public function getValorUnitarioAttribute() {
+        return (isset($this->attributes['valor_unitario'])) ? number_format($this->attributes['valor_unitario'], 2) : 0;
+    }
+
+    public function getValorUnitarioFormAttribute() {
+        return (isset($this->attributes['valor_unitario'])) ? $this->attributes['valor_unitario'] : 0;
+    }
+
     public static function getRules() {
         return [
             '0' => 'required|exists:tbl_terceros,documento',

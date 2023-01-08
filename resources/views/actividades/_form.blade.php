@@ -17,29 +17,31 @@
     }
 @endphp
 
-@if ($create || $edit)
-    <div class="alert alert-success" role="alert"></div>
-    <div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
+@if (!$create)
+    <ul class="nav nav-tabs" id="activityTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="true">Actividad</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="track-tab-activity" data-bs-toggle="tab" data-bs-target="#track-activity" type="button" role="tab" aria-controls="track-activity" aria-selected="true">Seguimiento</button>
+        </li>
+    </ul>
 
-    <form action="{{ $create ? route('activities.store') : route('activities.update', $activity) }}" method="POST">
-        @csrf
-        @if (!$create)
-            @method('PATCH')
-        @endif
+    <div class="tab-content pt-3" id="activityTab">
+        <div class="tab-pane fade show active" id="activity" role="tabpanel" aria-labelledby="activity-tab">
 @endif
-    @if (!$create)
-        <ul class="nav nav-tabs" id="activityTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="true">Actividad</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="track-tab-activity" data-bs-toggle="tab" data-bs-target="#track-activity" type="button" role="tab" aria-controls="track-activity" aria-selected="true">Seguimiento</button>
-            </li>
-        </ul>
 
-        <div class="tab-content pt-3" id="activityTab">
-            <div class="tab-pane fade show active" id="activity" role="tabpanel" aria-labelledby="activity-tab">    
+    @if ($create || $edit)
+        <div class="alert alert-success" role="alert"></div>
+        <div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
+
+        <form action="{{ $create ? route('activities.store') : route('activities.update', $activity) }}" method="POST">
+            @csrf
+            @if (!$create)
+                @method('PATCH')
+            @endif
     @endif
+    
         <div class="row">
             <input type="hidden" id="id_actividad" value="{{ $activity->id_actividad }}">
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
@@ -278,13 +280,13 @@
 
         @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear actividad' : 'Editar actividad'])
 
-        @if (!$create)
-            </div>
-            <div class="tab-pane" id="track-activity" role="tabpanel" aria-labelledby="track-tab-activity">
-                @include('actividades._track', [$edit, 'model' => $estados_actividad])
-            </div>
-        @endif
+@if (!$create)
+        </div>
+        <div class="tab-pane" id="track-activity" role="tabpanel" aria-labelledby="track-tab-activity">
+            @include('actividades._track', [$edit, 'model' => $estados_actividad])
+        </div>
     </div>
+@endif
 
 <script type="application/javascript">
     datePicker();

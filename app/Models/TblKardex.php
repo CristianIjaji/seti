@@ -47,4 +47,20 @@ class TblKardex extends Model
     public function getFechaKardexAttribute() {
         return date('Y-m-d', strtotime($this->attributes['created_at']));
     }
+
+    public function getValorUnitarioAttribute() {
+        return (isset($this->attributes['valor_unitario'])) ? number_format($this->attributes['valor_unitario'], 2) : 0;
+    }
+
+    public function getValorTotalAttribute() {
+        return (isset($this->attributes['valor_total'])) ? number_format($this->attributes['valor_total'], 2) : 0;
+    }
+
+    public function getSaldoValorUnitarioAttribute() {
+        return (isset($this->attributes['saldo_valor_unitario'])) ? number_format($this->attributes['saldo_valor_unitario'], 2) : 0;
+    }
+
+    public function getSaldoValorTotalAttribute() {
+        return (isset($this->attributes['saldo_valor_total'])) ? number_format($this->attributes['saldo_valor_total'], 2) : 0;
+    }
 }

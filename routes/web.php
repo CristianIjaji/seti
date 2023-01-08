@@ -98,7 +98,7 @@ Route::post('activities/{activity}/handleActivity', [ActividadController::class,
 
 // Controlador estado activities
 Route::resource('stateactivities', EstadoActividadController::class);
-Route::post('stateActivities/grid',[EstadoActividadController::class, 'grid'])->name('stateActivities.grid');
+Route::post('stateactivities/grid',[EstadoActividadController::class, 'grid'])->name('stateactivities.grid');
 
 // Controlador de consolidado
 // Route::get('deals/export', [ConsolidadoController::class, 'export'])->name('deals.export');

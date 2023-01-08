@@ -10,11 +10,9 @@ use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use App\Models\TblEstadoActividad;
-use App\Models\TblOrdenCompra;
 use App\Models\TblOrdenesCompraDetalle;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -157,7 +155,7 @@ class ActividadController extends Controller
             $actividad = TblActividad::create($request->validated());
             $this->authorize('create', $actividad);
 
-            $actividad->comentarios = $actividad->observaciones;
+            $actividad->comentario = $actividad->observaciones;
             $this->createTrack($actividad, $actividad->id_estado_actividad);
 
             return response()->json([
@@ -403,6 +401,7 @@ class ActividadController extends Controller
 
     private function createTrack($activity, $action) {
         try {
+            Log::info("Actividad: ".print_r($activity->comentario, 1));
             TblEstadoActividad::create([
                 'id_actividad' => $activity->id_actividad,
                 'estado' => $action,

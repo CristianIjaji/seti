@@ -6,11 +6,11 @@ use App\Exports\ReportsExport;
 use App\Http\Requests\SaveInventarioRequest;
 use App\Imports\DataImport;
 use App\Models\TblInventario;
+use App\Models\TblKardex;
 use App\Models\TblListaPrecio;
 use App\Models\TblTercero;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 
 class InventarioController extends Controller
@@ -106,6 +106,21 @@ class InventarioController extends Controller
             $inventario = TblInventario::create($request->validated());
             $this->authorize('create', $inventario);
 
+            TblKardex::create([
+                'id_inventario' => $inventario->id_inventario,
+                'id_tercero_entrega' => auth()->id(),
+                'id_tercero_recibe' => $inventario->id_tercero_almacen,
+                'concepto' => 'Creación de inventario',
+                'documento' => $inventario->id_inventario,
+                'cantidad' => $inventario->cantidad,
+                'valor_unitario' => $inventario->valor_unitario_form,
+                'valor_total' => $inventario->valor_unitario_form * $inventario->cantidad,
+                'saldo_cantidad' => $inventario->cantidad,
+                'saldo_valor_unitario' => $inventario->valor_unitario,
+                'saldo_valor_total' => $inventario->valor_unitario * $inventario->cantidad,
+                'id_usuareg' => auth()->id()
+            ]);
+
             return response()->json([
                 'success' => 'Producto creado exitosamente!',
                 'reponse' => [
@@ -179,6 +194,23 @@ class InventarioController extends Controller
     {
         try {
             $this->authorize('update', $store);
+            if($store->cantidad != $request->cantidad || $store->valor_unitario_form != $request->valor_unitario) {
+                TblKardex::create([
+                    'id_inventario' => $store->id_inventario,
+                    'id_tercero_entrega' => auth()->id(),
+                    'id_tercero_recibe' => $store->id_tercero_almacen,
+                    'concepto' => 'Ajuste de inventario',
+                    'documento' => $store->id_inventario,
+                    'cantidad' => $store->cantidad,
+                    'valor_unitario' => $store->valor_unitario_form,
+                    'valor_total' => $store->valor_unitario_form * $store->cantidad,
+                    'saldo_cantidad' => $request->cantidad,
+                    'saldo_valor_unitario' => $request->valor_unitario,
+                    'saldo_valor_total' => $request->valor_unitario * $request->cantidad,
+                    'id_usuareg' => auth()->id()
+                ]);
+            }
+
             $store->update($request->validated());
 
             return response()->json([
