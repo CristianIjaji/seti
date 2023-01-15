@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TblKardex;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 
 class KardexController extends Controller
@@ -57,6 +58,7 @@ class KardexController extends Controller
      */
     public function index()
     {
+        $this->authorize('view', new TblKardex);
         return $this->getView('kardex.index');
     }
 
@@ -87,9 +89,13 @@ class KardexController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(TblKardex $kardex)
     {
-        //
+        $this->authorize('view', $kardex);
+
+        return view('kardex._form', [
+            'kardex' => $kardex
+        ]);
     }
 
     /**

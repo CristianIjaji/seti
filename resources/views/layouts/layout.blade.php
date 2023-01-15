@@ -98,6 +98,17 @@
                         })
                     })
                 })
+
+                window.addEventListener('storage', (e) => {
+                    switch (e['key']) {
+                        case 'theme':
+                            setTheme(localStorage.getItem('theme'));
+                            showActiveTheme(localStorage.getItem('theme'));
+                            break;
+                        default:
+                            break;
+                    }
+                });
             })()
         }
 
@@ -142,7 +153,7 @@
         let parent = document.querySelector(`[data-bs-target="#${menu_padre.id}"`);
         parent.classList.add('activemenu');
 
-        parent.querySelector(':scope > .submenu_icon').classList.add('fa-solid');
+        parent.querySelector(':scope > .submenu_icon').classList.remove('fa-angle-down');
         parent.querySelector(':scope > .submenu_icon').classList.add('fa-angle-up');
     }
 

@@ -6,7 +6,6 @@
         "title" => 'Nueva orden',
         "modal-size" => "modal-fullscreen",
         'header-class' => 'bg-primary bg-opacity-75 text-white',
-        "route" => route("purchases.create"),
     ],
     'headers' => [
         ['name' => 'id_orden_compra','label' => '#', 'align' => 'text-end'],

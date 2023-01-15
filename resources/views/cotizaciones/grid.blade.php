@@ -7,7 +7,6 @@
         "title" => 'Nueva cotización',
         'header-class' => 'bg-primary bg-opacity-75 text-white',
         "modal-size" => "modal-fullscreen",
-        "route" => route("quotes.create"),
     ],
     'headers' => [
         ['name' => 'id_cotizacion', 'label' => '#', 'align' => 'text-end'],

@@ -32,7 +32,7 @@ class TblTerceroPolicy
      */
     public function view(TblUsuario $tblUsuario, TblTercero $tblTercero)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->view;
+        return isset($tblUsuario->getPermisosMenu('clients.index')->view) ? $tblUsuario->getPermisosMenu('clients.index')->view : false;
     }
 
     /**
@@ -43,7 +43,7 @@ class TblTerceroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->create;
+        return isset($tblUsuario->getPermisosMenu('clients.index')->create) ? $tblUsuario->getPermisosMenu('clients.index')->create : false;
     }
 
     /**
@@ -55,7 +55,7 @@ class TblTerceroPolicy
      */
     public function update(TblUsuario $tblUsuario, TblTercero $tblTercero)
     {
-        return $tblUsuario->getPermisosMenu('clients.index')->update;
+        return isset($tblUsuario->getPermisosMenu('clients.index')->update) ? $tblUsuario->getPermisosMenu('clients.index')->update : false;
     }
 
     /**
@@ -95,10 +95,10 @@ class TblTerceroPolicy
     }
 
     public function export(TblUsuario $tblUsuario, TblTercero $tblTercero) {
-        return $tblUsuario->getPermisosMenu('clients.index')->export;
+        return isset($tblUsuario->getPermisosMenu('clients.index')->export) ? $tblUsuario->getPermisosMenu('clients.index')->export : false;
     }
 
     public function import(TblUsuario $tblUsuario, TblTercero $tblTercero) {
-        return $tblUsuario->getPermisosMenu('clients.index')->import;
+        return isset($tblUsuario->getPermisosMenu('clients.index')->import) ? $tblUsuario->getPermisosMenu('clients.index')->import : false;
     }
 }

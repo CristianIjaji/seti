@@ -5,7 +5,6 @@
     'btnOptionsCreate' => [
         "title" => 'Nuevo tercero',
         "modal-size" => "modal-xl",
-        "route" => route("clients.create"),
     ],
     'headers' => [
         ['name' => 'id_tercero', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],

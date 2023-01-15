@@ -9778,7 +9778,7 @@ var totalItemType = function totalItemType(tipo_carrito, type) {
 };
 
 window.totalCarrito = function (tipo_carrito) {
-  var iva = parseFloat($('#iva option:selected').length > 0 ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '') : $('#iva').val().replace('IVA ', '').replace('%', ''), 0);
+  var iva = parseFloat($('#iva option:selected').length > 0 ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '') : $('#iva').length > 0 ? $('#iva').val().replace('IVA ', '').replace('%', '') : 0, 0);
   var id_materiales = $("#".concat(tipo_carrito, " .lbl_total_material")).length ? $("#".concat(tipo_carrito, " .lbl_total_material")).attr('id').replace('lbl_', '') : 0;
   var id_mano_obra = $("#".concat(tipo_carrito, " .lbl_total_mano_obra")).length ? $("#".concat(tipo_carrito, " .lbl_total_mano_obra")).attr('id').replace('lbl_', '') : 0;
   var id_transporte = $("#".concat(tipo_carrito, " .lbl_total_transporte")).length ? $("#".concat(tipo_carrito, " .lbl_total_transporte")).attr('id').replace('lbl_', '') : 0;
@@ -10009,11 +10009,11 @@ var openMainSubMenu = function openMainSubMenu() {
   $('.submenu_icon').each(function (i, e) {
     var menu = document.getElementById($(e).closest('a').data('bs-target').replace('#', ''));
     menu.addEventListener('hide.bs.collapse', function (event) {
-      $(e).removeClass(showIcon).addClass(hideIcon);
+      $(e).removeClass(showIcon).removeClass(hideIcon).addClass(hideIcon);
       $(e).closest('a').removeClass(activemenu);
     });
     menu.addEventListener('show.bs.collapse', function (event) {
-      $(e).removeClass(hideIcon).addClass(showIcon);
+      $(e).removeClass(hideIcon).removeClass(showIcon).addClass(showIcon);
       $(e).closest('a').addClass(activemenu);
     });
   });
@@ -10194,10 +10194,10 @@ $(document).on('change', '#iva', function () {
     totalCarrito('cotizacion');
   }
 });
-var showIcon = 'fa-solid fa-angle-up';
-var hideIcon = 'fa-solid fa-angle-down';
-$(document).on('click', '.show-more', function () {
-  $(this).find('i').toggleClass("".concat(showIcon, " ").concat(hideIcon));
+var showIcon = 'fa-angle-up';
+var hideIcon = 'fa-angle-down';
+$(document).on('click', 'span.show-more', function () {
+  $(this).find('i').toggleClass("".concat(hideIcon, " ").concat(showIcon));
 });
 $(document).on('change', '#estado_seguimiento', function () {
   $('#div_fecha_seguimiento').addClass('d-none');

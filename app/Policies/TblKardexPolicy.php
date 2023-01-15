@@ -30,7 +30,7 @@ class TblKardexPolicy
      */
     public function view(TblUsuario $tblUsuario, TblKardex $tblKardex)
     {
-        return $tblUsuario->getPermisosMenu('kardex.index')->view;
+        return isset($tblUsuario->getPermisosMenu('kardex.index')->view) ? $tblUsuario->getPermisosMenu('kardex.index')->view : false;
     }
 
     /**
@@ -97,6 +97,6 @@ class TblKardexPolicy
     }
     
     public function export(TblUsuario $tblUsuario, TblKardex $tblKardex) {
-        return $tblUsuario->getPermisosMenu('kardex.index')->import;
+        return isset($tblUsuario->getPermisosMenu('kardex.index')->import) ? $tblUsuario->getPermisosMenu('kardex.index')->import : false;
     }
 }

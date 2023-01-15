@@ -226,8 +226,7 @@ class TerceroController extends Controller
         $data = TblTercero::select('name')
             ->where("documento", 'LIKE', "%{$request->query}%")
             ->get();
-        // $query = $request->get('query');
-        // $filterResult = TblTercero::where('documento', 'LIKE', '%'. $query. '%')->get();
+
         return response()->json($data);
     }
 
@@ -310,5 +309,11 @@ class TerceroController extends Controller
     public function import() {
         (new DataImport(new TblTercero))->import(request()->file('input_file'));
         return back();
+    }
+
+    public function getTercerosByTipo($tipo) {
+        return response()->json([
+            'terceros' => TblTercero::getTercerosTipo($tipo)
+        ]);
     }
 }

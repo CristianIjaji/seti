@@ -32,7 +32,7 @@ class TblCotizacionPolicy
      */
     public function view(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
-        return $tblUsuario->getPermisosMenu('quotes.index')->view;
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->view) ? $tblUsuario->getPermisosMenu('quotes.index')->view : false;
     }
 
     /**
@@ -43,7 +43,7 @@ class TblCotizacionPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('quotes.index')->create;
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->create) ? $tblUsuario->getPermisosMenu('quotes.index')->create : false;
     }
 
     /**
@@ -55,7 +55,7 @@ class TblCotizacionPolicy
      */
     public function update(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion)
     {
-        return $tblUsuario->getPermisosMenu('quotes.index')->update;
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->update) ? $tblUsuario->getPermisosMenu('quotes.index')->update : false;
     }
 
     /**
@@ -95,11 +95,11 @@ class TblCotizacionPolicy
     }
 
     public function export(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        return $tblUsuario->getPermisosMenu('quotes.index')->export;
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->export) ? $tblUsuario->getPermisosMenu('quotes.index')->export : false;
     }
 
     public function import(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        return $tblUsuario->getPermisosMenu('quotes.index')->import;
+        return isset($tblUsuario->getPermisosMenu('quotes.index')->import) ? $tblUsuario->getPermisosMenu('quotes.index')->import : false;
     }
 
 

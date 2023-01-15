@@ -31,7 +31,7 @@ class TblPuntosInteresPolicy
      */
     public function view(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres)
     {
-        return $tblUsuario->getPermisosMenu('sites.index')->view;
+        return isset($tblUsuario->getPermisosMenu('sites.index')->view) ? $tblUsuario->getPermisosMenu('sites.index')->view : false;
     }
 
     /**
@@ -42,7 +42,7 @@ class TblPuntosInteresPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('sites.index')->create;
+        return isset($tblUsuario->getPermisosMenu('sites.index')->create) ? $tblUsuario->getPermisosMenu('sites.index')->create : false;
     }
 
     /**
@@ -54,7 +54,7 @@ class TblPuntosInteresPolicy
      */
     public function update(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres)
     {
-        return $tblUsuario->getPermisosMenu('sites.index')->update;
+        return isset($tblUsuario->getPermisosMenu('sites.index')->update) ? $tblUsuario->getPermisosMenu('sites.index')->update : false;
     }
 
     /**
@@ -94,10 +94,10 @@ class TblPuntosInteresPolicy
     }
 
     public function export(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres) {
-        return $tblUsuario->getPermisosMenu('sites.index')->export;
+        return isset($tblUsuario->getPermisosMenu('sites.index')->export) ? $tblUsuario->getPermisosMenu('sites.index')->export : false;
     }
 
     public function import(TblUsuario $tblUsuario, TblPuntosInteres $tblPuntosInteres) {
-        return $tblUsuario->getPermisosMenu('sites.index')->import;
+        return isset($tblUsuario->getPermisosMenu('sites.index')->import) ? $tblUsuario->getPermisosMenu('sites.index')->import : false;
     }
 }

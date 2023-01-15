@@ -166,10 +166,9 @@ class CotizacionController extends Controller
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
-            'contratistas' => TblTercero::where([
-                'estado' => 1,
-                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            'contratistas' => TblTercero::where('estado', '=', 1)
+                ->wherein('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
+                ->get(),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
         ]);
@@ -224,7 +223,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => false,
             'cotizacion' => $quote,
-            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(9999999999),
+            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(10),
             'actividad' => TblActividad::where(['id_cotizacion' => $quote->id_cotizacion])->first(),
         ]);
     }
@@ -247,7 +246,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => true,
             'cotizacion' => $quote,
-            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(9999999999),
+            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(10),
             'carrito' => $quote->getDetalleCotizacion($quote),
             'clientes' => TblTercero::where([
                 'estado' => 1,
@@ -257,10 +256,9 @@ class CotizacionController extends Controller
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
-            'contratistas' => TblTercero::where([
-                'estado' => 1,
-                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            'contratistas' => TblTercero::where('estado', '=', 1)
+            ->wherein('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
+            ->get(),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas')),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
@@ -440,6 +438,7 @@ class CotizacionController extends Controller
 
     private function getView($view) {
         $cotizacion = new TblCotizacion;
+        $contratistas = TblTercero::getTercerosTipo(session('id_dominio_contratista'));
 
         return view($view, [
             'model' => TblCotizacion::with(['tblCliente', 'tblEstacion', 'tblTipoTrabajo', 'tblPrioridad', 'tblContratista'])
@@ -450,7 +449,7 @@ class CotizacionController extends Controller
             'estaciones' => TblPuntosInteres::where('estado', '=', 1)->pluck('nombre', 'id_punto_interes'),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'procesos' => TblDominio::getListaDominios(session('id_dominio_tipos_proceso')),
-            'contratistas' => TblTercero::getTercerosTipo(session('id_dominio_coordinador')),
+            'contratistas' => TblTercero::getTercerosTipo(session('id_dominio_coordinador'))->union($contratistas),
             'status' => $cotizacion->status,
             'export' => Gate::allows('export', $cotizacion),
             'import' => Gate::allows('import', $cotizacion),

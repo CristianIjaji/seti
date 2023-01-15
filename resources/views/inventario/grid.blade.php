@@ -4,14 +4,14 @@
     'route' => 'stores',
     'btnOptionsCreate' => [
         "title" => 'Nuevo producto',
-        "modal-size" => "modal-xl",
-        "route" => route("stores.create"),
+        'header-class' => 'bg-primary bg-opacity-75 text-white',
+        "modal-size" => "modal-fullscreen",
     ],
     'headers' => [
         ['name' => 'id_inventario', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'id_tercero_almacen', 'label' => 'Almacén', 'col' => 'col-2', 'options' => $almacenes],
         ['name' => 'clasificacion', 'label' => 'Clasificación', 'col' => 'col-2', 'options' => $clasificaciones],
-        ['name' => 'descripcion', 'label' => 'Descripción', 'col' => 'col-2'],
+        ['name' => 'descripcion', 'label' => 'Descripción', 'col' => 'col-3'],
         ['name' => 'cantidad', 'label' => 'Cantidad', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'unidad', 'label' => 'Unidad', 'col' => 'col-1'],
         ['name' => 'valor_unitario', 'label' => 'Valor unitario', 'align' => 'text-end', 'col' => 'col-2'],
@@ -21,10 +21,12 @@
             'btnOptions' => [
                 'view' => $view,
                 'modal-view-title' => 'Ver producto',
-                'modal-view-size' => 'modal-xl',
+                'modal-view-size' => 'modal-fullscreen',
+                'header-view-class' => 'bg-info bg-opacity-75 text-white',
                 'edit' => $edit,
                 'modal-edit-title' => 'Editar producto',
-                'modal-edit-size' => 'modal-xl',
+                'modal-edit-size' => 'modal-fullscreen',
+                'header-edit-class' => 'bg-warning bg-opacity-75 text-white',
             ]
         ]]
     ],

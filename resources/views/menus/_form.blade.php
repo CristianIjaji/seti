@@ -51,8 +51,8 @@
                                 >
                                 <label class="btn p-0 border-0" style="color: var(--bs-bg-color)"
                                     @isset($menu->submenu)
-                                        data-bs-target="#_{{ $menu->id_menu }}"
-                                        data-bs-toggle="collapse"
+                                        {{-- data-bs-target="#_{{ $menu->id_menu }}"
+                                        data-bs-toggle="collapse" --}}
                                     @endisset
                                 >
                                     {{ $menu->nombre }}
@@ -82,20 +82,24 @@
             <div class="form-group col-12 col-md-6 m-auto mx-auto">
                 <ul class="list-unstyled user-select-none">
                     <li>
-                        <input type="checkbox" id="ckb-crear" class="btn btn-out-primary opciones-menu {{ (!$create && !$edit ? 'disabled' : '') }}">
-                        <label for="ckb-crear" class="p-0 border-0 btn" style="color: var(--bs-bg-color)">Crear</label>
+                        <input type="checkbox" id="ckb-all" class="btn btn-out-primary opciones-menu-parent disabled">
+                        <label for="ckb-all" class="p-0 border-0 btn disabled" style="color: var(--bs-bg-color)">Seleccionar todos</label>
                     </li>
                     <li>
-                        <input type="checkbox" id="ckb-editar" class="btn btn-out-primary opciones-menu {{ (!$create && !$edit ? 'disabled' : '') }}">
-                        <label for="ckb-editar" class="p-0 border-0 btn" style="color: var(--bs-bg-color)">Editar</label>
+                        <input type="checkbox" id="ckb-crear" class="btn btn-out-primary opciones-menu disabled">
+                        <label for="ckb-crear" class="p-0 border-0 btn disabled" style="color: var(--bs-bg-color)">Crear</label>
                     </li>
                     <li>
-                        <input type="checkbox" id="ckb-importar" class="btn btn-out-primary opciones-menu {{ (!$create && !$edit ? 'disabled' : '') }}">
-                        <label for="ckb-importar" class="p-0 border-0 btn" style="color: var(--bs-bg-color)">Importar</label>
+                        <input type="checkbox" id="ckb-editar" class="btn btn-out-primary opciones-menu disabled">
+                        <label for="ckb-editar" class="p-0 border-0 btn disabled" style="color: var(--bs-bg-color)">Editar</label>
                     </li>
                     <li>
-                        <input type="checkbox" id="ckb-exportar" class="btn btn-out-primary opciones-menu {{ (!$create && !$edit ? 'disabled' : '') }}">
-                        <label for="ckb-exportar" class="p-0 border-0 btn" style="color: var(--bs-bg-color)">Exportar</label>
+                        <input type="checkbox" id="ckb-importar" class="btn btn-out-primary opciones-menu disabled">
+                        <label for="ckb-importar" class="p-0 border-0 btn disabled" style="color: var(--bs-bg-color)">Importar</label>
+                    </li>
+                    <li>
+                        <input type="checkbox" id="ckb-exportar" class="btn btn-out-primary opciones-menu disabled">
+                        <label for="ckb-exportar" class="p-0 border-0 btn disabled" style="color: var(--bs-bg-color)">Exportar</label>
                     </li>
                 </ul>
             </div>
@@ -119,17 +123,15 @@
         let parent = $(this).closest('.accordion-item').data('parent');
 
         $.each(list_permisos, (i, p) => {
-            if(i !== 2) {
-                setPermiso(id_menu, p, false);
-            } else {
-                setPermiso(id_menu, p, checked);
-            }
+            setPermiso(id_menu, p, (i !== 2 ? false : checked));
         });
 
         if(typeof child !== 'undefined') {
             $.each($(`[data-parent="${child}"] > div > .menu_tercero `), (i, e) => {
                 $(e).prop('checked', checked);
-                setPermiso(parseInt($(e).attr('id')), list_permisos[2], checked);
+                $.each(list_permisos, (i, p) => {
+                    setPermiso(parseInt($(e).attr('id')), p, (i !== 2 ? false : checked));
+                });
             });
         }
 
@@ -137,25 +139,27 @@
             let keepChecked = false;
             $.each($(`[data-parent="${parent}"] > div > .menu_tercero`), (i, e) => {
                 if($(e).prop('checked')) {
-                    keepChecked = true
+                    keepChecked = true;
                 }
             });
 
             $(`[data-child="${parent}"] > div > .menu_tercero`).prop('checked', keepChecked);
-            setPermiso(parent, list_permisos[2], checked);
+            setPermiso(parent, list_permisos[2], keepChecked);
         }
 
         updatePermiso();
         showPermiso(getPermiso(id_menu));
+
+        $('.opciones-menu, .opciones-menu-parent').closest('li').children().removeClass('disabled');
+
+        if(!checked) {
+            id_menu = null;
+            $('.opciones-menu, .opciones-menu-parent').closest('li').children().addClass('disabled');
+        }
     });
 
     $('.opciones-menu').click(function() {
-        if(id_menu > 0 && $(`.accordion #${id_menu}`).prop('checked')) {
-            let opcion = $(this).attr('id').replace('ckb-', '');
-            setPermiso(id_menu, opcion, $(this).prop('checked'));
-            updatePermiso();
-            showPermiso(getPermiso(id_menu));
-        }
+        changesPermiso($(this));
     });
 
     $('.menu-item-perfil label').click(function() {
@@ -164,22 +168,16 @@
         });
         
         $(this).toggleClass('text-success');
-
-        $(this).closest('li').find('.show-more').click();
-
         id_menu = $(this).closest('div').find('input').attr('id');
+
         showPermiso(getPermiso(id_menu));
+    });
 
-        // if(typeof $(this).closest('.menu-item-perfil').data('parent') !== 'undefined') {
-        //     let parent = $(this).closest('.menu-item-perfil').data('parent');
-        //     $(`[data-child="${parent}"] > div > label`).toggleClass('text-success');
-        // }
-
-        // if(typeof $(this).closest('.menu-item-perfil').data('child') !== 'undefined') {
-        //     let childs = $(this).closest('.menu-item-perfil').data('child');
-
-        //     $(`[data-parent="${childs}"] > div > label`).toggleClass('text-success');
-        // }
+    $('#ckb-all').click(function() {
+        $('.opciones-menu').each((i, e) => {
+            $(e).prop('checked', $(this).prop('checked'));
+            changesPermiso($(e));
+        });
     });
 
     function showPermiso(data_permiso) {
@@ -188,6 +186,10 @@
             $('#ckb-editar').prop('checked', data_permiso['permiso'][list_permisos[1]]);
             $('#ckb-importar').prop('checked', data_permiso['permiso'][list_permisos[3]]);
             $('#ckb-exportar').prop('checked', data_permiso['permiso'][list_permisos[4]]);
+            $('.opciones-menu, .opciones-menu-parent').closest('li').children().removeClass('disabled');
+        } else {
+            $('.opciones-menu, .opciones-menu-parent').prop('checked', false);
+            $('.opciones-menu, .opciones-menu-parent').closest('li').children().addClass('disabled');
         }
     }
 
@@ -259,5 +261,26 @@
         });
 
         $('#div-permisos').html(inputs);
+    }
+
+    function changesPermiso(element) {
+        if(id_menu > 0 && $(`.accordion #${id_menu}`).prop('checked') && $(element).attr('id') !== 'ckb-all') {
+            let id_menu_padre = $(`.accordion .accordion-item[data-child="${id_menu}"]`).length ? id_menu : 0;
+            let opcion = $(element).attr('id').replace('ckb-', '');
+
+            if(id_menu_padre > 0) {
+                $.each($(`[data-parent="${id_menu_padre}"] .menu_tercero `), (i, e) => {
+                    if($(e).prop('checked')) {
+                        setPermiso(parseInt($(e).attr('id')), opcion, $(element).prop('checked'));
+                    }
+                });
+
+                updatePermiso();
+            } else {
+                setPermiso(id_menu, opcion, $(element).prop('checked'));
+                updatePermiso();
+                showPermiso(getPermiso(id_menu));
+            }
+        }
     }
 </script>

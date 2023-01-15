@@ -7,7 +7,6 @@
         "title" => 'Nueva actividad',
         'header-class' => 'bg-primary bg-opacity-75 text-white',
         "modal-size" => "modal-fullscreen",
-        "route" => route("activities.create"),
     ],
     'headers' => [
         ['name' => 'id_actividad', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],

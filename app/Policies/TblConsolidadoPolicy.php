@@ -30,7 +30,7 @@ class TblConsolidadoPolicy
      */
     public function view(TblUsuario $tblUsuario, TblConsolidado $tblConsolidado)
     {
-        return $tblUsuario->getPermisosMenu('deals.index')->view;
+        return isset($tblUsuario->getPermisosMenu('deals.index')->view) ? $tblUsuario->getPermisosMenu('deals.index')->view : false;
     }
 
     /**
@@ -41,7 +41,7 @@ class TblConsolidadoPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('deals.index')->create;
+        return isset($tblUsuario->getPermisosMenu('deals.index')->create) ? $tblUsuario->getPermisosMenu('deals.index')->create : false;
     }
 
     /**
@@ -53,7 +53,7 @@ class TblConsolidadoPolicy
      */
     public function update(TblUsuario $tblUsuario, TblConsolidado $tblConsolidado)
     {
-        return $tblUsuario->getPermisosMenu('deals.index')->update;
+        return isset($tblUsuario->getPermisosMenu('deals.index')->update) ? $tblUsuario->getPermisosMenu('deals.index')->update : false;
     }
 
     /**

@@ -69,6 +69,9 @@ class SaveInventarioRequest extends FormRequest
             'valor_unitario' => [
                 'required'
             ],
+            'IVA' => [
+                'nullable'
+            ],
             'ubicacion' => [
                 'nullable',
                 'string',

@@ -5,7 +5,6 @@
     'btnOptionsCreate' => [
         "title" => 'Nuevo parámetro',
         "modal-size" => "modal-md",
-        "route" => route("params.create"),
     ],
     'headers' => [
         ['name' => 'id_parametro_aplicacion', 'label' => '#', 'col' => 'col-1', 'align' => 'text-end'],

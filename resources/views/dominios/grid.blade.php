@@ -5,13 +5,11 @@
     'btnOptionsCreate' => [
         "title" => 'Nuevo dominio',
         "modal-size" => "modal-md",
-        "route" => route("domains.create"),
     ],
     'headers' => [
         ['name' => 'id_dominio', 'label' => '#', 'col' => 'col-1', 'align' => 'text-end'],
         ['name' => 'nombre', 'label' => 'Nombre', 'col' => 'col-2'],
         ['name' => 'id_dominio_padre', 'label' => 'Dominio padre', 'col' => 'col-3', 'options' => $dominios_padre],
-        // ['name' => 'descripcion', 'label' => 'Descripción', 'col' => 'col-3'],
         ['name' => 'estado', 'label' => 'Estado', 'html' => true, 'align' => 'text-center', 'options' => [0 => 'Inactivo', 1 => 'Activo'], 'col' => 'col-1',],
         ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [
             'btnOptions' => [

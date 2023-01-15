@@ -4,7 +4,6 @@
     $disable_form = in_array($cotizacion->estado, [session('id_dominio_cotizacion_aprobada')]) ? true : false;
     $editable = (
         ($edit) &&
-        // $cotizacion->id_usuareg == Auth::user()->id_usuario &&
         in_array($cotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta'),
             session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_rechazada'), session('id_dominio_cotizacion_cancelada')]) ||
         ($edit && Auth::user()->role == session('id_dominio_analista')) ||
@@ -177,7 +176,7 @@
                                     <option
                                         data-id_contratista="{{ (isset($contratista->tblterceroresponsable) ? $contratista->tblterceroresponsable->id_tercero : $contratista->id_tercero ) }}"
                                         value="{{ $contratista->id_tercero }}" {{ old('id_responsable', $cotizacion->id_responsable_cliente) == $contratista->id_tercero ? 'selected' : '' }}>
-                                        {{ $contratista->full_name }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
+                                        {{ $contratista->full_name.(isset($contratista->razon_social) ? ' - '.$contratista->nombres.' '.$contratista->apellidos : '') }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
                                     </option>
                                 @empty
                                     <option value="">Elegir aprobador</option>
@@ -200,7 +199,7 @@
                         @endif
                     </div>
                 @else
-                    <input type="text" class="form-control" id="id_cliente_cotizacion" value="{{ $cotizacion->tblContratista->full_name }} {{ (isset($cotizacion->tblContratista->tblterceroresponsable) ? ' - '.$cotizacion->tblContratista->tblterceroresponsable->razon_social : '') }}" disabled>
+                    <input type="text" class="form-control" id="id_cliente_cotizacion" value="{{ $cotizacion->tblContratista->full_name.(isset($cotizacion->tblContratista->razon_social) ? ' - '.$cotizacion->tblContratista->nombres.' '.$cotizacion->tblContratista->apellidos : '') }}" disabled>
                 @endif
             </div>
             @if (!$create)
@@ -273,7 +272,7 @@
             <input type="hidden" id="valor_actividad" value="{{ $cotizacion->total_sin_iva }}">
             <div class="clearfix"><hr></div>
 
-            @include('cotizaciones.detalle', ['edit' => $editable, 'cotizacion' => $cotizacion, 'tipo_carrito' => 'cotizacion'])
+            @include('partials._detalle', ['edit' => $editable, 'cotizacion' => $cotizacion, 'tipo_carrito' => 'cotizacion', 'detalleCarrito' => $cotizacion->getDetalleCotizacion()])
         </div>
 
         @include('partials.buttons', [$create, 'edit' => $editable, 'label' => $create ? 'Crear cotización' : 'Editar cotización'])

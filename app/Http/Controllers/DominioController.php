@@ -172,7 +172,7 @@ class DominioController extends Controller
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('id_dominio', 'desc')->paginate(10),
-            'dominios_padre' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => null])->orderby('nombre')->pluck('nombre', 'id_dominio'),
+            'dominios_padre' => TblDominio::where(['estado' => 1])->orderby('nombre')->pluck('nombre', 'id_dominio'),
             'create' => Gate::allows('create', new TblDominio),
             'edit' => Gate::allows('update', new TblDominio),
             'view' => Gate::allows('view', new TblDominio),

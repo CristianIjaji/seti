@@ -5,7 +5,6 @@
     'btnOptionsCreate' => [
         "title" => 'Nuevo perfil',
         "modal-size" => "modal-lg",
-        "route" => route("profiles.create"),
     ],
     'headers' => [
         ['name' => 'id_tipo_tercero', 'label' => 'Tipo tercero', 'options' => $tipo_terceros],

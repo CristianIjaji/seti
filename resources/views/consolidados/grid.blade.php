@@ -6,7 +6,6 @@
         "title" => 'Nuevo consolidado',
         'header-class' => 'bg-primary bg-opacity-75 text-white',
         "modal-size" => "modal-fullscreen",
-        "route" => route("deals.create"),
     ],
     'headers' => [
         ['name' => 'id_consolidado', 'label' => '#', 'col' => 'col-2', 'align' => 'text-end'],

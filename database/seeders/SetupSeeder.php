@@ -16,6 +16,8 @@ use App\Models\TblKardex;
 use App\Models\TblListaPrecio;
 use App\Models\TblMenu;
 use App\Models\TblMenuTipoTercero;
+use App\Models\TblMovimiento;
+use App\Models\TblMovimientoDetalle;
 use App\Models\TblOrdenCompra;
 use App\Models\TblParametro;
 use App\Models\TblPuntosInteres;
@@ -23,6 +25,7 @@ use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SetupSeeder extends Seeder
 {
@@ -122,26 +125,30 @@ class SetupSeeder extends Seeder
             </html>
         ';
 
-        TblKardex::truncate();
-        TblInventario::truncate();
-        TblConsolidadoDetalle::truncate();
-        TblConsolidado::truncate();
-        TblHallazgo::truncate();
-        TblFactura::truncate();
-        TblOrdenCompra::truncate();
-        TblMenuTipoTercero::truncate();
-        TblMenu::truncate();
-        TblPuntosInteres::truncate();
-        TblListaPrecio::truncate();
-        TblEstadoCotizacion::truncate();
-        TblConsolidado::truncate();
-        TblCotizacion::truncate();
-        TblEstadoActividad::truncate();
-        TblActividad::truncate();
-        TblTercero::truncate();
-        TblParametro::truncate();
-        TblDominio::truncate();
-        TblUsuario::truncate();
+        /* Inicio limpieza de tablas */
+            TblKardex::truncate();
+            TblMovimientoDetalle::truncate();
+            TblMovimiento::truncate();
+            TblInventario::truncate();
+            TblConsolidadoDetalle::truncate();
+            TblConsolidado::truncate();
+            TblHallazgo::truncate();
+            TblFactura::truncate();
+            TblOrdenCompra::truncate();
+            TblMenuTipoTercero::truncate();
+            TblMenu::truncate();
+            TblPuntosInteres::truncate();
+            TblListaPrecio::truncate();
+            TblEstadoCotizacion::truncate();
+            TblConsolidado::truncate();
+            TblCotizacion::truncate();
+            TblEstadoActividad::truncate();
+            TblActividad::truncate();
+            TblTercero::truncate();
+            TblParametro::truncate();
+            TblDominio::truncate();
+            TblUsuario::truncate();
+        /* Fin limpieza de tablas */
 
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
@@ -213,10 +220,14 @@ class SetupSeeder extends Seeder
                 'id_dominio' => null,
                 'key' => 'id_dominio_zonas',
                 'childs' => [
+                    'Centro' => ['id_dominio' => null, 'key' => ''],
+                    'Centro Oriente' => ['id_dominio' => null, 'key' => ''],
+                    'Costa' => ['id_dominio' => null, 'key' => ''],
+                    'Norte' => ['id_dominio' => null, 'key' => ''],
+                    'Noroccidente' => ['id_dominio' => null, 'key' => ''],
+                    'Occidente' => ['id_dominio' => null, 'key' => ''],
                     'Oriente' => ['id_dominio' => null, 'key' => ''],
                     'Suroccidente' => ['id_dominio' => null, 'key' => ''],
-                    'Centro' => ['id_dominio' => null, 'key' => ''],
-                    'Noroccidente' => ['id_dominio' => null, 'key' => ''],
                 ]
             ],
             'Listado de transportes de las estaciones' => [
@@ -333,6 +344,43 @@ class SetupSeeder extends Seeder
                     'Servicio' => ['id_dominio' => null, 'key' => 'id_dominio_orden_servicio'],
                     'Suministro' => ['id_dominio' => null, 'key' => 'id_dominio_orden_suministro'],
                 ]
+            ],
+            'Lista con los tipos de movimientos de inventario' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_tipo_movimiento',
+                'childs' => [
+                    'Entrada' => [
+                        'id_dominio' => null,
+                        'key' => 'id_dominio_entrada',
+                        'childs' => [
+                            'Ajuste inventario' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_ajuste'],
+                            'Devolución' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_devolucion'],
+                            'Inventario inicial' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_inicial'],
+                            'Orden compra' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_orden'],
+                            'Prestamo' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_prestamo'],
+                        ]
+                    ],
+                    'Salida' => [
+                        'id_dominio' => null,
+                        'key' => 'id_dominio_salida',
+                        'childs' => [
+                            'Actividad' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_actividad'],
+                            'Ajuste inventario' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_ajuste'],
+                            'Devolución' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_devolucion'],
+                            'Prestamo' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_prestamo']
+                        ]
+                    ]
+                ]
+            ],
+            'Lista estados de movimiento' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_estados_movimiento',
+                'childs' => [
+                    'Pendiente' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_pendiente'],
+                    'Cancelado' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_cancelado'],
+                    'Completado' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_completado'],
+                    'En proceso' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_proceso'],
+                ]
             ]
         ];
 
@@ -372,6 +420,29 @@ class SetupSeeder extends Seeder
                         'id_usuareg' => $user->id_usuario
                     ]);
                 }
+
+                if(isset($dominio['childs'])) {
+                    foreach ($dominio['childs'] as $_nombre_dominio => $_dominio) {
+                        $params = [
+                            'id_dominio_padre' => $dominios_padres[$dominio_padre]['childs'][$nombre_dominio]['id_dominio'],
+                            'nombre' => $_nombre_dominio,
+                            'descripcion' => isset($_dominio['descripcion']) ? $_dominio['descripcion'] : $_nombre_dominio,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario,
+                        ];
+
+                        $dominios_padres[$dominio_padre]['childs'][$nombre_dominio]['childs'][$_nombre_dominio]['id_dominio'] = $this->createRegister($modelDominio, $params)->id_dominio;
+
+                        if(!empty($_dominio['key'])) {
+                            $this->createRegister($modelParametro, [
+                                'llave' => $_dominio['key'],
+                                'valor' => $dominios_padres[$dominio_padre]['childs'][$nombre_dominio]['childs'][$_nombre_dominio]['id_dominio'],
+                                'descripcion' => $_dominio['key'],
+                                'id_usuareg' => $user->id_usuario
+                            ]);
+                        }
+                    }
+                }
             }
         }
 
@@ -405,34 +476,12 @@ class SetupSeeder extends Seeder
                     'id_usuareg' => $user->id_usuario,
                 ]
             ],
-            'Puntos interés' => [
-                'id_menu' => null,
-                'menu' => [
-                    'url' => 'sites.index',
-                    'icon' => 'fa-solid fa-tower-cell nav_icon',
-                    'nombre' => 'Puntos interés',
-                    'orden' => 2,
-                    'estado' => 1,
-                    'id_usuareg' => $user->id_usuario,
-                ]
-            ],
-            'Lista precios' => [
-                'id_menu' => null,
-                'menu' => [
-                    'url' => 'priceList.index',
-                    'icon' => 'fa-solid fa-list-ol nav_icon',
-                    'nombre' => 'Lista precios',
-                    'orden' => 3,
-                    'estado' => 1,
-                    'id_usuareg' => $user->id_usuario,
-                ]
-            ],
             'Almacén' => [
                 'id_menu' => null,
                 'menu' => [
                     'icon' => 'fa-solid fa-store nav_icon',
                     'nombre' => 'Almacén',
-                    'orden' => 4,
+                    'orden' => 2,
                     'estado' => 1,
                     'id_usuareg' => $user->id_usuario
                 ],
@@ -442,7 +491,7 @@ class SetupSeeder extends Seeder
                         'menu' => [
                             'id_menu_padre' => null,
                             'url' => 'stores.index',
-                            'icon' => 'fa-solid fa-boxes-stacked nav_icon',
+                            'icon' => 'fa-solid fa-warehouse nav_icon fs-5',
                             'nombre' => 'Inventario',
                             'orden' => 1,
                             'estado' => 1,
@@ -453,10 +502,10 @@ class SetupSeeder extends Seeder
                         'id_menu' => null,
                         'menu' => [
                             'id_menu_padre' => null,
-                            'url' => 'kardex.index',
-                            'icon' => 'fa-solid fa-chart-column nav_icon',
-                            'nombre' => 'Kardex',
-                            'orden' => 2,
+                            'url' => 'moves.index',
+                            'icon' => 'fa-solid fa-cart-flatbed nav_icon',
+                            'nombre' => 'Movimientos',
+                            'orden' => 3,
                             'estado' => 1,
                             'id_usuareg' => $user->id_usuario
                         ]
@@ -465,14 +514,48 @@ class SetupSeeder extends Seeder
                         'id_menu' => null,
                         'menu' => [
                             'id_menu_padre' => null,
-                            'url' => 'purchases.index',
-                            'icon' => 'fa-solid fa-truck-arrow-right nav_icon',
-                            'nombre' => 'Orden compra',
+                            'url' => 'kardex.index',
+                            'icon' => 'fa-solid fa-chart-column nav_icon',
+                            'nombre' => 'Kardex',
                             'orden' => 3,
+                            'estado' => 1,
+                            'id_usuareg' => $user->id_usuario
+                        ]
+                    ],
+                    3 => [
+                        'id_menu' => null,
+                        'menu' => [
+                            'id_menu_padre' => null,
+                            'url' => 'purchases.index',
+                            'icon' => 'fa-solid fa-cart-shopping nav_icon',
+                            'nombre' => 'Orden compra',
+                            'orden' => 4,
                             'estado' => 1,
                             'id_usuareg' => $user->id_usuario,
                         ]
                     ]
+                ]
+            ],
+            'Puntos interés' => [
+                'id_menu' => null,
+                'menu' => [
+                    'url' => 'sites.index',
+                    'icon' => 'fa-solid fa-tower-cell nav_icon',
+                    'nombre' => 'Puntos interés',
+                    'orden' => 3,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario,
+                ]
+            ],
+            'Lista precios' => [
+                'id_menu' => null,
+                'menu' => [
+                    'url' => 'priceList.index',
+                    'icon' => 'fa-solid fa-list-ol nav_icon',
+                    'nombre' => 'Lista precios',
+                    'orden' => 4,
+                    'estado' => 1,
+                    'id_usuareg' => $user->id_usuario,
                 ]
             ],
             'Cotizaciones' => [
@@ -533,7 +616,7 @@ class SetupSeeder extends Seeder
                         'id_menu' => null,
                         'menu' => [
                             'url' => 'profiles.index',
-                            'icon' => 'fa-solid fa-list-check nav_icon',
+                            'icon' => 'fa-solid fa-id-card-clip nav_icon',
                             'nombre' => 'Perfiles',
                             'orden' => 2,
                             'estado' => 1,
@@ -572,11 +655,11 @@ class SetupSeeder extends Seeder
             $this->createRegister($modelMenuTercero, [
                 'id_menu' => $menus[$nombre]['id_menu'],
                 'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
-                'crear' => true,
-                'editar' => true,
+                'crear' => isset($menu['submenu']) ? false : true,
+                'editar' => isset($menu['submenu']) ? false : true,
                 'ver' => true,
-                'importar' => true,
-                'exportar' => true,
+                'importar' => isset($menu['submenu']) ? false : true,
+                'exportar' => isset($menu['submenu']) ? false : true,
             ]);
 
             if(isset($menu['submenu'])) {

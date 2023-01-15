@@ -738,7 +738,7 @@ window.totalCarrito = (tipo_carrito) => {
     let iva = parseFloat(
         $('#iva option:selected').length > 0
             ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '')
-            : $('#iva').val().replace('IVA ', '').replace('%', '')
+            : ($('#iva').length > 0 ? $('#iva').val().replace('IVA ', '').replace('%', '') : 0)
         , 0
     );
 
@@ -988,13 +988,14 @@ const openMainSubMenu = () => {
 
     $('.submenu_icon').each((i, e) => {
         let menu = document.getElementById($(e).closest('a').data('bs-target').replace('#', ''));
+
         menu.addEventListener('hide.bs.collapse', event => {
-            $(e).removeClass(showIcon).addClass(hideIcon);
+            $(e).removeClass(showIcon).removeClass(hideIcon).addClass(hideIcon);
             $(e).closest('a').removeClass(activemenu);
         });
 
         menu.addEventListener('show.bs.collapse', event => {
-            $(e).removeClass(hideIcon).addClass(showIcon);
+            $(e).removeClass(hideIcon).removeClass(showIcon).addClass(showIcon);
             $(e).closest('a').addClass(activemenu);
         });
     });
@@ -1207,11 +1208,11 @@ $(document).on('change', '#iva', function() {
     }
 });
 
-let showIcon = 'fa-solid fa-angle-up';
-let hideIcon = 'fa-solid fa-angle-down';
+let showIcon = 'fa-angle-up';
+let hideIcon = 'fa-angle-down';
 
-$(document).on('click', '.show-more', function() {    
-    $(this).find('i').toggleClass(`${showIcon} ${hideIcon}`);
+$(document).on('click', 'span.show-more', function() {
+    $(this).find('i').toggleClass(`${hideIcon} ${showIcon}`);
 });
 
 $(document).on('change', '#estado_seguimiento', function() {

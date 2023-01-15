@@ -14,9 +14,8 @@ class TblKardex extends Model
     protected $guarded = [];
 
     protected $fillable = [
+        'id_movimiento_detalle',
         'id_inventario',
-        'id_tercero_entrega',
-        'id_tercero_recibe',
         'concepto',
         'documento',
         'cantidad',
@@ -28,16 +27,12 @@ class TblKardex extends Model
         'id_usuareg'
     ];
 
+    public function tblmovimientodetalle() {
+        return $this->belongsTo(TblMovimientoDetalle::class, 'id_movimiento_detalle');
+    }
+
     public function tblinventario() {
         return $this->belongsTo(TblInventario::class, 'id_inventario');
-    }
-
-    public function tblterceroentrega() {
-        return $this->belongsTo(TblTercero::class, 'id_tercero_entrega');
-    }
-
-    public function tbltercerorecibo() {
-        return $this->belongsTo(TblTercero::class, 'id_tercero_recibe');
     }
 
     public function tblusuario() {
@@ -52,8 +47,29 @@ class TblKardex extends Model
         return (isset($this->attributes['valor_unitario'])) ? number_format($this->attributes['valor_unitario'], 2) : 0;
     }
 
+    public function getIvaAttribute() {
+        return (isset($this->tblmovimientodetalle->iva)
+            ? $this->tblmovimientodetalle->tbliva->descripcion
+            : 0
+        );
+    }
+
+    public function getSubTotalAttribute() {
+        $porcentaje = intval(str_replace('%', '', $this->attributes['iva'])) / 100;
+        $valor = $this->attributes['valor_total'];
+
+        return $valor * $porcentaje;
+    }
+
     public function getValorTotalAttribute() {
         return (isset($this->attributes['valor_total'])) ? number_format($this->attributes['valor_total'], 2) : 0;
+    }
+
+    public function getSaldoIvaAttribute() {
+        $porcentaje = intval(str_replace('%', '', $this->attributes['iva'])) / 100;
+        $valor = $this->attributes['valor_total'];
+
+        return $valor * $porcentaje;
     }
 
     public function getSaldoValorUnitarioAttribute() {

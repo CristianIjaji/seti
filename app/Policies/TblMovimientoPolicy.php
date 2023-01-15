@@ -2,11 +2,11 @@
 
 namespace App\Policies;
 
-use App\Models\TblMenuTipoTercero;
+use App\Models\TblMovimiento;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class TblMenuTipoTerceroPolicy
+class TblMovimientoPolicy
 {
     use HandlesAuthorization;
 
@@ -25,12 +25,12 @@ class TblMenuTipoTerceroPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
+     * @param  \App\Models\TblMovimiento  $tblMovimiento
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
+    public function view(TblUsuario $tblUsuario, TblMovimiento $tblMovimiento)
     {
-        return isset($tblUsuario->getPermisosMenu('profiles.index')->view) ? $tblUsuario->getPermisosMenu('profiles.index')->view : false;
+        return isset($tblUsuario->getPermisosMenu('moves.index')->view) ? $tblUsuario->getPermisosMenu('moves.index')->view : false;
     }
 
     /**
@@ -41,29 +41,29 @@ class TblMenuTipoTerceroPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return isset($tblUsuario->getPermisosMenu('profiles.index')->create) ? $tblUsuario->getPermisosMenu('profiles.index')->create : false;
+        return isset($tblUsuario->getPermisosMenu('moves.index')->create) ? $tblUsuario->getPermisosMenu('moves.index')->create : false;
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
+     * @param  \App\Models\TblMovimiento  $tblMovimiento
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
+    public function update(TblUsuario $tblUsuario, TblMovimiento $tblMovimiento)
     {
-        return isset($tblUsuario->getPermisosMenu('profiles.index')->update) ? $tblUsuario->getPermisosMenu('profiles.index')->update : false;
+        return isset($tblUsuario->getPermisosMenu('moves.index')->update) ? $tblUsuario->getPermisosMenu('moves.index')->update : false;
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
+     * @param  \App\Models\TblMovimiento  $tblMovimiento
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
+    public function delete(TblUsuario $tblUsuario, TblMovimiento $tblMovimiento)
     {
         //
     }
@@ -72,10 +72,10 @@ class TblMenuTipoTerceroPolicy
      * Determine whether the user can restore the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
+     * @param  \App\Models\TblMovimiento  $tblMovimiento
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
+    public function restore(TblUsuario $tblUsuario, TblMovimiento $tblMovimiento)
     {
         //
     }
@@ -84,11 +84,19 @@ class TblMenuTipoTerceroPolicy
      * Determine whether the user can permanently delete the model.
      *
      * @param  \App\Models\TblUsuario  $tblUsuario
-     * @param  \App\Models\TblMenuTipoTercero  $tblMenuTipoTercero
+     * @param  \App\Models\TblMovimiento  $tblMovimiento
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(TblUsuario $tblUsuario, TblMenuTipoTercero $tblMenuTipoTercero)
+    public function forceDelete(TblUsuario $tblUsuario, TblMovimiento $tblMovimiento)
     {
         //
+    }
+
+    public function export(TblUsuario $tblUsuario, TblMovimiento $tblMovimiento) {
+        return isset($tblUsuario->getPermisosMenu('moves.index')->export) ? $tblUsuario->getPermisosMenu('moves.index')->export : false;
+    }
+
+    public function import(TblUsuario $tblUsuario, TblMovimiento $tblMovimiento) {
+        return isset($tblUsuario->getPermisosMenu('moves.index')->import) ? $tblUsuario->getPermisosMenu('moves.index')->import : false;
     }
 }

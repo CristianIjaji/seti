@@ -25,6 +25,8 @@
 @import '~bootstrap-fileinput/themes/explorer/theme.min.css';
 @import '~bootstrap-icons/font/bootstrap-icons.css';
 
+@import '~datatables.net-dt/css/jquery.dataTables.min.css';
+
 @font-face {
     src: url('/fonts/Apex New Bold Italic/Apex New Bold Italic.otf');
     font-family: "Apex New Bold Italic";
@@ -63,13 +65,13 @@ body{
 }
 
 ::-webkit-scrollbar {
-    width: 1px;
-    height: 1px;
+    width: 5px;
+    height: 5px;
 }
 /* Track */
 ::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 45px grey;
-    height: 5px;
+    box-shadow: inset 0 0 45px var(--bs-bg-color);
+    height: 10px;
 }
 /* Handle */
 ::-webkit-scrollbar-thumb {
@@ -296,11 +298,12 @@ button.close {
     color: var(--bs-secondary) !important;
     background-color: var(--bs-white) !important;
     border-radius: 0.375rem;
+    text-shadow: none !important;
 }
 
 #nav-bar .nav_icon {
     font-size: 1.25rem;
-    margin-left: -5px;
+    margin-left: -6px;
     width: 20px;
     text-align: end;
 }
@@ -321,6 +324,7 @@ button.close {
 #nav-bar.l-navbar .active {
     color: var(--bs-primary) !important;
     background-color: var(--bs-white) !important;
+    text-shadow: none !important;
 }
 
 #nav-bar.l-navbar .activemenu {
@@ -711,10 +715,24 @@ label.required::after {
     background-color: #ffffff4a;
 }
 
+// #nav-bar .collapse.show a {
+//     text-shadow: 1px 1px 1px var(--bs-dark);
+// }
+
 .accordion-button::after{
     width: 14px;
     height: 14px;
     background-size: 14px;   
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    float: left !important;
+}
+
+.hover-tr:hover {
+    // --bs-table-accent-bg: var(--bs-table-hover-bg);
+    color: var(--bs-table-hover-color);
+    background-color: var(--bs-table-hover-bg);
 }
 
 @media screen and (min-width: 768px) {

@@ -194,6 +194,7 @@
             let coordinador = parseInt({!! session('id_dominio_coordinador') !!});
             let proveedor = parseInt({!! session('id_dominio_contratista') !!});
             let almacen = parseInt({!! session('id_dominio_almacen') !!});
+            let tipo_almacen = parseInt({!! session('id_dominio_documento_almacen') !!});
 
             if($.inArray(valor, [cliente, proveedor]) > -1) {
                 $('#div_logo').removeClass('d-none');
@@ -203,7 +204,10 @@
                 $('#div_dependencia').removeClass('d-none');
             }
 
+            $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', true);
+            
             if(valor == {!! session('id_dominio_almacen') !!}) {
+                $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', false);
                 $('#div-select-tipo-documento').addClass('d-none');
                 $('#id_dominio_tipo_documento').val({!! session('id_dominio_documento_almacen') !!}).change();
                 $('#lbl-tipo-documento').removeClass('d-none').text($('#id_dominio_tipo_documento option:selected').text());

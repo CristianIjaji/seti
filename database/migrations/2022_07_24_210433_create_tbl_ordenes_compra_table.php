@@ -22,7 +22,7 @@ class CreateTblOrdenesCompraTable extends Migration
             $table->unsignedBigInteger('id_estado');
             $table->unsignedBigInteger('id_asesor');
             $table->date('vencimiento')->nullable();
-            $table->decimal('cupo', 20, 2);
+            // $table->decimal('cupo', 20, 2);
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 

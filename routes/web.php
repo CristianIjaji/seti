@@ -12,6 +12,7 @@ use App\Http\Controllers\KardexController;
 use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MenuTipoTerceroController;
 use App\Http\Controllers\MessagesController;
+use App\Http\Controllers\MovimientoController;
 use App\Http\Controllers\OrdenController;
 use App\Http\Controllers\ParametroController;
 use App\Http\Controllers\PuntosInteresController;
@@ -40,7 +41,8 @@ Route::post('contact', [MessagesController::class, 'contact'])->name('contact');
 // Controlador terceros
 Route::get('clients/export', [TerceroController::class, 'export'])->name('clients.export');
 Route::get('clients/template', [TerceroController::class, 'downloadTemplate'])->name('clients.template');
-Route::get('/clients/search', [TerceroController::class, 'search'])->name('clients.search');
+Route::get('clients/search', [TerceroController::class, 'search'])->name('clients.search');
+Route::get('clients/{type}/getTercerosByTipo', [TerceroController::class, 'getTercerosByTipo'])->name('clients.getTercerosByTipo');
 Route::resource('clients', TerceroController::class);
 Route::post('clients/grid', [TerceroController::class, 'grid'])->name('clients.grid');
 Route::post('clients/import', [TerceroController::class, 'import'])->name('clients.import');
@@ -67,6 +69,13 @@ Route::get('stores/template', [InventarioController::class, 'downloadTemplate'])
 Route::resource('stores', InventarioController::class);
 Route::post('stores/grid', [InventarioController::class, 'grid'])->name('stores.grid');
 Route::post('stores/import', [InventarioController::class, 'import'])->name('stores.import');
+
+// Controlador de movimientos
+Route::get('moves/export', [MovimientoController::class, 'export'])->name('moves.export');
+Route::get('moves/template', [MovimientoController::class, 'downloadTemplate'])->name('moves.template');
+Route::resource('moves', MovimientoController::class);
+Route::post('moves/grid', [MovimientoController::class, 'grid'])->name('moves.grid');
+Route::post('moves/import', [MovimientoController::class], 'import')->name('moves.import');
 
 // Controlador del kardex
 Route::resource('kardex', KardexController::class);

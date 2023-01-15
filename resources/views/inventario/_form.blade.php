@@ -30,7 +30,7 @@
         <div class="row">
             <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
                 <label for="id_tercero_almacen" class="required">Almacén</label>
-                @if ($edit)
+                @if ($create)
                     <select class="form-control" name="id_tercero_almacen" id="id_tercero_almacen" style="width: 100%" @if ($edit) required @else disabled @endif>
                         <option value="">Elegir almacén</option>
                         @foreach ($almacenes as $almacen)
@@ -40,8 +40,8 @@
                         @endforeach
                     </select>
                 @else
-                <input type="text" class="form-control" value="{{ $inventario->tblterceroalmacen->full_name }}" disabled readonly>
-                <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $inventario->id_tercero_almacen }}">
+                    <input type="text" class="form-control" value="{{ $inventario->tblterceroalmacen->full_name }}" disabled readonly>
+                    <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $inventario->id_tercero_almacen }}">
                 @endif
             </div>
             <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
@@ -88,6 +88,22 @@
             <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
                 <label for="valor_unitario" class="required">Valor unitario</label>
                 <input type="text" class="form-control money" @if ($edit) name="valor_unitario" @endif id="valor_unitario" value="{{ old('valor_unitario', $inventario->valor_unitario) }}" @if ($edit) required @else disabled @endif>
+            </div>
+            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                <label for="iva">IVA %</label>
+                @if ($edit)
+                    <select class="form-control text-end" name="iva" id="iva" data-dir="rtl" style="width: 100%" @if ($edit) required @else disabled @endif>
+                        <option value="">Elegir IVA</option>
+                        @foreach ($impuestos as $id => $nombre)
+                            <option value="{{ $id }}" {{ old('iva', $inventario->iva) == $id ? 'selected' : '' }}>
+                                {{ $nombre }}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <input type="hidden" id="iva" value="{{ isset($inventario->tblIva) ? $inventario->tblIva->nombre : null }}">
+                    <input type="text" class="form-control text-end" value="{{ isset($inventario->tblIva) ? $inventario->tblIva->nombre : 'Sin IVA' }}" disabled>
+                @endif
             </div>
             <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
                 <label for="ubicacion" class="required">Ubicación</label>
@@ -142,7 +158,7 @@
 @if (!$create)
         </div>
         <div class="tab-pane" id="track-kardex" role="tabpanel" aria-labelledby="track-tab-kardex">
-            
+            @include('kardex.hoja', ['kardex' => $kardex])
         </div>
     </div>
 @endif

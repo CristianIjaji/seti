@@ -5,13 +5,18 @@ namespace App\Http\Controllers;
 use App\Exports\ReportsExport;
 use App\Http\Requests\SaveInventarioRequest;
 use App\Imports\DataImport;
+use App\Models\TblDominio;
 use App\Models\TblInventario;
 use App\Models\TblKardex;
 use App\Models\TblListaPrecio;
+use App\Models\TblMovimiento;
+use App\Models\TblMovimientoDetalle;
 use App\Models\TblTercero;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class InventarioController extends Controller
 {
@@ -65,6 +70,7 @@ class InventarioController extends Controller
      */
     public function index()
     {
+        $this->authorize('view', new TblInventario);
         return $this->getView('inventario.index');
     }
 
@@ -85,12 +91,13 @@ class InventarioController extends Controller
             'almacenes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_almacen'),
-                'id_responsable_cliente' => auth()->id()
+                'id_responsable_cliente' => auth()->user()->id_tercero
             ])->get(),
             'clasificaciones' => TblInventario::pluck('clasificacion', 'clasificacion'),
             'unidades' => $unidades2,
             'ubicaciones' => TblInventario::pluck('ubicacion', 'ubicacion'),
             'marcas' => TblInventario::pluck('marca', 'marca'),
+            'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
         ]);
     }
 
@@ -147,7 +154,11 @@ class InventarioController extends Controller
 
         return view('inventario._form', [
             'edit' => false,
-            'inventario' => $store
+            'inventario' => $store,
+            'kardex' => TblKardex::with(['tblinventario', 'tblmovimientodetalle', 'tblusuario'])
+                ->where(['id_inventario' => $store->id_inventario])
+                ->orderBy('created_at', 'asc')
+                ->get(),
         ]);
     }
 
@@ -176,6 +187,11 @@ class InventarioController extends Controller
             'unidades' => $unidades2,
             'ubicaciones' => TblInventario::pluck('ubicacion', 'ubicacion'),
             'marcas' => TblInventario::pluck('marca', 'marca'),
+            'kardex' => TblKardex::with(['tblinventario', 'tblmovimientodetalle', 'tblusuario'])
+                ->where(['id_inventario' => $store->id_inventario])
+                ->orderBy('created_at', 'asc')
+                ->get(),
+            'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
             'estados' => [
                 0 => 'Inactivo',
                 1 => 'Activo'
@@ -194,24 +210,74 @@ class InventarioController extends Controller
     {
         try {
             $this->authorize('update', $store);
-            if($store->cantidad != $request->cantidad || $store->valor_unitario_form != $request->valor_unitario) {
-                TblKardex::create([
+            if($store->cantidad != $request->cantidad) {
+                $porcentajeImpuesto = ($request->iva > 0
+                    ? intval(str_replace(['iva', ' ', '%'], ['', '', ''], mb_strtolower(TblDominio::where(['id_dominio' => $request->iva])->first()->nombre)))
+                    : 0
+                ) / 100;
+
+                // Se crea el movimiento de inventario
+                $id_dominio_tipo_movimiento = ($request->cantidad > $store->cantidad
+                    ? session('id_dominio_movimiento_entrada_ajuste')
+                    : session('id_dominio_movimiento_salida_ajuste')
+                );
+
+                $id_tercero_recibe = ($request->cantidad > $store->cantidad
+                    ? $store->id_tercero_almacen
+                    : auth()->user()->id_tercero
+                );
+                $id_tercero_entrega = ($request->cantidad > $store->cantidad
+                    ? auth()->user()->id_tercero
+                    : $store->id_tercero_almacen
+                );
+
+                $cantidad = ($request->cantidad > $store->cantidad
+                    ? $request->cantidad
+                    : abs($store->cantidad - $request->cantidad)
+                );
+                
+                $valorImpuesto = (doubleval($cantidad) * doubleval($request->valor_unitario)) * $porcentajeImpuesto;
+
+                $movimiento = TblMovimiento::create([
+                    'id_dominio_tipo_movimiento' => $id_dominio_tipo_movimiento,
+                    'id_tercero_recibe' => $id_tercero_recibe,
+                    'id_tercero_entrega' => $id_tercero_entrega,
+                    'documento' => '',
+                    'observaciones' => 'Ajuste inventario',
+                    'total' => (($cantidad * $request->valor_unitario) + $valorImpuesto),
+                    'saldo' => 0,
+                    'id_dominio_estado' => session('id_dominio_movimiento_pendiente'),
+                    'id_usuareg' => auth()->id()
+                ]);
+
+                $detalle = TblMovimientoDetalle::create([
+                    'id_movimiento' => $movimiento->id_movimiento,
                     'id_inventario' => $store->id_inventario,
-                    'id_tercero_entrega' => auth()->id(),
-                    'id_tercero_recibe' => $store->id_tercero_almacen,
-                    'concepto' => 'Ajuste de inventario',
-                    'documento' => $store->id_inventario,
-                    'cantidad' => $store->cantidad,
-                    'valor_unitario' => $store->valor_unitario_form,
-                    'valor_total' => $store->valor_unitario_form * $store->cantidad,
-                    'saldo_cantidad' => $request->cantidad,
-                    'saldo_valor_unitario' => $request->valor_unitario,
-                    'saldo_valor_total' => $request->valor_unitario * $request->cantidad,
+                    'cantidad' => $cantidad,
+                    'valor_unitario' => $request->valor_unitario,
+                    'iva' => $request->iva,
+                    'valor_total' => ($cantidad * $request->valor_unitario) + $valorImpuesto,
+                    'id_usuareg' => auth()->id()
+                ]);
+
+                TblKardex::create([
+                    'id_movimiento_detalle' => $detalle->id_movimiento_detalle,
+                    'id_inventario' => $store->id_inventario,
+                    'concepto' => 'Ajuste inventario',
+                    'documento' => $movimiento->id_movimiento,
+                    'cantidad' => $cantidad,
+                    'valor_unitario' => $request->valor_unitario,
+                    'valor_total' => ($cantidad * $request->valor_unitario) + $valorImpuesto,
+                    'saldo_cantidad' => $cantidad,
+                    'saldo_valor_unitario' => $detalle->valor_unitario,
+                    'saldo_valor_total' => ($cantidad * $request->valor_unitario) + $valorImpuesto,
                     'id_usuareg' => auth()->id()
                 ]);
             }
 
             $store->update($request->validated());
+            $movimiento->id_dominio_estado = session('id_dominio_movimiento_completado');
+            $movimiento->save();
 
             return response()->json([
                 'success' => 'Producto actualizado correctamente!'
@@ -268,12 +334,14 @@ class InventarioController extends Controller
                 tbl_inventario.cantidad,
                 tbl_inventario.unidad,
                 tbl_inventario.valor_unitario,
+                iva.descripcion as iva,
                 tbl_inventario.ubicacion,
                 tbl_inventario.cantidad_minima,
                 tbl_inventario.cantidad_maxima,
                 CASE WHEN tbl_inventario.estado = 1 THEN 'Activo' ELSE 'Inactivo' END estado_inventario
             ")
         )->join('tbl_terceros as t', 'tbl_inventario.id_tercero_almacen', '=', 't.id_tercero')
+        ->join('tbl_dominios as iva', 'tbl_inventario.iva', '=', 'iva.id_dominio')
         ->where(function ($q) use($option) {
             if($option == 1) {
                 $this->dinamyFilters($q, [
@@ -288,7 +356,7 @@ class InventarioController extends Controller
 
     public function export() {
         $headers = ['#', 'Almacén', 'Clasificación', 'Descripción', 'Marca', 'Cantidad', 'Unidad', 'Valor unitario',
-            'Ubicación', 'Cantidad mínima', 'Cantidad máxima', 'Estado'
+            'IVA', 'Ubicación', 'Cantidad mínima', 'Cantidad máxima', 'Estado'
         ];
 
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(1)), 'Reporte inventario.xlsx');
@@ -296,7 +364,7 @@ class InventarioController extends Controller
 
     public function downloadTemplate() {
         $headers = ['Documento encargado', 'Clasificación', 'Descripción', 'Marca', 'Cantidad', 'Unidad', 'Valor unitario',
-            'Ubicación', 'Cantidad mínima', 'Cantidad máxima'
+            'IVA', 'Ubicación', 'Cantidad mínima', 'Cantidad máxima'
         ];
 
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(2)), 'Template inventario.xlsx');
@@ -304,6 +372,14 @@ class InventarioController extends Controller
 
     public function import() {
         (new DataImport(new TblInventario))->import(request()->file('input_file'));
+
+        TblMovimiento::where([
+            'id_dominio_tipo_movimiento' => session('id_dominio_movimiento_entrada_inicial'),
+            'id_dominio_estado' => session('id_dominio_movimiento_pendiente'),
+            // 'id_tercero_recibe' => $producto->id_tercero_almacen,
+            'id_tercero_entrega' => auth()->user()->id_tercero,
+        ])->update(['id_dominio_estado' => session('id_dominio_movimiento_completado')]);
+
         return back();
     }
 }

@@ -30,7 +30,7 @@ class TblInventarioPolicy
      */
     public function view(TblUsuario $tblUsuario, TblInventario $tblInventario)
     {
-        return $tblUsuario->getPermisosMenu('stores.index')->view;
+        return isset($tblUsuario->getPermisosMenu('stores.index')->view) ? $tblUsuario->getPermisosMenu('stores.index')->view : false;
     }
 
     /**
@@ -41,7 +41,7 @@ class TblInventarioPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('stores.index')->create;
+        return isset($tblUsuario->getPermisosMenu('stores.index')->create) ? $tblUsuario->getPermisosMenu('stores.index')->create : false;
     }
 
     /**
@@ -53,7 +53,7 @@ class TblInventarioPolicy
      */
     public function update(TblUsuario $tblUsuario, TblInventario $tblInventario)
     {
-        return $tblUsuario->getPermisosMenu('stores.index')->update;
+        return isset($tblUsuario->getPermisosMenu('stores.index')->update) ? $tblUsuario->getPermisosMenu('stores.index')->update : false;
     }
 
     /**
@@ -93,10 +93,10 @@ class TblInventarioPolicy
     }
 
     public function export(TblUsuario $tblUsuario, TblInventario $tblInventario) {
-        return $tblUsuario->getPermisosMenu('stores.index')->export;
+        return isset($tblUsuario->getPermisosMenu('stores.index')->export) ? $tblUsuario->getPermisosMenu('stores.index')->export : false;
     }
 
     public function import(TblUsuario $tblUsuario, TblInventario $tblInventario) {
-        return $tblUsuario->getPermisosMenu('stores.index')->import;
+        return isset($tblUsuario->getPermisosMenu('stores.index')->import) ? $tblUsuario->getPermisosMenu('stores.index')->import : false;
     }
 }

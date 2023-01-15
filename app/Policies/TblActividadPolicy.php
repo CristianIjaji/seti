@@ -30,7 +30,7 @@ class TblActividadPolicy
      */
     public function view(TblUsuario $tblUsuario, TblActividad $tblActividad)
     {
-        return $tblUsuario->getPermisosMenu('activities.index')->ver;
+        return isset($tblUsuario->getPermisosMenu('activities.index')->ver) ? $tblUsuario->getPermisosMenu('activities.index')->ver : false;
     }
 
     /**
@@ -41,7 +41,7 @@ class TblActividadPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('activities.index')->create;
+        return isset($tblUsuario->getPermisosMenu('activities.index')->create) ? $tblUsuario->getPermisosMenu('activities.index')->create : false;
     }
 
     /**
@@ -53,7 +53,7 @@ class TblActividadPolicy
      */
     public function update(TblUsuario $tblUsuario, TblActividad $tblActividad)
     {
-        return $tblUsuario->getPermisosMenu('activities.index')->update;
+        return isset($tblUsuario->getPermisosMenu('activities.index')->update) ? $tblUsuario->getPermisosMenu('activities.index')->update : false;
     }
 
     /**
@@ -97,7 +97,7 @@ class TblActividadPolicy
     }
 
     public function import(TblUsuario $tblUsuario, TblActividad $tblActividad) {
-        return $tblUsuario->getPermisosMenu('activities.index')->import;
+        return isset($tblUsuario->getPermisosMenu('activities.index')->import) ? $tblUsuario->getPermisosMenu('activities.index')->import : false;
     }
 
     // public function sheduleActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {

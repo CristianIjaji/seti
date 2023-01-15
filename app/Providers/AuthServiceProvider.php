@@ -27,15 +27,15 @@ class AuthServiceProvider extends ServiceProvider
 
         //
         Gate::define('create-user', function($user) {
-            return $user->getPermisosMenu('users.index')->create;
+            return isset($user->getPermisosMenu('users.index')->create) ? $user->getPermisosMenu('users.index')->create : false;
         });
 
         Gate::define('update-user', function($user) {
-            return $user->getPermisosMenu('users.index')->update;
+            return isset($user->getPermisosMenu('users.index')->update) ? $user->getPermisosMenu('users.index')->update : false;
         });
 
         Gate::define('view-user', function($user) {
-            return $user->getPermisosMenu('users.index')->view;
+            return isset($user->getPermisosMenu('users.index')->view) ? $user->getPermisosMenu('users.index')->view : false;
         });
     }
 }

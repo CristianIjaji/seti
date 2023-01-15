@@ -30,7 +30,7 @@ class TblOrdenCompraPolicy
      */
     public function view(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra)
     {
-        return $tblUsuario->getPermisosMenu('purchases.index')->view;
+        return isset($tblUsuario->getPermisosMenu('purchases.index')->view) ? $tblUsuario->getPermisosMenu('purchases.index')->view : false;
     }
 
     /**
@@ -41,7 +41,7 @@ class TblOrdenCompraPolicy
      */
     public function create(TblUsuario $tblUsuario)
     {
-        return $tblUsuario->getPermisosMenu('purchases.index')->create;
+        return isset($tblUsuario->getPermisosMenu('purchases.index')->create) ? $tblUsuario->getPermisosMenu('purchases.index')->create : false;
     }
 
     /**
@@ -53,7 +53,7 @@ class TblOrdenCompraPolicy
      */
     public function update(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra)
     {
-        return $tblUsuario->getPermisosMenu('purchases.index')->update;
+        return isset($tblUsuario->getPermisosMenu('purchases.index')->update) ? $tblUsuario->getPermisosMenu('purchases.index')->update : false;
     }
 
     /**
