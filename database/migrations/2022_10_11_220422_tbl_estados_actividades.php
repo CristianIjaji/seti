@@ -14,7 +14,7 @@ class TblEstadosActividades extends Migration
     public function up()
     {
         Schema::create('tbl_estado_actividad', function (Blueprint $table) {
-            $table->bigIncrements('id_estado_actividad');
+            $table->bigIncrements('id_dominio_estado');
             $table->unsignedBigInteger('id_actividad');
             $table->unsignedBigInteger('estado');
             $table->string('comentario');

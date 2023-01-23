@@ -34,7 +34,7 @@ class SaveConsolidadoRequest extends FormRequest
 
         $this->merge([
             // 'mes' => (trim($this->get('mes')) != '' ? date('Y-m-d', strtotime($this->get('mes'))) : null),
-            'id_estado_consolidado' => session('id_dominio_consolidado_creado'),
+            'id_dominio_estado' => session('id_dominio_consolidado_creado'),
             'id_usuareg' => (auth()->guest() ? 1 : auth()->id()),
         ]);
     }
@@ -47,11 +47,11 @@ class SaveConsolidadoRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_cliente' => [
+            'id_tercero_cliente' => [
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
-            'id_responsable_cliente' => [
+            'id_tercero_responsable' => [
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
@@ -63,7 +63,7 @@ class SaveConsolidadoRequest extends FormRequest
                 'nullable',
                 'max:255'
             ],
-            'id_estado_consolidado' => [
+            'id_dominio_estado' => [
                 'required',
                 'exists:tbl_dominios,id_dominio'
             ],
@@ -81,8 +81,8 @@ class SaveConsolidadoRequest extends FormRequest
     public function messages()
     {
         return [
-            'id_cliente.required' => 'El campo cliente es obligatorio.',
-            'id_responsable_cliente.required' => 'El campo encargado cliente es obligatorio.',
+            'id_tercero_cliente.required' => 'El campo cliente es obligatorio.',
+            'id_tercero_responsable.required' => 'El campo encargado cliente es obligatorio.',
             'id_actividad.required' => 'Debe agregar una actividad al consolidado.',
             'id_actividad.unique' => 'La actividad ya fue registrada.'
         ];

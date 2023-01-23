@@ -16,7 +16,7 @@ class TblMenuTipoTercero extends Model
 
     protected $fillable = [
         'id_menu',
-        'id_tipo_tercero',
+        'id_dominio_tipo_tercero',
         'crear',
         'editar',
         'ver',
@@ -29,7 +29,7 @@ class TblMenuTipoTercero extends Model
     }
 
     public function tbltipotercero() {
-        return $this->belongsTo(TblDominio::class, 'id_tipo_tercero');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_tipo_tercero');
     }
 
     public function getCrearAttribute() {

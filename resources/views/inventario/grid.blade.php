@@ -10,7 +10,7 @@
     'headers' => [
         ['name' => 'id_inventario', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'id_tercero_almacen', 'label' => 'Almacén', 'col' => 'col-2', 'options' => $almacenes],
-        ['name' => 'clasificacion', 'label' => 'Clasificación', 'col' => 'col-2', 'options' => $clasificaciones],
+        ['name' => 'id_dominio_clasificacion', 'label' => 'Clasificación', 'col' => 'col-2', 'options' => $clasificaciones],
         ['name' => 'descripcion', 'label' => 'Descripción', 'col' => 'col-3'],
         ['name' => 'cantidad', 'label' => 'Cantidad', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'unidad', 'label' => 'Unidad', 'col' => 'col-1'],

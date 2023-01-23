@@ -132,19 +132,19 @@ class EstadoCotizacionController extends Controller
     }
 
     public function grid() {
-        return $this->getView('cotizaciones._track');
+        return $this->getView('partials._track');
     }
 
     private function getView($view) {
-        $estados = new TblEstadoCotizacion;
-
         return view($view, [
             'edit' => true,
             'model' => TblEstadoCotizacion::with(['tblCotizacion', 'tblestado', 'tblusuario'])
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('created_at', 'desc')->paginate(10),
-            'request' => $this->filtros
+            'request' => $this->filtros,
+            'title' => 'Estados cotización',
+            'route' => 'statequotes',
         ]);
     }
 }

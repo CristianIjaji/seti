@@ -38,17 +38,16 @@ class SaveInventarioRequest extends FormRequest
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
-            'clasificacion' => [
+            'id_dominio_clasificacion' => [
                 'required',
-                'string',
-                'max:255'
+                'exists:tbl_dominios,id_dominio'
             ],
             'descripcion' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::unique('tbl_inventario')->where(function($query) {
-                    return $query->where('clasificacion', '=', $this->get('clasificacion'))
+                    return $query->where('id_dominio_clasificacion', '=', $this->get('id_dominio_clasificacion'))
                         ->where('descripcion', '=', $this->get('descripcion'))
                         ->where('marca', '=', $this->get('marca'));
                 })->ignore($this->route('store'))
@@ -68,9 +67,6 @@ class SaveInventarioRequest extends FormRequest
             ],
             'valor_unitario' => [
                 'required'
-            ],
-            'IVA' => [
-                'nullable'
             ],
             'ubicacion' => [
                 'nullable',
@@ -99,7 +95,7 @@ class SaveInventarioRequest extends FormRequest
     {
         return [
             'id_tercero_almacen.required' => 'El campo almacén es obligatorio.',
-            'clasificacion.required' => 'El campo clasificación es obligatorio.',
+            'id_dominio_clasificacion.required' => 'El campo clasificación es obligatorio.',
             'descripcion.unique' => 'El producto ya está registrado.',
         ];
     }

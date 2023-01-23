@@ -221,7 +221,7 @@ class PuntosInteresController extends Controller
 
     public static function get_puntos_interes_client($client) {
         return response()->json([
-            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $client])->orderBy('nombre', 'asc')->pluck('nombre', 'id_punto_interes'),
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_tercero_cliente' => $client])->orderBy('nombre', 'asc')->pluck('nombre', 'id_punto_interes'),
         ]);
     }
 
@@ -240,10 +240,10 @@ class PuntosInteresController extends Controller
                 CASE WHEN tbl_puntos_interes.estado = 1 THEN 'Activo' ELSE 'Inactivo' END as estado_sitio
             ")
         )
-        ->join('tbl_terceros as t', 'tbl_puntos_interes.id_cliente',  '=', 't.id_tercero')
-        ->join('tbl_dominios as z', 'tbl_puntos_interes.id_zona', '=', 'z.id_dominio')
-        ->join('tbl_dominios as tt', 'tbl_puntos_interes.id_tipo_transporte', '=', 'tt.id_dominio')
-        ->join('tbl_dominios as ta', 'tbl_puntos_interes.id_tipo_accesso', '=', 'ta.id_dominio')
+        ->join('tbl_terceros as t', 'tbl_puntos_interes.id_tercero_cliente',  '=', 't.id_tercero')
+        ->join('tbl_dominios as z', 'tbl_puntos_interes.id_dominio_zona', '=', 'z.id_dominio')
+        ->join('tbl_dominios as tt', 'tbl_puntos_interes.id_dominio_tipo_transporte', '=', 'tt.id_dominio')
+        ->join('tbl_dominios as ta', 'tbl_puntos_interes.id_dominio_tipo_accesso', '=', 'ta.id_dominio')
         ->where(function ($q) use($option) {
             if($option == 1) {
                 $this->dinamyFilters($q, [

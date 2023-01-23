@@ -17,20 +17,20 @@ class CreateTblActividadesTable extends Migration
             $table->bigIncrements('id_actividad');
             $table->string('ot')->nullable();
             $table->unsignedBigInteger('id_tipo_actividad');
-            $table->unsignedBigInteger("id_subsistema")->nullable();
+            $table->unsignedBigInteger("id_dominio_subsistema")->nullable();
             $table->text('descripcion');
-            $table->unsignedBigInteger('id_encargado_cliente');
-            $table->unsignedBigInteger('id_resposable_contratista');
+            $table->unsignedBigInteger('id_tercero_encargado_cliente');
+            $table->unsignedBigInteger('id_tercero_resposable_contratista');
             $table->unsignedBigInteger('id_estacion');
             $table->string('permiso_acceso')->nullable();
             $table->date('fecha_solicitud');
             $table->date('fecha_programacion')->nullable();
             $table->date('fecha_reprogramacion')->nullable();
             $table->date('fecha_ejecucion')->nullable();
-            $table->unsignedBigInteger('id_estado_actividad');
+            $table->unsignedBigInteger('id_dominio_estado');
             $table->unsignedBigInteger('id_cotizacion')->nullable();
             $table->unsignedBigInteger('id_orden_compra')->nullable();
-            $table->unsignedBigInteger('id_informe')->nullable();
+            $table->unsignedBigInteger('id_informe_actividad')->nullable();
             $table->date('fecha_liquidado')->nullable();
             $table->boolean('liquidado')->default(false);
             $table->date('mes_consolidado')->nullable();
@@ -39,23 +39,23 @@ class CreateTblActividadesTable extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_subsistema')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_subsistema')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_tipo_actividad')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_estacion')->references('id_punto_interes')->on('tbl_puntos_interes')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_estado_actividad')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_estado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_orden_compra')->references('id_orden_compra')->on('tbl_ordenes_compra')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_informe')->references('id_informe_actividad')->on('tbl_informes_actividades')
+            $table->foreign('id_informe_actividad')->references('id_informe_actividad')->on('tbl_informes_actividades')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_encargado_cliente')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_tercero_encargado_cliente')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
-                $table->foreign('id_resposable_contratista')->references('id_tercero')->on('tbl_terceros')
+                $table->foreign('id_tercero_resposable_contratista')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

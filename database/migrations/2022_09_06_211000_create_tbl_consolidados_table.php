@@ -15,18 +15,18 @@ class CreateTblConsolidadosTable extends Migration
     {
         Schema::create('tbl_consolidados', function (Blueprint $table) {
             $table->bigIncrements('id_consolidado');
-            $table->unsignedBigInteger('id_cliente');
+            $table->unsignedBigInteger('id_tercero_cliente');
             $table->date('mes');
-            $table->unsignedBigInteger('id_estado_consolidado');
-            $table->unsignedBigInteger('id_responsable_cliente');
+            $table->unsignedBigInteger('id_dominio_estado');
+            $table->unsignedBigInteger('id_tercero_responsable');
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_tercero_cliente')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_estado_consolidado')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_estado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_responsable_cliente')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_tercero_responsable')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

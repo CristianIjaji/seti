@@ -1,7 +1,7 @@
-<?php
-    $create = isset($inventario->id_inventario) ? false : true;
-    $edit = isset($edit) ? $edit : ($create == true ? true : false);
-?>
+@php
+    $create = !isset($inventario->id_inventario);
+    $edit = isset($edit) ? $edit : $create;
+@endphp
 
 @if (!$create)
     <ul class="nav nav-tabs" id="storeTab" role="tablist">
@@ -28,7 +28,7 @@
             @endif
     @endif
         <div class="row">
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="id_tercero_almacen" class="required">Almacén</label>
                 @if ($create)
                     <select class="form-control" name="id_tercero_almacen" id="id_tercero_almacen" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -44,22 +44,27 @@
                     <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $inventario->id_tercero_almacen }}">
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
-                <label for="clasificacion" class="required">Clasificación</label>
-                <input type="text" class="form-control" list="list-clasificaciones" @if ($edit) name="clasificacion" @endif id="clasificacion" value="{{ old('clasificacion', $inventario->clasificacion) }}" @if ($edit) required @else disabled @endif>
-                @if ($edit)
-                    <datalist id="list-clasificaciones">
-                        @foreach ($clasificaciones as $clasificacion)
-                            <option value="{{ $clasificacion }}">{{ $clasificacion }}</option>
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
+                <label for="id_dominio_clasificacion" class="required">Clasificación</label>
+                @if ($create || $edit)
+                    <select class="form-control" name="id_dominio_clasificacion" id="id_dominio_clasificacion" style="width: 100%" @if ($edit) required @else disabled @endif>
+                        <option value="">Elegir clasificación</option>
+                        @foreach ($clasificaciones as $id => $nombre)
+                            <option value="{{ $id }}" {{ old('id_dominio_clasificacion', $inventario->id_dominio_clasificacion) == $id ? 'selected' : '' }}>
+                                {{ $nombre }}
+                            </option>
                         @endforeach
-                    </datalist>
+                    </select>
+                @else
+                    <input type="text" class="form-control" value="{{ $inventario->tblclasificacion->nombre }}" disabled readonly>
+                    <input type="hidden" name="id_dominio_clasificacion" id="id_dominio_clasificacion" value="{{ $inventario->id_dominio_clasificacion }}">
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="descripcion" class="required">Descripción</label>
                 <input type="text" class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" value="{{ old('descripcion', $inventario->descripcion) }}" @if ($edit) required @else disabled @endif>
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="marca" class="required">Marca</label>
                 <input type="text" class="form-control" list="list_marcas" @if ($edit) name="marca" @endif id="marca" value="{{ old('marca', $inventario->marca) }}" @if ($edit) required @else disabled @endif>
                 @if ($edit)
@@ -70,11 +75,11 @@
                     </datalist>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="cantidad" class="required">Cantidad</label>
                 <input type="number" min="0" class="form-control text-end" @if ($edit) name="cantidad" @endif id="cantidad" value="{{ old('cantidad', $inventario->cantidad) }}" @if ($edit) required @else disabled @endif>
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="unidad" class="required">Unidad</label>
                 <input type="text" class="form-control" list="list_unidades" @if ($edit) name="unidad" @endif id="unidad" value="{{ old('unidad', $inventario->unidad) }}" @if ($edit) required @else disabled @endif>
                 @if ($edit)
@@ -85,27 +90,11 @@
                     </datalist>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="valor_unitario" class="required">Valor unitario</label>
                 <input type="text" class="form-control money" @if ($edit) name="valor_unitario" @endif id="valor_unitario" value="{{ old('valor_unitario', $inventario->valor_unitario) }}" @if ($edit) required @else disabled @endif>
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
-                <label for="iva">IVA %</label>
-                @if ($edit)
-                    <select class="form-control text-end" name="iva" id="iva" data-dir="rtl" style="width: 100%" @if ($edit) required @else disabled @endif>
-                        <option value="">Elegir IVA</option>
-                        @foreach ($impuestos as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('iva', $inventario->iva) == $id ? 'selected' : '' }}>
-                                {{ $nombre }}
-                            </option>
-                        @endforeach
-                    </select>
-                @else
-                    <input type="hidden" id="iva" value="{{ isset($inventario->tblIva) ? $inventario->tblIva->nombre : null }}">
-                    <input type="text" class="form-control text-end" value="{{ isset($inventario->tblIva) ? $inventario->tblIva->nombre : 'Sin IVA' }}" disabled>
-                @endif
-            </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="ubicacion" class="required">Ubicación</label>
                 <input type="text" class="form-control" list="list_ubicacion" @if ($edit) name="ubicacion" @endif id="ubicacion" value="{{ old('ubicacion', $inventario->ubicacion) }}" @if ($edit) required @else disabled @endif>
                 @if ($edit)
@@ -116,16 +105,16 @@
                     </datalist>
                 @endif
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="cantidad_minima" class="required">Cantidad mínima</label>
                 <input type="number" min="0" class="form-control text-end" @if ($edit) name="cantidad_minima" @endif id="cantidad_minima" value="{{ old('cantidad_minima', $inventario->cantidad_minima) }}" @if ($edit) required @else disabled @endif>
             </div>
-            <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+            <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                 <label for="cantidad_maxima" class="required">Cantidad máxima</label>
                 <input type="number" min="0" class="form-control text-end" @if ($edit) name="cantidad_maxima" @endif id="cantidad_maxima" value="{{ old('cantidad_maxima', $inventario->cantidad_maxima) }}" @if ($edit) required @else disabled @endif>
             </div>
             @if(!$create)
-                <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                     <label for="estado" class="required">Estado</label>
                     @if ($edit)
                         <select class="form-control" name="estado" id="estado" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -141,12 +130,12 @@
                 </div>
             @endif
             @if(!$create && !$edit)
-                <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                     <label for="creado_por">Creado por</label>
                     <input type="text" id="creado_por" class="form-control" disabled value="{{ $inventario->tblusuario->usuario }}">
                 </div>
             
-                <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+                <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
                     <label for="fecha_creacion">Fecha creación</label>
                     <input type="text" id="fecha_creacion" class="form-control" disabled value="{{ $inventario->created_at }}">
                 </div>
@@ -154,7 +143,9 @@
         </div>
 
         @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear producto' : 'Editar producto'])
-
+    @if ($create || $edit)
+        </form>
+    @endif
 @if (!$create)
         </div>
         <div class="tab-pane" id="track-kardex" role="tabpanel" aria-labelledby="track-tab-kardex">

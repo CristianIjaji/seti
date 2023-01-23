@@ -16,14 +16,14 @@ class CreateTblInformesActividadesTable extends Migration
         Schema::create('tbl_informes_actividades', function (Blueprint $table) {
             $table->bigIncrements('id_informe_actividad');
             $table->integer('id_actividad')->nullable();
-            $table->unsignedBigInteger('id_encargado');
-            $table->unsignedBigInteger('id_estado_informe');
+            $table->unsignedBigInteger('id_tercero_encargado');
+            $table->unsignedBigInteger('id_dominio_estado');
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_encargado')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_tercero_encargado')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_estado_informe')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_estado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

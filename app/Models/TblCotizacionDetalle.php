@@ -15,7 +15,7 @@ class TblCotizacionDetalle extends Model
 
     protected $fillable = [
         'id_cotizacion',
-        'id_tipo_item',
+        'id_dominio_tipo_item',
         'id_lista_precio',
         'descripcion',
         'unidad',
@@ -25,7 +25,7 @@ class TblCotizacionDetalle extends Model
     ];
 
     public function tbldominioitem(){
-        return $this->belongsTo(TblDominio::class, 'id_tipo_item');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_tipo_item');
     }
 
     public function tblListaprecio(){

@@ -1,9 +1,9 @@
-<?php
-    $create = isset($tercero->id_tercero) ? false : true;
-    $edit = isset($edit) ? $edit : ($create == true ? true : false);
+@php
+    $create = !isset($tercero->id_tercero);
+    $edit = isset($edit) ? $edit : $create;
     $tipo_documento = (isset($tipo_documento) && $tipo_documento != '') ? $tipo_documento : false;
     $tipo_tercero = (isset($tipo_tercero) && $tipo_tercero != '') ? $tipo_tercero : false;
-?>
+@endphp
 
 @if ($create || $edit)
     <div class="alert alert-success" role="alert"></div>
@@ -107,18 +107,18 @@
             <input type="tel" class="form-control" @if ($edit) name="telefono" @endif id="telefono" value="{{ old('telefono', $tercero->telefono) }}" @if ($edit) required @else disabled @endif>
         </div>
         <div id="div_dependencia" class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
-            <label for="id_responsable_cliente" class="required">Dependencia</label>
+            <label for="id_tercero_responsable" class="required">Dependencia</label>
             @if ($edit)
-                <select class="form-control" name="id_responsable_cliente" id="id_responsable_cliente" data-minimuminputlength="3" style="width: 100%" @if ($edit) required @else disabled @endif>
+                <select class="form-control" name="id_tercero_responsable" id="id_tercero_responsable" data-minimuminputlength="3" style="width: 100%" @if ($edit) required @else disabled @endif>
                     <option value="">Elegir dependencia</option>
                     @foreach ($terceros as $dependencia)
-                        <option value="{{ $dependencia->id_tercero }}" {{ old('id_responsable_cliente', $tercero->id_responsable_cliente) == $dependencia->id_tercero ? 'selected' : '' }}>
+                        <option value="{{ $dependencia->id_tercero }}" {{ old('id_tercero_responsable', $tercero->id_tercero_responsable) == $dependencia->id_tercero ? 'selected' : '' }}>
                             {{$dependencia->full_name}}
                         </option>
                     @endforeach
                 </select>
             @else
-                <input type="text" class="form-control" id="id_responsable_cliente" value="{{ isset($tercero->tblterceroresponsable->full_name) ? $tercero->tblterceroresponsable->full_name : 'Sin dependencia' }}" disabled>
+                <input type="text" class="form-control" id="id_tercero_responsable" value="{{ isset($tercero->tblterceroresponsable->full_name) ? $tercero->tblterceroresponsable->full_name : 'Sin dependencia' }}" disabled>
             @endif
         </div>
         
@@ -158,100 +158,103 @@
     </div>
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear tercero' : 'Editar tercero'])
+@if ($create || $edit)
+    </form>
+@endif
 
-    <style>
-        .file-preview{
-            padding: 0px !important;
+<style>
+    .file-preview{
+        padding: 0px !important;
+    }
+    .file-drop-zone-title {
+        padding: 0px !important;
+        margin: 30px 0px;
+    }
+    .file-drop-zone {
+        margin: 0px !important;
+        padding: 0px !important;
+        min-height: 100px !important;
+    }
+</style>
+<script type="application/javascript">
+    $('#id_dominio_tipo_documento').change(function() {
+        $('#div_dv, #div_razon_social').addClass('d-none');
+        let valor = parseInt($(this).val());
+        let nit = {!! session('id_dominio_nit') !!};
+
+        if($.inArray(valor, [nit]) > -1) {
+            $('#div_dv, #div_razon_social').removeClass('d-none');
         }
-        .file-drop-zone-title {
-            padding: 0px !important;
-            margin: 30px 0px;
-        }
-        .file-drop-zone {
-            margin: 0px !important;
-            padding: 0px !important;
-            min-height: 100px !important;
-        }
-    </style>
-    <script type="application/javascript">
-        $('#id_dominio_tipo_documento').change(function() {
-            $('#div_dv, #div_razon_social').addClass('d-none');
-            let valor = parseInt($(this).val());
-            let nit = {!! session('id_dominio_nit') !!};
+    });
 
-            if($.inArray(valor, [nit]) > -1) {
-                $('#div_dv, #div_razon_social').removeClass('d-none');
-            }
-        });
+    $('#id_dominio_tipo_tercero').change(function() {
+        $('#div_logo, #div_dependencia, #lbl-tipo-documento').addClass('d-none');
+        $('#div-select-tipo-documento').removeClass('d-none');
 
-        $('#id_dominio_tipo_tercero').change(function() {
-            $('#div_logo, #div_dependencia, #lbl-tipo-documento').addClass('d-none');
-            $('#div-select-tipo-documento').removeClass('d-none');
+        let valor = parseInt($(this).val());
+        let cliente = parseInt({!! session('id_dominio_cliente') !!});
+        let representante_cliente = parseInt({!! session('id_dominio_representante_cliente') !!});
+        let coordinador = parseInt({!! session('id_dominio_coordinador') !!});
+        let proveedor = parseInt({!! session('id_dominio_contratista') !!});
+        let almacen = parseInt({!! session('id_dominio_almacen') !!});
+        let tipo_almacen = parseInt({!! session('id_dominio_documento_almacen') !!});
 
-            let valor = parseInt($(this).val());
-            let cliente = parseInt({!! session('id_dominio_cliente') !!});
-            let representante_cliente = parseInt({!! session('id_dominio_representante_cliente') !!});
-            let coordinador = parseInt({!! session('id_dominio_coordinador') !!});
-            let proveedor = parseInt({!! session('id_dominio_contratista') !!});
-            let almacen = parseInt({!! session('id_dominio_almacen') !!});
-            let tipo_almacen = parseInt({!! session('id_dominio_documento_almacen') !!});
-
-            if($.inArray(valor, [cliente, proveedor]) > -1) {
-                $('#div_logo').removeClass('d-none');
-            }
-
-            if($.inArray(valor, [representante_cliente, coordinador, almacen]) > -1) {
-                $('#div_dependencia').removeClass('d-none');
-            }
-
-            $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', true);
-            
-            if(valor == {!! session('id_dominio_almacen') !!}) {
-                $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', false);
-                $('#div-select-tipo-documento').addClass('d-none');
-                $('#id_dominio_tipo_documento').val({!! session('id_dominio_documento_almacen') !!}).change();
-                $('#lbl-tipo-documento').removeClass('d-none').text($('#id_dominio_tipo_documento option:selected').text());
-                $('#documento').val(RandomString());
-            }
-        });
-
-        if($('#id_dominio_tipo_documento').length) {
-            $('#id_dominio_tipo_documento').change();
+        if($.inArray(valor, [cliente, proveedor]) > -1) {
+            $('#div_logo').removeClass('d-none');
         }
 
-        if($('#id_dominio_tipo_tercero').length) {
-            $('#id_dominio_tipo_tercero').change();
+        if($.inArray(valor, [representante_cliente, coordinador, almacen]) > -1) {
+            $('#div_dependencia').removeClass('d-none');
         }
 
-        var previewImage = null;
-    
-        if("{!! $tercero->logo !!}" !== '') {
-            previewImage = "storage/{!! $tercero->logo !!}"
+        $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', true);
+        
+        if(valor == {!! session('id_dominio_almacen') !!}) {
+            $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', false);
+            $('#div-select-tipo-documento').addClass('d-none');
+            $('#id_dominio_tipo_documento').val({!! session('id_dominio_documento_almacen') !!}).change();
+            $('#lbl-tipo-documento').removeClass('d-none').text($('#id_dominio_tipo_documento option:selected').text());
+            $('#documento').val(RandomString());
         }
-    
-        var show = (!"{!! $create !!}" && !"{!! $edit !!}") ? false : true;
-    
-        $("#logo").fileinput({
-            language: 'es',
-            theme: "explorer",
-            showCaption: show,
-            showBrowse: show,
+    });
+
+    if($('#id_dominio_tipo_documento').length) {
+        $('#id_dominio_tipo_documento').change();
+    }
+
+    if($('#id_dominio_tipo_tercero').length) {
+        $('#id_dominio_tipo_tercero').change();
+    }
+
+    var previewImage = null;
+
+    if("{!! $tercero->logo !!}" !== '') {
+        previewImage = "storage/{!! $tercero->logo !!}"
+    }
+
+    var show = (!"{!! $create !!}" && !"{!! $edit !!}") ? false : true;
+
+    $("#logo").fileinput({
+        language: 'es',
+        theme: "explorer",
+        showCaption: show,
+        showBrowse: show,
+        showRemove: false,
+        showUpload: false,
+        showCancel: false,
+        showClose: false,
+        showDescriptionClose: false,
+        // allowedPreviewTypes : [ 'image' ],
+        allowedFileExtensions : ['jpg', 'jpeg', 'png'],
+        initialPreviewShowDelete: false,
+        fileActionSettings: {
             showRemove: false,
-            showUpload: false,
-            showCancel: false,
-            showClose: false,
-            showDescriptionClose: false,
-            // allowedPreviewTypes : [ 'image' ],
-            allowedFileExtensions : ['jpg', 'jpeg', 'png'],
-            initialPreviewShowDelete: false,
-            fileActionSettings: {
-                showRemove: false,
-                showDrag: false
-            },
-            initialPreview: [
-                previewImage
-            ],
-            initialPreviewAsData: true,
-            initialPreviewConfig: {}
-        });
-    </script>
+            showDrag: false
+        },
+        initialPreview: [
+            previewImage
+        ],
+        initialPreviewAsData: true,
+        initialPreviewConfig: {}
+    });
+</script>

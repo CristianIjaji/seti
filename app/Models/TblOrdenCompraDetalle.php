@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TblOrdenesCompraDetalle extends Model
+class TblOrdenCompraDetalle extends Model
 {
     use HasFactory;
 
@@ -15,8 +15,7 @@ class TblOrdenesCompraDetalle extends Model
 
     protected $fillable = [
         'id_orden_compra',
-        'id_cotizacion_detalle',
-        'id_lista_precio',
+        'id_inventario',
         'descripcion',
         'cantidad',
         'valor_unitario',
@@ -26,12 +25,5 @@ class TblOrdenesCompraDetalle extends Model
     public function tblordencompra() {
         return $this->belongsTo(TblOrdenCompra::class, 'id_orden_compra');
     }
-
-    public function tblcotizaciondetalle() {
-        return $this->belongsTo(TblCotizacionDetalle::class, 'id_cotizacion_detalle');
-    }
-
-    public function tbllistaprecio() {
-        return $this->belongsTo(TblPuntosInteres::class, 'id_lista_precio');
-    }
+    
 }

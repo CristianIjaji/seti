@@ -14,9 +14,9 @@ class TblHallazgo extends Model
 
     protected $fillable = [
         'id_actividad',
-        'id_supervisor',
+        'id_tercero_supervisor',
         'hallazgo',
-        'id_estado_hallazgo',
+        'id_dominio_estado',
         'id_usuareg'
     ];
 
@@ -25,11 +25,11 @@ class TblHallazgo extends Model
     }
 
     public function tblsupervisor() {
-        return $this->belongsTo(TblTercero::class, 'id_supervisor');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_supervisor');
     }
 
     public function tblestadohallazgo() {
-        return $this->belongsTo(TblDominio::class, 'id_estado_hallazgo');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblusuario() {

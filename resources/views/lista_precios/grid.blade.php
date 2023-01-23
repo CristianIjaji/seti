@@ -8,8 +8,8 @@
     ],
     'headers' => [
         ['name' => 'id_lista_precio', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
-        ['name' => 'id_cliente', 'label' => 'Cliente', 'col' => 'col-3', 'options' => $clientes],// Nombre de la llave
-        ['name' => 'id_tipo_item', 'label' => 'Tipo ítem', 'col' => 'col-2', 'options' => $listaTipoItemPrecio],
+        ['name' => 'id_tercero_cliente', 'label' => 'Cliente', 'col' => 'col-3', 'options' => $clientes],// Nombre de la llave
+        ['name' => 'id_dominio_tipo_item', 'label' => 'Tipo ítem', 'col' => 'col-2', 'options' => $listaTipoItemPrecio],
         ['name' => 'codigo', 'label' => 'Código', 'col' => 'col-1'],
         ['name' => 'unidad', 'label' => 'Unidad', 'col' => 'col-1'],
         ['name' => 'cantidad', 'label' => 'Cantidad', 'col' => 'col-1','align'=>'text-end'],

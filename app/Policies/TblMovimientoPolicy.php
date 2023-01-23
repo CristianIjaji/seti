@@ -97,6 +97,6 @@ class TblMovimientoPolicy
     }
 
     public function import(TblUsuario $tblUsuario, TblMovimiento $tblMovimiento) {
-        return isset($tblUsuario->getPermisosMenu('moves.index')->import) ? $tblUsuario->getPermisosMenu('moves.index')->import : false;
+        return false;
     }
 }

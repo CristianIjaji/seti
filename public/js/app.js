@@ -9499,7 +9499,7 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
       }).then(function () {
         if (typeof response.errors === 'undefined') {
           if (typeof reload === 'undefined' || reload.toString() !== 'false') {
-            location.reload();
+            $('.search_form').change();
           } else {
             if ($("#".concat(select)).length && typeof response.response !== 'undefined') {
               var record = response.response;
@@ -9744,7 +9744,7 @@ window.drawItems = function () {
     if (typeof element !== 'undefined' && _typeof(element) === 'object') {
       if (!$("#tr_".concat(type_item, "_").concat(id_item)).length) {
         var classname = "".concat($("#caret_".concat(type_item)).hasClass(showIcon) ? 'show' : '');
-        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_lista_precio[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            <textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ").concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete btn-delete-item\" ".concat(tooltip, " title='Quitar \xEDtem' data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><span class=\"btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold\"></i></span></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
+        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_dominio_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_item[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            <textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                        </td>\n                        ").concat(element['unidad'] ? "\n                            <td class=\"col-1 my-auto border-0\">\n                                <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ".concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                    value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            ") : "", "\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete btn-delete-item\" ".concat(tooltip, " title='Quitar \xEDtem' data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><span class=\"btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold\"></i></span></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
         $('.money').inputmask(formatCurrency);
       } else {
         $("#tr_".concat(type_item, "_").concat(id_item, " #valor_total_").concat(id_item)).val(element['valor_total']);
@@ -9778,7 +9778,7 @@ var totalItemType = function totalItemType(tipo_carrito, type) {
 };
 
 window.totalCarrito = function (tipo_carrito) {
-  var iva = parseFloat($('#iva option:selected').length > 0 ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '') : $('#iva').length > 0 ? $('#iva').val().replace('IVA ', '').replace('%', '') : 0, 0);
+  var iva = parseFloat($('#id_dominio_iva option:selected').length > 0 ? $('#id_dominio_iva option:selected').text().trim().replace('IVA ', '').replace('%', '') : $('#id_dominio_iva').length > 0 ? $('#id_dominio_iva').val().replace('IVA ', '').replace('%', '') : 0, 0);
   var id_materiales = $("#".concat(tipo_carrito, " .lbl_total_material")).length ? $("#".concat(tipo_carrito, " .lbl_total_material")).attr('id').replace('lbl_', '') : 0;
   var id_mano_obra = $("#".concat(tipo_carrito, " .lbl_total_mano_obra")).length ? $("#".concat(tipo_carrito, " .lbl_total_mano_obra")).attr('id').replace('lbl_', '') : 0;
   var id_transporte = $("#".concat(tipo_carrito, " .lbl_total_transporte")).length ? $("#".concat(tipo_carrito, " .lbl_total_transporte")).attr('id').replace('lbl_', '') : 0;
@@ -9812,7 +9812,7 @@ var getItem = function getItem(item) {
     'item': $(item).data('item'),
     'descripcion': $(item).data('descripcion'),
     'cantidad': cantidad,
-    'unidad': $(item).data('unidad'),
+    'unidad': typeof $(item).data('unidad') !== 'undefined' ? $(item).data('unidad') : false,
     'valor_unitario': valor,
     'valor_total': parseFloat(cantidad * valor, 2)
   };
@@ -9850,6 +9850,30 @@ var fnc_totales = function fnc_totales(id) {
     $("#".concat(id_tr[0], " #valor_total_").concat(id_tr[2])).val(valor_total);
     totalCarrito(id_tr[0]);
   }
+};
+
+var matchCustom = function matchCustom(params, data) {
+  // If there are no search terms, return all of the data
+  if ($.trim(params.term) === '') {
+    return data;
+  } // Do not display the item if there is no 'text' property
+
+
+  if (typeof data.text === 'undefined') {
+    return null;
+  }
+
+  var terms = params.term.split(" ");
+
+  for (var i = 0; i < terms.length; i++) {
+    var tester = new RegExp(terms[i], 'i');
+
+    if (tester.test(data.text) == false) {
+      return null;
+    }
+  }
+
+  return data;
 };
 
 $('body').tooltip({
@@ -9891,7 +9915,8 @@ window.setupSelect2 = function () {
           args.maximum != 1 && (t += "s");
           return t;
         }
-      }
+      },
+      matcher: matchCustom
     });
   });
   $('.select2-selection').addClass('form-control');
@@ -9964,33 +9989,6 @@ $(function () {
       showLoader(false);
     });
   });
-  $('#input_file').change(function (e) {
-    $('#lbl_input_file').text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
-
-    if (typeof e.target.files[0] !== 'undefined') {
-      $('#lbl_input_file').addClass('file_selected');
-      Swal.fire({
-        icon: 'question',
-        title: 'Subir archivo al servidor?',
-        text: e.target.files[0].name,
-        showCancelButton: true,
-        confirmButtonText: 'Continuar',
-        cancelButtonText: 'Cancelar',
-        reverseButtons: true,
-        confirmButtonColor: '#fe0115c4',
-        cancelButtonColor: '#6e7d88'
-      }).then(function (result) {
-        if (result.isConfirmed) {
-          showLoader(true);
-          $('#input_file').parent().submit();
-        } else {
-          $('#input_file').val('');
-        }
-      });
-    } else {
-      $('#lbl_input_file').removeClass('file_selected');
-    }
-  });
   $('[data-toggle="tooltip"]').on('click', function () {
     $(this).tooltip('hide');
   });
@@ -10019,6 +10017,33 @@ var openMainSubMenu = function openMainSubMenu() {
   });
 };
 
+$(document).on('change', '#input_file', function (e) {
+  $('#lbl_input_file').text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
+
+  if (typeof e.target.files[0] !== 'undefined') {
+    $('#lbl_input_file').addClass('file_selected');
+    Swal.fire({
+      icon: 'question',
+      title: 'Subir archivo al servidor?',
+      text: e.target.files[0].name,
+      showCancelButton: true,
+      confirmButtonText: 'Continuar',
+      cancelButtonText: 'Cancelar',
+      reverseButtons: true,
+      confirmButtonColor: '#fe0115c4',
+      cancelButtonColor: '#6e7d88'
+    }).then(function (result) {
+      if (result.isConfirmed) {
+        showLoader(true);
+        $('#input_file').closest('form').trigger('submit');
+      } else {
+        $('#input_file').val('');
+      }
+    });
+  } else {
+    $('#lbl_input_file').removeClass('file_selected');
+  }
+});
 $(document).on('click', '.modal-form', function (e) {
   e.preventDefault();
   handleModal($(this));
@@ -10158,23 +10183,21 @@ $(document).on('keyup', '.txt-totales', function () {
 $(document).on('change', '.txt-totales', function () {
   fnc_totales($(this).data('id-tr'));
 });
-$(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', function () {
+$(document).on('change', '#id_cliente_cotizacion, #id_tercero_encargado_cliente', function () {
   if (typeof $(this).closest('form').attr('action') !== 'undefined') {
-    $('#table-cotizaciones').addClass('d-none');
     $('#id_estacion').empty();
     $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
-    var id_cliente = $(this).find(':selected').data('id_cliente');
+    var id_tercero_cliente = $(this).find(':selected').data('id_tercero_cliente');
 
-    if (id_cliente !== '') {
-      $('#table-cotizaciones').removeClass('d-none');
+    if (id_tercero_cliente !== '') {
       $(".tr_suministros").each(function (index, item) {
         var action = new String($(item).data('action')).split('/');
-        action[5] = id_cliente;
+        action[5] = id_tercero_cliente;
         action = action.join('/');
         $(item).data('action', action);
       });
       $.ajax({
-        url: "sites/".concat(id_cliente, "/get_puntos_interes_client"),
+        url: "sites/".concat(id_tercero_cliente, "/get_puntos_interes_client"),
         method: 'GET',
         beforeSend: function beforeSend() {
           showLoader(true);
@@ -10317,14 +10340,14 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
     if (result.isConfirmed) {
       if (action == 'create-activity') {
         url = 'activities';
-        data.append('id_encargado_cliente', $('#id_cliente').val());
+        data.append('id_tercero_encargado_cliente', $('#id_tercero_cliente').val());
         data.append('id_estacion', $('#id_punto_interes').val());
         data.append('id_tipo_actividad', $('#id_tipo_actividad').val());
         data.append('fecha_solicitud', $('#fecha_solicitud').val());
         data.append('valor', $('#valor_actividad').val());
-        data.append('id_resposable_contratista', $('#id_resposable_contratista').val());
+        data.append('id_tercero_resposable_contratista', $('#id_tercero_resposable_contratista').val());
         data.append('descripcion', $('#descripcion').val());
-        data.append('id_estado_actividad', $('#id_estado_actividad').val());
+        data.append('id_dominio_estado', $('#id_dominio_estado').val());
         data.append('id_cotizacion', $('#id_cotizacion').val());
         data.append('observaciones', $('#descripcion').val());
       }
@@ -10385,14 +10408,14 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
 });
 $(document).on('change', '#id_cotizacion_actividad', function () {
   $('#ot').val('');
-  $('#id_encargado_cliente').val('');
+  $('#id_tercero_encargado_cliente').val('');
   $('#id_estacion').empty();
   $('#id_estacion').append("<option value=''>Elegir punto \xEDnteres</option>");
   $('#id_tipo_actividad').val('');
   $('#fecha_solicitud').val('');
-  $('#id_resposable_contratista').val('');
+  $('#id_tercero_resposable_contratista').val('');
   $('#descripcion').val('');
-  $('#id_encargado_cliente, #id_tipo_actividad, #id_subsistema').change();
+  $('#id_tercero_encargado_cliente, #id_tipo_actividad, #id_dominio_subsistema').change();
 
   if ($(this).val() !== '') {
     $.ajax({
@@ -10403,16 +10426,16 @@ $(document).on('change', '#id_cotizacion_actividad', function () {
       }
     }).done(function (response) {
       $('#ot').val(response.ot);
-      $('#id_encargado_cliente').val(response.id_cliente);
-      $('#id_encargado_cliente').change();
+      $('#id_tercero_encargado_cliente').val(response.id_tercero_cliente);
+      $('#id_tercero_encargado_cliente').change();
       $('#id_estacion').append("<option value='".concat(response.id_estacion, "'>").concat(response.tbl_estacion.nombre, "</option>"));
       $('#id_estacion').val(response.id_estacion);
       $('#id_estacion').change();
-      $('#id_tipo_actividad').val(response.id_tipo_trabajo);
+      $('#id_tipo_actividad').val(response.id_dominio_tipo_trabajo);
       $('#id_tipo_actividad').change();
       $('#fecha_solicitud').val(response.fecha_solicitud);
-      $('#id_resposable_contratista').val(response.id_responsable_cliente);
-      $('#id_resposable_contratista').change();
+      $('#id_tercero_resposable_contratista').val(response.id_tercero_responsable);
+      $('#id_tercero_resposable_contratista').change();
       $('#descripcion').val(response.descripcion);
     }).always(function () {
       showLoader(false);
@@ -10421,11 +10444,11 @@ $(document).on('change', '#id_cotizacion_actividad', function () {
 });
 $(document).on('click', '#btn-get-activities', function (e) {
   e.preventDefault();
-  var id_cliente = $('#id_cliente').val();
-  var id_encargado = $('#id_responsable_cliente').val();
+  var id_tercero_cliente = $('#id_tercero_cliente').val();
+  var id_tercero_encargado = $('#id_tercero_responsable').val();
   var id_consolidado = $('#id_consolidado').val();
 
-  if (id_cliente !== '' && id_encargado !== '') {
+  if (id_tercero_cliente !== '' && id_tercero_encargado !== '') {
     $.ajax({
       url: "deals/getActivities",
       method: 'POST',
@@ -10433,8 +10456,8 @@ $(document).on('click', '#btn-get-activities', function (e) {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       },
       data: {
-        id_cliente: id_cliente,
-        id_encargado: id_encargado,
+        id_tercero_cliente: id_tercero_cliente,
+        id_tercero_encargado: id_tercero_encargado,
         id_consolidado: id_consolidado,
         _token: $('meta[name="csrf-token"]').attr('content')
       },

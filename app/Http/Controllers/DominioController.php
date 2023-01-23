@@ -63,7 +63,7 @@ class DominioController extends Controller
 
         return view('dominios._form', [
             'dominio' => new TblDominio,
-            'dominios_padre' => TblDominio::where(['id_dominio_padre' => null])->pluck('nombre', 'id_dominio'),
+            'dominios_padre' => TblDominio::where(['estado' => 1])->pluck('nombre', 'id_dominio'),
         ]);
     }
 
@@ -118,7 +118,7 @@ class DominioController extends Controller
         return view('dominios._form', [
             'edit' => true,
             'dominio' => $domain,
-            'dominios_padre' => TblDominio::where(['estado' => 1, 'id_dominio_padre' => null])
+            'dominios_padre' => TblDominio::where(['estado' => 1])
                 ->orderby('nombre')
                 ->pluck('nombre', 'id_dominio'),
             'estados' => [

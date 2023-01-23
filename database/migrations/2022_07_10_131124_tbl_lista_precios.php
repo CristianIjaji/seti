@@ -15,10 +15,10 @@ class TblListaPrecios extends Migration
     {
         Schema::create('tbl_lista_precios', function (Blueprint $table) {
             $table->bigIncrements('id_lista_precio');
-            $table->unsignedBigInteger('id_cliente');
-            $table->unsignedBigInteger('id_tipo_item');
+            $table->unsignedBigInteger('id_tercero_cliente');
+            $table->unsignedBigInteger('id_dominio_tipo_item');
             $table->string('codigo');
-            $table->unique(['id_cliente', 'codigo'], 'codigo_cliente');
+            $table->unique(['id_tercero_cliente', 'codigo'], 'codigo_cliente');
             $table->text('descripcion');
             $table->string('unidad');
             $table->decimal('cantidad');
@@ -27,9 +27,9 @@ class TblListaPrecios extends Migration
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_tercero_cliente')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_tipo_item')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_tipo_item')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

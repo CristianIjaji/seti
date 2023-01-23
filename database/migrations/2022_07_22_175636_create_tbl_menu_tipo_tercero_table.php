@@ -16,7 +16,7 @@ class CreateTblMenuTipoTerceroTable extends Migration
         Schema::create('tbl_menu_tipo_tercero', function (Blueprint $table) {
             $table->bigIncrements('id_menu_tipo_tercero');
             $table->unsignedBigInteger('id_menu');
-            $table->unsignedBigInteger('id_tipo_tercero');
+            $table->unsignedBigInteger('id_dominio_tipo_tercero');
             $table->boolean('crear');
             $table->boolean('editar');
             $table->boolean('ver');
@@ -26,7 +26,7 @@ class CreateTblMenuTipoTerceroTable extends Migration
 
             $table->foreign('id_menu')->references('id_menu')->on('tbl_menus')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_tipo_tercero')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_tipo_tercero')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
         });
     }

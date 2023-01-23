@@ -192,7 +192,7 @@ class TerceroController extends Controller
                 $client->logo = $request->file('logo')->store('images');
                 $client->save();
             } else {
-                $client->update(array_filter($request->validated()));
+                $client->update($request->validated());
             }
 
             $usuario = TblUsuario::where('id_tercero', '=', $client->id_tercero)->get()->first();
@@ -272,7 +272,7 @@ class TerceroController extends Controller
         )
         ->join('tbl_dominios as td', 'tbl_terceros.id_dominio_tipo_documento', '=', 'td.id_dominio')
         ->join('tbl_dominios as tt', 'tbl_terceros.id_dominio_tipo_tercero', '=', 'tt.id_dominio')
-        ->leftjoin('tbl_terceros as t', 'tbl_terceros.id_responsable_cliente', '=', 't.id_tercero')
+        ->leftjoin('tbl_terceros as t', 'tbl_terceros.id_tercero_responsable', '=', 't.id_tercero')
         ->where(function ($q) use($option) {
             if($option == 1) {
                 $this->dinamyFilters($q, [

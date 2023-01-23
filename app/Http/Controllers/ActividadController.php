@@ -10,7 +10,7 @@ use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use App\Models\TblEstadoActividad;
-use App\Models\TblOrdenesCompraDetalle;
+use App\Models\TblOrdenCompraDetalle;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -72,20 +72,6 @@ class ActividadController extends Controller
         );
     }
 
-    private function getDetailOrden($activity) {
-        TblOrdenesCompraDetalle::where('id_orden', '=', $activity->id_orden_compra)->wherenotin('id_lista_precio', request()->id_lista_precio)->delete();
-
-        $total = 0;
-        foreach (request()->id_lista_precio as $index => $valor) {
-            $detalle = TblOrdenesCompraDetalle::where(['id_orden' => $activity->id_orden_compra, 'id_lista_precio' => request()->id_lista_precio[$index]])->first();
-            if(!$detalle) {
-                $detalle = new TblOrdenesCompraDetalle;
-            }
-
-            $detalle->id_lista_precio = request()->id_lista_precio[$index];
-        }
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -107,12 +93,12 @@ class ActividadController extends Controller
     {
         $this->authorize('create', new TblActividad);
 
-        $id_cliente = 0;
+        $id_tercero_cliente = 0;
         if(isset(request()->cotizacion)) {
             $quote = TblCotizacion::find(request()->cotizacion);
-            $id_cliente = (isset($quote->tblCliente->id_responsable_cliente)
-                ? $quote->tblCliente->id_responsable_cliente
-                : $quote->id_cliente
+            $id_tercero_cliente = (isset($quote->tblCliente->id_tercero_responsable)
+                ? $quote->tblCliente->id_tercero_responsable
+                : $quote->id_tercero_cliente
             );
         }
 
@@ -121,21 +107,20 @@ class ActividadController extends Controller
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
-            'contratistas' => TblTercero::where([
-                'estado' => 1,
-                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            'contratistas' => TblTercero::where('estado', '=', '1')
+                ->wherein('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
+                ->get(),
             'clientes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            ])->where('id_tercero_responsable', '>', 0)->get(),
             'proveedores' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_proveedor')
             ])->get(),
             'medios_pago_ordenes_compra' => TblDominio::getListaDominios(session('id_dominio_medio_pago_orden_compra')),
             'tipos_ordenes_compra' => TblDominio::getListaDominios(session('id_dominio_tipo_orden_compra')),
-            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_tercero_cliente' => $id_tercero_cliente])->pluck('nombre', 'id_punto_interes'),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
             'estados' => TblDominio::wherein('id_dominio', [session('id_dominio_actividad_programado'), session('id_dominio_actividad_comprando')])->get(),
@@ -156,7 +141,7 @@ class ActividadController extends Controller
             $this->authorize('create', $actividad);
 
             $actividad->comentario = $actividad->observaciones;
-            $this->createTrack($actividad, $actividad->id_estado_actividad);
+            $this->createTrack($actividad, $actividad->id_dominio_estado);
 
             return response()->json([
                 'success' => 'Actividad creada exitosamente!',
@@ -200,9 +185,9 @@ class ActividadController extends Controller
     {
         $this->authorize('update', $activity);
 
-        $id_cliente = (isset($activity->tblencargadocliente->id_responsable_cliente)
-            ? $activity->tblencargadocliente->id_responsable_cliente
-            : $activity->id_encargado_cliente
+        $id_tercero_cliente = (isset($activity->tblencargadocliente->id_tercero_responsable)
+            ? $activity->tblencargadocliente->id_tercero_responsable
+            : $activity->id_tercero_encargado_cliente
         );
 
         return view('actividades._form', [
@@ -211,24 +196,23 @@ class ActividadController extends Controller
             'clientes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
-            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
+            ])->where('id_tercero_responsable', '>', 0)->get(),
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_tercero_cliente' => $id_tercero_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
             'estados_actividad' => TblEstadoActividad::where(['id_actividad' =>$activity->id_actividad])->orderby('created_at','desc')->paginate(10),
             'estados' => TblDominio::where(['id_dominio_padre' => session('id_dominio_estados_actividad')])->get(),
-            'contratistas' => TblTercero::where([
-                'estado' => 1,
-                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            'contratistas' => TblTercero::where('estado', '=', '1')
+                ->wherein('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
+                ->get(),
             'cotizaciones' => TblCotizacion::select(DB::raw('DISTINCT tbl_cotizaciones.*'))
             ->leftjoin('tbl_actividades as act', 'tbl_cotizaciones.id_cotizacion', '=', 'act.id_cotizacion')
             ->where('act.id_cotizacion')
             ->where([
-                'tbl_cotizaciones.id_cliente' => $activity->id_encargado_cliente,
+                'tbl_cotizaciones.id_tercero_cliente' => $activity->id_tercero_encargado_cliente,
                 'tbl_cotizaciones.id_estacion' => $activity->id_estacion,
-                'tbl_cotizaciones.id_tipo_trabajo' => $activity->id_tipo_actividad,
-                'tbl_cotizaciones.estado' => session('id_dominio_cotizacion_aprobada')
+                'tbl_cotizaciones.id_dominio_tipo_trabajo' => $activity->id_tipo_actividad,
+                'tbl_cotizaciones.id_dominio_estado' => session('id_dominio_cotizacion_aprobada')
             ])
             ->get(),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
@@ -256,7 +240,7 @@ class ActividadController extends Controller
             }
 
             $activity->comentario = $activity->observaciones;
-            $this->createTrack($activity, $activity->id_estado_actividad);
+            $this->createTrack($activity, $activity->id_dominio_estado);
 
             return response()->json([
                 'success' => 'Cotización actualizada correctamente!'
@@ -353,6 +337,8 @@ class ActividadController extends Controller
     private function getView($view) {
         $actividad = new TblActividad;
 
+        $contratistas = TblTercero::getTercerosTipo(session('id_dominio_contratista'));
+
         return view($view, [
             'model' => TblActividad::with(['tbltipoactividad', 'tblsubsistema', 'tblencargadocliente',
                 'tblresposablecontratista', 'tblestacion', 'tblestadoactividad', 'tblcotizacion', 'tblordencompra', 'tblusuario'])
@@ -361,7 +347,7 @@ class ActividadController extends Controller
                 })->latest()->paginate(10),
             'clientes' => TblTercero::getTercerosTipo(session('id_dominio_representante_cliente')),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
-            'contratistas' => TblTercero::getTercerosTipo(session('id_dominio_coordinador')),
+            'contratistas' => TblTercero::getTercerosTipo(session('id_dominio_coordinador'))->union($contratistas),
             'estados_actividad' => TblDominio::getListaDominios(session('id_dominio_estados_actividad')),
             'status' => $actividad->status,
             'create' => Gate::allows('create', $actividad),
@@ -373,8 +359,8 @@ class ActividadController extends Controller
 
     private function updateActivity($activity, $estados, $nuevoEstado, $msg, $notification, $usuarioFinal = '') {
         try {
-            if(in_array($activity->id_estado_actividad, $estados)) {
-                $activity->id_estado_actividad = $nuevoEstado;
+            if(in_array($activity->id_dominio_estado, $estados)) {
+                $activity->id_dominio_estado = $nuevoEstado;
 
                 $this->createTrack($activity, $nuevoEstado);
                 unset($activity->comentario);
@@ -420,10 +406,10 @@ class ActividadController extends Controller
             ->leftjoin('tbl_actividades as act', 'tbl_cotizaciones.id_cotizacion', '=', 'act.id_cotizacion')
             ->where('act.id_cotizacion')
             ->where([
-                'tbl_cotizaciones.id_cliente' => $activity->id_encargado_cliente,
+                'tbl_cotizaciones.id_tercero_cliente' => $activity->id_tercero_encargado_cliente,
                 'tbl_cotizaciones.id_estacion' => $activity->id_estacion,
-                'tbl_cotizaciones.id_tipo_trabajo' => $activity->id_tipo_actividad,
-                'tbl_cotizaciones.estado' => session('id_dominio_cotizacion_aprobada')
+                'tbl_cotizaciones.id_dominio_tipo_trabajo' => $activity->id_tipo_actividad,
+                'tbl_cotizaciones.id_dominio_estado' => session('id_dominio_cotizacion_aprobada')
             ])
             ->get(),
         ]);

@@ -341,8 +341,17 @@ class SetupSeeder extends Seeder
                 'id_dominio' => null,
                 'key' => 'id_dominio_tipo_orden_compra',
                 'childs' => [
-                    'Servicio' => ['id_dominio' => null, 'key' => 'id_dominio_orden_servicio'],
-                    'Suministro' => ['id_dominio' => null, 'key' => 'id_dominio_orden_suministro'],
+                    'Compra' => ['id_dominio' => null, 'key' => 'id_dominio_orden_compra'],
+                ]
+            ],
+            'Listado con los estados de orden de compra' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_estados_orden',
+                'childs' => [
+                    'Abierta' => ['id_dominio' => null, 'key' => 'id_dominio_orden_abierta'],
+                    'Cerrada' => ['id_dominio' => null, 'key' => 'id_dominio_orden_cerrada'],
+                    'Parcial' => ['id_dominio' => null, 'key' => 'id_dominio_orden_parcial'],
+                    'Cancelada' => ['id_dominio' => null, 'key' => 'id_dominio_orden_cancelada'],
                 ]
             ],
             'Lista con los tipos de movimientos de inventario' => [
@@ -354,7 +363,7 @@ class SetupSeeder extends Seeder
                         'key' => 'id_dominio_entrada',
                         'childs' => [
                             'Ajuste inventario' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_ajuste'],
-                            'Devolución' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_devolucion'],
+                            'Devolución material' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_devolucion'],
                             'Inventario inicial' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_inicial'],
                             'Orden compra' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_orden'],
                             'Prestamo' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_prestamo'],
@@ -380,6 +389,14 @@ class SetupSeeder extends Seeder
                     'Cancelado' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_cancelado'],
                     'Completado' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_completado'],
                     'En proceso' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_proceso'],
+                ]
+            ],
+            'Lista clasificación inventario' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_clasificacion_inventario',
+                'childs' => [
+                    'Material' => ['id_dominio' => null, 'key' => ''],
+                    'Herramienta' => ['id_dominio' => null, 'key' => ''],
                 ]
             ]
         ];
@@ -654,7 +671,7 @@ class SetupSeeder extends Seeder
 
             $this->createRegister($modelMenuTercero, [
                 'id_menu' => $menus[$nombre]['id_menu'],
-                'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
+                'id_dominio_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
                 'crear' => isset($menu['submenu']) ? false : true,
                 'editar' => isset($menu['submenu']) ? false : true,
                 'ver' => true,
@@ -669,7 +686,7 @@ class SetupSeeder extends Seeder
 
                     $this->createRegister($modelMenuTercero, [
                         'id_menu' => $menus[$nombre]['submenu'][$key]['id_menu'],
-                        'id_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
+                        'id_dominio_tipo_tercero' => $administrador_pagina->id_dominio_tipo_tercero,
                         'crear' => true,
                         'editar' => true,
                         'ver' => true,

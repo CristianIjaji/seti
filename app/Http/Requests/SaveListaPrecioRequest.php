@@ -34,11 +34,11 @@ class SaveListaPrecioRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_cliente' => [
+            'id_tercero_cliente' => [
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
-            'id_tipo_item'=>[
+            'id_dominio_tipo_item'=>[
                 'required',
                 'exists:tbl_dominios,id_dominio'
             ],
@@ -47,7 +47,7 @@ class SaveListaPrecioRequest extends FormRequest
                 'string',
                 'max:20',
                 Rule::unique('tbl_lista_precios')->where(function($query) {
-                    return $query->where('id_cliente', '=', $this->get('id_cliente'))
+                    return $query->where('id_tercero_cliente', '=', $this->get('id_tercero_cliente'))
                         ->where('codigo', '=', $this->get('codigo'));
                 })->ignore($this->route('priceList'))
             ],
@@ -79,8 +79,8 @@ class SaveListaPrecioRequest extends FormRequest
     public function messages()
     {
         return [
-            'id_cliente.required' => 'El campo cliente es obligatorio.',
-            'id_tipo_item.required' => 'El campo tipo ítem es obligatorio.',
+            'id_tercero_cliente.required' => 'El campo cliente es obligatorio.',
+            'id_dominio_tipo_item.required' => 'El campo tipo ítem es obligatorio.',
         ];
     }
 }

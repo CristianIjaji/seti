@@ -10,7 +10,7 @@ class TblEstadoActividad extends Model
     use HasFactory;
 
     protected $table = 'tbl_estado_actividad';
-    protected $primaryKey ='id_estado_actividad';
+    protected $primaryKey ='id_dominio_estado';
     protected $guarded =[];
 
     protected $filable = [

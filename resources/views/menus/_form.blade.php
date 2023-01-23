@@ -1,5 +1,5 @@
 <?php
-    $create = isset($profile->id_tipo_tercero) ? false : true;
+    $create = isset($profile->id_dominio_tipo_tercero) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
 ?>
 
@@ -15,18 +15,18 @@
 @endif
         <div class="row">
             <div class="form-group col-12">
-                <label for="id_tipo_tercero" class="required">Tipo tercero</label>
+                <label for="id_dominio_tipo_tercero" class="required">Tipo tercero</label>
                 @if ($edit)
-                    <select name="id_tipo_tercero" id="id_tipo_tercero" style="width: 100%" @if ($edit) required @else disabled @endif>
+                    <select name="id_dominio_tipo_tercero" id="id_dominio_tipo_tercero" style="width: 100%" @if ($edit) required @else disabled @endif>
                         <option value="">Elegir tipo tercero</option>
                         @foreach ($tipo_terceros as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('id_tipo_tercero', $profile->id_tipo_tercero) == $id ? 'selected' : '' }}>
+                            <option value="{{ $id }}" {{ old('id_dominio_tipo_tercero', $profile->id_dominio_tipo_tercero) == $id ? 'selected' : '' }}>
                                 {{ $nombre }}
                             </option>
                         @endforeach
                     </select>
                 @else
-                    <input type="text" class="form-control" id="id_tipo_tercero" value="{{ $profile->tbltipotercero->nombre }}" disabled>
+                    <input type="text" class="form-control" id="id_dominio_tipo_tercero" value="{{ $profile->tbltipotercero->nombre }}" disabled>
                 @endif
             </div>
             <div class="form-group col-12 col-md-6">

@@ -26,7 +26,7 @@ class SaveMenuTipoTerceroRequest extends FormRequest
             'id_menu' => [
                 'required',
             ],
-            'id_tipo_tercero' => [
+            'id_dominio_tipo_tercero' => [
                 'required',
                 'exists:tbl_dominios,id_dominio',
                 Rule::unique('tbl_menu_tipo_tercero')->ignore($this->route('profiles'))
@@ -49,7 +49,7 @@ class SaveMenuTipoTerceroRequest extends FormRequest
         ];
         
         if(isset(request()->route('profile')->id_menu_tipo_tercero)) {
-            unset($this->rules['id_tipo_tercero'][2]);
+            unset($this->rules['id_dominio_tipo_tercero'][2]);
         }
     }
 
@@ -67,8 +67,8 @@ class SaveMenuTipoTerceroRequest extends FormRequest
     {
         return [
             'id_menu.required' => 'Debe seleccionar un menú.',
-            'id_tipo_tercero.required' => 'El campo tipo tercero es obligatorio.',
-            'id_tipo_tercero.unique' => 'Ya se registraron los permisos de este tipo tercero.',
+            'id_dominio_tipo_tercero.required' => 'El campo tipo tercero es obligatorio.',
+            'id_dominio_tipo_tercero.unique' => 'Ya se registraron los permisos de este tipo tercero.',
         ];
     }
 }

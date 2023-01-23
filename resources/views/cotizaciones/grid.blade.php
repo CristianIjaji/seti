@@ -11,13 +11,13 @@
     'headers' => [
         ['name' => 'id_cotizacion', 'label' => '#', 'align' => 'text-end'],
         ['name' => 'ot_trabajo', 'label' => 'OT trabajo'],
-        ['name' => 'id_cliente', 'label' => 'Cliente', 'options' => $clientes],
+        ['name' => 'id_tercero_cliente', 'label' => 'Cliente', 'options' => $clientes],
         ['name' => 'tblEstacion', 'label' => 'Sitio', 'foreign' => 'nombre'],
         ['name' => 'fecha_solicitud', 'label' => 'Fecha solicitud', 'class' => 'input-date'],
         ['name' => 'fecha_envio', 'label' => 'Fecha envió', 'class' => 'input-date'],
-        ['name' => 'id_prioridad', 'label' => 'Prioridad', 'options' => $prioridades],
-        ['name' => 'estado', 'label' => 'Proceso', 'options' => $procesos],
-        ['name' => 'id_responsable_cliente', 'label' => 'Responsable', 'options' => $contratistas],
+        ['name' => 'id_dominio_prioridad', 'label' => 'Prioridad', 'options' => $prioridades],
+        ['name' => 'id_dominio_estado', 'label' => 'Proceso', 'options' => $procesos],
+        ['name' => 'id_tercero_responsable', 'label' => 'Responsable', 'options' => $contratistas],
         ['name' => '', 'label' => 'Acciones', 'actions' => [
             'btnOptions' => [
                 'view' => $view,

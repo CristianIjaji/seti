@@ -15,14 +15,14 @@
 @endif
     <div class="row">
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-            <label for="id_cliente" class="required">Cliente</label>
+            <label for="id_tercero_cliente" class="required">Cliente</label>
             @if ($edit)
                 <div class="row pe-0 pe-md-3">
                     <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
-                        <select class="form-control" name="id_cliente" id="id_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
+                        <select class="form-control" name="id_tercero_cliente" id="id_tercero_cliente" style="width: 100%" @if ($edit) required @else disabled @endif>
                             <option value="">Elegir cliente</option>
                             @foreach ($clientes as $cliente)
-                                <option value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $lista_precio->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
+                                <option value="{{ $cliente->id_tercero }}" {{ old('id_tercero_cliente', $lista_precio->id_tercero_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
                                     {{$cliente->full_name}}
                                 </option>
                             @endforeach
@@ -35,7 +35,7 @@
                                 data-title="Nuevo cliente"
                                 data-size='modal-xl'
                                 data-reload="false"
-                                data-select="id_cliente"
+                                data-select="id_tercero_cliente"
                                 data-action='{{ route('clients.create', "tipo_documento=".session('id_dominio_nit')."&tipo_tercero=".session('id_dominio_cliente')."") }}'
                                 data-toggle="tooltip"
                                 title="Crear cliente"
@@ -44,22 +44,22 @@
                     @endif
                 </div>
             @else
-                <input type="text" class="form-control" id="id_cliente" value="{{ $lista_precio->tbltercerocliente->full_name }}" disabled>
+                <input type="text" class="form-control" id="id_tercero_cliente" value="{{ $lista_precio->tbltercerocliente->full_name }}" disabled>
             @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-            <label for="id_tipo_item" class="required">Tipo ítem</label>
+            <label for="id_dominio_tipo_item" class="required">Tipo ítem</label>
             @if ($edit)
-                <select class="form-control" name="id_tipo_item" id="id_tipo_item" style="width: 100%" @if ($edit) required @else disabled @endif>
+                <select class="form-control" name="id_dominio_tipo_item" id="id_dominio_tipo_item" style="width: 100%" @if ($edit) required @else disabled @endif>
                     <option value="">Elegir tipo ítem</option>
                     @foreach ($tipo_items as $id => $nombre)
-                        <option value="{{ $id }}" {{ old('id_tipo_item', $lista_precio->id_tipo_item) == $id ? 'selected' : '' }}>
+                        <option value="{{ $id }}" {{ old('id_dominio_tipo_item', $lista_precio->id_dominio_tipo_item) == $id ? 'selected' : '' }}>
                             {{ $nombre }}
                         </option>
                     @endforeach
                 </select>
             @else
-                <input type="text" class="form-control" id="id_cliente" value="{{ $lista_precio->tbldominioitem->nombre }}" disabled>
+                <input type="text" class="form-control" id="id_tercero_cliente" value="{{ $lista_precio->tbldominioitem->nombre }}" disabled>
             @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">

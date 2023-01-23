@@ -16,13 +16,12 @@ class CreateTblInventarioTable extends Migration
         Schema::create('tbl_inventario', function (Blueprint $table) {
             $table->bigIncrements('id_inventario');
             $table->unsignedBigInteger('id_tercero_almacen');
-            $table->string('clasificacion');
+            $table->unsignedBigInteger('id_dominio_clasificacion')->nullable();
             $table->string('descripcion');
             $table->string('marca')->default('');
-            $table->unique(['clasificacion', 'descripcion', 'marca'], 'product_name');
+            $table->unique(['id_dominio_clasificacion', 'descripcion', 'marca'], 'product_name');
             $table->decimal('cantidad')->default(0);
             $table->string('unidad');
-            $table->unsignedBigInteger('iva')->nullable();
             $table->decimal('valor_unitario', 20, 2);
             $table->string('ubicacion')->nullable();
             $table->decimal('cantidad_minima');
@@ -33,7 +32,7 @@ class CreateTblInventarioTable extends Migration
 
             $table->foreign('id_tercero_almacen')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('iva')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_clasificacion')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

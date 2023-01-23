@@ -33,11 +33,11 @@ class SavePuntosInteresRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_cliente' => [
+            'id_tercero_cliente' => [
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
-            'id_zona' => [
+            'id_dominio_zona' => [
                 'required',
                 'exists:tbl_dominios,id_dominio',
             ],
@@ -64,11 +64,11 @@ class SavePuntosInteresRequest extends FormRequest
                 'required',
                 'string'
             ],
-            'id_tipo_transporte' => [
+            'id_dominio_tipo_transporte' => [
                 'required',
                 'exists:tbl_dominios,id_dominio',
             ],
-            'id_tipo_accesso' => [
+            'id_dominio_tipo_accesso' => [
                 'required',
                 'exists:tbl_dominios,id_dominio',
             ],
@@ -82,10 +82,10 @@ class SavePuntosInteresRequest extends FormRequest
     public function messages()
     {
         return [
-            'id_cliente.required' => 'El campo cliente es obligatorio.',
-            'id_zona.required' => 'El campo zona es obligatorio.',
-            'id_tipo_transporte.required' => 'El campo transporte es obligatorio.',
-            'id_tipo_accesso.required' => 'El campo acceso es obligatorio.',
+            'id_tercero_cliente.required' => 'El campo cliente es obligatorio.',
+            'id_dominio_zona.required' => 'El campo zona es obligatorio.',
+            'id_dominio_tipo_transporte.required' => 'El campo transporte es obligatorio.',
+            'id_dominio_tipo_accesso.required' => 'El campo acceso es obligatorio.',
         ];
     }
 }

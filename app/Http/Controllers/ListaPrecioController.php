@@ -199,7 +199,7 @@ class ListaPrecioController extends Controller
         return view('partials._search', [
             'type' => $type,
             'tipo_carrito' => $tipo_carrito,
-            'items' => TblListaPrecio::where(['estado' => 1, 'id_tipo_item' => $type, 'id_cliente' => $client])->get()
+            'items' => TblListaPrecio::where(['estado' => 1, 'id_dominio_tipo_item' => $type, 'id_tercero_cliente' => $client])->get()
         ]);
     }
 
@@ -240,8 +240,8 @@ class ListaPrecioController extends Controller
                 CASE WHEN tbl_lista_precios.estado = 1 THEN 'Activo' ELSE 'Inactivo' END estado_lista
             ")
         )
-        ->join('tbl_terceros as t', 'tbl_lista_precios.id_cliente', '=', 't.id_tercero')
-        ->join('tbl_dominios as ti', 'tbl_lista_precios.id_tipo_item', '=', 'ti.id_dominio')
+        ->join('tbl_terceros as t', 'tbl_lista_precios.id_tercero_cliente', '=', 't.id_tercero')
+        ->join('tbl_dominios as ti', 'tbl_lista_precios.id_dominio_tipo_item', '=', 'ti.id_dominio')
         ->where(function ($q) use($option) {
             if($option == 1) {
                 $this->dinamyFilters($q, [

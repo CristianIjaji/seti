@@ -19,6 +19,7 @@ class TblMovimiento extends Model
         'id_tercero_entrega',
         'documento',
         'observaciones',
+        'id_dominio_iva',
         'total',
         'saldo',
         'id_dominio_estado',
@@ -41,6 +42,10 @@ class TblMovimiento extends Model
         return $this->belongsTo(TblTercero::class, 'id_tercero_entrega');
     }
 
+    public function tbliva() {
+        return $this->belongsTo(TblDominio::class, 'id_dominio_iva');
+    }
+
     public function tblestado() {
         return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
@@ -49,9 +54,17 @@ class TblMovimiento extends Model
         return date('Y-m-d', strtotime($this->attributes['created_at']));
     }
 
+    public function getTotalAttribute() {
+        return number_format(isset($this->attributes['total']) && $this->attributes['total'] > 0 ? $this->attributes['total'] : 0, 2);
+    }
+    
+    public function getSaldoAttribute() {
+        return number_format(isset($this->attributes['saldo']) && $this->attributes['saldo'] > 0 ? $this->attributes['saldo'] : 0, 2);
+    }
+
     public function getDetalleMovimiento() {
         $carrito = [];
-        $items = TblMovimientoDetalle::with(['tblinventario', 'tbliva'])->where(['id_movimiento' => (isset($this->attributes['id_movimiento']) ? $this->attributes['id_movimiento'] : -1)])->get();
+        $items = TblMovimientoDetalle::with(['tblinventario'])->where(['id_movimiento' => (isset($this->attributes['id_movimiento']) ? $this->attributes['id_movimiento'] : -1)])->get();
 
         foreach ($items as $item) {
             $carrito[session('id_dominio_tipo_movimiento')][$item->id_inventario] = [
@@ -60,7 +73,6 @@ class TblMovimiento extends Model
                 'cantidad' => $item->cantidad,
                 'unidad' => $item->tblinventario->unidad,
                 'valor_unitario' => $item->valor_unitario,
-                'iva' => (isset($item->iva) ? str_replace(['IVA', ' ', '%'], ['', '', ''], $item->tbliva->nombre) : 0),
                 'valor_total' => $item->valor_total,
             ];
         }

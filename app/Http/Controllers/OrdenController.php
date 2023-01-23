@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveOrdenRequest;
 use App\Models\TblDominio;
+use App\Models\TblInventario;
 use App\Models\TblOrdenCompra;
+use App\Models\TblOrdenCompraDetalle;
 use App\Models\TblTercero;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class OrdenController extends Controller
@@ -42,6 +46,32 @@ class OrdenController extends Controller
         return $querybuilder;
     }
 
+    private function getDetailPurshase($orden) {
+        TblOrdenCompraDetalle::where('id_orden_compra', '=', $orden->id_orden_compra)->wherenotin('id_inventario', request()->id_item)->delete();
+        $total = 0;
+
+        foreach (request()->id_dominio_tipo_item as $index => $valor) {
+            $detalle = TblOrdenCompraDetalle::where(['id_orden_compra' => $orden->id_orden_compra, 'id_inventario' => request()->id_item[$index]])->first();
+            if(!$detalle) {
+                $detalle = new TblOrdenCompraDetalle;
+            }
+
+            $detalle->id_orden_compra = $orden->id_orden_compra;
+            $detalle->id_inventario = request()->id_item[$index];
+            $detalle->descripcion = request()->descripcion_item[$index];
+            $detalle->cantidad = request()->cantidad[$index];
+            $detalle->valor_unitario = str_replace(',', '', request()->valor_unitario[$index]);
+            $detalle->valor_total = $detalle->cantidad * $detalle->valor_unitario;
+
+            $detalle->save();
+            $total += $detalle->valor_total;
+        }
+
+        $iva = intval(str_replace(['iva', ' ', '%'], ['', '', ''], mb_strtolower($orden->tblIva->nombre))) / 100;
+        $valor_iva = $total * $iva;
+        return $total + $valor_iva;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -64,10 +94,16 @@ class OrdenController extends Controller
         $this->authorize('create', new TblOrdenCompra);
 
         return view('ordenes_compra._form', [
+            'orden' => new TblOrdenCompra,
             'proveedores' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_proveedor')
             ])->get(),
+            'almacenes' => TblTercero::where([
+                'estado' => 1,
+                'id_dominio_tipo_tercero' => session('id_dominio_almacen')
+            ])->get(),
+            'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
             'medios_pago_ordenes_compra' => TblDominio::getListaDominios(session('id_dominio_medio_pago_orden_compra')),
             'tipos_ordenes_compra' => TblDominio::getListaDominios(session('id_dominio_tipo_orden_compra')),
         ]);
@@ -79,9 +115,27 @@ class OrdenController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(SaveOrdenRequest $request)
     {
-        //
+        try {
+            $orden = TblOrdenCompra::create($request->validated());
+            $this->authorize('create', $orden);
+
+            $orden->cupo_actual = $this->getDetailPurshase($orden);
+            $orden->save();
+
+            return response()->json([
+                'success' => 'Orden creada exitosamente!',
+                'response' => [
+                    'value' => $orden->id_orden_compra,
+                    'option' => $orden->descripcion,
+                ],
+            ]);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'errors' => $th->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -137,7 +191,10 @@ class OrdenController extends Controller
         return view($view, [
             'model' => TblOrdenCompra::where(function($q) {
                 $this->dinamyFilters($q);
-            })->orderBy('id_ordenes_compra', 'desc')->paginate(10),
+            })->orderBy('id_orden_compra', 'desc')->paginate(10),
+            'almacenes' => TblTercero::getTercerosTipo(session('id_dominio_almacen')),
+            'proveedores' => TblTercero::getTercerosTipo(session('id_dominio_proveedor')),
+            'modosPago' => TblDominio::getListaDominios(session('id_dominio_medio_pago_orden_compra')),
             'create' => Gate::allows('create', new TblOrdenCompra),
             'edit' => Gate::allows('update', new TblOrdenCompra),
             'view' => Gate::allows('view', new TblOrdenCompra),

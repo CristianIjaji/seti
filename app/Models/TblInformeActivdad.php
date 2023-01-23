@@ -15,8 +15,8 @@ class TblInformeActivdad extends Model
 
     protected $fillable = [
         'id_actividad',
-        'id_encargado',
-        'id_estado_informe',
+        'id_tercero_encargado',
+        'id_dominio_estado',
         'id_usuareg'
     ];
 
@@ -25,11 +25,11 @@ class TblInformeActivdad extends Model
     }
 
     public function tblencargado() {
-        return $this->belongsTo(TblTercero::class, 'id_encargado');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_encargado');
     }
 
     public function tblestadoinforme() {
-        return $this->belongsTo(TblDominio::class, 'id_estado_informe');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblusuario() {

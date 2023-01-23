@@ -19,10 +19,16 @@ class CreateTblMovimientosDetalleTable extends Migration
             $table->unsignedBigInteger('id_inventario');
             $table->decimal('cantidad');
             $table->decimal('valor_unitario', 20, 2);
-            $table->unsignedBigInteger('iva');
             $table->decimal('valor_total', 20, 2);
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
+            
+            $table->foreign('id_movimiento')->references('id_movimiento')->on('tbl_movimientos')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_inventario')->references('id_inventario')->on('tbl_inventario')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
+                ->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

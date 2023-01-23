@@ -8,7 +8,8 @@
     ],
     'headers' => [
         ['name' => 'id_kardex', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
-        ['name' => 'fecha_kardex', 'label' => 'Fecha registro', 'class' => 'input-date'],
+        ['name' => 'created_at', 'label' => 'Fecha registro', 'class' => 'input-date'],
+        ['name' => 'tipo_movimiento', 'label' => 'Tipo movimiento', 'options' => $tipos_movimientos],
         ['name' => 'tblinventario', 'label' => 'Producto', 'class' => 'col-3', 'foreign' => 'descripcion'],
         ['name' => 'concepto', 'label' => 'Concepto', 'class' => 'col-2'],
         ['name' => 'documento', 'label' => 'Documento', 'align' => 'text-end'],

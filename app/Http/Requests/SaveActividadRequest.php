@@ -41,7 +41,7 @@ class SaveActividadRequest extends FormRequest
                 'max:255',
                 Rule::unique('tbl_actividades')->ignore($this->route('activity'))
             ],
-            'id_encargado_cliente' => [
+            'id_tercero_encargado_cliente' => [
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
@@ -53,7 +53,7 @@ class SaveActividadRequest extends FormRequest
                 'required',
                 'exists:tbl_dominios,id_dominio'
             ],
-            'id_subsistema' => [
+            'id_dominio_subsistema' => [
                 'required',
                 'exists:tbl_dominios,id_dominio'
             ],
@@ -73,7 +73,7 @@ class SaveActividadRequest extends FormRequest
             'valor' => [
                 'required',
             ],
-            'id_resposable_contratista' => [
+            'id_tercero_resposable_contratista' => [
                 'required',
                 'exists:tbl_terceros,id_tercero'
             ],
@@ -89,7 +89,7 @@ class SaveActividadRequest extends FormRequest
                 'nullable',
                 'date'
             ],
-            'id_estado_actividad' => [
+            'id_dominio_estado' => [
                 'required',
                 'exists:tbl_dominios,id_dominio'
             ],
@@ -102,7 +102,7 @@ class SaveActividadRequest extends FormRequest
                 'nullable',
                 'exists:tbl_ordenes_compra,id_orden_compra'
             ],
-            'id_informe' => [
+            'id_informe_actividad' => [
                 'nullable',
                 'exists:tbl_informes_actividades,id_informe_actividad'
             ],
@@ -131,17 +131,17 @@ class SaveActividadRequest extends FormRequest
     public function messages()
     {
         return [
-            'id_encargado_cliente.required' => 'El campo cliente es obligatorio.',
+            'id_tercero_encargado_cliente.required' => 'El campo cliente es obligatorio.',
             'id_estacion.required' => 'El campo punto de interés es obligatorio.',
             'id_tipo_actividad.required' => 'El campo tipo de trabajo es obligatorio.',
-            'id_subsistema.required' => 'El campo subsistema es obligatorio.',
+            'id_dominio_subsistema.required' => 'El campo subsistema es obligatorio.',
             'fecha_solicitud.required' => 'El campo fecha de solicitud es obligatorio.',
             'fecha_solicitud.date' => 'La fecha de solicitud no es valida.',
             'fecha_programacion.required' => 'El campo fecha de programación es obligatorio.',
             'fecha_programacion.date' => 'La fecha de programación no es valida.',
             'permiso_acceso.max' => 'ID permiso no debe ser mayor que 20 caracteres.',
             'descripcion.required' => 'El campo descripción es obligatorio.',
-            'id_estado_actividad.required' => 'El campo estado actividad es obligatorio.',
+            'id_dominio_estado.required' => 'El campo estado actividad es obligatorio.',
             'id_cotizacion.unique' => 'Ya existe una actividad asociada a está cotización.',
         ];
     }

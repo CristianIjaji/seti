@@ -1,6 +1,6 @@
 @php
-    $create = isset($movimiento->id_movimiento) ? false : true;
-    $edit = isset($edit) ? $edit : ($create == true ? true : false);
+    $create = !isset($movimiento->id_movimiento);
+    $edit = isset($edit) ? $edit : $create;
     $editable = (
         ($edit) &&
         !in_array($movimiento->id_dominio_tipo_movimiento, [session('id_dominio_movimiento_entrada_inicial')]) ? true : false ||
@@ -19,7 +19,7 @@
         @endif
 @endif
     <div class="row">
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
             <label for="" class="required">Tipo Movimiento</label>
             @if ($create)
                 <select name="id_dominio_tipo_movimiento" id="id_dominio_tipo_movimiento" style="width: 100%">
@@ -35,7 +35,7 @@
                 <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $movimiento->tbltipomovimiento }}">
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
             <label for="" class="required">Quien entrega</label>
             @if ($create)
                 <select name="id_tercero_entrega" id="id_tercero_entrega" style="width: 100%">
@@ -46,22 +46,37 @@
                 <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $movimiento->id_tercero_entrega }}">
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
             <label for="" class="required">Quien recibe</label>
             @if ($create)
                 <select name="id_tercero_recibe" id="id_tercero_recibe" style="width: 100%">
                     <option value="">Elegir quien recibe</option>
                 </select>
             @else
-            <input type="text" class="form-control" value="{{ $movimiento->tbltercerorecibe->full_name }}" disabled readonly>
-            <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $movimiento->id_tercero_recibe }}">
+                <input type="text" class="form-control" value="{{ $movimiento->tbltercerorecibe->full_name }}" disabled readonly>
+                <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $movimiento->id_tercero_recibe }}">
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2">
+            <label for="id_dominio_iva" class="required">IVA %</label>
+            @if ($edit)
+                <select class="form-control text-end" name="id_dominio_iva" id="id_dominio_iva" data-dir="rtl" style="width: 100%" @if ($edit) required @else disabled @endif>
+                    @foreach ($impuestos as $id => $nombre)
+                        <option value="{{ $id }}" {{ old('id_dominio_iva', $movimiento->id_dominio_iva) == $id ? 'selected' : '' }}>
+                            {{$nombre}}
+                        </option>
+                    @endforeach
+                </select>
+            @else
+                <input type="hidden" id="id_dominio_iva" value="{{ $movimiento->tblIva->nombre }}">
+                <input type="text" class="form-control text-end" value="{{ $movimiento->tblIva->nombre }}" disabled>
+            @endif
+        </div>
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2">
             <label for="">Documento</label>
             <input type="text" class="form-control" @if ($edit) name="documento" @endif id="documento" value="{{ old('documento', $movimiento->documento) }}" @if ($edit) required @else disabled @endif>
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-8">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-8">
             <label for="observaciones" class="required">Observaciones</label>
             <textarea class="form-control" @if ($edit) name="observaciones" @endif id="observaciones" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $movimiento->observaciones) }}</textarea>
         </div>
@@ -72,6 +87,9 @@
     </div>
 
     @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear movimiento' : 'Editar movimiento'])
+@if ($create || $edit)
+    </form>
+@endif
 
 <script type="application/javascript">
     function getTercerosTipo(tipo, element) {

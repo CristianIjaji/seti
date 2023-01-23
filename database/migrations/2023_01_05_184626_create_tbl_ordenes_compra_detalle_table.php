@@ -16,8 +16,7 @@ class CreateTblOrdenesCompraDetalleTable extends Migration
         Schema::create('tbl_ordenes_compra_detalle', function (Blueprint $table) {
             $table->bigIncrements('id_orden_compra_detalle');
             $table->unsignedBigInteger('id_orden_compra');
-            $table->unsignedBigInteger('id_cotizacion_detalle');
-            $table->unsignedBigInteger('id_lista_precio');
+            $table->unsignedBigInteger('id_inventario');
             $table->string('descripcion');
             $table->decimal('cantidad');
             $table->decimal('valor_unitario', 20, 2);
@@ -26,9 +25,7 @@ class CreateTblOrdenesCompraDetalleTable extends Migration
 
             $table->foreign('id_orden_compra')->references('id_orden_compra')->on('tbl_ordenes_compra')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_cotizacion_detalle')->references('id_cotizacion_detalle')->on('tbl_cotizaciones_detalle')
-                ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_lista_precio')->references('id_lista_precio')->on('tbl_lista_precios')
+            $table->foreign('id_inventario')->references('id_inventario')->on('tbl_inventario')
                 ->onDelete('cascade')->onUpdate('cascade');
         });
     }

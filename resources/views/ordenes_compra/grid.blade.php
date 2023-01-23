@@ -9,8 +9,11 @@
     ],
     'headers' => [
         ['name' => 'id_orden_compra','label' => '#', 'align' => 'text-end'],
-        ['name' => 'documento', 'label' => 'Documento', 'col' => 'col-2'],
-        ['name' => 'full_name', 'label' => 'Nombre o Razón social', 'col' => 'col-3'],
+        ['name' => 'id_tercero_almacen', 'label' => 'Almacen', 'col' => 'col-2', 'options' => $almacenes],
+        ['name' => 'id_tercero_proveedor', 'label' => 'Almacen', 'col' => 'col-2', 'options' => $proveedores],
+        ['name' => 'id_dominio_modalidad_pago', 'label' => 'Tipo pago', 'options' => $modosPago],
+        ['name' => 'vencimiento', 'label' => 'Vencimiento', 'class' => 'input-date'],
+        ['name' => 'cupo_actual', 'label' => 'Valor orden', 'align' => 'text-end'],
         ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [
             'btnOptions' => [
                 'view' => $view,

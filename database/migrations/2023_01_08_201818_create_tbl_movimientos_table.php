@@ -20,6 +20,7 @@ class CreateTblMovimientosTable extends Migration
             $table->unsignedBigInteger('id_tercero_entrega');
             $table->string('documento');
             $table->string('observaciones');
+            $table->unsignedBigInteger('id_dominio_iva');
             $table->decimal('total', 20, 2)->default(0);
             $table->decimal('saldo', 20, 2)->default(0);
             $table->unsignedBigInteger('id_dominio_estado');
@@ -31,6 +32,8 @@ class CreateTblMovimientosTable extends Migration
             $table->foreign('id_tercero_recibe')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_tercero_entrega')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_dominio_iva')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_dominio_estado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');

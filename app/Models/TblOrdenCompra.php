@@ -14,35 +14,45 @@ class TblOrdenCompra extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'id_tipo',
+        'id_tercero_almacen',
+        'id_tercero_proveedor',
+        'id_dominio_tipo',
         'descripcion',
-        'id_proveedor',
-        'id_modalidad_pago',
-        'id_estado',
-        'id_asesor',
+        'id_dominio_modalidad_pago',
+        'id_dominio_iva',
+        'id_dominio_estado',
+        'id_tercero_asesor',
         'vencimiento',
-        'cupo',
+        'cupo_actual',
         'id_usuareg'
     ];
 
+    public function tblalmacen() {
+        return $this->belongsTo(TblTercero::class, 'id_tercero_almacen');
+    }
+
     public function tbltipo() {
-        return $this->belongsTo(TblDominio::class, 'id_tipo');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_tipo');
     }
 
     public function tblproveedor() {
-        return $this->belongsTo(TblTercero::class, 'id_proveedor');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_proveedor');
     }
 
     public function tblmodalidadpago() {
-        return $this->belongsTo(TblDominio::class, 'id_modalidad_pago');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_modalidad_pago');
+    }
+
+    public function tbliva() {
+        return $this->belongsTo(TblDominio::class, 'id_dominio_iva');
     }
 
     public function tblestado() {
-        return $this->belongsTo(TblDominio::class, 'id_estado');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblasesor() {
-        return $this->belongsTo(TblTercero::class, 'id_asesor');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_asesor');
     }
 
     public function tblusuario() {
@@ -50,6 +60,6 @@ class TblOrdenCompra extends Model
     }
 
     public function tbldetalleorden() {
-        return $this->hasMany(TblOrdenesCompraDetalle::class, 'id_orden_compra');
+        return $this->hasMany(TblOrdenCompraDetalle::class, 'id_orden_compra');
     }
 }

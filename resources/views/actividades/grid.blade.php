@@ -11,13 +11,14 @@
     'headers' => [
         ['name' => 'id_actividad', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'ot', 'label' => 'OT', 'col' => 'col-1'],
-        ['name' => 'id_encargado_cliente', 'label' => 'Cliente', 'options' => $clientes, 'col' => 'col-2'],
+        ['name' => 'id_tercero_encargado_cliente', 'label' => 'Cliente', 'options' => $clientes, 'col' => 'col-2'],
         ['name' => 'id_tipo_actividad', 'label' => 'Tipo trabajo', 'options' => $tipos_trabajo, 'col' => 'col-1'],
         ['name' => 'tblestacion', 'label' => 'Sitio', 'foreign' => 'nombre', 'col' => 'col-1'],
         ['name' => 'fecha_solicitud', 'label' => 'Fecha solicitud', 'class' => 'input-date', 'col' => 'col-1'],
         ['name' => 'fecha_programacion', 'label' => 'Fecha programada', 'class' => 'input-date', 'col' => 'col-1'],
-        ['name' => 'id_estado_actividad', 'label' => 'Estado', 'options' => $estados_actividad, 'col' => 'col-1'],
-        ['name' => 'id_resposable_contratista', 'label' => 'Responsable', 'options' => $contratistas, 'col' => 'col-2'],
+        ['name' => 'fecha_reprogramacion', 'label' => 'Fecha programada', 'class' => 'input-date', 'col' => 'col-1'],
+        ['name' => 'id_dominio_estado', 'label' => 'Estado', 'options' => $estados_actividad, 'col' => 'col-1'],
+        ['name' => 'id_tercero_resposable_contratista', 'label' => 'Responsable', 'options' => $contratistas, 'col' => 'col-2'],
         ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [
             'btnOptions' => [
                 'view' => $view,

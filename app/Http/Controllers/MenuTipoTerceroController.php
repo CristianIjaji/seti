@@ -41,23 +41,23 @@ class MenuTipoTerceroController extends Controller
         }
 
         if(Auth::user()->role !== session('id_dominio_super_administrador')) {
-            $querybuilder->where('id_tipo_tercero', '<>', session('id_dominio_super_administrador'));
+            $querybuilder->where('id_dominio_tipo_tercero', '<>', session('id_dominio_super_administrador'));
         }
 
         return $querybuilder;
     }
 
     private function savePermisosTercero() {
-        TblMenuTipoTercero::where('id_tipo_tercero', '=', request()->id_tipo_tercero)->wherenotin('id_menu', request()->id_menu)->delete();
+        TblMenuTipoTercero::where('id_dominio_tipo_tercero', '=', request()->id_dominio_tipo_tercero)->wherenotin('id_menu', request()->id_menu)->delete();
 
         foreach (request()->id_menu as $index => $valor) {
-            $permiso = TblMenuTipoTercero::where(['id_tipo_tercero' => request()->id_tipo_tercero, 'id_menu' => request()->id_menu[$index]])->first();
+            $permiso = TblMenuTipoTercero::where(['id_dominio_tipo_tercero' => request()->id_dominio_tipo_tercero, 'id_menu' => request()->id_menu[$index]])->first();
             if(!$permiso) {
                 $permiso = new TblMenuTipoTercero;
             }
 
             $permiso->id_menu = request()->id_menu[$index];
-            $permiso->id_tipo_tercero = request()->id_tipo_tercero;
+            $permiso->id_dominio_tipo_tercero = request()->id_dominio_tipo_tercero;
             $permiso->crear = isset(request()->crear[$index]) ? request()->crear[$index] : false;
             $permiso->editar = isset(request()->editar[$index]) ? request()->editar[$index] : false;
             $permiso->ver = isset(request()->ver[$index]) ? request()->ver[$index] : false;
@@ -226,7 +226,7 @@ class MenuTipoTerceroController extends Controller
     }
 
     private function getPermisosMenu($profile) {
-        return TblMenuTipoTercero::where(['id_tipo_tercero' => $profile->id_tipo_tercero])->get();
+        return TblMenuTipoTercero::where(['id_dominio_tipo_tercero' => $profile->id_dominio_tipo_tercero])->get();
     }
 
     public function grid() {
@@ -239,14 +239,14 @@ class MenuTipoTerceroController extends Controller
         return view($view, [
             'model' => TblMenuTipoTercero::select(
                 DB::raw("
-                    tbl_menu_tipo_tercero.id_tipo_tercero,
+                    tbl_menu_tipo_tercero.id_dominio_tipo_tercero,
                     d.nombre as tipo_tercero,
                     min(tbl_menu_tipo_tercero.id_menu_tipo_tercero) as id_menu_tipo_tercero
                 ")
-            )->join('tbl_dominios as d', 'tbl_menu_tipo_tercero.id_tipo_tercero', '=', 'd.id_dominio')
+            )->join('tbl_dominios as d', 'tbl_menu_tipo_tercero.id_dominio_tipo_tercero', '=', 'd.id_dominio')
             ->where(function ($q) {
                 $this->dinamyFilters($q);
-            })->groupBy('id_tipo_tercero', 'd.nombre')
+            })->groupBy('id_dominio_tipo_tercero', 'd.nombre')
             ->orderBy('d.nombre', 'asc')->paginate(10),
             'tipo_terceros' => TblDominio::getListaDominios(session('id_dominio_tipo_tercero')),
             'create' => Gate::allows('create', $menu),

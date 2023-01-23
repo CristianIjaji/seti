@@ -29114,13 +29114,13 @@ button.close {
 }
 
 #nav-bar.l-navbar .active {
-  color: var(--bs-primary) !important;
+  color: var(--bs-secondary) !important;
   background-color: var(--bs-white) !important;
   text-shadow: none !important;
 }
 
 #nav-bar.l-navbar .activemenu {
-  color: var(--bs-primary) !important;
+  color: var(--bs-secondary) !important;
   background-color: rgba(var(--bs-white-rgb), 0.9);
   border-radius: var(--bs-border-radius) var(--bs-border-radius) 0px 0px !important;
 }
@@ -29488,7 +29488,7 @@ label.required::after {
 }
 
 #nav-bar .collapse.show {
-  background-color: rgba(255, 255, 255, 0.2901960784);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .accordion-button::after {

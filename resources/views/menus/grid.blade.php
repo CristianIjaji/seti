@@ -7,7 +7,7 @@
         "modal-size" => "modal-lg",
     ],
     'headers' => [
-        ['name' => 'id_tipo_tercero', 'label' => 'Tipo tercero', 'options' => $tipo_terceros],
+        ['name' => 'id_dominio_tipo_tercero', 'label' => 'Tipo tercero', 'options' => $tipo_terceros],
         ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [
             'btnOptions' => [
                 'view' => $view,

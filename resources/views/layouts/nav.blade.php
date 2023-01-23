@@ -89,6 +89,14 @@
                     @isset($menu->submenu)
                         <ul class="list-group border-top-0 rounded-0 rounded-bottom collapse" id="__menu_{{ $menu->id_menu }}" data-bs-parent=".accordion">
                             @foreach ($menu->submenu as $submenu)
+                                @php
+                                    $rounded = 'rounded';
+                                @endphp
+                                @if ($loop->first)
+                                    @php
+                                        $rounded = 'rounded-bottom';
+                                    @endphp
+                                @endif
                                 <li>
                                     <a
                                         @isset($submenu->url) href="{{ route($submenu->url) }}" @endisset
@@ -96,7 +104,7 @@
                                         data-toggle="tooltip"
                                         data-bs-placement="right"
                                         data-menu="__menu_{{ $menu->id_menu }}"
-                                        class="nav_link {{ setActive($submenu->url) }} rounded-bottom m-0">
+                                        class="nav_link {{ setActive($submenu->url) }} {{ $rounded}}  m-0">
                                         <i class="{{ $submenu->icon }} text-center"></i>
                                         <span class="nav_name">{{$submenu->nombre}}</span>
                                     </a>

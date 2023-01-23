@@ -23,15 +23,15 @@
         <label>Movimiento</label>
         <input type="text" class="form-control" value="{{ $kardex->tblmovimientodetalle->id_movimiento }}" disabled readonly>
     </div>
+    <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-4">
+        <label>Producto</label>
+        <input type="text" class="form-control" value="{{ $kardex->tblinventario->descripcion }}" disabled readonly>
+    </div>
     <hr>
     <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
-        <label>Detalle producto</label>
-        <table class="table table-bordered rounded">
+        <label>Detalle movimiento</label>
+        <table class="table table-striped-columns table-bordered rounded">
             <thead>
-                <tr>
-                    <th class="w-25">Producto</th>
-                    <td colspan="4">{{ $kardex->tblinventario->descripcion }}</td>
-                </tr>
                 <tr>
                     <th>Cantidad</th>
                     <td class="text-end">{{ $kardex->cantidad }}</td>
@@ -39,14 +39,6 @@
                 <tr>
                     <th>Valor unitario</th>
                     <td class="text-end">{{ $kardex->valor_unitario }}</td>
-                </tr>
-                <tr>
-                    <th>IVA</th>
-                    <td class="text-end">{{ $kardex->iva }}</td>
-                </tr>
-                <tr>
-                    <th>Subtotal</td>
-                    <td class="text-end">{{ $kardex->valor_total }}</td>
                 </tr>
                 <tr>
                     <th>Total</td>
@@ -57,12 +49,8 @@
     </div>
     <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
         <label>Saldo producto</label>
-        <table class="table table-bordered rounded">
+        <table class="table table-striped-columns table-bordered rounded">
             <thead>
-                <tr>
-                    <th class="w-25">Producto</th>
-                    <td colspan="4">{{ $kardex->tblinventario->descripcion }}</td>
-                </tr>
                 <tr>
                     <th>Cantidad</th>
                     <td class="text-end">{{ $kardex->saldo_cantidad }}</td>
@@ -71,18 +59,10 @@
                     <th>Valor unitario</th>
                     <td class="text-end">{{ $kardex->saldo_valor_unitario }}</td>
                 </tr>
-                {{-- <tr>
-                    <th>IVA</th>
-                    <td class="text-end">{{ $kardex->iva }}</td>
-                </tr>
-                <tr>
-                    <th>Subtotal</td>
-                    <td class="text-end">{{ $kardex->valor_total }}</td>
-                </tr>
                 <tr>
                     <th>Total</td>
-                    <td class="text-end">{{ $kardex->valor_total }}</td>
-                </tr> --}}
+                    <th class="text-end">{{ $kardex->saldo_valor_total }}</th>
+                </tr>
             </thead>
         </table>
     </div>

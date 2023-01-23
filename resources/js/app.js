@@ -408,7 +408,7 @@ const sendAjaxForm = (action, data, reload, select, modal) => {
             }).then(function() {
                 if(typeof response.errors === 'undefined') {
                     if(typeof reload === 'undefined' || reload.toString() !== 'false') {
-                        location.reload();
+                        $('.search_form').change();
                     } else {
                         if($(`#${select}`).length && typeof response.response !== 'undefined') {
                             var record = response.response;
@@ -674,17 +674,22 @@ window.drawItems = (edit = true, tipo_carrito, type_item, id_item) => {
                 $(`
                     <tr id="${tipo_carrito}_${type_item}_${id_item}" class="border-bottom collapse ${classname} item_${type_item} detail-${type_item}">
                         <td class="col-1 my-auto border-0">
-                            <input type='hidden' name="id_tipo_item[]" value="${type_item}" />
-                            <input type='hidden' name="id_lista_precio[]" value="${id_item}" />
+                            <input type='hidden' name="id_dominio_tipo_item[]" value="${type_item}" />
+                            <input type='hidden' name="id_item[]" value="${id_item}" />
                             <input type="text" class="form-control text-md-center text-end text-uppercase border-0" id="item_${id_item}" value="${element['item']}" disabled>
                         </td>
                         <td class="col-4 my-auto border-0">
                             <textarea class="form-control border-0 resize-textarea" rows="2" name="descripcion_item[]" id="descripcion_item_${id_item}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
                         </td>
-                        <td class="col-1 my-auto border-0">
-                            <input type="text" class="form-control text-md-start text-end border-0" ${tooltip} title="${element['unidad']}" name="unidad[]" id="unidad_${id_item}"
-                                value="${element['unidad']}" ${edit ? '' : 'disabled'}>
-                        </td>
+                        ${element['unidad']
+                            ? `
+                            <td class="col-1 my-auto border-0">
+                                <input type="text" class="form-control text-md-start text-end border-0" ${tooltip} title="${element['unidad']}" name="unidad[]" id="unidad_${id_item}"
+                                    value="${element['unidad']}" ${edit ? '' : 'disabled'}>
+                            </td>
+                            `
+                            : ``
+                        }
                         <td class="col-1 my-auto border-0">
                             <input type="number" min="1" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"
                                 class="form-control text-end border-0 txt-totales" name="cantidad[]" id="cantidad_${id_item}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
@@ -736,9 +741,9 @@ const totalItemType = (tipo_carrito, type) => {
 
 window.totalCarrito = (tipo_carrito) => {
     let iva = parseFloat(
-        $('#iva option:selected').length > 0
-            ? $('#iva option:selected').text().trim().replace('IVA ', '').replace('%', '')
-            : ($('#iva').length > 0 ? $('#iva').val().replace('IVA ', '').replace('%', '') : 0)
+        $('#id_dominio_iva option:selected').length > 0
+            ? $('#id_dominio_iva option:selected').text().trim().replace('IVA ', '').replace('%', '')
+            : ($('#id_dominio_iva').length > 0 ? $('#id_dominio_iva').val().replace('IVA ', '').replace('%', '') : 0)
         , 0
     );
 
@@ -781,7 +786,7 @@ const getItem = (item) => {
         'item': $(item).data('item'),
         'descripcion': $(item).data('descripcion'),
         'cantidad': cantidad,
-        'unidad': $(item).data('unidad'),
+        'unidad': (typeof $(item).data('unidad') !== 'undefined' ? $(item).data('unidad') : false),
         'valor_unitario': valor,
         'valor_total': parseFloat(cantidad * valor, 2),
     };
@@ -822,6 +827,29 @@ const fnc_totales = (id) => {
 
         totalCarrito(id_tr[0]);
     }
+}
+
+const matchCustom = (params, data) => {
+    // If there are no search terms, return all of the data
+    if ($.trim(params.term) === '') {
+        return data;
+    }
+
+    // Do not display the item if there is no 'text' property
+    if (typeof data.text === 'undefined') {
+        return null;
+    }
+
+    var terms = params.term.split(" ");
+    for (var i=0; i < terms.length; i++){
+        var tester = new RegExp(terms[i], 'i');
+        if (tester.test(data.text) == false){
+            return null;
+
+        }
+    }
+
+    return data;
 }
 
 $('body').tooltip({
@@ -865,6 +893,7 @@ window.setupSelect2 = function(modal = '') {
                     return t;
                 }
             },
+            matcher: matchCustom,
         });
     });
 
@@ -937,36 +966,6 @@ $(function() {
         });
     });
 
-    $('#input_file').change(function(e){
-        $('#lbl_input_file')
-            .text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
-        
-        if(typeof e.target.files[0] !== 'undefined') {
-            $('#lbl_input_file').addClass('file_selected');
-
-            Swal.fire({
-                icon: 'question',
-                title: 'Subir archivo al servidor?',
-                text: e.target.files[0].name,
-                showCancelButton: true,
-                confirmButtonText: 'Continuar',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true,
-                confirmButtonColor: '#fe0115c4',
-                cancelButtonColor: '#6e7d88',
-            }).then((result) => {
-                if(result.isConfirmed) {
-                    showLoader(true);
-                    $('#input_file').parent().submit();
-                } else {
-                    $('#input_file').val('');
-                }
-            });
-        } else {
-            $('#lbl_input_file').removeClass('file_selected');
-        }
-    });
-
     $('[data-toggle="tooltip"]').on('click', function () {
         $(this).tooltip('hide')
     });
@@ -1000,6 +999,36 @@ const openMainSubMenu = () => {
         });
     });
 }
+
+$(document).on('change', '#input_file', function(e){
+    $('#lbl_input_file')
+        .text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
+    
+    if(typeof e.target.files[0] !== 'undefined') {
+        $('#lbl_input_file').addClass('file_selected');
+
+        Swal.fire({
+            icon: 'question',
+            title: 'Subir archivo al servidor?',
+            text: e.target.files[0].name,
+            showCancelButton: true,
+            confirmButtonText: 'Continuar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true,
+            confirmButtonColor: '#fe0115c4',
+            cancelButtonColor: '#6e7d88',
+        }).then((result) => {
+            if(result.isConfirmed) {
+                showLoader(true);
+                $('#input_file').closest('form').trigger('submit');
+            } else {
+                $('#input_file').val('');
+            }
+        });
+    } else {
+        $('#lbl_input_file').removeClass('file_selected');
+    }
+});
 
 $(document).on('click', '.modal-form', function(e) {
     e.preventDefault();
@@ -1166,27 +1195,24 @@ $(document).on('change', '.txt-totales', function() {
     fnc_totales($(this).data('id-tr'));
 });
 
-$(document).on('change', '#id_cliente_cotizacion, #id_encargado_cliente', function() {    
+$(document).on('change', '#id_cliente_cotizacion, #id_tercero_encargado_cliente', function() {    
     if(typeof $(this).closest('form').attr('action') !== 'undefined') {
-        $('#table-cotizaciones').addClass('d-none');
-
         $('#id_estacion').empty();
         $('#id_estacion').append(`<option value=''>Elegir punto ínteres</option>`);
-        let id_cliente = $(this).find(':selected').data('id_cliente');
+        let id_tercero_cliente = $(this).find(':selected').data('id_tercero_cliente');
 
-        if(id_cliente !== '') {
-            $('#table-cotizaciones').removeClass('d-none');
+        if(id_tercero_cliente !== '') {
 
             $(`.tr_suministros`).each((index, item) => {
                 let action = new String($(item).data('action')).split('/');
-                action[5] = id_cliente;
+                action[5] = id_tercero_cliente;
 
                 action = action.join('/');
                 $(item).data('action', action);
             });
 
             $.ajax({
-                url: `sites/${id_cliente}/get_puntos_interes_client`,
+                url: `sites/${id_tercero_cliente}/get_puntos_interes_client`,
                 method: 'GET',
                 beforeSend: function() {
                     showLoader(true);
@@ -1409,14 +1435,14 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
         if(result.isConfirmed) {
             if(action == 'create-activity') {
                 url = 'activities';
-                data.append('id_encargado_cliente', $('#id_cliente').val());
+                data.append('id_tercero_encargado_cliente', $('#id_tercero_cliente').val());
                 data.append('id_estacion', $('#id_punto_interes').val());
                 data.append('id_tipo_actividad', $('#id_tipo_actividad').val());
                 data.append('fecha_solicitud', $('#fecha_solicitud').val());
                 data.append('valor', $('#valor_actividad').val());
-                data.append('id_resposable_contratista', $('#id_resposable_contratista').val());
+                data.append('id_tercero_resposable_contratista', $('#id_tercero_resposable_contratista').val());
                 data.append('descripcion', $('#descripcion').val());
-                data.append('id_estado_actividad', $('#id_estado_actividad').val());
+                data.append('id_dominio_estado', $('#id_dominio_estado').val());
                 data.append('id_cotizacion', $('#id_cotizacion').val());
                 data.append('observaciones', $('#descripcion').val());
             }
@@ -1481,14 +1507,14 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
 
 $(document).on('change', '#id_cotizacion_actividad', function() {
     $('#ot').val('');
-    $('#id_encargado_cliente').val('');
+    $('#id_tercero_encargado_cliente').val('');
     $('#id_estacion').empty();
     $('#id_estacion').append(`<option value=''>Elegir punto ínteres</option>`);
     $('#id_tipo_actividad').val('');
     $('#fecha_solicitud').val('');
-    $('#id_resposable_contratista').val('');
+    $('#id_tercero_resposable_contratista').val('');
     $('#descripcion').val('');
-    $('#id_encargado_cliente, #id_tipo_actividad, #id_subsistema').change();
+    $('#id_tercero_encargado_cliente, #id_tipo_actividad, #id_dominio_subsistema').change();
 
     if($(this).val() !== '') {
         $.ajax({
@@ -1499,16 +1525,16 @@ $(document).on('change', '#id_cotizacion_actividad', function() {
             }
         }).done(function(response) {
             $('#ot').val(response.ot);
-            $('#id_encargado_cliente').val(response.id_cliente);
-            $('#id_encargado_cliente').change();
+            $('#id_tercero_encargado_cliente').val(response.id_tercero_cliente);
+            $('#id_tercero_encargado_cliente').change();
             $('#id_estacion').append(`<option value='${response.id_estacion}'>${response.tbl_estacion.nombre}</option>`);
             $('#id_estacion').val(response.id_estacion);
             $('#id_estacion').change();
-            $('#id_tipo_actividad').val(response.id_tipo_trabajo);
+            $('#id_tipo_actividad').val(response.id_dominio_tipo_trabajo);
             $('#id_tipo_actividad').change();
             $('#fecha_solicitud').val(response.fecha_solicitud);
-            $('#id_resposable_contratista').val(response.id_responsable_cliente);
-            $('#id_resposable_contratista').change();
+            $('#id_tercero_resposable_contratista').val(response.id_tercero_responsable);
+            $('#id_tercero_resposable_contratista').change();
             $('#descripcion').val(response.descripcion);
         }).always(function() {
             showLoader(false);
@@ -1519,18 +1545,18 @@ $(document).on('change', '#id_cotizacion_actividad', function() {
 $(document).on('click', '#btn-get-activities', (e) => {
     e.preventDefault();
 
-    let id_cliente = $('#id_cliente').val();
-    let id_encargado = $('#id_responsable_cliente').val();
+    let id_tercero_cliente = $('#id_tercero_cliente').val();
+    let id_tercero_encargado = $('#id_tercero_responsable').val();
     let id_consolidado = $('#id_consolidado').val();
 
-    if(id_cliente !== '' && id_encargado !== '') {
+    if(id_tercero_cliente !== '' && id_tercero_encargado !== '') {
         $.ajax({
             url: `deals/getActivities`,
             method: 'POST',
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             data: {
-                id_cliente,
-                id_encargado,
+                id_tercero_cliente,
+                id_tercero_encargado,
                 id_consolidado,
                 _token: $('meta[name="csrf-token"]').attr('content')
             },

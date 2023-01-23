@@ -111,11 +111,11 @@ class ConsolidadoController extends Controller
             'clientes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            ])->where('id_tercero_responsable', '>', 0)->get(),
             'contratistas' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            ])->where('id_tercero_responsable', '>', 0)->get(),
             'detalle_consolidado' => TblConsolidadoDetalle::where(['id_consolidado' => -1])->orderBy('id_consolidado_detalle', 'desc')->get()
         ]);
     }
@@ -181,7 +181,7 @@ class ConsolidadoController extends Controller
             ->join('tbl_consolidados as con', 'tbl_consolidados_detalle.id_consolidado', '=', 'con.id_consolidado')
             ->join('tbl_actividades as act', 'tbl_consolidados_detalle.id_actividad', '=', 'act.id_actividad')
             ->join('tbl_puntos_interes as est', 'act.id_estacion', '=', 'est.id_punto_interes')
-            ->join('tbl_dominios as zon', 'est.id_zona', '=', 'zon.id_dominio')
+            ->join('tbl_dominios as zon', 'est.id_dominio_zona', '=', 'zon.id_dominio')
             ->where([
                 'tbl_consolidados_detalle.id_consolidado' => $deal->id_consolidado
             ])
@@ -206,11 +206,11 @@ class ConsolidadoController extends Controller
             'clientes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            ])->where('id_tercero_responsable', '>', 0)->get(),
             'contratistas' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            ])->where('id_tercero_responsable', '>', 0)->get(),
             'detalle_consolidado' => TblConsolidadoDetalle::select(
                 DB::raw("
                     ROW_NUMBER() OVER(PARTITION BY con.id_consolidado) as item,
@@ -228,7 +228,7 @@ class ConsolidadoController extends Controller
             ->join('tbl_consolidados as con', 'tbl_consolidados_detalle.id_consolidado', '=', 'con.id_consolidado')
             ->join('tbl_actividades as act', 'tbl_consolidados_detalle.id_actividad', '=', 'act.id_actividad')
             ->join('tbl_puntos_interes as est', 'act.id_estacion', '=', 'est.id_punto_interes')
-            ->join('tbl_dominios as zon', 'est.id_zona', '=', 'zon.id_dominio')
+            ->join('tbl_dominios as zon', 'est.id_dominio_zona', '=', 'zon.id_dominio')
             ->where([
                 'tbl_consolidados_detalle.id_consolidado' => $deal->id_consolidado
             ])
@@ -313,13 +313,13 @@ class ConsolidadoController extends Controller
 
     public function getActivities() {
         try {
-            $id_cliente = request()->id_cliente;
-            $id_responsable_cliente = request()->id_encargado;
+            $id_tercero_cliente = request()->id_tercero_cliente;
+            $id_tercero_responsable = request()->id_tercero_encargado;
             $id_consolidado = request()->id_consolidado;
 
             $filters = [
-                'tbl_actividades.id_encargado_cliente' => $id_cliente,
-                'tbl_actividades.id_resposable_contratista' => $id_responsable_cliente,
+                'tbl_actividades.id_tercero_encargado_cliente' => $id_tercero_cliente,
+                'tbl_actividades.id_tercero_resposable_contratista' => $id_tercero_responsable,
                 'tbl_actividades.mes_consolidado' => null
             ];
 
@@ -327,7 +327,7 @@ class ConsolidadoController extends Controller
                 'edit' => true,
                 'model' => TblActividad::select(
                     DB::raw("
-                        ROW_NUMBER() OVER(PARTITION BY tbl_actividades.id_encargado_cliente ORDER BY e.nombre) as item,
+                        ROW_NUMBER() OVER(PARTITION BY tbl_actividades.id_tercero_encargado_cliente ORDER BY e.nombre) as item,
                         tbl_actividades.id_actividad,
                         z.nombre as zona,
                         tbl_actividades.ot,
@@ -341,7 +341,7 @@ class ConsolidadoController extends Controller
                 )
                 ->join('tbl_cotizaciones as c', 'tbl_actividades.id_cotizacion', '=', 'c.id_cotizacion')
                 ->join('tbl_puntos_interes as e', 'c.id_estacion', '=', 'e.id_punto_interes')
-                ->join('tbl_dominios as z', 'e.id_zona', '=', 'z.id_dominio')
+                ->join('tbl_dominios as z', 'e.id_dominio_zona', '=', 'z.id_dominio')
                 ->leftjoin('tbl_consolidados_detalle as det', 'tbl_actividades.id_actividad', '=', 'det.id_actividad')
                 ->where($filters)
                 ->orwhere('det.id_consolidado', '=', $id_consolidado)

@@ -16,17 +16,17 @@ class CreateTblHallazgosTable extends Migration
         Schema::create('tbl_hallazgos', function (Blueprint $table) {
             $table->bigIncrements('id_hallazgo');
             $table->unsignedBigInteger('id_actividad');
-            $table->unsignedBigInteger('id_supervisor');
+            $table->unsignedBigInteger('id_tercero_supervisor');
             $table->string('hallazgo');
-            $table->unsignedBigInteger('id_estado_hallazgo');
+            $table->unsignedBigInteger('id_dominio_estado');
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
             $table->foreign('id_actividad')->references('id_actividad')->on('tbl_actividades')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_supervisor')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_tercero_supervisor')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_estado_hallazgo')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_estado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

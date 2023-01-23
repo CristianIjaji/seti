@@ -16,23 +16,23 @@ class TblCotizacion extends Model
 
     protected $fillable = [
         'ot_trabajo',
-        'id_cliente',
+        'id_tercero_cliente',
         'id_estacion',
-        'id_tipo_trabajo',
+        'id_dominio_tipo_trabajo',
         'fecha_solicitud',
         'fecha_envio',
-        'id_prioridad',
-        'estado',
-        'id_responsable_cliente',
+        'id_dominio_prioridad',
+        'id_dominio_estado',
+        'id_tercero_responsable',
         'valor',
-        'iva',
+        'id_dominio_iva',
         'descripcion',
         'valor_reasignado',
         'id_usuareg',
     ];
 
     public function tblCliente() {
-        return $this->belongsTo(TblTercero::class, 'id_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_cliente');
     }
 
     public function tblEstacion() {
@@ -40,19 +40,19 @@ class TblCotizacion extends Model
     }
 
     public function tblTipoTrabajo() {
-        return $this->belongsTo(TblDominio::class, 'id_tipo_trabajo');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_tipo_trabajo');
     }
 
     public function tblPrioridad() {
-        return $this->belongsTo(TblDominio::class, 'id_prioridad');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_prioridad');
     }
 
     public function tblIva() {
-        return $this->belongsTo(TblDominio::class, 'iva');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_iva');
     }
 
     public function tblContratista() {
-        return $this->belongsTo(TblTercero::class, 'id_responsable_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_responsable');
     }
 
     public function tblusereg() {
@@ -60,7 +60,7 @@ class TblCotizacion extends Model
     }
 
     public function tbldominioestado() {
-        return $this->belongsTo(TblDominio::class, 'estado');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblcotizaciondetalle() {
@@ -68,35 +68,35 @@ class TblCotizacion extends Model
     }
 
     public function getmaterialescotizacion($id_cotizacion) {
-        return TblCotizacionDetalle::where(['id_cotizacion' => $id_cotizacion, 'id_tipo_item' => session('id_dominio_materiales')])->get();
+        return TblCotizacionDetalle::where(['id_cotizacion' => $id_cotizacion, 'id_dominio_tipo_item' => session('id_dominio_materiales')])->get();
     }
 
     public function getmanoobracotizacion($id_cotizacion) {
-        return TblCotizacionDetalle::where(['id_cotizacion' => $id_cotizacion, 'id_tipo_item' => session('id_dominio_mano_obra')])->get();
+        return TblCotizacionDetalle::where(['id_cotizacion' => $id_cotizacion, 'id_dominio_tipo_item' => session('id_dominio_mano_obra')])->get();
     }
 
     public function gettransportecotizacion($id_cotizacion) {
-        return TblCotizacionDetalle::where(['id_cotizacion' => $id_cotizacion, 'id_tipo_item' => session('id_dominio_transporte')])->get();
+        return TblCotizacionDetalle::where(['id_cotizacion' => $id_cotizacion, 'id_dominio_tipo_item' => session('id_dominio_transporte')])->get();
     }
 
     public function getTotalMaterialAttribute() {
         return TblCotizacionDetalle::where([
             'id_cotizacion' => $this->attributes['id_cotizacion'],
-            'id_tipo_item' => session('id_dominio_materiales')
+            'id_dominio_tipo_item' => session('id_dominio_materiales')
         ])->sum('valor_total');
     }
 
     public function getTotalManoObraAttribute() {
         return TblCotizacionDetalle::where([
             'id_cotizacion' => $this->attributes['id_cotizacion'],
-            'id_tipo_item' => session('id_dominio_mano_obra')
+            'id_dominio_tipo_item' => session('id_dominio_mano_obra')
         ])->sum('valor_total');
     }
 
     public function getTotalTransporteAttribute() {
         return TblCotizacionDetalle::where([
             'id_cotizacion' => $this->attributes['id_cotizacion'],
-            'id_tipo_item' => session('id_dominio_transporte')
+            'id_dominio_tipo_item' => session('id_dominio_transporte')
         ])->sum('valor_total');
     }
 
@@ -110,7 +110,7 @@ class TblCotizacion extends Model
 
     public function getTotalIvaAttribute() {
         $totalsiniva = $this->getTotalSinIvaAttribute();
-        $modeloiva = TblDominio::where(['id_dominio' => $this->attributes['iva']])->first();
+        $modeloiva = TblDominio::where(['id_dominio' => $this->attributes['id_dominio_iva']])->first();
         $iva = str_replace(['IVA ', '%'], ['', ''], $modeloiva->nombre);
 
         $valorIva = ($totalsiniva * $iva) / 100;
@@ -181,7 +181,7 @@ class TblCotizacion extends Model
         $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => (isset($this->attributes['id_cotizacion']) ? $this->attributes['id_cotizacion'] : -1)])->get();
 
         foreach ($items as $item) {
-            $carrito[$item->id_tipo_item][$item->id_lista_precio] = [
+            $carrito[$item->id_dominio_tipo_item][$item->id_lista_precio] = [
                 'item' => $item->tblListaprecio->codigo,
                 'descripcion' => $item->descripcion,
                 'cantidad' => $item->cantidad,
@@ -252,16 +252,16 @@ class TblCotizacion extends Model
 
         return new TblCotizacion([
             'ot_trabajo' => $ot,
-            'id_cliente' => (isset($cliente->id_tercero) ? $cliente->id_tercero : null),
+            'id_tercero_cliente' => (isset($cliente->id_tercero) ? $cliente->id_tercero : null),
             'id_estacion' => (isset($sitio->id_punto_interes) ? $sitio->id_punto_interes : null),
-            'id_tipo_trabajo' => (isset($tipo_trabajo->id_dominio) ? $tipo_trabajo->id_dominio : null),
+            'id_dominio_tipo_trabajo' => (isset($tipo_trabajo->id_dominio) ? $tipo_trabajo->id_dominio : null),
             'fecha_solicitud' => $fecha_solicitud,
             'fecha_envio' => $fecha_envio,
-            'id_prioridad' => (isset($prioridad->id_dominio) ? $prioridad->id_dominio : null),
-            'estado' => (isset($estado->id_dominio) ? $estado->id_dominio : null),
-            'id_responsable_cliente' => (isset($encargado->id_tercero) ? $encargado->id_tercero : null),
+            'id_dominio_prioridad' => (isset($prioridad->id_dominio) ? $prioridad->id_dominio : null),
+            'id_dominio_estado' => (isset($estado->id_dominio) ? $estado->id_dominio : null),
+            'id_tercero_responsable' => (isset($encargado->id_tercero) ? $encargado->id_tercero : null),
             'valor' => $valor,
-            'iva' => (isset($iva->id_dominio) ? $iva->id_dominio : null),
+            'id_dominio_iva' => (isset($iva->id_dominio) ? $iva->id_dominio : null),
             'descripcion' => $descripcion,
             'id_usuareg' => auth()->id()
         ]);

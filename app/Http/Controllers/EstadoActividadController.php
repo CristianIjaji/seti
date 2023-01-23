@@ -132,7 +132,7 @@ class EstadoActividadController extends Controller
     }
 
     public  function grid() {
-        return $this->getView('actividades._track');
+        return $this->getView('partials._track');
     }
 
     public function getView($view){
@@ -144,7 +144,9 @@ class EstadoActividadController extends Controller
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('created_at', 'desc')->paginate(10),
-            'request' => $this->filtros
+            'request' => $this->filtros,
+            'title' => 'Estados actividad',
+            'route' => 'stateactivities',
         ]);
 
     }

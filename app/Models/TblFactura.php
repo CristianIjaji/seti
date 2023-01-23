@@ -14,18 +14,18 @@ class TblFactura extends Model
 
     protected $fillable = [
         'numero_factura',
-        'id_estado_factura',
-        'id_proveedor',
+        'id_dominio_estado',
+        'id_tercero_proveedor',
         'dias_pago',
         'id_usuareg'
     ];
 
     public function tblestadofactura() {
-        return $this->belongsTo(TblDominio::class, 'id_estado_factura');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblproveedor() {
-        return $this->belongsTo(TblTercero::class, 'id_proveedor');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_proveedor');
     }
 
     public function tblusuario() {

@@ -17,12 +17,12 @@
         <input type="hidden" id="id_consolidado" value="{{ $consolidado->id_consolidado }}">
 
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-5">
-            <label for="id_cliente" class="required">Cliente</label>
+            <label for="id_tercero_cliente" class="required">Cliente</label>
             @if ($edit)
-                <select name="id_cliente" id="id_cliente" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
+                <select name="id_tercero_cliente" id="id_tercero_cliente" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
                     <option value="">Elegir cliente</option>
                     @foreach ($clientes as $cliente)
-                        <option value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $consolidado->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
+                        <option value="{{ $cliente->id_tercero }}" {{ old('id_tercero_cliente', $consolidado->id_tercero_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
                             {{ $cliente->full_name }} {{ (isset($cliente->tblterceroresponsable) ? ' - '.$cliente->tblterceroresponsable->razon_social : '' ) }}
                         </option>
                     @endforeach
@@ -32,12 +32,12 @@
             @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-12 col-lg-5">
-            <label for="id_responsable_cliente" class="required">Encargado cliente</label>
+            <label for="id_tercero_responsable" class="required">Encargado cliente</label>
             @if ($edit)
-                <select name="id_responsable_cliente" id="id_responsable_cliente" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
+                <select name="id_tercero_responsable" id="id_tercero_responsable" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
                     @forelse ($contratistas as $contratista)
                         <option
-                            value="{{ $contratista->id_tercero }}" {{ old('id_responsable', $consolidado->id_responsable_cliente) == $contratista->id_tercero ? 'selected' : '' }}>
+                            value="{{ $contratista->id_tercero }}" {{ old('id_responsable', $consolidado->id_tercero_responsable) == $contratista->id_tercero ? 'selected' : '' }}>
                             {{ $contratista->full_name }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
                         </option>
                     @empty

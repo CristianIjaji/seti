@@ -87,7 +87,7 @@ class SaveTerceroRequest extends FormRequest
                 'required',
                 'exists:tbl_dominios,id_dominio'
             ],
-            'id_responsable_cliente' => [
+            'id_tercero_responsable' => [
                 !in_array($this->get('id_dominio_tipo_tercero'), [session('id_dominio_representante_cliente'), session('id_dominio_coordinador'), session('id_dominio_almacen')])
                 ? 'nullable'
                 : 'required','exists:tbl_terceros,id_tercero'
@@ -97,7 +97,7 @@ class SaveTerceroRequest extends FormRequest
                 'image'
             ],
             'estado' => [
-                'nullable'   
+                'nullable'
             ],
             'id_usuareg' => [
                 'required',
@@ -113,7 +113,7 @@ class SaveTerceroRequest extends FormRequest
             'id_dominio_tipo_tercero.required' => 'El campo tipo tercero es obligatorio.',
             'dv.required' => 'El campo DV es obligatorio.',
             'razon_social.required' => 'El campo Razón social es obligatorio.',
-            'id_responsable_cliente.required' => 'El campo dependencia es obligatorio.'
+            'id_tercero_responsable.required' => 'El campo dependencia es obligatorio.'
         ];
     }
 }

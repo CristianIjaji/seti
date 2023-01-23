@@ -1,10 +1,10 @@
 @php
     $create = isset($cotizacion->id_cotizacion) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
-    $disable_form = in_array($cotizacion->estado, [session('id_dominio_cotizacion_aprobada')]) ? true : false;
+    $disable_form = in_array($cotizacion->id_dominio_estado, [session('id_dominio_cotizacion_aprobada')]) ? true : false;
     $editable = (
         ($edit) &&
-        in_array($cotizacion->estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta'),
+        in_array($cotizacion->id_dominio_estado, [session('id_dominio_cotizacion_creada'), session('id_dominio_cotizacion_devuelta'),
             session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_rechazada'), session('id_dominio_cotizacion_cancelada')]) ||
         ($edit && Auth::user()->role == session('id_dominio_analista')) ||
         $create
@@ -45,16 +45,16 @@
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_cliente_cotizacion" class="required">Cliente</label>
-                <input type="hidden" id="id_cliente" value="{{ $cotizacion->id_cliente }}">
+                <input type="hidden" id="id_tercero_cliente" value="{{ $cotizacion->id_tercero_cliente }}">
                 @if ($edit && !$disable_form)
                     <div class="row pe-0 pe-md-3">
                         <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
-                            <select class="form-control" name="id_cliente" id="id_cliente_cotizacion" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
+                            <select class="form-control" name="id_tercero_cliente" id="id_cliente_cotizacion" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                                 <option value="">Elegir cliente</option>
                                 @foreach ($clientes as $cliente)
                                     <option
-                                        data-id_cliente="{{ (isset($cliente->tblterceroresponsable) ? $cliente->tblterceroresponsable->id_tercero : $cliente->id_tercero ) }}"
-                                        value="{{ $cliente->id_tercero }}" {{ old('id_cliente', $cotizacion->id_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
+                                        data-id_tercero_cliente="{{ (isset($cliente->tblterceroresponsable) ? $cliente->tblterceroresponsable->id_tercero : $cliente->id_tercero ) }}"
+                                        value="{{ $cliente->id_tercero }}" {{ old('id_tercero_cliente', $cotizacion->id_tercero_cliente) == $cliente->id_tercero ? 'selected' : '' }}>
                                         {{ $cliente->full_name }} {{ (isset($cliente->tblterceroresponsable) ? ' - '.$cliente->tblterceroresponsable->razon_social : '' ) }}
                                     </option>
                                 @endforeach
@@ -67,7 +67,7 @@
                                     data-title="Nuevo cliente"
                                     data-size='modal-xl'
                                     data-reload="false"
-                                    data-select="id_cliente"
+                                    data-select="id_tercero_cliente"
                                     data-action='{{ route('clients.create', "tipo_tercero=".session('id_dominio_representante_cliente')."") }}'
                                     data-toggle="tooltip"
                                     title="Crear cliente"
@@ -116,19 +116,19 @@
                 @endif
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
-                <label for="id_tipo_trabajo" class="required">Tipo trabajo</label>
-                <input type="hidden" id="id_tipo_actividad" value="{{ $cotizacion->id_tipo_trabajo }}">
+                <label for="id_dominio_tipo_trabajo" class="required">Tipo trabajo</label>
+                <input type="hidden" id="id_tipo_actividad" value="{{ $cotizacion->id_dominio_tipo_trabajo }}">
                 @if ($edit && !$disable_form)
-                    <select class="form-control" name="id_tipo_trabajo" id="id_tipo_trabajo" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
+                    <select class="form-control" name="id_dominio_tipo_trabajo" id="id_dominio_tipo_trabajo" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                         <option value="">Elegir tipo trabajo</option>
                         @foreach ($tipos_trabajo as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('id_tipo_trabajo', $cotizacion->id_tipo_trabajo) == $id ? 'selected' : '' }}>
+                            <option value="{{ $id }}" {{ old('id_dominio_tipo_trabajo', $cotizacion->id_dominio_tipo_trabajo) == $id ? 'selected' : '' }}>
                                 {{$nombre}}
                             </option>
                         @endforeach
                     </select>
                 @else
-                    <input type="text" class="form-control" id="id_tipo_trabajo" value="{{ $cotizacion->tblTipoTrabajo->nombre }}" disabled>
+                    <input type="text" class="form-control" id="id_dominio_tipo_trabajo" value="{{ $cotizacion->tblTipoTrabajo->nombre }}" disabled>
                 @endif
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2 input-date">
@@ -136,46 +136,46 @@
                 <input type="text" class="form-control" data-max-date="{{ date('Y-m-d') }}" @if ($edit && !$disable_form) name="fecha_solicitud" data-default-date="{{ $cotizacion->fecha_solicitud }}" @endif id="fecha_solicitud" value="{{ old('fecha_solicitud', $cotizacion->fecha_solicitud) }}" @if ($edit && !$disable_form) required @else disabled @endif readonly>
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
-                <label for="id_prioridad" class="required">Prioridad</label>
+                <label for="id_dominio_prioridad" class="required">Prioridad</label>
                 @if ($edit && !$disable_form)
-                    <select class="form-control" name="id_prioridad" id="id_prioridad" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
+                    <select class="form-control" name="id_dominio_prioridad" id="id_dominio_prioridad" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                         <option value="">Elegir prioridad</option>
                         @foreach ($prioridades as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('id_prioridad', $cotizacion->id_prioridad) == $id ? 'selected' : '' }}>
+                            <option value="{{ $id }}" {{ old('id_dominio_prioridad', $cotizacion->id_dominio_prioridad) == $id ? 'selected' : '' }}>
                                 {{$nombre}}
                             </option>
                         @endforeach
                     </select>
                 @else
-                    <input type="text" class="form-control" id="id_prioridad" value="{{ $cotizacion->tblPrioridad->nombre }}" disabled>
+                    <input type="text" class="form-control" id="id_dominio_prioridad" value="{{ $cotizacion->tblPrioridad->nombre }}" disabled>
                 @endif
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
-                <label for="iva" class="required">IVA %</label>
+                <label for="id_dominio_iva" class="required">IVA %</label>
                 @if ($edit && !$disable_form)
-                    <select class="form-control text-end" name="iva" id="iva" data-dir="rtl" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
+                    <select class="form-control text-end" name="id_dominio_iva" id="id_dominio_iva" data-dir="rtl" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                         @foreach ($impuestos as $id => $nombre)
-                            <option value="{{ $id }}" {{ old('iva', $cotizacion->iva) == $id ? 'selected' : '' }}>
+                            <option value="{{ $id }}" {{ old('id_dominio_iva', $cotizacion->id_dominio_iva) == $id ? 'selected' : '' }}>
                                 {{$nombre}}
                             </option>
                         @endforeach
                     </select>
                 @else
-                    <input type="hidden" id="iva" value="{{ $cotizacion->tblIva->nombre }}">
+                    <input type="hidden" id="id_dominio_iva" value="{{ $cotizacion->tblIva->nombre }}">
                     <input type="text" class="form-control text-end" value="{{ $cotizacion->tblIva->nombre }}" disabled>
                 @endif
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_responsable" class="required">Aprobador</label>
-                <input type="hidden" id="id_resposable_contratista" value="{{ $cotizacion->id_responsable_cliente }}">
+                <input type="hidden" id="id_tercero_resposable_contratista" value="{{ $cotizacion->id_tercero_responsable }}">
                 @if ($edit && !$disable_form)
                     <div class="row pe-0 pe-md-3">
                         <div class="{{ $create_client ? 'col-10 col-md-11' : 'col-12' }}">
-                            <select class="form-control" name="id_responsable_cliente" id="id_responsable" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
+                            <select class="form-control" name="id_tercero_responsable" id="id_responsable" style="width: 100%" @if ($edit && !$disable_form) required @else disabled @endif>
                                 @forelse ($contratistas as $contratista)
                                     <option
                                         data-id_contratista="{{ (isset($contratista->tblterceroresponsable) ? $contratista->tblterceroresponsable->id_tercero : $contratista->id_tercero ) }}"
-                                        value="{{ $contratista->id_tercero }}" {{ old('id_responsable', $cotizacion->id_responsable_cliente) == $contratista->id_tercero ? 'selected' : '' }}>
+                                        value="{{ $contratista->id_tercero }}" {{ old('id_responsable', $cotizacion->id_tercero_responsable) == $contratista->id_tercero ? 'selected' : '' }}>
                                         {{ $contratista->full_name.(isset($contratista->razon_social) ? ' - '.$contratista->nombres.' '.$contratista->apellidos : '') }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
                                     </option>
                                 @empty
@@ -205,7 +205,7 @@
             @if (!$create)
                 <div class="form-group text-truncate col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                     <label>Estado</label>
-                    <label data-toggle="tooltip" title="{{ $cotizacion->tbldominioestado->nombre }}" class="form-control text-truncate  {{ isset($cotizacion->status[$cotizacion->estado]) ? $cotizacion->status[$cotizacion->estado] : '' }}">{{ $cotizacion->tbldominioestado->nombre }}</label>
+                    <label data-toggle="tooltip" title="{{ $cotizacion->tbldominioestado->nombre }}" class="form-control text-truncate  {{ isset($cotizacion->status[$cotizacion->id_dominio_estado]) ? $cotizacion->status[$cotizacion->id_dominio_estado] : '' }}">{{ $cotizacion->tbldominioestado->nombre }}</label>
                 </div>
             @endif
             <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
@@ -276,11 +276,13 @@
         </div>
 
         @include('partials.buttons', [$create, 'edit' => $editable, 'label' => $create ? 'Crear cotización' : 'Editar cotización'])
-
+    @if ($create || $edit)
+        </form>
+    @endif
 @if (!$create)
         </div>
         <div class="tab-pane" id="track-quote" role="tabpanel" aria-labelledby="track-tab-quote">
-            @include('cotizaciones._track', [$edit, 'model' => $estados_cotizacion])
+            @include('partials._track', [$edit, 'model' => $estados_cotizacion, 'title' => 'Estados cotización', 'route' => 'statequotes'])
         </div>
     </div>
 @endif

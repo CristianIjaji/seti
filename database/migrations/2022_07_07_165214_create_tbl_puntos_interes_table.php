@@ -15,25 +15,25 @@ class CreateTblPuntosInteresTable extends Migration
     {
         Schema::create('tbl_puntos_interes', function (Blueprint $table) {
             $table->bigIncrements('id_punto_interes');
-            $table->unsignedBigInteger('id_cliente');
-            $table->unsignedBigInteger('id_zona');
+            $table->unsignedBigInteger('id_tercero_cliente');
+            $table->unsignedBigInteger('id_dominio_zona');
             $table->string('nombre');
             $table->string('latitud')->nullable();
             $table->string('longitud')->nullable();
             $table->smallInteger('estado')->default(1);
             $table->text('descripcion');
-            $table->unsignedBigInteger('id_tipo_transporte');
-            $table->unsignedBigInteger('id_tipo_accesso');
+            $table->unsignedBigInteger('id_dominio_tipo_transporte');
+            $table->unsignedBigInteger('id_dominio_tipo_accesso');
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_cliente')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_tercero_cliente')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_zona')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_zona')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_tipo_transporte')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_tipo_transporte')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_tipo_accesso')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_dominio_tipo_accesso')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

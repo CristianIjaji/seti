@@ -67,6 +67,7 @@ Route::post('priceList/import', [ListaPrecioController::class, 'import'])->name(
 Route::get('stores/export', [InventarioController::class, 'export'])->name('stores.export');
 Route::get('stores/template', [InventarioController::class, 'downloadTemplate'])->name('stores.template');
 Route::resource('stores', InventarioController::class);
+Route::get('stores/{id_almacen}/{tipo_carrito}', [InventarioController::class, 'search'])->name('stores.search');
 Route::post('stores/grid', [InventarioController::class, 'grid'])->name('stores.grid');
 Route::post('stores/import', [InventarioController::class, 'import'])->name('stores.import');
 
@@ -78,11 +79,13 @@ Route::post('moves/grid', [MovimientoController::class, 'grid'])->name('moves.gr
 Route::post('moves/import', [MovimientoController::class], 'import')->name('moves.import');
 
 // Controlador del kardex
+Route::get('kardex/export', [KardexController::class, 'export'])->name('kardex.export');
 Route::resource('kardex', KardexController::class);
 Route::post('kardex/grid', [KardexController::class, 'grid'])->name('kardex.grid');
 
 // Controlador de orden de compra
 Route::resource('purchases', OrdenController::class);
+Route::post('purchases/grid', [OrdenController::class, 'grid'])->name('purchases.grid');
 
 // Controlador cotizaciones
 Route::get('quotes/exportQuote', [CotizacionController::class, 'exportQuote'])->name('quotes.exportQuote');

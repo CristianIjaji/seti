@@ -18,7 +18,6 @@ class TblMovimientoDetalle extends Model
         'id_inventario',
         'cantidad',
         'valor_unitario',
-        'iva',
         'valor_total',
         'id_usuareg'
     ];
@@ -29,9 +28,5 @@ class TblMovimientoDetalle extends Model
 
     public function tblinventario() {
         return $this->belongsTo(TblInventario::class, 'id_inventario');
-    }
-
-    public function tbliva() {
-        return $this->belongsTo(TblDominio::class, 'iva');
     }
 }

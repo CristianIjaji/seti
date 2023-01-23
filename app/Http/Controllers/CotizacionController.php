@@ -74,8 +74,8 @@ class CotizacionController extends Controller
             }
             if(Auth::user()->role == session('id_dominio_coordinador')) {
                 $querybuilder->where([
-                    'tbl_cotizaciones.id_responsable_cliente' => Auth::user()->id_tercero,
-                    'tbl_cotizaciones.estado' => session('id_dominio_cotizacion_creada'),
+                    'tbl_cotizaciones.id_tercero_responsable' => Auth::user()->id_tercero,
+                    'tbl_cotizaciones.id_dominio_estado' => session('id_dominio_cotizacion_creada'),
                 ]);
                 $querybuilder->orwhere([
                     'tbl_cotizaciones.id_usuareg' => Auth::user()->id_usuario
@@ -87,40 +87,43 @@ class CotizacionController extends Controller
     }
 
     private function sendNotification($cotizacion, $channel, $event) {
-        $cotizacion->descripcion = $cotizacion->tblEstacion->nombre."\nFecha solicitud: ".$cotizacion->fecha_solicitud."\nAlcance: ".$cotizacion->descripcion;
+        try {
+            $cotizacion->descripcion = $cotizacion->tblEstacion->nombre."\nFecha solicitud: ".$cotizacion->fecha_solicitud."\nAlcance: ".$cotizacion->descripcion;
 
-        $options = [
-            'cluster' => 'us2',
-            'useTLS' => true
-        ];
+            $options = [
+                'cluster' => 'us2',
+                'useTLS' => true
+            ];
 
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            $options
-        );
+            $pusher = new Pusher(
+                env('PUSHER_APP_KEY'),
+                env('PUSHER_APP_SECRET'),
+                env('PUSHER_APP_ID'),
+                $options
+            );
 
-        $pusher->trigger(
-            $channel,
-            $event,
-            $cotizacion
-        );
+            $pusher->trigger(
+                $channel,
+                $event,
+                $cotizacion
+            );
+        } catch (\Throwable $th) {
+        }
     }
 
     private function getDetailQuote($quote) {
-        TblCotizacionDetalle::where('id_cotizacion', '=', $quote->id_cotizacion)->wherenotin('id_lista_precio', request()->id_lista_precio)->delete();
-
+        TblCotizacionDetalle::where('id_cotizacion', '=', $quote->id_cotizacion)->wherenotin('id_lista_precio', request()->id_item)->delete();
         $total = 0;
-        foreach (request()->id_tipo_item as $index => $valor) {
-            $detalle = TblCotizacionDetalle::where(['id_cotizacion' => $quote->id_cotizacion, 'id_lista_precio' => request()->id_lista_precio[$index]])->first();
+
+        foreach (request()->id_dominio_tipo_item as $index => $valor) {
+            $detalle = TblCotizacionDetalle::where(['id_cotizacion' => $quote->id_cotizacion, 'id_lista_precio' => request()->id_item[$index]])->first();
             if(!$detalle) {
                 $detalle = new TblCotizacionDetalle;
             }
 
             $detalle->id_cotizacion = $quote->id_cotizacion;
-            $detalle->id_tipo_item = request()->id_tipo_item[$index];
-            $detalle->id_lista_precio = request()->id_lista_precio[$index];
+            $detalle->id_dominio_tipo_item = request()->id_dominio_tipo_item[$index];
+            $detalle->id_lista_precio = request()->id_item[$index];
             $detalle->descripcion = request()->descripcion_item[$index];
             $detalle->unidad = request()->unidad[$index];
             $detalle->cantidad = request()->cantidad[$index];
@@ -162,7 +165,7 @@ class CotizacionController extends Controller
             'clientes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
+            ])->where('id_tercero_responsable', '>', 0)->get(),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
@@ -183,8 +186,8 @@ class CotizacionController extends Controller
     public function store(SaveCotizacionRequest $request)
     {
         try {
+            $this->authorize('create', new TblCotizacion);
             $cotizacion = TblCotizacion::create($request->validated());
-            $this->authorize('create', $cotizacion);
 
             $cotizacion->valor = $this->getDetailQuote($cotizacion);
             $cotizacion->save();
@@ -238,9 +241,9 @@ class CotizacionController extends Controller
     {
         $this->authorize('update', $quote);
 
-        $id_cliente = (isset($quote->tblCliente->id_responsable_cliente)
-            ? $quote->tblCliente->id_responsable_cliente
-            : $quote->id_cliente
+        $id_tercero_cliente = (isset($quote->tblCliente->id_tercero_responsable)
+            ? $quote->tblCliente->id_tercero_responsable
+            : $quote->id_tercero_cliente
         );
 
         return view('cotizaciones._form', [
@@ -251,14 +254,14 @@ class CotizacionController extends Controller
             'clientes' => TblTercero::where([
                 'estado' => 1,
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
-            ])->where('id_responsable_cliente', '>', 0)->get(),
-            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_cliente' => $id_cliente])->pluck('nombre', 'id_punto_interes'),
+            ])->where('id_tercero_responsable', '>', 0)->get(),
+            'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_tercero_cliente' => $id_tercero_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo')),
             'prioridades' => TblDominio::getListaDominios(session('id_dominio_tipos_prioridad')),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
             'contratistas' => TblTercero::where('estado', '=', 1)
-            ->wherein('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
-            ->get(),
+                ->wherein('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
+                ->get(),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas')),
             'create_client' => isset(TblUsuario::getPermisosMenu('clients.index')->create) ? TblUsuario::getPermisosMenu('clients.index')->create : false,
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
@@ -279,7 +282,7 @@ class CotizacionController extends Controller
         try {
             $this->authorize('update', $quote);
 
-            $estado = $quote->estado;
+            $estado = $quote->id_dominio_estado;
             $quote->update($request->validated());
 
             $quote->valor = $this->getDetailQuote($quote);
@@ -484,24 +487,24 @@ class CotizacionController extends Controller
                 tbl_cotizaciones.valor
             ")
         )
-        ->join('tbl_terceros as t', 'tbl_cotizaciones.id_cliente', '=', 't.id_tercero')
-        ->leftjoin('tbl_terceros as tc', 't.id_responsable_cliente', '=', 'tc.id_tercero')
+        ->join('tbl_terceros as t', 'tbl_cotizaciones.id_tercero_cliente', '=', 't.id_tercero')
+        ->leftjoin('tbl_terceros as tc', 't.id_tercero_responsable', '=', 'tc.id_tercero')
         ->join('tbl_puntos_interes as pi', 'tbl_cotizaciones.id_estacion', '=', 'pi.id_punto_interes')
-        ->join('tbl_dominios as tt', 'tbl_cotizaciones.id_tipo_trabajo', '=', 'tt.id_dominio')
-        ->join('tbl_dominios as p', 'tbl_cotizaciones.id_prioridad', '=', 'p.id_dominio')
-        ->join('tbl_dominios as e', 'tbl_cotizaciones.estado', '=', 'e.id_dominio')
+        ->join('tbl_dominios as tt', 'tbl_cotizaciones.id_dominio_tipo_trabajo', '=', 'tt.id_dominio')
+        ->join('tbl_dominios as p', 'tbl_cotizaciones.id_dominio_prioridad', '=', 'p.id_dominio')
+        ->join('tbl_dominios as e', 'tbl_cotizaciones.id_dominio_estado', '=', 'e.id_dominio')
         ->join('tbl_dominios as iva', 'tbl_cotizaciones.iva', '=', 'iva.id_dominio')
-        ->join('tbl_terceros as tpr', 'tbl_cotizaciones.id_responsable_cliente', '=', 'tpr.id_tercero')
+        ->join('tbl_terceros as tpr', 'tbl_cotizaciones.id_tercero_responsable', '=', 'tpr.id_tercero')
 
         ->where(function($q) use($option) {
             if($option == 1) {
                 $this->dinamyFilters($q, [
-                    'tbl_cotizaciones.id_cliente' => 'id_cliente',
-                    'tbl_cotizaciones.estado' => 'estado',
-                    'tbl_cotizaciones.id_responsable_cliente' => 'id_responsable_cliente'
+                    'tbl_cotizaciones.id_tercero_cliente' => 'id_tercero_cliente',
+                    'tbl_cotizaciones.id_dominio_estado' => 'id_dominio_estado',
+                    'tbl_cotizaciones.id_tercero_responsable' => 'id_tercero_responsable'
                 ]);
             } else {
-                $q->where('tbl_cotizaciones.estado', '=', '-1');
+                $q->where('tbl_cotizaciones.id_dominio_estado', '=', '-1');
             }
         })
         ->get();
@@ -529,8 +532,8 @@ class CotizacionController extends Controller
     
     private function updateQuote($quote, $estados, $nuevoEstado, $msg, $notification, $usuarioFinal = '') {
         try {
-            if(in_array($quote->estado, $estados)) {
-                $quote->estado = $nuevoEstado;
+            if(in_array($quote->id_dominio_estado, $estados)) {
+                $quote->id_dominio_estado = $nuevoEstado;
                 
                 $this->createTrack($quote, $nuevoEstado);
                 unset($quote->comentario);

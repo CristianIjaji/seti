@@ -16,11 +16,10 @@ class TblInventario extends Model
 
     protected $fillable = [
         'id_tercero_almacen',
-        'clasificacion',
+        'id_dominio_clasificacion',
         'descripcion',
         'marca',
         'cantidad',
-        'iva',
         'unidad',
         'valor_unitario',
         'ubicacion',
@@ -34,8 +33,8 @@ class TblInventario extends Model
         return $this->belongsTo(TblTercero::class, 'id_tercero_almacen');
     }
 
-    public function tblIva() {
-        return $this->belongsTo(TblDominio::class, 'iva');
+    public function tblclasificacion() {
+        return $this->belongsTo(TblDominio::class, 'id_dominio_clasificacion');
     }
 
     public function tblusuario() {
@@ -59,19 +58,22 @@ class TblInventario extends Model
         return (isset($this->attributes['valor_unitario'])) ? $this->attributes['valor_unitario'] : 0;
     }
 
+    public function getProductoAttribute() {
+        return $this->tblclasificacion->nombre.' '.$this->attributes['descripcion'].' '.$this->attributes['marca'];
+    }
+
     public static function getRules() {
         return [
             '0' => 'required|exists:tbl_terceros,documento',
-            '1' => 'required|string|max:255',
+            '1' => 'required|exists:tbl_dominios,nombre',
             '2' => 'required|string|max:255',
             '3' => 'nullable|string:max:255',
             '4' => 'required',
             '5' => 'required|string:max:255',
             '6' => 'required',
-            '7' => 'nullable',
-            '8' => 'nullable|string|max:255',
-            '9' => 'required|min:0',
-            '10' => 'required|min:0'
+            '7' => 'nullable|string|max:255',
+            '8' => 'required|min:0',
+            '9' => 'required|min:0'
         ];
     }
 
@@ -84,10 +86,9 @@ class TblInventario extends Model
             '4' => 'Cantidad',
             '5' => 'Unidad',
             '6' => 'Valor Unitario',
-            '7' => 'IVA',
-            '8' => 'Ubicación',
-            '9' => 'Cantidad Mínima',
-            '10' => 'Cantidad Máxima'
+            '7' => 'Ubicación',
+            '8' => 'Cantidad Mínima',
+            '9' => 'Cantidad Máxima'
         ];
     }
 
@@ -99,21 +100,15 @@ class TblInventario extends Model
         $cantidad = trim($row[4]);
         $unidad = trim($row[5]);
         $valorUnitario = trim($row[6]);
-        $iva = trim($row[7]);
-        $ubicacion = trim($row[8]);
-        $cantidadMinima = trim($row[9]);
-        $cantidadMaxima = trim($row[10]);
+        $ubicacion = trim($row[7]);
+        $cantidadMinima = trim($row[8]);
+        $cantidadMaxima = trim($row[9]);
 
         $almacen = TblTercero::where(['documento' => $documento])->first();
-        $impuesto = TblDominio::where(['descripcion' => "$iva%"])->first();
-        $porcentajeImpuesto = (isset($impuesto->id_dominio)
-            ? intval(str_replace(['iva', ' ', '%'], ['', '', ''], mb_strtolower($impuesto->nombre)))
-            : 0
-        ) / 100;
-        $valorImpuesto = ($cantidad * $valorUnitario) * $porcentajeImpuesto;
+        $dominio_clasificacion = TblDominio::where(['nombre' => $clasificacion])->first();
 
         $existe = TblInventario::where([
-            'clasificacion' => $clasificacion,
+            'id_dominio_clasificacion' => (isset($dominio_clasificacion->id_dominio) ? $dominio_clasificacion->id_dominio : null),
             'descripcion' => $descripcion,
             'marca' => $marca
         ])->first();
@@ -122,13 +117,12 @@ class TblInventario extends Model
             // Se intenta crear producto
             $producto = TblInventario::create([
                 'id_tercero_almacen' => (isset($almacen->id_tercero) ? $almacen->id_tercero : null),
-                'clasificacion' => $clasificacion,
+                'id_dominio_clasificacion' => (isset($dominio_clasificacion->id_dominio) ? $dominio_clasificacion->id_dominio : null),
                 'descripcion' => $descripcion,
                 'marca' => $marca,
                 'cantidad' => $cantidad,
                 'unidad' => $unidad,
                 'valor_unitario' => $valorUnitario,
-                'iva' => (isset($impuesto->id_dominio) ? $impuesto->id_dominio : null),
                 'ubicacion' => $ubicacion,
                 'cantidad_minima' => $cantidadMinima,
                 'cantidad_maxima' => $cantidadMaxima,
@@ -150,6 +144,7 @@ class TblInventario extends Model
                     'id_tercero_entrega' => auth()->user()->id_tercero,
                     'documento' => '',
                     'observaciones' => 'Inventario inicial',
+                    'id_dominio_iva' => TblDominio::where(['estado' => 1, 'nombre' => 'IVA 19%'])->first()->id_dominio,
                     'total' => 0,
                     'saldo' => 0,
                     'id_dominio_estado' => session('id_dominio_movimiento_pendiente'),
@@ -162,8 +157,7 @@ class TblInventario extends Model
                 'id_inventario' => $producto->id_inventario,
                 'cantidad' => $cantidad,
                 'valor_unitario' => $valorUnitario,
-                'iva' => (isset($impuesto->id_dominio) ? $impuesto->id_dominio : null),
-                'valor_total' => ($cantidad * $valorUnitario) + $valorImpuesto,
+                'valor_total' => ($cantidad * $valorUnitario),
                 'id_usuareg' => auth()->id()
             ]);
 
@@ -177,7 +171,7 @@ class TblInventario extends Model
                 'valor_total' => ($cantidad * $valorUnitario),
                 'saldo_cantidad' => $producto->cantidad,
                 'saldo_valor_unitario' => $valorUnitario,
-                'saldo_valor_total' => ($cantidad * $valorUnitario) + $valorImpuesto,
+                'saldo_valor_total' => ($cantidad * $valorUnitario),
                 'id_usuareg' => auth()->id()
             ]);
 

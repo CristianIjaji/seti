@@ -26,7 +26,7 @@ class TblTercerosTable extends Migration
             $table->string('correo');
             $table->string('telefono');
             $table->unsignedBigInteger('id_dominio_tipo_tercero');
-            $table->unsignedBigInteger('id_responsable_cliente')->nullable();
+            $table->unsignedBigInteger('id_tercero_responsable')->nullable();
             $table->string('logo')->default('');
             $table->integer('estado')->default(1);
             $table->unsignedBigInteger('id_usuareg');
@@ -36,7 +36,7 @@ class TblTercerosTable extends Migration
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_dominio_tipo_tercero')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_responsable_cliente')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_tercero_responsable')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

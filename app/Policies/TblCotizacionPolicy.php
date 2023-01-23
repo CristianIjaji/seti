@@ -104,7 +104,7 @@ class TblCotizacionPolicy
 
 
     public function cancelQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_rechazada')])) {
+        if(in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_rechazada')])) {
             return false;
         }
 
@@ -112,8 +112,8 @@ class TblCotizacionPolicy
     }
 
     public function checkQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) ||
-            ($tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero && $tblCotizacion->id_usuareg !== $tblUsuario->id_usuario)) {
+        if(!in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_creada')]) ||
+            ($tblCotizacion->id_tercero_responsable != $tblUsuario->tbltercero->id_tercero && $tblCotizacion->id_usuareg !== $tblUsuario->id_usuario)) {
             return false;
         }
 
@@ -121,8 +121,8 @@ class TblCotizacionPolicy
     }
 
     public function denyQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_creada')]) ||
-            ($tblCotizacion->id_responsable_cliente != $tblUsuario->tbltercero->id_tercero && $tblCotizacion->id_usuareg !== $tblUsuario->id_usuario)) {
+        if(!in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_creada')]) ||
+            ($tblCotizacion->id_tercero_responsable != $tblUsuario->tbltercero->id_tercero && $tblCotizacion->id_usuareg !== $tblUsuario->id_usuario)) {
             return false;
         }
 
@@ -130,7 +130,7 @@ class TblCotizacionPolicy
     }
 
     public function waitQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_revisada')])) {
+        if(!in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_revisada')])) {
             return false;
         }
 
@@ -138,7 +138,7 @@ class TblCotizacionPolicy
     }
 
     public function rejectQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_pendiente_aprobacion')])) {
+        if(!in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_pendiente_aprobacion')])) {
             return false;
         }
 
@@ -146,7 +146,7 @@ class TblCotizacionPolicy
     }
 
     public function aproveQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_pendiente_aprobacion')])) {
+        if(!in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_pendiente_aprobacion')])) {
             return false;
         }
 
@@ -157,7 +157,7 @@ class TblCotizacionPolicy
         // Se valida sí ya existe una actividad asociada
         $actividad = TblActividad::where(['id_cotizacion' => $tblCotizacion->id_cotizacion])->first();
 
-        if(in_array($tblCotizacion->estado, [session('id_dominio_cotizacion_cancelada')]) || isset($actividad->id_actividad)) {
+        if(in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_cancelada')]) || isset($actividad->id_actividad)) {
             return false;
         }
 
@@ -168,7 +168,7 @@ class TblCotizacionPolicy
         // Se valida sí ya existe una actividad asociado
         $actividad = TblActividad::where(['id_cotizacion' => $tblCotizacion->id_cotizacion])->first();
 
-        if($tblCotizacion->estado != session('id_dominio_cotizacion_aprobada') || isset($actividad->id_actividad)) {
+        if($tblCotizacion->id_dominio_estado != session('id_dominio_cotizacion_aprobada') || isset($actividad->id_actividad)) {
             return false;
         }
 

@@ -14,23 +14,23 @@ class TblConsolidado extends Model
     protected $primaryKey = 'id_consolidado';
 
     protected $fillable = [
-        'id_cliente',
+        'id_tercero_cliente',
         'mes',
-        'id_estado_consolidado',
-        'id_responsable_cliente',
+        'id_dominio_estado',
+        'id_tercero_responsable',
         'id_usuareg'
     ];
 
     public function tblcliente() {
-        return $this->belongsTo(TblTercero::class, 'id_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_cliente');
     }
 
     public function tblestadoconsolidado() {
-        return $this->belongsTo(TblDominio::class, 'id_estado_consolidado');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblresponsablecliente() {
-        return $this->belongsTo(TblTercero::class, 'id_responsable_cliente');        
+        return $this->belongsTo(TblTercero::class, 'id_tercero_responsable');        
     }
 
     public function tblusuario() {

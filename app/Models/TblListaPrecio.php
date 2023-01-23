@@ -15,8 +15,8 @@ class TblListaPrecio extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'id_cliente',
-        'id_tipo_item',
+        'id_tercero_cliente',
+        'id_dominio_tipo_item',
         'codigo',
         'descripcion',
         'unidad',
@@ -27,11 +27,11 @@ class TblListaPrecio extends Model
     ];
 
     public function tbltercerocliente() {
-        return $this->belongsTo(TblTercero::class, 'id_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_cliente');
     }
    
     public function tbldominioitem() {
-        return $this->belongsTo(TblDominio::class, 'id_tipo_item');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_tipo_item');
     }
    
     public function tblusuario() {
@@ -94,14 +94,14 @@ class TblListaPrecio extends Model
         $item = TblDominio::where(['nombre' => $tipo_item, 'id_dominio_padre' => $parametro_items])->first();
 
         $existe = TblListaPrecio::where([
-            'id_cliente' => $cliente->id_tercero,
+            'id_tercero_cliente' => $cliente->id_tercero,
             'codigo' => $codigo
         ])->first();
 
         if(!$existe) {
             return new TblListaPrecio([
-                'id_cliente' => $cliente->id_tercero,
-                'id_tipo_item' => $item->id_dominio,
+                'id_tercero_cliente' => $cliente->id_tercero,
+                'id_dominio_tipo_item' => $item->id_dominio,
                 'codigo' => $codigo,
                 'descripcion' => $descripcion,
                 'unidad' => $unidad,

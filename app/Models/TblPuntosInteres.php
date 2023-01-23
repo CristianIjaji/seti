@@ -14,32 +14,32 @@ class TblPuntosInteres extends Model
     protected $guarded = [];
 
     protected $filable = [
-        'id_cliente',
-        'id_zona',
+        'id_tercero_cliente',
+        'id_dominio_zona',
         'nombre',
         'latitud',
         'longitud',
         'estado',
         'descripcion',
-        'id_tipo_transporte',
-        'id_tipo_accesso',
+        'id_dominio_tipo_transporte',
+        'id_dominio_tipo_accesso',
         'id_usuareg'
     ];
 
     public function tblcliente() {
-        return $this->belongsTo(TblTercero::class, 'id_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_cliente');
     }
 
     public function tbldominiozona() {
-        return $this->belongsTo(TblDominio::class, 'id_zona');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_zona');
     }
 
     public function tbldominiotransporte() {
-        return $this->belongsTo(TblDominio::class, 'id_tipo_transporte');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_tipo_transporte');
     }
 
     public function tbldominioacceso() {
-        return $this->belongsTo(TblDominio::class, 'id_tipo_accesso');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_tipo_accesso');
     }
 
     public function tblusuario() {
@@ -101,14 +101,14 @@ class TblPuntosInteres extends Model
         $acceso = TblDominio::where(['nombre' => $acceso, 'id_dominio_padre' => $parametro_acceso])->first();
 
         return new TblPuntosInteres([
-            'id_cliente' => (isset($cliente->id_tercero) ? $cliente->id_tercero : null),
-            'id_zona' => (isset($zona->id_dominio) ? $zona->id_dominio : null),
+            'id_tercero_cliente' => (isset($cliente->id_tercero) ? $cliente->id_tercero : null),
+            'id_dominio_zona' => (isset($zona->id_dominio) ? $zona->id_dominio : null),
             'nombre' => $nombre,
             'latitud' => $latitud,
             'longitud' => $longitud,
             'descripcion' => $descripcion,
-            'id_tipo_transporte' => (isset($transporte->id_dominio) ? $transporte->id_dominio : null),
-            'id_tipo_accesso' => (isset($acceso->id_dominio) ? $acceso->id_dominio : null),
+            'id_dominio_tipo_transporte' => (isset($transporte->id_dominio) ? $transporte->id_dominio : null),
+            'id_dominio_tipo_accesso' => (isset($acceso->id_dominio) ? $acceso->id_dominio : null),
             'id_usuareg' => auth()->id()
         ]);
     }

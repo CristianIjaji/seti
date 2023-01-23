@@ -15,20 +15,20 @@ class TblActividad extends Model
     protected $fillable = [
         'ot',
         'id_tipo_actividad',
-        'id_subsistema',
+        'id_dominio_subsistema',
         'descripcion',
-        'id_encargado_cliente',
-        'id_resposable_contratista',
+        'id_tercero_encargado_cliente',
+        'id_tercero_resposable_contratista',
         'id_estacion',
         'permiso_acceso',
         'fecha_solicitud',
         'fecha_programacion',
         'fecha_reprogramacion',
         'fecha_ejecucion',
-        'id_estado_actividad',
+        'id_dominio_estado',
         'id_cotizacion',
         'id_orden_compra',
-        'id_informe',
+        'id_informe_actividad',
         'fecha_liquidado',
         'liquidado',
         'mes_consolidado',
@@ -42,15 +42,15 @@ class TblActividad extends Model
     }
 
     public function tblsubsistema() {
-        return $this->belongsTo(TblDominio::class, 'id_subsistema');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_subsistema');
     }
 
     public function tblencargadocliente() {
-        return $this->belongsTo(TblTercero::class, 'id_encargado_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_encargado_cliente');
     }
 
     public function tblresposablecontratista() {
-        return $this->belongsTo(TblTercero::class, 'id_resposable_contratista');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_resposable_contratista');
     }
 
     public function tblestacion() {
@@ -58,7 +58,7 @@ class TblActividad extends Model
     }
 
     public function tblestadoactividad() {
-        return $this->belongsTo(TblDominio::class, 'id_estado_actividad');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblcotizacion() {
@@ -70,7 +70,7 @@ class TblActividad extends Model
     }
 
     public function tblinforme() {
-        // return $this->belongsTo(tblinforme::class, 'id_informe');
+        // return $this->belongsTo(tblinforme::class, 'id_informe_actividad');
     }
 
     public function tblconsolidadodetalle() {
@@ -82,7 +82,7 @@ class TblActividad extends Model
     }
 
     public function getEstadoAttribute() {
-        return $this->attributes['id_estado_actividad'];
+        return $this->attributes['id_dominio_estado'];
     }
 
     public function getStatusAttribute() {

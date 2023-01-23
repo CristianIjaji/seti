@@ -99,7 +99,7 @@ class TblUsuario extends Authenticatable
         $menus = DB::table('tbl_menu_tipo_tercero', 't')
             ->join('tbl_menus as m', 't.id_menu', '=', 'm.id_menu')
             ->select('m.id_menu', 'm.url', 'm.icon', 'm.nombre', 'm.id_menu_padre', 'm.orden')
-            ->where(['m.estado' => 1, 't.id_tipo_tercero' => Auth::user()->role])
+            ->where(['m.estado' => 1, 't.id_dominio_tipo_tercero' => Auth::user()->role])
             ->orderBy(DB::raw('COALESCE(id_menu_padre, orden)', 'asc'))
             ->get();
         
@@ -123,7 +123,7 @@ class TblUsuario extends Authenticatable
     }
 
     public static function getPermisosMenu($menu) {
-        return TblMenuTipoTercero::where(['id_menu' => TblMenu::where(['url' => $menu])->first()->id_menu, 'id_tipo_tercero' => Auth::user()->role])->first();
+        return TblMenuTipoTercero::where(['id_menu' => TblMenu::where(['url' => $menu])->first()->id_menu, 'id_dominio_tipo_tercero' => Auth::user()->role])->first();
     }
 
     public function getMimesTypeAttribute() {

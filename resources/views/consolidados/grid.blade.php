@@ -9,11 +9,11 @@
     ],
     'headers' => [
         ['name' => 'id_consolidado', 'label' => '#', 'col' => 'col-2', 'align' => 'text-end'],
-        ['name' => 'id_cliente', 'label' => 'Cliente', 'col' => 'col-4', 'options' => $clientes],
+        ['name' => 'id_tercero_cliente', 'label' => 'Cliente', 'col' => 'col-4', 'options' => $clientes],
         ['name' => 'mes', 'label' => 'Mes', 'col' => 'col-3', 'align' => 'text-capitalize',
             'class' => 'input-months text-capitalize', 'data' => ['format' => 'YYYY-MMMM', 'viewmode' => "months"]
         ],
-        ['name' => 'id_estado_consolidado', 'label' => 'Estado', 'col' => 'col-2', 'options' => $estados],
+        ['name' => 'id_dominio_estado', 'label' => 'Estado', 'col' => 'col-2', 'options' => $estados],
         ['name' => '', 'label' => 'Acciones', 'actions' => [
             'btnOptions' => [
                 'view' => $view,

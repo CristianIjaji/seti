@@ -26,7 +26,7 @@ class TblTercero extends Model
         'correo',
         'telefono',
         'id_dominio_tipo_tercero',
-        'id_responsable_cliente',
+        'id_tercero_responsable',
         'logo',
         'estado',
         'id_usuareg'
@@ -45,7 +45,7 @@ class TblTercero extends Model
     }
 
     public function tblterceroresponsable() {
-        return $this->belongsTo(TblTercero::class, 'id_responsable_cliente');
+        return $this->belongsTo(TblTercero::class, 'id_tercero_responsable');
     }
 
     public function tbluser() {
@@ -92,7 +92,7 @@ class TblTercero extends Model
     }
 
     public static function getTercerosTipo($id_dominio_tipo) {
-        $nombre_tercero = (in_array($id_dominio_tipo, [session('id_dominio_cliente')])
+        $nombre_tercero = (in_array($id_dominio_tipo, [session('id_dominio_cliente'), session('id_dominio_proveedor')])
             ? "COALESCE(razon_social, CONCAT(nombres, ' ', apellidos))"
             : "CONCAT(t.nombres, ' ', t.apellidos)"
         );
@@ -173,7 +173,7 @@ class TblTercero extends Model
             'correo' => $correo,
             'telefono' => $telefono,
             'id_dominio_tipo_tercero' => (isset($tipoTercero->id_dominio) ? $tipoTercero->id_dominio : null),
-            'id_responsable_cliente' => (isset($responsable->id_tercero) ? $responsable->id_tercero : null),
+            'id_tercero_responsable' => (isset($responsable->id_tercero) ? $responsable->id_tercero : null),
             'id_usuareg' => auth()->id()
         ]);
     }
