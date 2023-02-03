@@ -176,6 +176,10 @@ class TblCotizacion extends Model
             : null;
     }
 
+    public function getEstadoAttribute() {
+        return $this->attributes['id_dominio_estado'];
+    }
+
     public function getDetalleCotizacion() {
         $carrito = [];
         $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => (isset($this->attributes['id_cotizacion']) ? $this->attributes['id_cotizacion'] : -1)])->get();

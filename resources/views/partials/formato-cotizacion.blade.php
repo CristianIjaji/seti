@@ -111,7 +111,7 @@
         <tr>
             <td></td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->tblListaprecio->codigo }}</td>
-            <td colspan="3" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$nowrap }} height: {{ ((strlen(trim($detalle->descripcion)) / 60) > 1 ? (strlen(trim($detalle->descripcion)) / 60) : 1) * 28 }}px;">
+            <td colspan="3" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$nowrap }} height: {{ ((strlen(trim($detalle->descripcion)) / 60) > 1 ? (strlen(trim($detalle->descripcion)) / 60) : 1) * 32 }}px;">
                 {{ trim($detalle->descripcion) }}
             </td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter }}">{{ $detalle->unidad }}</td>
@@ -119,9 +119,6 @@
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->valor_unitario }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->cantidad * $detalle->valor_unitario }}</td>
         </tr>
-        @php
-            $rows++;
-        @endphp
     @endforeach
 
     @foreach ($quote->getmanoobracotizacion($quote->id_cotizacion) as $detalle)
@@ -136,9 +133,6 @@
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->valor_unitario }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->cantidad * $detalle->valor_unitario }}</td>
         </tr>
-        @php
-            $rows++;
-        @endphp
     @endforeach
 
     @foreach ($quote->gettransportecotizacion($quote->id_cotizacion) as $detalle)
@@ -153,10 +147,13 @@
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->valor_unitario }}</td>
             <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$nowrap }}">{{ $detalle->cantidad * $detalle->valor_unitario }}</td>
         </tr>
-        @php
-            $rows++;
-        @endphp
     @endforeach
+
+    @php
+        $rows += count($quote->getmaterialescotizacion($quote->id_cotizacion)) + 
+            count($quote->gettransportecotizacion($quote->id_cotizacion)) +
+            count($quote->gettransportecotizacion($quote->id_cotizacion));
+    @endphp
 
     <tr>
         <td></td>
@@ -171,7 +168,7 @@
         <td style="{{ $bordernone.$borderleft }}"></td>
         <td colspan="6" style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textcenter.$bold }}">{{ $quote->tblIva->nombre }}</td>
         <td style="{{ $bordernone.$borderleft.$bordertop.$borderright.$borderbottom.$textright.$bold }}">
-            =I{{ $rows }}*{{ doubleval($quote->tblIva->descripcion) / 100 }}
+            =I{{ $rows }}*{{ doubleval(isset($quote->tblIva) ? $quote->tblIva->descripcion : 0) / 100 }}
         </td>
     </tr>
     <tr>

@@ -6,7 +6,6 @@ use App\Models\TblActividad;
 use App\Models\TblCotizacion;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
 class TblCotizacionPolicy
 {

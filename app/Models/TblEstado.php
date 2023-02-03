@@ -5,27 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TblEstadoCotizacion extends Model
+class TblEstado extends Model
 {
     use HasFactory;
 
-    protected $table = 'tbl_estado_cotizacion';
-    protected $primaryKey = 'id_estado_cotizacion';
+    protected $table = 'tbl_estados';
+    protected $primaryKey = 'id_estado';
     protected $guarded = [];
 
     protected $filable = [
-        'id_cotizacion',
-        'estado',
+        'id_tabla',
+        'tabla',
+        'id_dominio_estado',
         'comentario',
         'id_usuareg'
     ];
 
-    public function tblCotizacion(){
-        return $this->belongsTo(tblCotizacion::class, 'id_cotizacion');
-    }
-
     public function tblestado() {
-        return $this->belongsTo(TblDominio::class, 'estado');
+        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblusuario() {

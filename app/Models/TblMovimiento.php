@@ -62,6 +62,10 @@ class TblMovimiento extends Model
         return number_format(isset($this->attributes['saldo']) && $this->attributes['saldo'] > 0 ? $this->attributes['saldo'] : 0, 2);
     }
 
+    public function getEstadoAttribute() {
+        return $this->attributes['id_dominio_estado'];
+    }
+
     public function getDetalleMovimiento() {
         $carrito = [];
         $items = TblMovimientoDetalle::with(['tblinventario'])->where(['id_movimiento' => (isset($this->attributes['id_movimiento']) ? $this->attributes['id_movimiento'] : -1)])->get();
@@ -69,9 +73,9 @@ class TblMovimiento extends Model
         foreach ($items as $item) {
             $carrito[session('id_dominio_tipo_movimiento')][$item->id_inventario] = [
                 'item' => $item->id_inventario,
-                'descripcion' => $item->tblinventario->descripcion,
+                'descripcion' => $item->tblinventario->descripcion."\nDisponible: ".$item->cantidad,
                 'cantidad' => $item->cantidad,
-                'unidad' => $item->tblinventario->unidad,
+                // 'unidad' => $item->tblinventario->unidad,
                 'valor_unitario' => $item->valor_unitario,
                 'valor_total' => $item->valor_total,
             ];

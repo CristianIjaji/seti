@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class SaveActividadRequest extends FormRequest
@@ -23,7 +22,7 @@ class SaveActividadRequest extends FormRequest
         $this->merge([
             'ot' => mb_strtoupper($this->get('ot')),
             'valor' => str_replace(',', '', $this->get('valor')),
-            'id_usuareg' => (Auth::id() === null ? 1 : Auth::id()),
+            'id_usuareg' => (auth()->id() === null ? 1 : auth()->id()),
         ]);
     }
 

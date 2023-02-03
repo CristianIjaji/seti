@@ -214,7 +214,7 @@
             </div>
             @if (!$create)
                 <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 my-auto text-center">
-                    <span id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-success border btn-quote px-3">
+                    <span id="btn-send-quote" title="Descargar cotización" data-toggle="tooltip" class="btn btn-outline-success border px-3 btn-download-format">
                         <i class="fa-solid fa-file-excel fs-4"></i>
                     </span>
 
@@ -282,7 +282,7 @@
 @if (!$create)
         </div>
         <div class="tab-pane" id="track-quote" role="tabpanel" aria-labelledby="track-tab-quote">
-            @include('partials._track', [$edit, 'model' => $estados_cotizacion, 'title' => 'Estados cotización', 'route' => 'statequotes'])
+            @include('partials._track', [$edit, 'model' => $estados_cotizacion, 'title' => 'Estados cotización', 'route' => 'states'])
         </div>
     </div>
 @endif

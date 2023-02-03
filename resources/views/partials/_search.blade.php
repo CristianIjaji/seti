@@ -35,8 +35,8 @@
                         data-type="{{ $type }}"
                         data-item="{{ $producto->id_inventario }}"
                         data-descripcion="{{ $producto->descripcion }}"
-                        data-cantidad="0"
-                        data-valor_unitario="0"
+                        data-cantidad="1"
+                        data-valor_unitario={{ str_replace(',', '', $producto->valor_unitario) }}
                         value="{{ $producto->id_inventario }}"
                     >
                         {{ $producto->producto }}

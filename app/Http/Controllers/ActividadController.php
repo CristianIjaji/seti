@@ -9,10 +9,8 @@ use App\Models\TblDominio;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
-use App\Models\TblEstadoActividad;
-use App\Models\TblOrdenCompraDetalle;
+use App\Models\TblEstado;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -170,7 +168,7 @@ class ActividadController extends Controller
         return view('actividades._form', [
             'edit' => false,
             'activity' => $activity,
-            'estados_actividad' => TblEstadoActividad::where(['id_actividad' =>$activity->id_actividad])->orderby('created_at', 'desc')->paginate(10),
+            'estados_actividad' => TblEstado::where(['id_tabla' => $activity->id_actividad, 'tabla' => $activity->getTable()])->orderby('created_at', 'desc')->paginate(10),
             'quote' => isset($activity->id_cotizacion) ? $activity->tblcotizacion : []
         ]);
     }
@@ -200,7 +198,7 @@ class ActividadController extends Controller
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_tercero_cliente' => $id_tercero_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
-            'estados_actividad' => TblEstadoActividad::where(['id_actividad' =>$activity->id_actividad])->orderby('created_at','desc')->paginate(10),
+            'estados_actividad' => TblEstado::where(['id_tabla' => $activity->id_actividad, 'tabla' => $activity->getTable()])->orderby('created_at','desc')->paginate(10),
             'estados' => TblDominio::where(['id_dominio_padre' => session('id_dominio_estados_actividad')])->get(),
             'contratistas' => TblTercero::where('estado', '=', '1')
                 ->wherein('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
@@ -234,9 +232,11 @@ class ActividadController extends Controller
             $this->authorize('update', $activity);
             $activity->update($request->validated());
 
-            if($activity->valor !== $activity->tblcotizacion->total_sin_iva) {
-                $activity->valor = $activity->tblcotizacion->valor;
-                $activity->update();
+            if(isset($activity->tblcotizacion)) {
+                if($activity->valor !== $activity->tblcotizacion->total_sin_iva) {
+                    $activity->valor = $activity->tblcotizacion->valor;
+                    $activity->update();
+                }
             }
 
             $activity->comentario = $activity->observaciones;
@@ -246,6 +246,7 @@ class ActividadController extends Controller
                 'success' => 'Cotización actualizada correctamente!'
             ]);
         } catch (\Throwable $th) {
+            Log::error("Error actualizando actividad: ".$th->getLine());
             return response()->json([
                 'errors' => $th->getMessage()
             ]);
@@ -341,7 +342,7 @@ class ActividadController extends Controller
 
         return view($view, [
             'model' => TblActividad::with(['tbltipoactividad', 'tblsubsistema', 'tblencargadocliente',
-                'tblresposablecontratista', 'tblestacion', 'tblestadoactividad', 'tblcotizacion', 'tblordencompra', 'tblusuario'])
+                'tblresposablecontratista', 'tblestacion', 'tblestadoactividad', 'tblcotizacion', 'tblusuario'])
                 ->where(function($q) {
                     $this->dinamyFilters($q);
                 })->latest()->paginate(10),
@@ -370,7 +371,7 @@ class ActividadController extends Controller
             $id_usuario = TblActividad::find($activity->id_actividad)->id_usuareg;
 
             if($notification !== '') {
-                $channel = 'user-'.(intval(Auth::user()->id_usuario) != intval($id_usuario)
+                $channel = 'user-'.(intval(auth()->id()) != intval($id_usuario)
                     ? $id_usuario
                     : (isset($activity->tblresposablecontratista->tbluser->idu_usuario) ? $activity->tblresposablecontratista->tbluser->idu_usuario : null)
                 );
@@ -387,12 +388,12 @@ class ActividadController extends Controller
 
     private function createTrack($activity, $action) {
         try {
-            Log::info("Actividad: ".print_r($activity->comentario, 1));
-            TblEstadoActividad::create([
-                'id_actividad' => $activity->id_actividad,
-                'estado' => $action,
+            TblEstado::create([
+                'id_tabla' => $activity->id_actividad,
+                'tabla' => $activity->getTable(),
+                'id_dominio_estado' => $action,
                 'comentario' => $activity->comentario,
-                'id_usuareg' => Auth::id()
+                'id_usuareg' => auth()->id()
             ]);
             
         } catch (\Throwable $th) {
@@ -416,7 +417,7 @@ class ActividadController extends Controller
     }
 
     public function seguimiento(TblActividad $activity) {
-        return view('partials.seguimiento', [
+        return view('partials._seguimiento', [
             'model' => $activity,
             'route' => 'activities.handleActivity'
         ]);

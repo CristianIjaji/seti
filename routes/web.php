@@ -4,8 +4,7 @@ use App\Http\Controllers\ActividadController;
 use App\Http\Controllers\ConsolidadoController;
 use App\Http\Controllers\CotizacionController;
 use App\Http\Controllers\DominioController;
-use App\Http\Controllers\EstadoActividadController;
-use App\Http\Controllers\EstadoCotizacionController;
+use App\Http\Controllers\EstadoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\KardexController;
@@ -13,7 +12,7 @@ use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MenuTipoTerceroController;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\MovimientoController;
-use App\Http\Controllers\OrdenController;
+use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\ParametroController;
 use App\Http\Controllers\PuntosInteresController;
 use App\Http\Controllers\TerceroController;
@@ -67,13 +66,14 @@ Route::post('priceList/import', [ListaPrecioController::class, 'import'])->name(
 Route::get('stores/export', [InventarioController::class, 'export'])->name('stores.export');
 Route::get('stores/template', [InventarioController::class, 'downloadTemplate'])->name('stores.template');
 Route::resource('stores', InventarioController::class);
-Route::get('stores/{id_almacen}/{tipo_carrito}', [InventarioController::class, 'search'])->name('stores.search');
+Route::get('stores/{id_almacen}/{tipo_carrito}/{type}', [InventarioController::class, 'search'])->name('stores.search');
 Route::post('stores/grid', [InventarioController::class, 'grid'])->name('stores.grid');
 Route::post('stores/import', [InventarioController::class, 'import'])->name('stores.import');
 
 // Controlador de movimientos
 Route::get('moves/export', [MovimientoController::class, 'export'])->name('moves.export');
 Route::get('moves/template', [MovimientoController::class, 'downloadTemplate'])->name('moves.template');
+Route::get('moves/{edit}/{id_tipo_movimiento}/{id}', [MovimientoController::class, 'getViewDetalle'])->name('moves.getViewDetalle');
 Route::resource('moves', MovimientoController::class);
 Route::post('moves/grid', [MovimientoController::class, 'grid'])->name('moves.grid');
 Route::post('moves/import', [MovimientoController::class], 'import')->name('moves.import');
@@ -84,8 +84,12 @@ Route::resource('kardex', KardexController::class);
 Route::post('kardex/grid', [KardexController::class, 'grid'])->name('kardex.grid');
 
 // Controlador de orden de compra
-Route::resource('purchases', OrdenController::class);
-Route::post('purchases/grid', [OrdenController::class, 'grid'])->name('purchases.grid');
+Route::get('purchases/exportPurchase', [OrdenCompraController::class, 'exportPurchase'])->name('purchases.exportPurchase');
+Route::get('purchases/{purchase}/seguimiento', [OrdenCompraController::class, 'seguimiento'])->name('purchases.seguimiento');
+Route::get('purchases/{id_tercero_proveedor}/{id_tercero_almacen}/getOrdenesActivas', [OrdenCompraController::class, 'getOrdenesActivas'])->name('purchases.getOrdenesActivas');
+Route::resource('purchases', OrdenCompraController::class);
+Route::post('purchases/grid', [OrdenCompraController::class, 'grid'])->name('purchases.grid');
+Route::post('purchases/{purchase}/handlePurchase', [OrdenCompraController::class, 'handlePurchase'])->name('purchases.handlePurchase');
 
 // Controlador cotizaciones
 Route::get('quotes/exportQuote', [CotizacionController::class, 'exportQuote'])->name('quotes.exportQuote');
@@ -97,9 +101,10 @@ Route::resource('quotes', CotizacionController::class);
 Route::post('quotes/grid', [CotizacionController::class, 'grid'])->name('quotes.grid');
 Route::post('quotes/{quote}/handleQuote', [CotizacionController::class, 'handleQuote'])->name('quotes.handleQuote');
 Route::post('quotes/import', [CotizacionController::class, 'import'])->name('quotes.import');
-// Controlador estado cotizaciones
-Route::resource('statequotes', EstadoCotizacionController::class);
-Route::post('statequotes/grid', [EstadoCotizacionController::class, 'grid'])->name('statequotes.grid');
+
+// Controlador estados
+Route::resource('states', EstadoController::class);
+Route::post('states/grid', [EstadoController::class, 'grid'])->name('states.grid');
 
 // Controlador de actividades
 Route::get('activities/{activity}/seguimiento', [ActividadController::class, 'seguimiento'])->name('activities.seguimiento');
@@ -109,8 +114,8 @@ Route::post('activities/grid', [ActividadController::class, 'grid'])->name('acti
 Route::post('activities/{activity}/handleActivity', [ActividadController::class, 'handleActivity'])->name('activities.handleActivity');
 
 // Controlador estado activities
-Route::resource('stateactivities', EstadoActividadController::class);
-Route::post('stateactivities/grid',[EstadoActividadController::class, 'grid'])->name('stateactivities.grid');
+// Route::resource('stateactivities', EstadoActividadController::class);
+// Route::post('stateactivities/grid',[EstadoActividadController::class, 'grid'])->name('stateactivities.grid');
 
 // Controlador de consolidado
 // Route::get('deals/export', [ConsolidadoController::class, 'export'])->name('deals.export');

@@ -29084,13 +29084,11 @@ button.close {
   color: var(--bs-white) !important;
   margin-bottom: 1.5rem;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 #nav-bar .nav_link:hover {
-  color: var(--bs-secondary) !important;
-  background-color: var(--bs-white) !important;
-  border-radius: 0.375rem;
-  text-shadow: none !important;
+  color: var(--bs-yellow) !important;
 }
 
 #nav-bar .nav_icon {
@@ -29114,15 +29112,14 @@ button.close {
 }
 
 #nav-bar.l-navbar .active {
-  color: var(--bs-secondary) !important;
-  background-color: var(--bs-white) !important;
-  text-shadow: none !important;
+  color: var(--bs-yellow) !important;
+  font-weight: bold;
+  background-color: rgba(255, 255, 255, 0.07);
 }
 
 #nav-bar.l-navbar .activemenu {
-  color: var(--bs-secondary) !important;
-  background-color: rgba(var(--bs-white-rgb), 0.9);
-  border-radius: var(--bs-border-radius) var(--bs-border-radius) 0px 0px !important;
+  color: var(--bs-yellow) !important;
+  background-color: rgba(255, 255, 255, 0.06);
 }
 
 #nav-bar.l-navbar.show-panel .nav_list {
@@ -29132,6 +29129,7 @@ button.close {
 .form-control {
   border: none;
   border-bottom: 1px solid #ced4da;
+  border-radius: 0px !important;
 }
 
 select {
@@ -29212,7 +29210,7 @@ label {
 }
 
 label.required::after {
-  content: "*";
+  content: " *";
   color: var(--bs-danger);
   font-weight: bolder;
 }
@@ -29332,6 +29330,14 @@ label.required::after {
 .accordion-item {
   background-color: var(--bs-bg-body);
   color: var(--bs-bg-color);
+}
+
+.tempus-dominus-widget.show {
+  background-color: var(--bs-form-control-bg);
+}
+
+.tempus-dominus-widget .dow.no-highlight {
+  color: var(--bs-body-color);
 }
 
 :root, [data-bs-theme=light] {
@@ -29488,7 +29494,8 @@ label.required::after {
 }
 
 #nav-bar .collapse.show {
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.04);
+  box-shadow: 0px 0px px;
 }
 
 .accordion-button::after {

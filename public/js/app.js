@@ -9175,6 +9175,8 @@ var url_cotizacion = 'quotes';
 var form_cotizacion = 'form_quotes';
 var url_actividad = 'activities';
 var form_actividad = 'form_activities';
+var url_orden = 'purchases';
+var form_orden = 'form_purchases';
 
 var createChannel = function createChannel(evento, canal, text, location, urlGrid, formData) {
   var audio = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : '';
@@ -9474,6 +9476,7 @@ var procesarErrores = function procesarErrores(modal, title, errores) {
 };
 
 var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
+  var reload_location = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : false;
   $.ajax({
     url: action,
     method: 'POST',
@@ -9494,12 +9497,17 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
       Swal.fire({
         icon: "".concat(typeof response.errors === 'undefined' ? 'success' : 'error'),
         title: "".concat(typeof response.errors === 'undefined' ? 'Cambio realizado' : 'No se pudo completar la acción'),
-        text: "".concat(typeof response.errors === 'undefined' ? response.success : response.errors),
-        confirmButtonColor: 'var(--bs-primary)'
+        html: "".concat(typeof response.errors === 'undefined' ? response.success : response.errors),
+        confirmButtonColor: 'var(--bs-primary)',
+        focus: true
       }).then(function () {
         if (typeof response.errors === 'undefined') {
-          if (typeof reload === 'undefined' || reload.toString() !== 'false') {
-            $('.search_form').change();
+          if (typeof reload === 'undefined' || reload.toString() !== 'false' || reload_location) {
+            if (!reload_location) {
+              $('.search_form').trigger('change');
+            } else {
+              location.reload();
+            }
           } else {
             if ($("#".concat(select)).length && typeof response.response !== 'undefined') {
               var record = response.response;
@@ -9513,6 +9521,9 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
     },
     error: function error(response) {
       procesarErrores(modal, 'Por favor corrija los siguientes campos:', response.responseJSON.errors);
+      $("#".concat(modal, " .modal-body")).animate({
+        scrollTop: 0
+      }, 'slow');
     }
   }).always(function () {
     showLoader(false);
@@ -9522,7 +9533,7 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
 var createModal = function createModal() {
   // Se genera id aleatorio
   var id = new Date().getUTCMilliseconds();
-  var modal = "\n        <div class=\"modal fade\" id=\"".concat(id, "\" tabindex=\"-1\" aria-labelledby=\"modalTitle-").concat(id, "\" aria-hidden=\"true\" data-bs-backdrop=\"static\">\n            <div class=\"modal-dialog modal-dialog-centered\">\n                <div class=\"modal-content shadow-lg\">\n                    <div class=\"modal-header border-bottom border-2\">\n                        <h5 class=\"modal-title fw-bold\" id=\"modalTitle-").concat(id, "\"></h5>\n                        <i class=\"fa-solid fa-xmark fs-3 px-2\" data-bs-dismiss=\"modal\" style=\"cursor: pointer\"></i>\n                    </div>\n                    <div class=\"modal-body px-4 pt-4\"></div>\n                </div>\n            </div>\n        </div>\n    ");
+  var modal = "\n        <div class=\"modal fade\" id=\"".concat(id, "\" tabindex=\"-1\" aria-labelledby=\"modalTitle-").concat(id, "\" aria-hidden=\"true\" data-bs-backdrop=\"static\">\n            <div class=\"modal-dialog modal-dialog-centered\">\n                <div class=\"modal-content shadow-lg\">\n                    <div class=\"modal-header border-bottom border-2\">\n                        <h5 class=\"modal-title\" id=\"modalTitle-").concat(id, "\"></h5>\n                        <i class=\"fa-solid fa-xmark fs-3 px-2\" data-bs-dismiss=\"modal\" style=\"cursor: pointer\"></i>\n                    </div>\n                    <div class=\"modal-body px-4 pt-4\"></div>\n                </div>\n            </div>\n        </div>\n    ");
   $('body').append(modal);
   return id;
 };
@@ -9536,6 +9547,7 @@ var handleModal = function handleModal(button) {
   var select = new String(button.data('select')).trim();
   var callback = new String(button.data('callback')).trim();
   var modal = new String(button.data('modal')).trim();
+  var reload_location = new String(button.data('reload-location')).trim();
   var btnCancel = new String(button.data('cancel')).trim();
   var btnSave = new String(button.data('save')).trim();
   size = size !== 'undefined' ? size : 'modal-md';
@@ -9543,8 +9555,10 @@ var handleModal = function handleModal(button) {
   btnCancel = btnCancel !== 'undefined' ? btnCancel : 'Cancelar';
   btnSave = btnSave !== 'undefined' ? btnSave : 'Guardad';
   reload = reload !== 'undefined' ? reload : 'true';
+  reload_location = reload_location !== 'undefined' ? reload_location : 'false';
   select = select !== 'undefined' ? select : '';
   modal = createModal();
+  if (action === '' || action.indexOf('-1') >= 0) return false;
 
   if (action !== 'undefined') {
     $.ajax({
@@ -9560,7 +9574,7 @@ var handleModal = function handleModal(button) {
       $("#".concat(modal, " .btn-modal-save")).html(btnSave);
       $("#".concat(modal, " #btn-form-action")).data('modal', modal);
       setupSelect2(modal);
-      $("#".concat(modal)).data('reload', reload);
+      $("#".concat(modal)).data('reload', reload).data('reload-location', reload_location);
 
       if (select !== '') {
         $("#".concat(modal)).data('select', select);
@@ -9744,7 +9758,7 @@ window.drawItems = function () {
     if (typeof element !== 'undefined' && _typeof(element) === 'object') {
       if (!$("#tr_".concat(type_item, "_").concat(id_item)).length) {
         var classname = "".concat($("#caret_".concat(type_item)).hasClass(showIcon) ? 'show' : '');
-        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_dominio_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_item[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            <textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_").concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>\n                        </td>\n                        ").concat(element['unidad'] ? "\n                            <td class=\"col-1 my-auto border-0\">\n                                <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ".concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                    value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            ") : "", "\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete btn-delete-item\" ".concat(tooltip, " title='Quitar \xEDtem' data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><span class=\"btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold\"></i></span></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
+        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_dominio_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_item[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            ").concat(tipo_carrito !== 'movimiento' ? "<textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_".concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>") : "".concat(element['descripcion']), "\n                        </td>\n                        ").concat(element['unidad'] ? "\n                            <td class=\"col-1 my-auto border-0\">\n                                <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ".concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                    value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            ") : "", "\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete btn-delete-item\" ".concat(tooltip, " title='Quitar \xEDtem' data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><span class=\"btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold\"></i></span></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
         $('.money').inputmask(formatCurrency);
       } else {
         $("#tr_".concat(type_item, "_").concat(id_item, " #valor_total_").concat(id_item)).val(element['valor_total']);
@@ -10007,12 +10021,10 @@ var openMainSubMenu = function openMainSubMenu() {
   $('.submenu_icon').each(function (i, e) {
     var menu = document.getElementById($(e).closest('a').data('bs-target').replace('#', ''));
     menu.addEventListener('hide.bs.collapse', function (event) {
-      $(e).removeClass(showIcon).removeClass(hideIcon).addClass(hideIcon);
-      $(e).closest('a').removeClass(activemenu);
+      $(e).removeClass(showIcon).removeClass(hideIcon).addClass(hideIcon); // $(e).closest('a').removeClass(activemenu);
     });
     menu.addEventListener('show.bs.collapse', function (event) {
-      $(e).removeClass(hideIcon).removeClass(showIcon).addClass(showIcon);
-      $(e).closest('a').addClass(activemenu);
+      $(e).removeClass(hideIcon).removeClass(showIcon).addClass(showIcon); // $(e).closest('a').addClass(activemenu);
     });
   });
 };
@@ -10079,13 +10091,14 @@ $(document).on('click', '#btn-form-action', function (e) {
   var reload = $("#".concat(modal)).data('reload');
   var form = $(this).closest('form');
   var select = $("#".concat(modal)).data('select');
+  var reload_location = $("#".concat(modal)).data('reload-location');
 
   if ($('#campos_reporte').length) {
     $('#campos_reporte option').prop('selected', true);
   }
 
   var data = new FormData(form[0]);
-  sendAjaxForm(action, data, reload, select, modal);
+  sendAjaxForm(action, data, reload, select, modal, reload_location);
 });
 $(document).on('click', 'button.close', function () {
   if ($(this).parent().hasClass('alert')) {
@@ -10169,9 +10182,7 @@ $(document).on('click', '.btn-delete-item', function () {
     id_tr = id_tr.split('_');
     delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
     totalCarrito(id_tr[0]);
-    $('[data-toggle="tooltip"]').on('click', function () {
-      $(this).tooltip('hide');
-    });
+    $('.tooltip.bs-tooltip-auto.fade.show').remove();
   }
 });
 $(document).on('keydown', '.txt-totales', function () {
@@ -10229,12 +10240,12 @@ $(document).on('change', '#estado_seguimiento', function () {
     $('#div_fecha_seguimiento').removeClass('d-none');
   }
 });
-$(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
+$(document).on('click', '#btn-create-comment, .btn-download-format', function (e) {
   e.preventDefault();
   var action = '';
   var form = $(this).closest('form');
   var data = new FormData(form[0]);
-  var cambio = $(this).attr('id') === 'btn-send-quote' ? $(this).attr('id') : $('#estado_seguimiento').val();
+  var cambio = $.inArray($(this).attr('id').toString(), ['btn-send-purchase', 'btn-send-quote']) > -1 ? $(this).attr('id') : $('#estado_seguimiento').val();
   var setupSwal = {};
   var url = '';
 
@@ -10277,6 +10288,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
 
     case 'btn-send-quote':
       action = 'send';
+      url = "".concat(url_cotizacion, "/exportQuote?quote=").concat($('#id_cotizacion').val());
       break;
 
     case 'btn-create-activity':
@@ -10303,6 +10315,11 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
       url = "".concat(url_actividad, "/").concat($('#id_actividad').val(), "/handleActivity");
       break;
 
+    case 'btn-send-purchase':
+      action = 'send';
+      url = "".concat(url_orden, "/exportPurchase?purchase=").concat($('#id_orden_compra').val());
+      break;
+
     default:
       break;
   }
@@ -10310,7 +10327,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function (e) {
   if (action === '') return false;
 
   if (action === 'send') {
-    downloadExcel("".concat(url_cotizacion, "/exportQuote?quote=").concat($('#id_cotizacion').val()), '', 'Reporte.xlsx');
+    downloadExcel("".concat(url), '', 'Reporte.xlsx');
     return false;
   }
 

@@ -11,6 +11,7 @@
         ['name' => 'id_tercero_cliente', 'label' => 'Cliente', 'col' => 'col-3', 'options' => $clientes],// Nombre de la llave
         ['name' => 'id_dominio_tipo_item', 'label' => 'Tipo ítem', 'col' => 'col-2', 'options' => $listaTipoItemPrecio],
         ['name' => 'codigo', 'label' => 'Código', 'col' => 'col-1'],
+        ['name' => 'descripcion', 'label' => 'Descripción', 'col' => 'col-3'],
         ['name' => 'unidad', 'label' => 'Unidad', 'col' => 'col-1'],
         ['name' => 'cantidad', 'label' => 'Cantidad', 'col' => 'col-1','align'=>'text-end'],
         ['name' => 'valor_unitario', 'label' => 'Valor Unitario', 'col' => 'col-1','align'=>'text-end'],

@@ -10,28 +10,33 @@
                         ".($edit
                             ? "
                                 <input type='hidden' name='id_dominio_tipo_item[]' value='$id_dominio_tipo_item'>
-                                <input type='hidden' name='id_lista_precio[]' value='$id_item'>
+                                <input type='hidden' name='id_item[]' value='$id_item'>
                                 <input type='text' class='form-control text-md-center text-end text-uppercase border-0' id='item_$id_dominio_tipo_item' value='$detail[item]' disabled>
                             "
                             : $detail['item']
                         )."
                     </td>
                     <td class='col-4 my-auto border-0'>
-                        ".($edit
+                        ".($edit && !in_array($tipo_carrito, ['movimiento'])
                             ? "
                                 <textarea class='form-control border-0 resize-textarea' rows='2' name='descripcion_item[]' id='descripcion_item_$id_item' ".($edit ? 'required' : 'disabled')." $resize>$detail[descripcion]</textarea>
                             "
                             : $detail['descripcion']
                         )."
                     </td>
-                    <td class='col-1 my-auto border-0 ".($edit ? '' : 'text-md-start text-end')."'>
-                        ".($edit
-                            ? "
-                                <input type='text' class='form-control text-md-start text-end border-0' ".($edit ? "data-toggle='tooltip' title='$detail[unidad]'" : '' )." name='unidad[]' id='unidad_$id_item' value='$detail[unidad]' ".($edit ? '' : 'disabled').">
-                            "
-                            : $detail['unidad']
-                        )."
-                    </td>
+                    ".(isset($detail['unidad'])
+                        ? "
+                            <td class='col-1 my-auto border-0 ".($edit ? '' : 'text-md-start text-end')."'>
+                                ".($edit
+                                    ? "
+                                        <input type='text' class='form-control text-md-start text-end border-0' ".($edit ? "data-toggle='tooltip' title='$detail[unidad]'" : '' )." name='unidad[]' id='unidad_$id_item' value='$detail[unidad]' ".($edit ? '' : 'disabled').">
+                                    "
+                                    : $detail['unidad']
+                                )."
+                            </td>
+                        "
+                        : ''
+                    )."
                     <td class='col-1 my-auto border-0 ".($edit ? '' : 'text-end')."'>
                         ".($edit
                             ? "
@@ -69,7 +74,6 @@
 
         return $row;
     }
-
 @endphp
 
 <div class="table-responsive">
@@ -78,12 +82,12 @@
             @case('cotizacion')
                 <thead>
                     <tr>
-                        <th class="col-1 text-center border rounded-start">Ítem</th>
-                        <th class="col-4 text-center border">Descripción</th>
-                        <th class="col-1 text-center border">Unidad</th>
-                        <th class="col-1 text-center border">Cantidad</th>
-                        <th class="col-2 text-center border">Valor Unitario</th>
-                        <th class="col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
+                        <th class="text-nowrap col-1 text-center border rounded-start">Ítem</th>
+                        <th class="text-nowrap col-4 text-center border">Descripción</th>
+                        <th class="text-nowrap col-1 text-center border">Unidad</th>
+                        <th class="text-nowrap col-1 text-center border">Cantidad</th>
+                        <th class="text-nowrap col-2 text-center border">Valor Unitario</th>
+                        <th class="text-nowrap col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
                         @if ($edit)
                             <th id="th-delete" class="col-1 text-center border rounded-end">Eliminar</th>
                         @endif
@@ -191,13 +195,11 @@
             @case('movimiento')
                 <thead>
                     <tr>
-                        <th class="col-1 text-center border rounded-start">ID</th>
-                        <th class="col-4 text-center border">Descripción</th>
-                        <th class="col-1 text-center border">Unidad</th>
-                        <th class="col-1 text-center border">Cantidad</th>
-                        <th class="col-2 text-center border">Valor Unitario</th>
-                        <th class="col-1 text-center border">IVA %</th>
-                        <th class="col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
+                        <th class="text-nowrap col-1 text-center border rounded-start">Ítem</th>
+                        <th class="text-nowrap col-4 text-center border">Descripción</th>
+                        <th class="text-nowrap col-1 text-center border">Cantidad</th>
+                        <th class="text-nowrap col-2 text-center border">Valor Unitario</th>
+                        <th class="text-nowrap col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
                         @if ($edit)
                             <th id="th-delete" class="col-1 text-center border rounded-end">Eliminar</th>
                         @endif
@@ -205,7 +207,7 @@
                 </thead>
                 <tbody>
                     <tr id="tr_{{ session('id_dominio_tipo_movimiento') }}" class="detail-{{session('id_dominio_tipo_movimiento')}}">
-                        <th colspan="{{ $edit ? 8 : 7 }}" class="border rounded">
+                        <th colspan="{{ $edit ? 6 : 5 }}" class="border rounded">
                             <span
                                 class="w-100 bg-primary bg-opacity-75 fw-bold user-select-none {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_movimiento"
                                 data-toggle="tooltip"
@@ -213,7 +215,7 @@
                                 data-title="Buscar producto"
                                 data-size='modal-xl'
                                 data-header-class='bg-primary bg-opacity-75 text-white'
-                                {{-- data-action='{{ route('priceList.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($cotizacion->tblCliente->id_tercero_responsable) ? $cotizacion->tblCliente->id_tercero_responsable : -1, 'tipo_carrito' => $tipo_carrito]) }}' --}}
+                                data-action=""
                                 data-toggle="tooltip"
                             >
                                 <label>LISTA DE PRODUCTOS</label>
@@ -224,6 +226,15 @@
                                 </div>
                                 <div class="my-auto">
                                     <label id="lbl_{{ session('id_dominio_tipo_movimiento') }}" class="lbl_total_transporte">$ 0.00</label>
+                                    @if (count(isset($detalleCarrito[session('id_dominio_tipo_movimiento')]) ? $detalleCarrito[session('id_dominio_tipo_movimiento')] : []) < 100)
+                                        <span
+                                            class="btn show-more"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target=".item_{{ session('id_dominio_tipo_movimiento') }}"
+                                        >
+                                            <i id="caret_{{ session('id_dominio_tipo_movimiento') }}" class="fa-solid fa-angle-up"></i>
+                                        </span>
+                                    @endif
                                 </div>
                             </div>
                         </th>
@@ -234,11 +245,11 @@
             @case('orden')
                 <thead>
                     <tr>
-                        <th class="col-1 text-center border rounded-start">Ítem</th>
-                        <th class="col-4 text-center border">Descripción</th>
-                        <th class="col-1 text-center border">Cantidad</th>
-                        <th class="col-2 text-center border">Valor Unitario</th>
-                        <th class="col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
+                        <th class="text-nowrap col-1 text-center border rounded-start">Ítem</th>
+                        <th class="text-nowrap col-4 text-center border">Descripción</th>
+                        <th class="text-nowrap col-1 text-center border">Cantidad</th>
+                        <th class="text-nowrap col-2 text-center border">Valor Unitario</th>
+                        <th class="text-nowrap col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
                         @if ($edit)
                             <th id="th-delete" class="col-1 text-center border rounded-end">Eliminar</th>
                         @endif
@@ -254,7 +265,7 @@
                                 data-title="Buscar producto"
                                 data-size='modal-xl'
                                 data-header-class='bg-primary bg-opacity-75 text-white'
-                                data-action='{{ route('stores.search', ['id_almacen' => isset($orden->id_tercero_almacen) ? $orden->id_tercero_almacen : -1, 'tipo_carrito' => $tipo_carrito]) }}'
+                                data-action='{{ route('stores.search', ['id_almacen' => isset($orden->id_tercero_almacen) ? $orden->id_tercero_almacen : -1, 'tipo_carrito' => $tipo_carrito, 'type' => session('id_dominio_tipo_orden_compra')]) }}'
                                 data-toggle="tooltip"
                             >
                                 <label>LISTA DE PRODUCTOS</label>
@@ -276,6 +287,7 @@
                             </div>
                         </th>
                     </tr>
+                    {!! createDetail(session('id_dominio_tipo_orden_compra'), (isset($detalleCarrito[session('id_dominio_tipo_orden_compra')]) ? $detalleCarrito[session('id_dominio_tipo_orden_compra')] : []), $edit, $tipo_carrito) !!}
                 </tbody>
                 @break
             @default
@@ -305,10 +317,8 @@
 
 <script type="application/javascript">
     carrito['{!! $tipo_carrito !!}'] = <?= json_encode($detalleCarrito) ?>;
-    // if({!! $tipo_carrito !!} !== 'movimiento') {
-        table();
-        flexTable();
-    // }
+    table();
+    flexTable();
     totalCarrito('{!! $tipo_carrito !!}');
     setTimeout(() => {
         updateTextAreaSize();

@@ -8,10 +8,7 @@ use App\Http\Requests\UpdateUsuarioRequest;
 use App\Http\Controllers\MessagesController;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 
 class UsuarioController extends Controller
 {
@@ -50,14 +47,14 @@ class UsuarioController extends Controller
             $this->filtros[$key] = $value;
         }
 
-        if(Auth::user()->role !== session('id_dominio_super_administrador')) {
+        if(auth()->user()->role !== session('id_dominio_super_administrador')) {
             $value = session('id_dominio_super_administrador');
             $querybuilder->whereHas('tbltercero', function($q) use($value){
                 $q->where('id_dominio_tipo_tercero', '!=', $value);
             });
         }
 
-        if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
+        if(!in_array(auth()->user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
             $value = session('id_dominio_super_administrador');
             $querybuilder->whereHas('tbltercero', function($q) use($value){
                 $q->whereNotIn('id_dominio_tipo_tercero', [session('id_dominio_super_administrador'), session('id_dominio_administrador')]);
@@ -68,10 +65,10 @@ class UsuarioController extends Controller
     }
 
     private function getAdminRoles() {
-        return Auth::user()->role == session('id_dominio_super_administrador')
+        return auth()->user()->role == session('id_dominio_super_administrador')
             ? [0]
             : (
-                Auth::user()->role == session('id_dominio_administrador')
+                auth()->user()->role == session('id_dominio_administrador')
                     ? [session('id_dominio_super_administrador')]
                     : [session('id_dominio_super_administrador'), session('id_dominio_administrador')]
             );

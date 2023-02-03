@@ -10,13 +10,12 @@ use App\Models\TblActividad;
 use App\Models\TblCotizacion;
 use App\Models\TblCotizacionDetalle;
 use App\Models\TblDominio;
-use App\Models\TblEstadoCotizacion;
+use App\Models\TblEstado;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -68,17 +67,17 @@ class CotizacionController extends Controller
             $this->filtros[$key] = $value;
         }
 
-        if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
-            if(Auth::user()->role == session('id_dominio_analista')) {
-                $querybuilder->where('tbl_cotizaciones.id_usuareg', '=', Auth::user()->id_usuario);
+        if(!in_array(auth()->user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
+            if(auth()->user()->role == session('id_dominio_analista')) {
+                $querybuilder->where('tbl_cotizaciones.id_usuareg', '=', auth()->user()->id_usuario);
             }
-            if(Auth::user()->role == session('id_dominio_coordinador')) {
+            if(auth()->user()->role == session('id_dominio_coordinador')) {
                 $querybuilder->where([
-                    'tbl_cotizaciones.id_tercero_responsable' => Auth::user()->id_tercero,
+                    'tbl_cotizaciones.id_tercero_responsable' => auth()->user()->id_tercero,
                     'tbl_cotizaciones.id_dominio_estado' => session('id_dominio_cotizacion_creada'),
                 ]);
                 $querybuilder->orwhere([
-                    'tbl_cotizaciones.id_usuareg' => Auth::user()->id_usuario
+                    'tbl_cotizaciones.id_usuareg' => auth()->user()->id_usuario
                 ]);
             }
         }
@@ -226,7 +225,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => false,
             'cotizacion' => $quote,
-            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(10),
+            'estados_cotizacion' => TblEstado::where(['id_tabla' => $quote->id_cotizacion, 'tabla' => $quote->getTable()])->orderBy('created_at', 'desc')->paginate(10),
             'actividad' => TblActividad::where(['id_cotizacion' => $quote->id_cotizacion])->first(),
         ]);
     }
@@ -249,7 +248,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => true,
             'cotizacion' => $quote,
-            'estados_cotizacion' => TblEstadoCotizacion::where(['id_cotizacion' => $quote->id_cotizacion])->orderBy('id_estado_cotizacion', 'desc')->paginate(10),
+            'estados_cotizacion' => TblEstado::where(['id_tabla' => $quote->id_cotizacion, 'tabla' => $quote->getTable()])->orderBy('created_at', 'desc')->paginate(10),
             'carrito' => $quote->getDetalleCotizacion($quote),
             'clientes' => TblTercero::where([
                 'estado' => 1,
@@ -543,7 +542,7 @@ class CotizacionController extends Controller
             $id_usuario = TblCotizacion::find($quote->id_cotizacion)->id_usuareg;
 
             if($notification !== '') {
-                $channel = 'user-'.(intval(Auth::user()->id_usuario) != intval($id_usuario)
+                $channel = 'user-'.(intval(auth()->id()) != intval($id_usuario)
                     ? $id_usuario
                     : (isset($quote->tblContratista->tbluser->id_usuario) ? $quote->tblContratista->tbluser->id_usuario : null)
                 );
@@ -560,11 +559,12 @@ class CotizacionController extends Controller
 
     private function createTrack($quote, $action) {
         try {
-            TblEstadoCotizacion::create([
-                'id_cotizacion' => $quote->id_cotizacion,
-                'estado' => $action,
+            TblEstado::create([
+                'id_tabla' => $quote->id_cotizacion,
+                'tabla' => $quote->getTable(),
+                'id_dominio_estado' => $action,
                 'comentario' => $quote->comentario,
-                'id_usuareg' => Auth::id()
+                'id_usuareg' => auth()->id()
             ]);
         } catch (\Throwable $th) {
             Log::error("Error creando track cotización: ".$th->getMessage());
@@ -582,7 +582,7 @@ class CotizacionController extends Controller
     }
 
     public function seguimiento(TblCotizacion $quote) {
-        return view('partials.seguimiento', [
+        return view('partials._seguimiento', [
             'model' => $quote,
             'route' => 'quotes.handleQuote'
         ]);

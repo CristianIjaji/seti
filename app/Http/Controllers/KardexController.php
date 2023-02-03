@@ -180,6 +180,7 @@ class KardexController extends Controller
                 tbl_kardex.created_at as fecha,
                 CONCAT(entrega.nombres, ' ', entrega.apellidos) as nombre_entrega,
                 CONCAT(recibe.nombres, ' ', recibe.apellidos) as nombre_recibe,
+                i.descripcion,
                 tbl_kardex.concepto,
                 detalle.id_movimiento,
                 CASE WHEN tm.id_dominio_padre = ".session('id_dominio_entrada')." THEN detalle.cantidad ELSE '' END entra,
@@ -197,6 +198,7 @@ class KardexController extends Controller
         ->join('tbl_terceros as entrega', 'movimiento.id_tercero_entrega', 'entrega.id_tercero')
         ->join('tbl_terceros as recibe', 'movimiento.id_tercero_recibe', 'recibe.id_tercero')
         ->join('tbl_dominios as tm', 'movimiento.id_dominio_tipo_movimiento', 'tm.id_dominio')
+        ->join('tbl_inventario as i','detalle.id_inventario', '=', 'i.id_inventario')
         ->where(function ($q) use($option) {
             if($option == 1) {
                 $this->dinamyFilters($q, [
@@ -213,7 +215,7 @@ class KardexController extends Controller
     }
 
     public function export() {
-        $headers = ['#', 'Fecha', 'Entrega', 'Recibe', 'Concepto', 'Movimiento', "Entra\nCantidad", "Entra\nValor Unitario",
+        $headers = ['#', 'Fecha', 'Entrega', 'Recibe', 'Producto', 'Concepto', 'Movimiento', "Entra\nCantidad", "Entra\nValor Unitario",
             "Entra\nTotal", "Sale\nCantidad", "Sale\nValor unitario", "Sale\nTotal", "Saldo\nCantidad", "Saldo\nValor unitario", "Saldo\nTotal"
         ];
 

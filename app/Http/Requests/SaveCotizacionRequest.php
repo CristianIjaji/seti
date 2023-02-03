@@ -97,23 +97,29 @@ class SaveCotizacionRequest extends FormRequest
                 'required',
                 'exists:tbl_dominios,id_dominio'
             ],
-            'id_tem' => [
+            'id_item' => [
                 'required',
                 'exists:tbl_lista_precios,id_lista_precio'
             ],
-            'descripcion_item' => [
-                'required'
-            ],
-            'unidad' => [
-                'required'
-            ],
-            'cantidad' => [
+            'id_item.*' => [
                 'required',
+                'exists:tbl_lista_precios,id_lista_precio'
             ],
-            'valor_unitario' => [
+            'descripcion_item.*' => [
                 'required'
             ],
-            'valor_total' => [
+            'unidad.*' => [
+                'required.*'
+            ],
+            'cantidad.*' => [
+                'required',
+                'numeric',
+                'min:1'
+            ],
+            'valor_unitario.*' => [
+                'required'
+            ],
+            'valor_total.*' => [
                 'required'
             ]
         ];
@@ -131,8 +137,9 @@ class SaveCotizacionRequest extends FormRequest
             'id_proceso.required' => 'El campo proceso es obligatorio.',
             'id_tercero_responsable.required' => 'El campo contratista es obligatorio.',
             'id_dominio_tipo_item.required' => 'Debe agregar un ítem a la cotización.',
-            'id_tem.required' => 'Debe agregar un ítem a la cotización.',
-            'descripcion_item.required' => 'El campo descripción del ítem es obligarorio.',
+            'id_item.required' => 'Debe agregar un ítem a la cotización.',
+            'descripcion_item.*.required' => 'El campo descripción del ítem es obligarorio.',
+            'unidad.*.required' => 'El campo unidad es obligatorio.'
         ];
     }
 }

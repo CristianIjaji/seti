@@ -344,13 +344,13 @@ class InventarioController extends Controller
         ]);
     }
 
-    public function search($id_almacen, $tipo_carrito) {
+    public function search($id_almacen, $tipo_carrito, $type) {
         if(empty($id_almacen)) {
             return response()->json(['errors' => 'Error consultando lista de productos.']);
         }
 
         return view('partials._search', [
-            'type' => session('id_dominio_tipo_orden_compra'),
+            'type' => $type,
             'tipo_carrito' => $tipo_carrito,
             'productos' => TblInventario::where(['estado' => 1, 'id_tercero_almacen' => $id_almacen])->get(),
         ]);

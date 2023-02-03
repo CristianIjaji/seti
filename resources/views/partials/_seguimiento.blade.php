@@ -56,7 +56,7 @@
 
         <div id="div_fecha_seguimiento" class="form-group col-12 d-none input-date">
             <label for="input_fecha">Fecha</label>
-            <input type="text" class="form-control" data-min-date="{{ date('Y-m-d') }}" name="input_fecha" id="input_fecha" readonly>
+            <input type="text" class="form-control" name="input_fecha" id="input_fecha" readonly>
         </div>
 
         <div class="form-group col-12 text-start">
@@ -68,7 +68,7 @@
             <button type="button" class="btn bg-danger bg-gradient text-white" data-bs-dismiss="modal">
                 <i class="fa-regular fa-circle-xmark"></i> Cerrar
             </button>
-            <button id="btn-quote" class="btn bg-primary bg-gradient text-white">
+            <button id="btn-create-comment" class="btn bg-primary bg-gradient text-white">
                 <i class="fa-regular fa-circle-check"></i> Crear comentario
             </button>
         </div>

@@ -7,8 +7,7 @@ use App\Models\TblConsolidado;
 use App\Models\TblCotizacion;
 use App\Models\TblConsolidadoDetalle;
 use App\Models\TblDominio;
-use App\Models\TblEstadoActividad;
-use App\Models\TblEstadoCotizacion;
+use App\Models\TblEstado;
 use App\Models\TblFactura;
 use App\Models\TblHallazgo;
 use App\Models\TblInventario;
@@ -139,11 +138,9 @@ class SetupSeeder extends Seeder
             TblMenu::truncate();
             TblPuntosInteres::truncate();
             TblListaPrecio::truncate();
-            TblEstadoCotizacion::truncate();
+            TblEstado::truncate();
             TblConsolidado::truncate();
             TblCotizacion::truncate();
-            TblEstadoActividad::truncate();
-            TblActividad::truncate();
             TblTercero::truncate();
             TblParametro::truncate();
             TblDominio::truncate();
@@ -508,7 +505,7 @@ class SetupSeeder extends Seeder
                         'menu' => [
                             'id_menu_padre' => null,
                             'url' => 'stores.index',
-                            'icon' => 'fa-solid fa-warehouse nav_icon fs-5',
+                            'icon' => 'fa-solid fa-warehouse nav_icon',
                             'nombre' => 'Inventario',
                             'orden' => 1,
                             'estado' => 1,

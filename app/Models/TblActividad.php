@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class TblActividad extends Model
 {
@@ -27,7 +28,6 @@ class TblActividad extends Model
         'fecha_ejecucion',
         'id_dominio_estado',
         'id_cotizacion',
-        'id_orden_compra',
         'id_informe_actividad',
         'fecha_liquidado',
         'liquidado',
@@ -64,10 +64,6 @@ class TblActividad extends Model
     public function tblcotizacion() {
         return $this->belongsTo(TblCotizacion::class, 'id_cotizacion');
     }
-    
-    public function tblordencompra() {
-        return $this->belongsTo(TblOrdenCompra::class, 'id_orden_compra');
-    }
 
     public function tblinforme() {
         // return $this->belongsTo(tblinforme::class, 'id_informe_actividad');
@@ -102,9 +98,11 @@ class TblActividad extends Model
         return number_format(isset($this->attributes['valor_cotizado']) ? $this->attributes['valor_cotizado'] : $this->attributes['valor'], 2);
     }
 
-    // public function getObservacionAttribute() {
-    //     return isset($this->tblconsolidadodetalle) ? $this->tblconsolidadodetalle->observacion : '';
-    //     $observacion = isset($this->tblconsolidadodetalle) ? $this->tblconsolidadodetalle->observacion : '';
-    //     return "<textarea class='form-control' style='resize: none;'>$observacion</textarea>";
-    // }
+    public function getInventario() {
+        return TblMovimiento::where([
+            'id_dominio_tipo_movimiento' => session('id_dominio_movimiento_salida_actividad'),
+            'id_tercero_recibe' => $this->attributes['id_tercero_resposable_contratista'],
+            'documento' => $this->attributes['id_actividad'],
+        ])->first();
+    }
 }

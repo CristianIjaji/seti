@@ -29,7 +29,6 @@ class CreateTblActividadesTable extends Migration
             $table->date('fecha_ejecucion')->nullable();
             $table->unsignedBigInteger('id_dominio_estado');
             $table->unsignedBigInteger('id_cotizacion')->nullable();
-            $table->unsignedBigInteger('id_orden_compra')->nullable();
             $table->unsignedBigInteger('id_informe_actividad')->nullable();
             $table->date('fecha_liquidado')->nullable();
             $table->boolean('liquidado')->default(false);
@@ -48,8 +47,6 @@ class CreateTblActividadesTable extends Migration
             $table->foreign('id_dominio_estado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones')
-                ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_orden_compra')->references('id_orden_compra')->on('tbl_ordenes_compra')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_informe_actividad')->references('id_informe_actividad')->on('tbl_informes_actividades')
                 ->onDelete('cascade')->onUpdate('cascade');

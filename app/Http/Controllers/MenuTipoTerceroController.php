@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SaveMenuTipoTerceroRequest;
 use App\Models\TblDominio;
 use App\Models\TblMenuTipoTercero;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -40,7 +39,7 @@ class MenuTipoTerceroController extends Controller
             $this->filtros[$key] = $value;
         }
 
-        if(Auth::user()->role !== session('id_dominio_super_administrador')) {
+        if(auth()->user()->role !== session('id_dominio_super_administrador')) {
             $querybuilder->where('id_dominio_tipo_tercero', '<>', session('id_dominio_super_administrador'));
         }
 
@@ -84,7 +83,7 @@ class MenuTipoTerceroController extends Controller
         $menus = DB::table('tbl_menus', 'm')
         ->select('m.id_menu', 'm.url', 'm.icon', 'm.nombre', 'm.id_menu_padre', 'm.orden')
         ->where(['m.estado' => 1])
-        ->wherenotin('m.id_menu', (Auth::user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))
+        ->wherenotin('m.id_menu', (auth()->user()->role !== session('id_dominio_super_administrador') ? [8, 9] : []))
         ->orderBy(DB::raw('COALESCE(id_menu_padre, orden)', 'asc'))
         ->get();
         

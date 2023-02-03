@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class TblDominio extends Model
 {
@@ -24,9 +22,9 @@ class TblDominio extends Model
     ];
 
     public static function getAdminRoles() {
-        return Auth::user()->role == session('id_dominio_super_administrador')
+        return auth()->user()->role == session('id_dominio_super_administrador')
             ? [0]
-            : (Auth::user()->role == session('id_dominio_administrador')
+            : (auth()->user()->role == session('id_dominio_administrador')
                 ? [session('id_dominio_super_administrador')]
                 : [session('id_dominio_super_administrador'), session('id_dominio_administrador')]
         );

@@ -5,7 +5,7 @@
     'btnOptionsCreate' => [
         "title" => 'Nuevo producto',
         'header-class' => 'bg-primary bg-opacity-75 text-white',
-        "modal-size" => "modal-fullscreen",
+        "modal-size" => "modal-xl",
     ],
     'headers' => [
         ['name' => 'id_inventario', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
@@ -21,11 +21,11 @@
             'btnOptions' => [
                 'view' => $view,
                 'modal-view-title' => 'Ver producto',
-                'modal-view-size' => 'modal-fullscreen',
+                'modal-view-size' => 'modal-xl',
                 'header-view-class' => 'bg-info bg-opacity-75 text-white',
                 'edit' => $edit,
                 'modal-edit-title' => 'Editar producto',
-                'modal-edit-size' => 'modal-fullscreen',
+                'modal-edit-size' => 'modal-xl',
                 'header-edit-class' => 'bg-warning bg-opacity-75 text-white',
             ]
         ]]

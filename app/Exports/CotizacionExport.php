@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithDrawings;
@@ -107,15 +106,6 @@ class CotizacionExport implements FromView, WithEvents, WithDrawings, WithTitle
         $drawing2->setCoordinates('H2');
         
         return [$drawing, $drawing2];
-    }
-
-    function getRowcount($text, $width=55) {
-        $rc = 0;
-        $line = explode("\n", $text);
-        foreach($line as $source) {
-            $rc += intval((strlen($source) / $width) +1);
-        }
-        return $rc;
     }
 
     public function registerEvents(): array

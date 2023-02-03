@@ -80,23 +80,15 @@
                             data-bs-toggle="collapse"
                             data-bs-target="#__menu_{{ $menu->id_menu }}"
                         @endisset
-                        class="nav_link {{ setActive($menu->url) }} rounded {{ !isset($menu->submenu) ? 'my-1' : 'my-0 btn show-more' }}"
+                        class="nav_link {{ setActive($menu->url) }} {{ !isset($menu->submenu) ? 'my-1' : 'my-0 show-more' }} border-light border-bottom border-opacity-10"
                     >
                         <i class="{{ $menu->icon }} fs-5 text-center"></i>
                         <span class="nav_name">{{$menu->nombre}}</span>
                         {!! !isset($menu->url) ? '<i class="text-center fs-6 submenu_icon fa-solid fa-angle-down" style="margin-left: -6px;"></i>' : '' !!}
                     </a>
                     @isset($menu->submenu)
-                        <ul class="list-group border-top-0 rounded-0 rounded-bottom collapse" id="__menu_{{ $menu->id_menu }}" data-bs-parent=".accordion">
+                        <ul class="list-group collapse" id="__menu_{{ $menu->id_menu }}" data-bs-parent=".accordion">
                             @foreach ($menu->submenu as $submenu)
-                                @php
-                                    $rounded = 'rounded';
-                                @endphp
-                                @if ($loop->first)
-                                    @php
-                                        $rounded = 'rounded-bottom';
-                                    @endphp
-                                @endif
                                 <li>
                                     <a
                                         @isset($submenu->url) href="{{ route($submenu->url) }}" @endisset
@@ -104,8 +96,8 @@
                                         data-toggle="tooltip"
                                         data-bs-placement="right"
                                         data-menu="__menu_{{ $menu->id_menu }}"
-                                        class="nav_link {{ setActive($submenu->url) }} {{ $rounded}}  m-0">
-                                        <i class="{{ $submenu->icon }} text-center"></i>
+                                        class="nav_link {{ setActive($submenu->url) }} border-light border-bottom border-opacity-10 m-0">
+                                        <i class="{{ $submenu->icon }} fs-6 text-center"></i>
                                         <span class="nav_name">{{$submenu->nombre}}</span>
                                     </a>
                                 </li>

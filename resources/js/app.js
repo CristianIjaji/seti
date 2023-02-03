@@ -60,6 +60,9 @@ let form_cotizacion = 'form_quotes';
 let url_actividad = 'activities';
 let form_actividad = 'form_activities';
 
+let url_orden = 'purchases';
+let form_orden = 'form_purchases';
+
 const createChannel = (evento, canal, text, location, urlGrid, formData, audio = '') => {
     var channel = pusher.subscribe(`user-${canal}`);
     channel.bind(evento, function(data) {
@@ -368,6 +371,7 @@ const procesarErrores = (modal, title, errores) => {
     $.each(errores, function(i, item){
         errors += `<li>${item}</li>`;
     });
+
     $(`#${modal} .alert-danger`).html(
         `<h6 class="alert-heading fw-bold">${title}: </h6>
         <ul>${errors}</ul>
@@ -382,7 +386,7 @@ const procesarErrores = (modal, title, errores) => {
     });
 }
 
-const sendAjaxForm = (action, data, reload, select, modal) => {
+const sendAjaxForm = (action, data, reload, select, modal, reload_location = false) => {
     $.ajax({
         url: action,
         method: 'POST',
@@ -403,12 +407,17 @@ const sendAjaxForm = (action, data, reload, select, modal) => {
             Swal.fire({
                 icon: `${typeof response.errors === 'undefined' ? 'success' : 'error'}`,
                 title: `${typeof response.errors === 'undefined' ? 'Cambio realizado' : 'No se pudo completar la acción'}`,
-                text: `${typeof response.errors === 'undefined' ? response.success : response.errors}`,
+                html: `${typeof response.errors === 'undefined' ? response.success : response.errors}`,
                 confirmButtonColor: 'var(--bs-primary)',
+                focus: true
             }).then(function() {
                 if(typeof response.errors === 'undefined') {
-                    if(typeof reload === 'undefined' || reload.toString() !== 'false') {
-                        $('.search_form').change();
+                    if(typeof reload === 'undefined' || reload.toString() !== 'false' || reload_location) {
+                        if(!reload_location) {
+                            $('.search_form').trigger('change');
+                        } else {
+                            location.reload();
+                        }
                     } else {
                         if($(`#${select}`).length && typeof response.response !== 'undefined') {
                             var record = response.response;
@@ -422,6 +431,7 @@ const sendAjaxForm = (action, data, reload, select, modal) => {
         },
         error: function(response) {
             procesarErrores(modal, 'Por favor corrija los siguientes campos:', response.responseJSON.errors);
+            $(`#${modal} .modal-body`).animate({ scrollTop: 0 }, 'slow');
         }
     }).always(function () {
         showLoader(false);
@@ -437,7 +447,7 @@ const createModal = () => {
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content shadow-lg">
                     <div class="modal-header border-bottom border-2">
-                        <h5 class="modal-title fw-bold" id="modalTitle-${id}"></h5>
+                        <h5 class="modal-title" id="modalTitle-${id}"></h5>
                         <i class="fa-solid fa-xmark fs-3 px-2" data-bs-dismiss="modal" style="cursor: pointer"></i>
                     </div>
                     <div class="modal-body px-4 pt-4"></div>
@@ -459,6 +469,7 @@ const handleModal = (button) => {
     let select = new String(button.data('select')).trim();
     let callback = new String(button.data('callback')).trim();
     let modal = new String(button.data('modal')).trim();
+    let reload_location = new String(button.data('reload-location')).trim()
 
     let btnCancel = new String(button.data('cancel')).trim();
     let btnSave = new String(button.data('save')).trim();
@@ -468,8 +479,11 @@ const handleModal = (button) => {
     btnCancel = (btnCancel !== 'undefined' ? btnCancel : 'Cancelar');
     btnSave = (btnSave !== 'undefined' ? btnSave : 'Guardad');
     reload = (reload !== 'undefined' ? reload : 'true');
+    reload_location = (reload_location !== 'undefined' ? reload_location : 'false');
     select = (select !== 'undefined' ? select : '');
     modal = createModal();
+
+    if(action === '' || action.indexOf('-1') >= 0) return false;
 
     if(action !== 'undefined') {
         $.ajax({
@@ -486,7 +500,7 @@ const handleModal = (button) => {
 
             $(`#${modal} #btn-form-action`).data('modal', modal);
             setupSelect2(modal);
-            $(`#${modal}`).data('reload', reload);
+            $(`#${modal}`).data('reload', reload).data('reload-location', reload_location);
 
             if(select !== '') {
                 $(`#${modal}`).data('select', select);
@@ -679,7 +693,10 @@ window.drawItems = (edit = true, tipo_carrito, type_item, id_item) => {
                             <input type="text" class="form-control text-md-center text-end text-uppercase border-0" id="item_${id_item}" value="${element['item']}" disabled>
                         </td>
                         <td class="col-4 my-auto border-0">
-                            <textarea class="form-control border-0 resize-textarea" rows="2" name="descripcion_item[]" id="descripcion_item_${id_item}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>
+                            ${tipo_carrito !== 'movimiento'
+                                ? `<textarea class="form-control border-0 resize-textarea" rows="2" name="descripcion_item[]" id="descripcion_item_${id_item}" required ${edit ? '' : 'disabled'}>${element['descripcion']}</textarea>`
+                                : `${element['descripcion']}`
+                            }
                         </td>
                         ${element['unidad']
                             ? `
@@ -990,12 +1007,12 @@ const openMainSubMenu = () => {
 
         menu.addEventListener('hide.bs.collapse', event => {
             $(e).removeClass(showIcon).removeClass(hideIcon).addClass(hideIcon);
-            $(e).closest('a').removeClass(activemenu);
+            // $(e).closest('a').removeClass(activemenu);
         });
 
         menu.addEventListener('show.bs.collapse', event => {
             $(e).removeClass(hideIcon).removeClass(showIcon).addClass(showIcon);
-            $(e).closest('a').addClass(activemenu);
+            // $(e).closest('a').addClass(activemenu);
         });
     });
 }
@@ -1071,13 +1088,14 @@ $(document).on('click', '#btn-form-action', function(e){
     let reload = $(`#${modal}`).data('reload');
     let form = $(this).closest('form');
     let select = $(`#${modal}`).data('select');
+    let reload_location = $(`#${modal}`).data('reload-location');
     
     if($('#campos_reporte').length){
         $('#campos_reporte option').prop('selected', true);
     }
     
     let data = new FormData(form[0]);
-    sendAjaxForm(action, data, reload, select, modal);
+    sendAjaxForm(action, data, reload, select, modal, reload_location);
 });
 
 $(document).on('click', 'button.close', function() {
@@ -1177,9 +1195,7 @@ $(document).on('click', '.btn-delete-item', function() {
         delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
         totalCarrito(id_tr[0]);
 
-        $('[data-toggle="tooltip"]').on('click', function () {
-            $(this).tooltip('hide')
-        });
+        $('.tooltip.bs-tooltip-auto.fade.show').remove();
     }
 });
 
@@ -1249,14 +1265,14 @@ $(document).on('change', '#estado_seguimiento', function() {
     }
 });
 
-$(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
+$(document).on('click', '#btn-create-comment, .btn-download-format', function(e) {
     e.preventDefault();
 
     let action = '';
     let form = $(this).closest('form');
 
     let data = new FormData(form[0]);
-    let cambio = ($(this).attr('id') === 'btn-send-quote'
+    let cambio = ($.inArray($(this).attr('id').toString(), ['btn-send-purchase', 'btn-send-quote']) > -1
         ? $(this).attr('id')
         : $('#estado_seguimiento').val()
     );
@@ -1345,6 +1361,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
             break;
         case 'btn-send-quote':
             action = 'send';
+            url = `${url_cotizacion}/exportQuote?quote=${$('#id_cotizacion').val()}`;
             break;
         case 'btn-create-activity':
             setupSwal = getSwalConfig(
@@ -1398,6 +1415,10 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
             action = 'executed-activity';
             url = `${url_actividad}/${$('#id_actividad').val()}/handleActivity`;
             break;
+        case 'btn-send-purchase':
+            action = 'send';
+            url = `${url_orden}/exportPurchase?purchase=${$('#id_orden_compra').val()}`;
+            break;
         default:
             break;
     }
@@ -1405,7 +1426,7 @@ $(document).on('click', '#btn-quote, #btn-send-quote', function(e) {
     if(action === '') return false;
 
     if(action === 'send') {
-        downloadExcel(`${url_cotizacion}/exportQuote?quote=${$('#id_cotizacion').val()}`, '', 'Reporte.xlsx');
+        downloadExcel(`${url}`, '', 'Reporte.xlsx');
         return false;
     }
 

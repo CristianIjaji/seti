@@ -2,11 +2,9 @@
 
 namespace App\Policies;
 
-use App\Models\TblMenu;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
 class TblTerceroPolicy
 {

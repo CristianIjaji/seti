@@ -15,6 +15,16 @@
         $activity->id_tercero_resposable_contratista = $quote->id_tercero_responsable;
         $activity->descripcion = $quote->descripcion;
     }
+
+    $movimiento = $activity->getInventario();
+
+    $route = (!$movimiento ? 'moves.create' : 'moves.edit');
+    $params = (!$movimiento
+        ? "tipo_movimiento=".session('id_dominio_movimiento_salida_actividad')."&tercero=".$activity->id_tercero_resposable_contratista."&actividad=".$activity->id_actividad
+        : $movimiento['id_movimiento']
+    );
+    $classModal = (!$movimiento ? 'bg-primary bg-opacity-75 text-white' : 'bg-warning bg-opacity-75 text-white');
+    $classBtn = (!$movimiento ? 'btn btn-outline-danger border modal-form' : 'btn btn-outline-warning border modal-form');
 @endphp
 
 @if (!$create)
@@ -258,14 +268,15 @@
                     </span>
 
                     <span
-                        class="btn btn-outline-danger border modal-form"
-                        data-title="Orden compra"
+                        class="{{ $classBtn }}"
+                        data-title="Cargar inventario actividad {{ $activity->id_actividad }}"
                         data-size="modal-fullscreen"
-                        data-header-class='bg-primary bg-opacity-75 text-white'
+                        data-header-class="{{ $classModal }}"
                         data-reload="true"
-                        data-action="{{ route('purchases.create') }}"
+                        data-reload-location="true"
+                        data-action="{{ route($route, $params) }}"
                         data-toggle="tooltip"
-                        title="Orden compra"
+                        title="Cargar inventario"
                     >
                         <i class="fa-solid fa-cart-shopping fs-4"></i>
                     </span>

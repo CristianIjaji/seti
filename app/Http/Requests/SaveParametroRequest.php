@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class SaveParametroRequest extends FormRequest
 {
@@ -22,7 +21,7 @@ class SaveParametroRequest extends FormRequest
     {
         $this->merge([
             'valor' => implode(',', ($this->get('valor') !== null ? $this->get('valor') : [''])),
-            'id_usuareg' => (Auth::id() === null ? 1 : Auth::id()),
+            'id_usuareg' => (auth()->id() === null ? 1 : auth()->id()),
         ]);
     }
 

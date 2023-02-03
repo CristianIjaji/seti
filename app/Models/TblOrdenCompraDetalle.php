@@ -26,4 +26,7 @@ class TblOrdenCompraDetalle extends Model
         return $this->belongsTo(TblOrdenCompra::class, 'id_orden_compra');
     }
     
+    public function tblinventario() {
+        return $this->belongsTo(tblinventario::class, 'id_inventario');
+    }
 }

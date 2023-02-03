@@ -4,7 +4,7 @@
 @endphp
 
 @if (!$create)
-    <ul class="nav nav-tabs" id="storeTab" role="tablist">
+    {{-- <ul class="nav nav-tabs" id="storeTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="store-tab" data-bs-toggle="tab" data-bs-target="#store" type="button" role="tab" aria-controls="store" aria-selected="true">Producto</button>
         </li>
@@ -14,7 +14,7 @@
     </ul>
 
     <div class="tab-content pt-3" id="storeTab">
-        <div class="tab-pane fade show active" id="store" role="tabpanel" aria-labelledby="store-tab">
+        <div class="tab-pane fade show active" id="store" role="tabpanel" aria-labelledby="store-tab"> --}}
 @endif
 
     @if ($create || $edit)
@@ -147,9 +147,9 @@
         </form>
     @endif
 @if (!$create)
-        </div>
+        {{-- </div>
         <div class="tab-pane" id="track-kardex" role="tabpanel" aria-labelledby="track-tab-kardex">
             @include('kardex.hoja', ['kardex' => $kardex])
         </div>
-    </div>
+    </div> --}}
 @endif

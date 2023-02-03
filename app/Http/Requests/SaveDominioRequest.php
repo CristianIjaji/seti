@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class SaveDominioRequest extends FormRequest
 {
@@ -21,7 +20,7 @@ class SaveDominioRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'id_usuareg' => (Auth::id() === null ? 1 : Auth::id()),
+            'id_usuareg' => (auth()->id() === null ? 1 : auth()->id()),
         ]);
     }
 

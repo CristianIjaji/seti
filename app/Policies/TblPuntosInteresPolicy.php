@@ -5,7 +5,6 @@ namespace App\Policies;
 use App\Models\TblPuntosInteres;
 use App\Models\TblUsuario;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Support\Facades\Log;
 
 class TblPuntosInteresPolicy
 {

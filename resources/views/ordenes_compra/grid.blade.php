@@ -14,6 +14,7 @@
         ['name' => 'id_dominio_modalidad_pago', 'label' => 'Tipo pago', 'options' => $modosPago],
         ['name' => 'vencimiento', 'label' => 'Vencimiento', 'class' => 'input-date'],
         ['name' => 'cupo_actual', 'label' => 'Valor orden', 'align' => 'text-end'],
+        ['name' => 'id_dominio_estado', 'label' => 'Estado', 'options' => $estados, 'col' => 'col-1'],
         ['name' => '', 'label' => 'Acciones', 'col' => 'col-2', 'actions' => [
             'btnOptions' => [
                 'view' => $view,

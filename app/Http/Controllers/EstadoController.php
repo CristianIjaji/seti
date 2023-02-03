@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TblEstadoCotizacion;
+use App\Models\TblEstado;
 use Illuminate\Http\Request;
 
-class EstadoCotizacionController extends Controller
+class EstadoController extends Controller
 {
     protected $filtros;
 
@@ -138,7 +138,7 @@ class EstadoCotizacionController extends Controller
     private function getView($view) {
         return view($view, [
             'edit' => true,
-            'model' => TblEstadoCotizacion::with(['tblCotizacion', 'tblestado', 'tblusuario'])
+            'model' => TblEstado::with(['tblestado', 'tblusuario'])
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
                 })->orderBy('created_at', 'desc')->paginate(10),

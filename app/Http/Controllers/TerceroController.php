@@ -9,10 +9,8 @@ use App\Models\TblDominio;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 
@@ -56,11 +54,11 @@ class TerceroController extends Controller
             $this->filtros[$key] = $value;
         }
 
-        if(Auth::user()->role !== session('id_dominio_super_administrador')) {
+        if(auth()->user()->role !== session('id_dominio_super_administrador')) {
             $querybuilder->where('tbl_terceros.id_dominio_tipo_tercero', '<>', session('id_dominio_super_administrador'));
         }
 
-        if(!in_array(Auth::user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
+        if(!in_array(auth()->user()->role, [session('id_dominio_super_administrador'), session('id_dominio_administrador')])) {
             $querybuilder->whereNotIn('tbl_terceros.id_dominio_tipo_tercero', [session('id_dominio_super_administrador'), session('id_dominio_administrador')]);
         }
 

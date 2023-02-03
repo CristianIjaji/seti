@@ -91,4 +91,36 @@ class TblOrdenCompraPolicy
     {
         //
     }
+
+    public function export(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra) {
+        return isset($tblUsuario->getPermisosMenu('purchases.index')->export) ? $tblUsuario->getPermisosMenu('purchases.index')->export : false;
+    }
+
+    public function import(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra) {
+        return false;
+    }
+
+    public function cancelPurchase(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra) {
+        if(in_array($tblOrdenCompra->id_dominio_estado, [session('id_dominio_orden_cerrada'), session('id_dominio_orden_parcial')])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function parcialPurchase(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra) {
+        if(in_array($tblOrdenCompra->id_dominio_estado, [session('id_dominio_orden_cerrada'), session('id_dominio_orden_cancelada')])) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function createComment(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra) {
+        // if(in_array($tblOrdenCompra->id_dominio_estado, [session('id_dominio_orden_cerrada'), session('id_dominio_orden_cancelada')])) {
+        //     return false;
+        // }
+
+        return true;
+    }
 }
