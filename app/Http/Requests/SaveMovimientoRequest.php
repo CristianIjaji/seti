@@ -46,7 +46,8 @@ class SaveMovimientoRequest extends FormRequest
                 'exists:tbl_terceros,id_tercero'
             ],
             'documento' => [
-                'required',
+                !in_array($this->get('id_dominio_tipo_movimiento'), [session('id_dominio_movimiento_salida_traslado')])
+                ? 'required' : 'nullable',
                 $this->get('id_dominio_tipo_movimiento') == session('id_dominio_movimiento_salida_actividad')
                     ? 'exists:tbl_actividades,id_actividad'
                     : 'min:0'
@@ -78,7 +79,9 @@ class SaveMovimientoRequest extends FormRequest
             'cantidad.*' => [
                 'required',
                 'numeric',
-                'min:1'
+                in_array($this->get('id_dominio_tipo_movimiento'), [session('id_dominio_movimiento_entrada_devolucion'), session('id_dominio_movimiento_salida_traslado')])
+                    ? 'min:0'
+                    : 'min:1'
             ],
             'valor_unitario.*' => [
                 'required',

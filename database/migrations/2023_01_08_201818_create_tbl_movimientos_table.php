@@ -18,7 +18,7 @@ class CreateTblMovimientosTable extends Migration
             $table->unsignedBigInteger('id_dominio_tipo_movimiento');
             $table->unsignedBigInteger('id_tercero_recibe');
             $table->unsignedBigInteger('id_tercero_entrega');
-            $table->string('documento');
+            $table->string('documento')->nullable();
             $table->string('observaciones');
             $table->unsignedBigInteger('id_dominio_iva');
             $table->decimal('total', 20, 2)->default(0);

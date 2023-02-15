@@ -109,9 +109,9 @@ class SaveActividadRequest extends FormRequest
                 'nullable',
                 'date'
             ],
-            'liquidado' => [
+            'id_liquidacion' => [
                 'nullable',
-                'boolean'
+                'exists:tbl_liquidaciones,id_liquidacion'
             ],
             'mes_consolidado' => [
                 'nullable',

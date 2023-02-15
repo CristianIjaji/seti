@@ -133,9 +133,7 @@ class CotizacionController extends Controller
             $total += $detalle->valor_total;
         }
 
-        $iva = intval(str_replace(['iva', ' ', '%'], ['', '', ''], mb_strtolower($quote->tblIva->nombre))) / 100;
-        $valor_iva = $total * $iva;
-        return $total + $valor_iva;
+        return $total;
     }
 
     /**
@@ -492,7 +490,7 @@ class CotizacionController extends Controller
         ->join('tbl_dominios as tt', 'tbl_cotizaciones.id_dominio_tipo_trabajo', '=', 'tt.id_dominio')
         ->join('tbl_dominios as p', 'tbl_cotizaciones.id_dominio_prioridad', '=', 'p.id_dominio')
         ->join('tbl_dominios as e', 'tbl_cotizaciones.id_dominio_estado', '=', 'e.id_dominio')
-        ->join('tbl_dominios as iva', 'tbl_cotizaciones.iva', '=', 'iva.id_dominio')
+        ->join('tbl_dominios as iva', 'tbl_cotizaciones.id_dominio_iva', '=', 'iva.id_dominio')
         ->join('tbl_terceros as tpr', 'tbl_cotizaciones.id_tercero_responsable', '=', 'tpr.id_tercero')
 
         ->where(function($q) use($option) {
@@ -567,7 +565,7 @@ class CotizacionController extends Controller
                 'id_usuareg' => auth()->id()
             ]);
         } catch (\Throwable $th) {
-            Log::error("Error creando track cotización: ".$th->getMessage());
+            Log::error("Error creando track cotización: ".$th->__toString());
         }
     }
 

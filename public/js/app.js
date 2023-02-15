@@ -9161,6 +9161,7 @@ Vue.component('example-component', (__webpack_require__(/*! ./components/Example
 var app = new Vue({
   el: '#app'
 });
+window.id_dominio_salida_traslado = 0;
 window.regexCurrencyToFloat = /[^0-9.-]+/g;
 window.formatCurrency = {
   alias: "currency",
@@ -9398,6 +9399,30 @@ window.datePicker = function () {
   });*/
 };
 
+window.swalConfirm = function (title, text, fnc1, fnc2) {
+  Swal.fire({
+    icon: 'warning',
+    title: title,
+    text: text,
+    showCancelButton: true,
+    confirmButtonText: 'Continuar',
+    cancelButtonText: 'Cancelar',
+    reverseButtons: true,
+    confirmButtonColor: '#fe0115c4',
+    cancelButtonColor: '#6e7d88'
+  }).then(function (result) {
+    if (result.isConfirmed) {
+      if (typeof fnc1 === 'function') {
+        fnc1();
+      }
+    } else {
+      if (typeof fnc2 === 'function') {
+        fnc2();
+      }
+    }
+  });
+};
+
 var setupDatePicker = function setupDatePicker(element, setup, format) {
   var picker = new _eonasdan_tempus_dominus__WEBPACK_IMPORTED_MODULE_2__.TempusDominus(element, setup);
   picker.subscribe(_eonasdan_tempus_dominus__WEBPACK_IMPORTED_MODULE_2__.Namespace.events.hide, function (event) {
@@ -9502,8 +9527,8 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
         focus: true
       }).then(function () {
         if (typeof response.errors === 'undefined') {
-          if (typeof reload === 'undefined' || reload.toString() !== 'false' || reload_location) {
-            if (!reload_location) {
+          if (typeof reload === 'undefined' && reload.toString() !== 'false' || reload_location) {
+            if (reload_location !== 'true') {
               $('.search_form').trigger('change');
             } else {
               location.reload();
@@ -9530,9 +9555,14 @@ var sendAjaxForm = function sendAjaxForm(action, data, reload, select, modal) {
   });
 };
 
+var mz_index = 1054;
+var bz_index = 1053;
+
 var createModal = function createModal() {
   // Se genera id aleatorio
   var id = new Date().getUTCMilliseconds();
+  mz_index += 1;
+  bz_index += 1;
   var modal = "\n        <div class=\"modal fade\" id=\"".concat(id, "\" tabindex=\"-1\" aria-labelledby=\"modalTitle-").concat(id, "\" aria-hidden=\"true\" data-bs-backdrop=\"static\">\n            <div class=\"modal-dialog modal-dialog-centered\">\n                <div class=\"modal-content shadow-lg\">\n                    <div class=\"modal-header border-bottom border-2\">\n                        <h5 class=\"modal-title\" id=\"modalTitle-").concat(id, "\"></h5>\n                        <i class=\"fa-solid fa-xmark fs-3 px-2\" data-bs-dismiss=\"modal\" style=\"cursor: pointer\"></i>\n                    </div>\n                    <div class=\"modal-body px-4 pt-4\"></div>\n                </div>\n            </div>\n        </div>\n    ");
   $('body').append(modal);
   return id;
@@ -9608,6 +9638,9 @@ var handleModal = function handleModal(button) {
   $("#".concat(modal, " .modal-header")).addClass(headerClass);
   $("#".concat(modal)).modal('handleUpdate');
   $("#".concat(modal)).modal('show');
+  $("#".concat(modal)).css('z-index', mz_index);
+  $('.modal-backdrop').last().css('z-index', bz_index);
+  $('#kvFileinputModal').css('z-index', mz_index + 1);
 };
 
 var getSwalConfig = function getSwalConfig(icon, title, text, reverseButtons, showCancelButton, confirmButtonColor, confirmButtonText) {
@@ -9624,7 +9657,8 @@ var getSwalConfig = function getSwalConfig(icon, title, text, reverseButtons, sh
   };
 };
 
-var downloadExcel = function downloadExcel(url, data, defaultName) {
+var downloadFile = function downloadFile(url, data, defaultName) {
+  var typeFile = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'Excel';
   $.ajax({
     xhrFields: {
       responseType: 'blob'
@@ -9638,10 +9672,27 @@ var downloadExcel = function downloadExcel(url, data, defaultName) {
     success: function success(result, status, xhr) {
       var disposition = xhr.getResponseHeader('content-disposition');
       var matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
-      var filename = (matches != null && matches[1] ? matches[1] : defaultName).replace(/"/g, ''); // The actual download
+      var filename = (matches != null && matches[1] ? matches[1] : defaultName).replace(/"/g, '');
+      var type = '';
+
+      switch (typeFile) {
+        case 'Excel':
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+          break;
+
+        case 'PDF':
+          type: "application/octetstream";
+
+          break;
+
+        default:
+          break;
+      } // The actual download
+
 
       var blob = new Blob([result], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        type: type
       });
       var link = document.createElement('a');
       link.href = window.URL.createObjectURL(blob);
@@ -9758,12 +9809,16 @@ window.drawItems = function () {
     if (typeof element !== 'undefined' && _typeof(element) === 'object') {
       if (!$("#tr_".concat(type_item, "_").concat(id_item)).length) {
         var classname = "".concat($("#caret_".concat(type_item)).hasClass(showIcon) ? 'show' : '');
-        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_dominio_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_item[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            ").concat(tipo_carrito !== 'movimiento' ? "<textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_".concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>") : "".concat(element['descripcion']), "\n                        </td>\n                        ").concat(element['unidad'] ? "\n                            <td class=\"col-1 my-auto border-0\">\n                                <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ".concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                    value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            ") : "", "\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete btn-delete-item\" ".concat(tooltip, " title='Quitar \xEDtem' data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><span class=\"btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold\"></i></span></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
+        $("\n                    <tr id=\"".concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"border-bottom collapse ").concat(classname, " item_").concat(type_item, " detail-").concat(type_item, "\">\n                        <td class=\"col-1 my-auto border-0\">\n                            <input type='hidden' name=\"id_dominio_tipo_item[]\" value=\"").concat(type_item, "\" />\n                            <input type='hidden' name=\"id_item[]\" value=\"").concat(id_item, "\" />\n                            <input type=\"text\" class=\"form-control text-md-center text-end text-uppercase border-0\" id=\"item_").concat(id_item, "\" value=\"").concat(element['item'], "\" disabled>\n                        </td>\n                        <td class=\"col-4 my-auto border-0\">\n                            ").concat(tipo_carrito !== 'movimiento' ? "<textarea class=\"form-control border-0 resize-textarea\" rows=\"2\" name=\"descripcion_item[]\" id=\"descripcion_item_".concat(id_item, "\" required ").concat(edit ? '' : 'disabled', ">").concat(element['descripcion'], "</textarea>") : "".concat(element['descripcion']), "\n                        </td>\n                        ").concat(element['unidad'] ? "\n                            <td class=\"col-1 my-auto border-0\">\n                                <input type=\"text\" class=\"form-control text-md-start text-end border-0\" ".concat(tooltip, " title=\"").concat(element['unidad'], "\" name=\"unidad[]\" id=\"unidad_").concat(id_item, "\"\n                                    value=\"").concat(element['unidad'], "\" ").concat(edit ? '' : 'disabled', ">\n                            </td>\n                            ") : "", "\n                        <td class=\"col-1 my-auto border-0 td-cantidad\">\n                            <input type=\"number\" min=\"1\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales\" name=\"cantidad[]\" id=\"cantidad_").concat(id_item, "\" value=\"").concat(element['cantidad'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"\n                                class=\"form-control text-end border-0 txt-totales money\" ").concat(tooltip, " title=\"").concat(Inputmask.format(element['valor_unitario'], formatCurrency), "\" name=\"valor_unitario[]\"\n                                id=\"valor_unitario_").concat(id_item, "\" value=\"").concat(element['valor_unitario'], "\" required ").concat(edit ? '' : 'disabled', ">\n                        </td>\n                        <td class=\"col-2 my-auto border-0\">\n                            <input type=\"text\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\" class=\"form-control text-end border-0 txt-totales txt_total_item_").concat(type_item, " money\"\n                                name=\"valor_total[]\" id=\"valor_total_").concat(id_item, "\" value=\"").concat(element['valor_total'], "\" disabled>\n                        </td>\n                        ").concat(edit == true ? "<td class=\"text-center col-1 my-auto border-0 td-delete btn-delete-item\" ".concat(tooltip, " title='Quitar \xEDtem' data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><span class=\"btn btn-delete-item\" data-id-tr=\"").concat(tipo_carrito, "_").concat(type_item, "_").concat(id_item, "\"><i class=\"fa-solid fa-trash-can text-danger fs-5 fs-bold\"></i></span></td>") : "", "\n                    </tr>\n                ")).insertAfter($(".detail-".concat(type_item)).last());
         $('.money').inputmask(formatCurrency);
       } else {
         $("#tr_".concat(type_item, "_").concat(id_item, " #valor_total_").concat(id_item)).val(element['valor_total']);
       }
     }
+  }
+
+  if ($('#id_dominio_tipo_movimiento').length > 0 && parseInt($('#id_dominio_tipo_movimiento').val()) === parseInt(id_dominio_salida_traslado)) {
+    $('.lbl-cantidad, .td-cantidad').addClass('d-none');
   }
 
   setTimeout(function () {
@@ -9821,7 +9876,13 @@ window.totalCarrito = function (tipo_carrito) {
 
 var getItem = function getItem(item) {
   var cantidad = parseFloat($(item).data('cantidad'));
+  var stock = parseFloat(typeof $(item).data('stock') !== 'undefined' ? $(item).data('stock') : 0);
   var valor = parseFloat($(item).data('valor_unitario'));
+
+  if ($('#id_dominio_tipo_movimiento').length > 0 && parseInt($('#id_dominio_tipo_movimiento').val()) === parseInt(id_dominio_salida_traslado)) {
+    cantidad = stock;
+  }
+
   return {
     'item': $(item).data('item'),
     'descripcion': $(item).data('descripcion'),
@@ -10029,6 +10090,11 @@ var openMainSubMenu = function openMainSubMenu() {
   });
 };
 
+$(document).on('change', '#file_report', function () {
+  if ($(this).val() !== '') {
+    $('.kv-avatar .fileinput-upload-button').removeClass('d-none');
+  }
+});
 $(document).on('change', '#input_file', function (e) {
   $('#lbl_input_file').text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
 
@@ -10120,12 +10186,12 @@ $(document).on("click", ".btn-export", function (e) {
   e.preventDefault();
   var action = $(this).data('route');
   var data = $("#form_".concat(action)).serialize();
-  downloadExcel("".concat(action, "/export"), data, 'Reporte.xlsx');
+  downloadFile("".concat(action, "/export"), data, 'Reporte.xlsx');
 });
 $(document).on("click", ".btn-download", function (e) {
   e.preventDefault();
   var action = $(this).data('route');
-  downloadExcel("".concat(action, "/template"), '', 'Template.xlsx');
+  downloadFile("".concat(action, "/template"), '', 'Template.xlsx');
 });
 $(document).on('click', '#btn_upload', function () {
   $('#input_file').trigger('click');
@@ -10134,16 +10200,9 @@ $(document).on('select2:open', function () {
   document.querySelector('.select2-search__field').focus();
 });
 var specialkeypress = false;
-$(document).keydown(function (e) {
+$(document).on('keydown', '.modal', function (e) {
   if (e.ctrlKey && e.which === 13 || e.ctrlKey && e.which === 65) {
     e.preventDefault();
-  }
-
-  if ($('.btn-update').length) {
-    if (e.which == 116 || e.keyCode == 116) {
-      e.preventDefault();
-      $('.btn-update').click();
-    }
   }
 
   specialkeypress = $.inArray(e.which, [1, 16, 17]) ? true : false;
@@ -10152,8 +10211,16 @@ $(document).keydown(function (e) {
     $('.btn-primary.btn-md.modal-form').click();
   }
 
-  if (e.which === 13 && e.altKey) {
-    $('#btn-form-action').click();
+  if (e.which === 13 && e.ctrlKey) {
+    var modal = $(this).attr('id');
+
+    if ($("#".concat(modal, " #btn-form-action")).length) {
+      $("#".concat(modal, " #btn-form-action")).click();
+    }
+
+    if ($("#".concat(modal, " #btn-create-comment")).length) {
+      $("#".concat(modal, " #btn-create-comment")).click();
+    }
   }
 });
 $(document).on('click', '#kvFileinputModal .btn-kv-close', function (e) {
@@ -10175,14 +10242,41 @@ $(document).on('click', '#btn_select_quote', function () {
     $("#".concat(id)).modal('hide');
   }
 });
+
+var deleteItem = function deleteItem(id_tr) {
+  $("#".concat(id_tr)).remove();
+  id_tr = id_tr.split('_');
+  delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
+  totalCarrito(id_tr[0]);
+  $('.tooltip.bs-tooltip-auto.fade.show').remove();
+};
+
 $(document).on('click', '.btn-delete-item', function () {
   if (typeof $(this).data('id-tr') !== 'undefined') {
     var id_tr = $(this).data('id-tr');
-    $("#".concat(id_tr)).remove();
-    id_tr = id_tr.split('_');
-    delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
-    totalCarrito(id_tr[0]);
-    $('.tooltip.bs-tooltip-auto.fade.show').remove();
+    var array = id_tr.split('_');
+
+    if ($.inArray(array[0], ['liquidacion']) > -1) {
+      if (typeof carrito[array[0]][array[1]][array[2]] !== 'undefined') {
+        Swal.fire({
+          icon: 'question',
+          title: 'Eliminar Ítem',
+          text: "Desea eliminar el \xEDtem: ".concat(carrito[array[0]][array[1]][array[2]]['descripcion'], "?"),
+          showCancelButton: true,
+          confirmButtonText: 'Continuar',
+          cancelButtonText: 'Cancelar',
+          reverseButtons: true,
+          confirmButtonColor: '#fe0115c4',
+          cancelButtonColor: '#6e7d88'
+        }).then(function (result) {
+          if (result.isConfirmed) {
+            deleteItem(id_tr);
+          }
+        });
+      }
+    } else {
+      deleteItem(id_tr);
+    }
   }
 });
 $(document).on('keydown', '.txt-totales', function () {
@@ -10327,7 +10421,7 @@ $(document).on('click', '#btn-create-comment, .btn-download-format', function (e
   if (action === '') return false;
 
   if (action === 'send') {
-    downloadExcel("".concat(url), '', 'Reporte.xlsx');
+    downloadFile("".concat(url), '', 'Reporte.xlsx');
     return false;
   }
 
@@ -10500,15 +10594,33 @@ $(document).on('click', '.menuToggle', function () {
 });
 $(document).on('click', '#btn_download_consolidado', function () {
   var id_consolidado = $('#btn_download_consolidado').data('consolidado');
-  downloadExcel("deals/exportDeal?deal=".concat(id_consolidado), '', 'Reporte.xlsx');
+  downloadFile("deals/exportDeal?deal=".concat(id_consolidado), '', 'Reporte.xlsx');
 });
 $(document).on('hide.bs.modal', '.modal', function () {
   if ($(this).attr('id').length) {
     $(this).remove();
+    mz_index -= 1;
+    bz_index -= 1;
     $('.modal').each(function (i, element) {
       $(element).focus();
     });
   }
+});
+$(document).on('click', '.kv-avatar .fileinput-upload-button', function (e) {
+  e.preventDefault();
+  var action = $(this).closest('form').attr('action');
+  var modal = $(this).closest('.modal').attr('id');
+  var reload = $("#".concat(modal)).data('reload');
+  var form = $(this).closest('form');
+  var select = $("#".concat(modal)).data('select');
+  var reload_location = $("#".concat(modal)).data('reload-location');
+
+  if ($('#campos_reporte').length) {
+    $('#campos_reporte option').prop('selected', true);
+  }
+
+  var data = new FormData(form[0]);
+  sendAjaxForm(action, data, reload, select, modal, reload_location);
 });
 
 /***/ }),

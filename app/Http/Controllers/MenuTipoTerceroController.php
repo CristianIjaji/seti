@@ -142,7 +142,7 @@ class MenuTipoTerceroController extends Controller
                 'success' => 'Permiso creado exitosamente!',
             ]);
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
+            Log::error($th->__toString());
             return response()->json([
                 'errors' => $th->getMessage()
             ]);

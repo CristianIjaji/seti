@@ -36,7 +36,9 @@ class SaveDominioRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('tbl_dominios')->ignore($this->route('domain'))
+                Rule::unique('tbl_dominios')->where(function($query) {
+                    return $query->where('id_dominio_padre', '=', $this->get('id_dominio_padre'));
+                })->ignore($this->route('domain'))
             ],
             'descripcion' => [
                 'required',

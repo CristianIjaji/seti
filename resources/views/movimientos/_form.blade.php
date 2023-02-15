@@ -105,16 +105,16 @@
 
 <script type="application/javascript">
     var tipo_movimiento = 0;
+    var id_tercero_entrega = 0;
+    var id_tercero_recibe = 0;
     /*Entradas de inventario*/
     var id_dominio_movimiento_entrada_devolucion = parseInt({!! session('id_dominio_movimiento_entrada_devolucion') !!});
     var id_dominio_movimiento_entrada_orden = parseInt({!! session('id_dominio_movimiento_entrada_orden') !!});
-    var id_dominio_movimiento_entrada_prestamo = parseInt({!! session('id_dominio_movimiento_entrada_prestamo') !!});
     /*Fin entradas de inventario*/
 
     /*Salidas de inventario*/
     var id_dominio_movimiento_salida_actividad = parseInt({!! session('id_dominio_movimiento_salida_actividad') !!});
-    var id_dominio_movimiento_salida_devolucion = parseInt({!! session('id_dominio_movimiento_salida_devolucion') !!});
-    var id_dominio_movimiento_salida_prestamo = parseInt({!! session('id_dominio_movimiento_salida_prestamo') !!});
+    var id_dominio_movimiento_salida_traslado = parseInt({!! session('id_dominio_movimiento_salida_traslado') !!});
     /*Fin salidas de inventario*/
 
     function getTercerosTipo(tipo, element) {
@@ -136,21 +136,51 @@
         });
     }
 
-    function getOrdenes(id_tercero_proveedor, id_tercero_almacen, element) {
-        if(id_tercero_almacen === '' || id_tercero_almacen === '') {
-            return false;
-        }
-
+    function getTercerosInventario(element) {
         $.ajax({
-            url: `purchases/${id_tercero_proveedor}/${id_tercero_almacen}/getOrdenesActivas`,
+            url: `activities/getResponsablesInventario`,
             method: 'GET',
             beforeSend: function() {
                 showLoader(true);
             }
         }).done(function(data) {
             let options = '';
-            $.each(data['ordenes'], (i, e) => {
-                options += `<option value="${e['id_orden_compra']}">${e['id_orden_compra']}</option>`;
+            $.each(data, (i, e) => {
+                options += `<option value="${e['id_tercero']}">${e['nombre']}</option>`;
+            });
+
+            $(`#${element}`).append(options);
+        }).always(function() {
+            showLoader(false);
+        });
+    }
+
+    function getDocumentos(controller, id_tercero_proveedor, id_tercero_almacen, element) {
+        if(controller === '' || id_tercero_proveedor === '' || id_tercero_almacen === '' || element === '') {
+            return false;
+        }
+
+        $.ajax({
+            url: `${controller}/${id_tercero_proveedor}/${id_tercero_almacen}/getDocumentos`,
+            method: 'GET',
+            beforeSend: function() {
+                showLoader(true);
+            }
+        }).done(function(data) {
+            let options = '';
+            $.each(data['documentos'], (i, e) => {
+                let value = 0;
+                switch (controller) {
+                    case 'purchases':
+                        value = e['id_orden_compra'];
+                        break;
+                    case 'activities':
+                        value = e['id_actividad'];
+                        break;
+                    default:
+                        break;
+                }
+                options += `<option value="${value}">${value}</option>`;
             });
 
             $(`#${element}`).append(options);
@@ -172,31 +202,48 @@
         }).done(function(data) {
             $('#div_detalle').html(data);
             $('.tr_movimiento').addClass('disabled');
+            if(tipo_movimiento === id_dominio_movimiento_entrada_devolucion) {
+                $('.lbl-cantidad').text('Cantidad a devolver');
+            }
             $('.money').inputmask(formatCurrency);
         }).always(function() {
+            $('#select-documento').select2('open');
             showLoader(false);
+            $('#select-documento').select2('close');
         });
     }
 
-    $('#id_dominio_tipo_movimiento').change(function() {
-        let id_usuario = {!! auth()->id() !!};
-        let usuario = '{!! auth()->user()->tbltercero->full_name !!}';
-        tipo_movimiento = parseInt($(this).val());
-
+    function changeTipoMovimiento() {
         $('#id_tercero_entrega').empty().append(`<option value="">Elegir quien entrega</option>`);
         $('#id_tercero_recibe').empty().append(`<option value="">Elegir quien recibe</option>`);
         $('.tr_movimiento').removeClass('disabled');
         $('#documento').prop('disabled', false).removeClass('d-none');
+
         if($('#select-documento').length) {
             $('#select-documento').select2('destroy');
             $('#select-documento').remove();
         }
 
+        $('.lbl-cantidad').text('Cantidad');
+        $('.lbl-cantidad, .td-cantidad').removeClass('d-none');
+
         if(tipo_movimiento > 0) {
             switch (tipo_movimiento) {
                 case id_dominio_movimiento_entrada_devolucion:
-                    // $('#id_tercero_recibe').append(`<option value="${id_usuario}">${usuario}</option>`).val(id_usuario).change();
+                    $('.lbl-cantidad').text('Cantidad a devolver');
+
+                    $('.tr_movimiento').addClass('disabled');
+                    $('#documento').prop('disabled', true).addClass('d-none');
+                    $('#div_documento').append('<select name="documento" id="select-documento" style="width: 100%"><option>Elegir actividad</option></select>');
+                    getTercerosInventario('id_tercero_entrega');
                     getTercerosTipo({!! session('id_dominio_almacen') !!}, 'id_tercero_recibe');
+
+                    $('#select-documento').select2({
+                        dropdownParent: $(this).closest('form'),
+                    });
+
+                    $('.select2-selection').addClass('form-control');
+                    $('.select2-selection__rendered').data('toggle', 'tooltip');
                     break;
                 case id_dominio_movimiento_entrada_orden:
                     $('.tr_movimiento').addClass('disabled');
@@ -212,10 +259,6 @@
                     $('.select2-selection').addClass('form-control');
                     $('.select2-selection__rendered').data('toggle', 'tooltip');
                     break;
-                case id_dominio_movimiento_entrada_prestamo:
-                    // $('#id_tercero_recibe').append(`<option value="${id_usuario}">${usuario}</option>`).val(id_usuario).change();
-                    getTercerosTipo({!! session('id_dominio_almacen') !!}, 'id_tercero_recibe');
-                    break;
                 case id_dominio_movimiento_salida_actividad:
                     getTercerosTipo({!! session('id_dominio_almacen') !!}, 'id_tercero_entrega');
                     if({{ isset($id_tercero) }}) {
@@ -223,37 +266,34 @@
                         usuario = '{!! $nombre_tercero !!}';
                         $('#id_tercero_recibe').append(`<option value="${id_usuario}">${usuario}</option>`).val(id_usuario).change();
                     }
-                    // $('#id_tercero_recibe').append(`<option value="${id_usuario}">${usuario}</option>`).val(id_usuario).change();
                     break;
-                case id_dominio_movimiento_salida_devolucion:
-                    break;
-                case id_dominio_movimiento_salida_prestamo:
+                case id_dominio_movimiento_salida_traslado:
+                    $('.lbl-cantidad, .td-cantidad').addClass('d-none');
+                    getTercerosTipo({!! session('id_dominio_almacen') !!}, 'id_tercero_entrega');
+                    getTercerosTipo({!! session('id_dominio_almacen') !!}, 'id_tercero_recibe');
                     break;
                 default:
                     break;
             }
         }
-    });
+    }
 
-    $('#id_tercero_entrega').change(function () {
-        if(tipo_movimiento > 0 && $(this).val() !== '') {
+    function changeEntrega() {
+        if(tipo_movimiento > 0 && $('#id_tercero_entrega').val() !== '') {
             let data_action = '';
 
             switch (tipo_movimiento) {
                 case id_dominio_movimiento_entrada_devolucion:
-                    
+                    getDocumentos('activities', $('#id_tercero_entrega').val(), $('#id_tercero_recibe').val(), 'select-documento');
                     break;
                 case id_dominio_movimiento_entrada_orden:
-                    getOrdenes($('#id_tercero_entrega').val(), $('#id_tercero_recibe').val(), 'select-documento');
-                    break;
-                case id_dominio_movimiento_entrada_prestamo:
+                    getDocumentos('purchases', $('#id_tercero_entrega').val(), $('#id_tercero_recibe').val(), 'select-documento');
                     break;
                 case id_dominio_movimiento_salida_actividad:
-                    data_action = `stores/${$(this).val()}/movimiento/${{!! session('id_dominio_tipo_movimiento') !!}}`;
+                    data_action = `stores/${$('#id_tercero_entrega').val()}/movimiento/${{!! session('id_dominio_tipo_movimiento') !!}}`;
                     break;
-                case id_dominio_movimiento_salida_devolucion:
-                    break;
-                case id_dominio_movimiento_salida_prestamo:
+                case id_dominio_movimiento_salida_traslado:
+                    data_action = `stores/${$('#id_tercero_entrega').val()}/movimiento/${{!! session('id_dominio_tipo_movimiento') !!}}`;
                     break;
                 default:
                     break;
@@ -265,15 +305,67 @@
 
             $('.tr_movimiento').data('action', data_action);
         }
+    }
+
+    $('#id_dominio_tipo_movimiento').change(function() {
+        let id_usuario = {!! auth()->id() !!};
+        let usuario = '{!! auth()->user()->tbltercero->full_name !!}';
+
+        if(typeof carrito['movimiento'] !== 'undefined' && carrito['movimiento'].length === 0) {
+            tipo_movimiento = parseInt($(this).val());
+
+            changeTipoMovimiento();
+        }
+
+        if(typeof carrito['movimiento'] !== 'undefined' && carrito['movimiento'].length > 0 && parseInt(tipo_movimiento) !== parseInt($(this).val())) {
+            swalConfirm('Cambiar tipo movimiento', '¿Seguro quiere cambiar el tipo de movimiento?',
+                () => {
+                    tipo_movimiento = $('#id_dominio_tipo_movimiento').val();
+                    $('tr.item_{!! session("id_dominio_tipo_movimiento") !!}').remove();
+                    carrito['movimiento'] = [];
+                    totalCarrito('movimiento');
+
+                    changeTipoMovimiento();
+                    $('#id_tercero_entrega, #id_tercero_recibe').trigger('change');
+                },
+                () => {
+                    $('#id_dominio_tipo_movimiento').val(tipo_movimiento).trigger('change');
+                }
+            );
+        }
+    });
+
+    $('#id_tercero_entrega').change(function () {
+        if(typeof carrito['movimiento'] !== 'undefined' && carrito['movimiento'].length === 0) {
+            id_tercero_entrega = $(this).val();
+            changeEntrega();
+        }
+
+        if(typeof carrito['movimiento'] !== 'undefined' && carrito['movimiento'].length > 0 && parseInt(id_tercero_entrega) !== parseInt($(this).val())) {
+            swalConfirm('Cambiar quien entrega inventario', '¿Seguro quiere cambiar quien entrega?',
+                () => {
+                    id_tercero_entrega = $('#id_tercero_entrega').val();
+                    $('tr.item_{!! session("id_dominio_tipo_movimiento") !!}').remove();
+                    carrito['movimiento'] = [];
+                    totalCarrito('movimiento');
+
+                    changeEntrega();
+                },
+                () => {
+                    $('#id_tercero_entrega').val(id_tercero_entrega).trigger('change');
+                }
+            );
+        }
     });
 
     $('#id_tercero_recibe').change(function() {
         if(tipo_movimiento > 0 && $(this).val() !== '') {
             switch(tipo_movimiento) {
                 case id_dominio_movimiento_entrada_devolucion:
+                    getDocumentos('activities', $('#id_tercero_entrega').val(), $('#id_tercero_recibe').val(), 'select-documento');
                     break;
                 case id_dominio_movimiento_entrada_orden:
-                    getOrdenes($('#id_tercero_entrega').val(), $('#id_tercero_recibe').val(), 'select-documento');
+                    getDocumentos('purchases', $('#id_tercero_entrega').val(), $('#id_tercero_recibe').val(), 'select-documento');
                     break;
                 default:
                     break;
@@ -285,11 +377,11 @@
         if($(this).val() !== '') {
             switch (tipo_movimiento) {
                 case id_dominio_movimiento_entrada_devolucion:
+                    getCarrito(true, tipo_movimiento, $(this).val(), {!! session('id_dominio_tipo_movimiento') !!});
                     break;
                 case id_dominio_movimiento_entrada_orden:
                     getCarrito(true, tipo_movimiento, $(this).val(), {!! session('id_dominio_tipo_movimiento') !!});
                     break;
-            
                 default:
                     break;
             }
@@ -297,4 +389,5 @@
     });
 
     $('#id_dominio_tipo_movimiento').change();
+    id_dominio_salida_traslado = id_dominio_movimiento_salida_traslado;
 </script>

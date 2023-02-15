@@ -84,7 +84,7 @@
                     >
                         <i class="{{ $menu->icon }} fs-5 text-center"></i>
                         <span class="nav_name">{{$menu->nombre}}</span>
-                        {!! !isset($menu->url) ? '<i class="text-center fs-6 submenu_icon fa-solid fa-angle-down" style="margin-left: -6px;"></i>' : '' !!}
+                        {!! !isset($menu->url) ? '<i class="text-center fs-5 submenu_icon fa-solid fa-angle-down" style="margin-left: -6px;"></i>' : '' !!}
                     </a>
                     @isset($menu->submenu)
                         <ul class="list-group collapse" id="__menu_{{ $menu->id_menu }}" data-bs-parent=".accordion">
@@ -97,7 +97,7 @@
                                         data-bs-placement="right"
                                         data-menu="__menu_{{ $menu->id_menu }}"
                                         class="nav_link {{ setActive($submenu->url) }} border-light border-bottom border-opacity-10 m-0">
-                                        <i class="{{ $submenu->icon }} fs-6 text-center"></i>
+                                        <i class="{{ $submenu->icon }} fs-5 text-center"></i>
                                         <span class="nav_name">{{$submenu->nombre}}</span>
                                     </a>
                                 </li>

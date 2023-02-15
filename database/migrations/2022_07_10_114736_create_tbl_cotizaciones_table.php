@@ -22,7 +22,7 @@ class CreateTblCotizacionesTable extends Migration
             $table->date('fecha_solicitud');
             $table->dateTime('fecha_envio')->nullable();
             $table->unsignedBigInteger('id_dominio_prioridad');
-            $table->unsignedBigInteger('id_dominio_estado')->default(1);
+            $table->unsignedBigInteger('id_dominio_estado');
             $table->unsignedBigInteger('id_tercero_responsable');
             $table->decimal('valor', 20, 2);
             $table->unsignedBigInteger('id_dominio_iva');

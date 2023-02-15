@@ -100,14 +100,6 @@ class TblActividadPolicy
         return isset($tblUsuario->getPermisosMenu('activities.index')->import) ? $tblUsuario->getPermisosMenu('activities.index')->import : false;
     }
 
-    // public function sheduleActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
-    //     if(in_array($tblActividad->estado, [session('id_dominio_actividad_pausada')])) {
-    //         return false;
-    //     }
-
-    //     return true;
-    // }
-
     public function resheduleActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
         if(!in_array($tblActividad->estado, [session('id_dominio_actividad_reprogramado'), session('id_dominio_actividad_ejecutado'), session('id_dominio_actividad_liquidado'), session('id_dominio_actividad_conciliado')])) {
             return true;
@@ -133,7 +125,18 @@ class TblActividadPolicy
     }
 
     public function liquidatedActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
-        return true;
+        $mostrar_liquidacion = [
+            session('id_dominio_actividad_ejecutado'),
+            session('id_dominio_actividad_liquidado'),
+            session('id_dominio_actividad_conciliado'),
+            session('id_dominio_actividad_informe_cargado')
+        ];
+
+        if(in_array($tblActividad->estado, $mostrar_liquidacion) && $tblActividad->id_cotizacion) {
+            return true;
+        }
+
+        return false;
     }
 
     public function reconciledActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
@@ -141,11 +144,32 @@ class TblActividadPolicy
     }
 
     public function uploadReport(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        $mostrar_liquidacion = [
+            session('id_dominio_actividad_ejecutado'),
+            session('id_dominio_actividad_liquidado'),
+            session('id_dominio_actividad_conciliado'),
+            session('id_dominio_actividad_informe_cargado')
+        ];
 
+        if(in_array($tblActividad->estado, $mostrar_liquidacion) && $tblActividad->id_cotizacion) {
+            return true;
+        }
+
+        return false;
     }
 
     public function createComment(TblUsuario $tblUsuario, TblActividad $tblActividad) {
-        // TODO: validar si la actividad ya se encuentra conciliada
+        $estados_inactivos = [
+            session('id_dominio_actividad_ejecutado'),
+            session('id_dominio_actividad_liquidado'),
+            session('id_dominio_actividad_conciliado'),
+            session('id_dominio_actividad_informe_cargado')
+        ];
+
+        if(in_array($tblActividad->estado, $estados_inactivos)) {
+            return false;
+        }
+
         return true;
     }
 }

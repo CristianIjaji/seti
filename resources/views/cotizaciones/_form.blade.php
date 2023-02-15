@@ -8,10 +8,11 @@
             session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_rechazada'), session('id_dominio_cotizacion_cancelada')]) ||
         ($edit && Auth::user()->role == session('id_dominio_analista')) ||
         $create
-    )
+    );
+    $include = isset($include) ? $include : false;
 @endphp
 
-@if (!$create)
+@if (!$create && !$include)
     <ul class="nav nav-tabs" id="quotesTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="quotes-tab" data-bs-toggle="tab" data-bs-target="#quotes" type="button" role="tab" aria-controls="quotes" aria-selected="true">Cotización</button>
@@ -259,6 +260,7 @@
                             data-size="modal-fullscreen"
                             data-header-class='bg-primary bg-opacity-75 text-white'
                             data-reload="true"
+                            data-reload-location="true"
                             data-action="{{ route('activities.create', "cotizacion=".$cotizacion->id_cotizacion) }}"
                             data-toggle="tooltip"
                             title="Crear actividad"
@@ -279,7 +281,7 @@
     @if ($create || $edit)
         </form>
     @endif
-@if (!$create)
+@if (!$create && !$include)
         </div>
         <div class="tab-pane" id="track-quote" role="tabpanel" aria-labelledby="track-tab-quote">
             @include('partials._track', [$edit, 'model' => $estados_cotizacion, 'title' => 'Estados cotización', 'route' => 'states'])

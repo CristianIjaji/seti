@@ -38,7 +38,7 @@ class MessagesController extends Controller
                 'success' => 'Mensaje enviado exitosamente!',
             ]);
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
+            Log::error($th->__toString());
             return $th->getMessage();
         }
     }
@@ -70,7 +70,7 @@ class MessagesController extends Controller
                 'success' => 'Mensaje enviado exitosamente!',
             ]);
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
+            Log::error($th->__toString());
             return $th->getMessage();
         }
     }
@@ -102,7 +102,7 @@ class MessagesController extends Controller
                 'success' => 'Mensaje enviado exitosamente!',
             ]);
         } catch (\Throwable $th) {
-            Log::error($th->getMessage());
+            Log::error($th->__toString());
             return $th->getMessage();
         }
     }

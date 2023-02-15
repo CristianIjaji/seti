@@ -31,16 +31,20 @@ class CreateTblActividadesTable extends Migration
             $table->unsignedBigInteger('id_cotizacion')->nullable();
             $table->unsignedBigInteger('id_informe_actividad')->nullable();
             $table->date('fecha_liquidado')->nullable();
-            $table->boolean('liquidado')->default(false);
+            $table->unsignedBigInteger('id_liquidacion')->nullable();
             $table->date('mes_consolidado')->nullable();
             $table->decimal('valor', 20, 2);
             $table->text('observaciones');
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
+            $table->foreign('id_tipo_actividad')->references('id_dominio')->on('tbl_dominios')
+                ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_dominio_subsistema')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_tipo_actividad')->references('id_dominio')->on('tbl_dominios')
+            $table->foreign('id_tercero_encargado_cliente')->references('id_tercero')->on('tbl_terceros')
+                ->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('id_tercero_resposable_contratista')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_estacion')->references('id_punto_interes')->on('tbl_puntos_interes')
                 ->onDelete('cascade')->onUpdate('cascade');
@@ -50,9 +54,7 @@ class CreateTblActividadesTable extends Migration
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_informe_actividad')->references('id_informe_actividad')->on('tbl_informes_actividades')
                 ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_tercero_encargado_cliente')->references('id_tercero')->on('tbl_terceros')
-                ->onDelete('cascade')->onUpdate('cascade');
-                $table->foreign('id_tercero_resposable_contratista')->references('id_tercero')->on('tbl_terceros')
+            $table->foreign('id_liquidacion')->references('id_liquidacion')->on('tbl_liquidaciones')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');

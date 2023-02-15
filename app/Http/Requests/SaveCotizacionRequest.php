@@ -24,7 +24,9 @@ class SaveCotizacionRequest extends FormRequest
             'id_dominio_estado' => session('id_dominio_cotizacion_creada'),
             'codigo' => mb_strtoupper($this->get('codigo')),
             'valor' => 0,
-            'valor_total' => 0,
+            // 'valor_total' => 0,
+            'valor_unitario' => str_replace(',', '', $this->get('valor_unitario')),
+            'valor_total' => str_replace(',', '', $this->get('valor_total')),
             'id_usuareg' => (auth()->guest() ? 1 : auth()->id()),
         ]);
     }
@@ -99,17 +101,19 @@ class SaveCotizacionRequest extends FormRequest
             ],
             'id_item' => [
                 'required',
-                'exists:tbl_lista_precios,id_lista_precio'
             ],
             'id_item.*' => [
-                'required',
                 'exists:tbl_lista_precios,id_lista_precio'
             ],
             'descripcion_item.*' => [
-                'required'
+                'required',
+                'string',
+                'min:1'
             ],
             'unidad.*' => [
-                'required.*'
+                'required',
+                'string',
+                'min:2'
             ],
             'cantidad.*' => [
                 'required',
@@ -117,10 +121,14 @@ class SaveCotizacionRequest extends FormRequest
                 'min:1'
             ],
             'valor_unitario.*' => [
-                'required'
+                'required',
+                'numeric',
+                'min:0'
             ],
             'valor_total.*' => [
-                'required'
+                'required',
+                'numeric',
+                'min:1'
             ]
         ];
     }
@@ -139,7 +147,12 @@ class SaveCotizacionRequest extends FormRequest
             'id_dominio_tipo_item.required' => 'Debe agregar un ítem a la cotización.',
             'id_item.required' => 'Debe agregar un ítem a la cotización.',
             'descripcion_item.*.required' => 'El campo descripción del ítem es obligarorio.',
-            'unidad.*.required' => 'El campo unidad es obligatorio.'
+            'unidad.*.required' => 'El campo unidad es obligatorio.',
+            'unidad.*.min' => 'Por favor validar el nombre de la unidad de los ítems.',
+            'cantidad.*.required' => 'Debe indicar la cantidad de todos los ítems',
+            'cantidad.*.min' => 'La cantidad de los ítems debe ser mayor a 0',
+            'valor_unitario.*.required' => 'Debe indicar el valor unitario de todos los ítems',
+            'valor_unitario.*.min' => 'Por favor validar el valor unitario de los ítems.'
         ];
     }
 }

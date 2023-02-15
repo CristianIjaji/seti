@@ -2,6 +2,7 @@
     function createDetail($id_dominio_tipo_item, $details, $edit, $tipo_carrito) {
         $row = '';
         $resize = (!$edit ? 'style="resize: none;"' : '');
+        $min = in_array($tipo_carrito, ['liquidacion']) ? '0' : 1;
 
         foreach ($details as $id_item => $detail) {
             $row .= "
@@ -17,7 +18,7 @@
                         )."
                     </td>
                     <td class='col-4 my-auto border-0'>
-                        ".($edit && !in_array($tipo_carrito, ['movimiento'])
+                        ".($edit && !in_array($tipo_carrito, ['movimiento', 'liquidacion'])
                             ? "
                                 <textarea class='form-control border-0 resize-textarea' rows='2' name='descripcion_item[]' id='descripcion_item_$id_item' ".($edit ? 'required' : 'disabled')." $resize>$detail[descripcion]</textarea>
                             "
@@ -27,7 +28,7 @@
                     ".(isset($detail['unidad'])
                         ? "
                             <td class='col-1 my-auto border-0 ".($edit ? '' : 'text-md-start text-end')."'>
-                                ".($edit
+                                ".($edit && !in_array($tipo_carrito, ['liquidacion'])
                                     ? "
                                         <input type='text' class='form-control text-md-start text-end border-0' ".($edit ? "data-toggle='tooltip' title='$detail[unidad]'" : '' )." name='unidad[]' id='unidad_$id_item' value='$detail[unidad]' ".($edit ? '' : 'disabled').">
                                     "
@@ -37,10 +38,10 @@
                         "
                         : ''
                     )."
-                    <td class='col-1 my-auto border-0 ".($edit ? '' : 'text-end')."'>
+                    <td class='col-1 my-auto border-0 td-cantidad".($edit ? '' : 'text-end')."'>
                         ".($edit
                             ? "
-                                <input type='number' min='1' data-id-tr='$tipo_carrito".'_'."$id_dominio_tipo_item".'_'."$id_item' class='form-control text-end border-0 txt-totales'
+                                <input type='number' min='$min' data-id-tr='$tipo_carrito".'_'."$id_dominio_tipo_item".'_'."$id_item' class='form-control text-end border-0 txt-totales'
                                     name='cantidad[]' id='cantidad_$id_item' value='$detail[cantidad]' required ".($edit ? '' : 'disabled').">
                             "
                             : $detail['cantidad']
@@ -197,7 +198,7 @@
                     <tr>
                         <th class="text-nowrap col-1 text-center border rounded-start">Ítem</th>
                         <th class="text-nowrap col-4 text-center border">Descripción</th>
-                        <th class="text-nowrap col-1 text-center border">Cantidad</th>
+                        <th class="text-nowrap col-1 text-center border lbl-cantidad">Cantidad</th>
                         <th class="text-nowrap col-2 text-center border">Valor Unitario</th>
                         <th class="text-nowrap col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
                         @if ($edit)
@@ -288,6 +289,98 @@
                         </th>
                     </tr>
                     {!! createDetail(session('id_dominio_tipo_orden_compra'), (isset($detalleCarrito[session('id_dominio_tipo_orden_compra')]) ? $detalleCarrito[session('id_dominio_tipo_orden_compra')] : []), $edit, $tipo_carrito) !!}
+                </tbody>
+                @break
+            @case('liquidacion')
+                <thead>
+                    <tr>
+                        <th class="text-nowrap col-1 text-center border rounded-start">Ítem</th>
+                        <th class="text-nowrap col-4 text-center border">Descripción</th>
+                        <th class="text-nowrap col-1 text-center border">Unidad</th>
+                        <th class="text-nowrap col-1 text-center border">Cantidad</th>
+                        <th class="text-nowrap col-2 text-center border">Valor Unitario</th>
+                        <th class="text-nowrap col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
+                        @if ($edit)
+                            <th id="th-delete" class="col-1 text-center border rounded-end">Eliminar</th>
+                        @endif
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="tr_{{ session('id_dominio_materiales') }}" class="detail-{{session('id_dominio_materiales')}}">
+                        <th colspan="7" class="border rounded">
+                            <span
+                                class="w-100 bg-primary bg-opacity-75 fw-bold py-2 rounded d-flex justify-content-center text-white tr_suministros"
+                            >
+                                <label>SUMINISTRO DE MATERIALES</label>
+                            </span>
+                            <div class="d-flex justify-content-between">
+                                <div class="my-auto">
+                                    <label id="lbl_total_items_materiales">Total Ítems: {{ count(isset($detalleCarrito[session('id_dominio_materiales')]) ? $detalleCarrito[session('id_dominio_materiales')] : []) }}</label>
+                                </div>
+                                <div class="my-auto">
+                                    <label id="lbl_{{ session('id_dominio_materiales') }}" class="lbl_total_material">$ 0.00</label>
+                                    <span
+                                        class="btn show-more"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target=".item_{{ session('id_dominio_materiales') }}"
+                                        >
+                                        <i id="caret_{{ session('id_dominio_materiales') }}" class="fa-solid fa-angle-up"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    {!! createDetail(session('id_dominio_materiales'), isset($detalleCarrito[session('id_dominio_materiales')]) ? $detalleCarrito[session('id_dominio_materiales')] : [], $edit, $tipo_carrito) !!}
+                    <tr id="tr_{{ session('id_dominio_mano_obra') }}" class="detail-{{session('id_dominio_mano_obra')}}">
+                        <th colspan="7" class="border rounded">
+                            <span
+                                class="w-100 bg-primary bg-opacity-75 fw-bold py-2 rounded d-flex justify-content-center text-white tr_suministros disabled"
+                            >
+                                <label>MANO DE OBRA</label>
+                            </span>
+                            <div class="d-flex justify-content-between">
+                                <div class="my-auto">
+                                    <label id="lbl_total_items_mano_obra">Total Ítems: {{ count(isset($detalleCarrito[session('id_dominio_mano_obra')]) ? $detalleCarrito[session('id_dominio_mano_obra')] : []) }}</label>
+                                </div>
+                                <div class="my-auto">
+                                    <label id="lbl_{{ session('id_dominio_mano_obra') }}" class="lbl_total_mano_obra">$ 0.00</label>
+                                    <span
+                                        class="btn show-more"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target=".item_{{ session('id_dominio_mano_obra') }}"
+                                        >
+                                        <i id="caret_{{ session('id_dominio_mano_obra') }}" class="fa-solid fa-angle-up"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    {!! createDetail(session('id_dominio_mano_obra'), isset($detalleCarrito[session('id_dominio_mano_obra')]) ? $detalleCarrito[session('id_dominio_mano_obra')] : [], $edit, $tipo_carrito) !!}
+                    <tr id="tr_{{ session('id_dominio_transporte') }}" class="detail-{{session('id_dominio_transporte')}}">
+                        <th colspan="7" class="border rounded">
+                            <span
+                                class="w-100 bg-primary bg-opacity-75 fw-bold py-2 rounded d-flex justify-content-center text-white tr_suministros disabled"
+                            >
+                                <label>TRANSPORTE Y PEAJES</label>
+                            </span>
+                            <div class="d-flex justify-content-between">
+                                <div class="my-auto">
+                                    <label id="lbl_total_items_transporte">Total Ítems: {{ count(isset($detalleCarrito[session('id_dominio_transporte')]) ? $detalleCarrito[session('id_dominio_transporte')] : []) }}</label>
+                                </div>
+                                <div class="my-auto">
+                                    <label id="lbl_{{ session('id_dominio_transporte') }}" class="lbl_total_transporte">$ 0.00</label>
+                                    <span
+                                        class="btn show-more"
+                                        data-bs-toggle="collapse"
+                                        data-bs-target=".item_{{ session('id_dominio_transporte') }}"
+                                        >
+                                        <i id="caret_{{ session('id_dominio_transporte') }}" class="fa-solid fa-angle-up"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    {!! createDetail(session('id_dominio_transporte'), isset($detalleCarrito[session('id_dominio_transporte')]) ? $detalleCarrito[session('id_dominio_transporte')] : [], $edit, $tipo_carrito) !!}
                 </tbody>
                 @break
             @default

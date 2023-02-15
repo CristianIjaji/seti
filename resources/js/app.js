@@ -12,7 +12,7 @@ window.Pusher = require('pusher-js');
 
 import moment from 'moment';
 import { TempusDominus, Namespace } from '@eonasdan/tempus-dominus';
-import { random } from 'lodash';
+import { random, result } from 'lodash';
 
 const Swal = require('sweetalert2');
 
@@ -46,6 +46,7 @@ const app = new Vue({
     el: '#app',
 });
 
+window.id_dominio_salida_traslado = 0;
 window.regexCurrencyToFloat = /[^0-9.-]+/g;
 window.formatCurrency = { alias : "currency", prefix: '', min: 0 };
 
@@ -292,6 +293,30 @@ window.datePicker = () => {
     });*/
 }
 
+window.swalConfirm = (title, text, fnc1, fnc2) => {
+    Swal.fire({
+        icon: 'warning',
+        title: title,
+        text: text,
+        showCancelButton: true,
+        confirmButtonText: 'Continuar',
+        cancelButtonText: 'Cancelar',
+        reverseButtons: true,
+        confirmButtonColor: '#fe0115c4',
+        cancelButtonColor: '#6e7d88',
+    }).then((result) => {
+        if(result.isConfirmed) {
+            if(typeof fnc1 === 'function') {
+                fnc1();
+            }
+        } else {
+            if(typeof fnc2 === 'function') {
+                fnc2();
+            }
+        }
+    });
+}
+
 const setupDatePicker = (element, setup, format) => {
     let picker = new TempusDominus(element, setup);
 
@@ -412,8 +437,8 @@ const sendAjaxForm = (action, data, reload, select, modal, reload_location = fal
                 focus: true
             }).then(function() {
                 if(typeof response.errors === 'undefined') {
-                    if(typeof reload === 'undefined' || reload.toString() !== 'false' || reload_location) {
-                        if(!reload_location) {
+                    if((typeof reload === 'undefined' && reload.toString() !== 'false') || (reload_location)) {
+                        if(reload_location !== 'true') {
                             $('.search_form').trigger('change');
                         } else {
                             location.reload();
@@ -438,9 +463,14 @@ const sendAjaxForm = (action, data, reload, select, modal, reload_location = fal
     });
 }
 
+let mz_index = 1054;
+let bz_index = 1053;
+
 const createModal = () => {
     // Se genera id aleatorio
     let id = new Date().getUTCMilliseconds();
+    mz_index += 1;
+    bz_index += 1;
 
     let modal = `
         <div class="modal fade" id="${id}" tabindex="-1" aria-labelledby="modalTitle-${id}" aria-hidden="true" data-bs-backdrop="static">
@@ -457,6 +487,7 @@ const createModal = () => {
     `;
 
     $('body').append(modal);
+
     return id;
 }
 
@@ -537,6 +568,10 @@ const handleModal = (button) => {
 
     $(`#${modal}`).modal('handleUpdate');
     $(`#${modal}`).modal('show');
+
+    $(`#${modal}`).css('z-index', mz_index);
+    $('.modal-backdrop').last().css('z-index', bz_index);
+    $('#kvFileinputModal').css('z-index', (mz_index + 1));
 }
 
 const getSwalConfig = (icon, title, text, reverseButtons, showCancelButton, confirmButtonColor, confirmButtonText, cancelButtonText = 'Cancelar') => {
@@ -552,14 +587,14 @@ const getSwalConfig = (icon, title, text, reverseButtons, showCancelButton, conf
     };
 }
 
-const downloadExcel = (url, data, defaultName) => {
+const downloadFile = (url, data, defaultName, typeFile = 'Excel') => {
     $.ajax({
         xhrFields: {
             responseType: 'blob',
         },
         type: 'GET',
         url: url,
-        data: data,
+        data,
         beforeSend: () => {
             showLoader(true);
         },
@@ -567,10 +602,22 @@ const downloadExcel = (url, data, defaultName) => {
             let disposition = xhr.getResponseHeader('content-disposition');
             let matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
             let filename = (matches != null && matches[1] ? matches[1] : defaultName).replace(/"/g,'');
+            let type = '';
+
+            switch (typeFile) {
+                case 'Excel':
+                    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                    break;
+                case 'PDF':
+                    type: "application/octetstream";
+                    break;
+                default:
+                    break;
+            }
 
             // The actual download
             let blob = new Blob([result], {
-                type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                type
             });
 
             let link = document.createElement('a');
@@ -623,7 +670,6 @@ const responsiveTd = (id, i) => {
         $(`#${id} td:nth-child(${(i + 1)})`).removeClass('bg-light').addClass('border-0');
         $(`#${id} td.td-delete > span > i`).removeClass('text-white');
         $(`#${id} td.td-delete`).removeClass('btn bg-danger text-white');
-        
     }
 }
 
@@ -707,7 +753,7 @@ window.drawItems = (edit = true, tipo_carrito, type_item, id_item) => {
                             `
                             : ``
                         }
-                        <td class="col-1 my-auto border-0">
+                        <td class="col-1 my-auto border-0 td-cantidad">
                             <input type="number" min="1" data-id-tr="${tipo_carrito}_${type_item}_${id_item}"
                                 class="form-control text-end border-0 txt-totales" name="cantidad[]" id="cantidad_${id_item}" value="${element['cantidad']}" required ${edit ? '' : 'disabled'}>
                         </td>
@@ -731,6 +777,10 @@ window.drawItems = (edit = true, tipo_carrito, type_item, id_item) => {
                 $(`#tr_${type_item}_${id_item} #valor_total_${id_item}`).val(element['valor_total']);
             }
         }
+    }
+
+    if($('#id_dominio_tipo_movimiento').length > 0 && parseInt($('#id_dominio_tipo_movimiento').val()) === parseInt(id_dominio_salida_traslado)) {
+        $('.lbl-cantidad, .td-cantidad').addClass('d-none');
     }
 
     setTimeout(() => {
@@ -797,7 +847,12 @@ window.totalCarrito = (tipo_carrito) => {
 
 const getItem = (item) => {
     let cantidad = parseFloat($(item).data('cantidad'));
+    let stock = parseFloat((typeof $(item).data('stock') !== 'undefined' ? $(item).data('stock') : 0));
     let valor = parseFloat($(item).data('valor_unitario'));
+
+    if($('#id_dominio_tipo_movimiento').length > 0 && parseInt($('#id_dominio_tipo_movimiento').val()) === parseInt(id_dominio_salida_traslado)) {
+        cantidad = stock;
+    }
 
     return {
         'item': $(item).data('item'),
@@ -1017,6 +1072,12 @@ const openMainSubMenu = () => {
     });
 }
 
+$(document).on('change', '#file_report', function() {
+    if($(this).val() !== '') {
+        $('.kv-avatar .fileinput-upload-button').removeClass('d-none');
+    }
+});
+
 $(document).on('change', '#input_file', function(e){
     $('#lbl_input_file')
         .text(typeof e.target.files[0] !== 'undefined' ? e.target.files[0].name : '');
@@ -1120,7 +1181,7 @@ $(document).on("click", ".btn-export", function(e) {
     let action = $(this).data('route');
     let data = $(`#form_${action}`).serialize();
 
-    downloadExcel(`${action}/export`, data, 'Reporte.xlsx');
+    downloadFile(`${action}/export`, data, 'Reporte.xlsx');
 });
 
 $(document).on("click", ".btn-download", function(e) {
@@ -1128,7 +1189,7 @@ $(document).on("click", ".btn-download", function(e) {
     
     let action = $(this).data('route');
 
-    downloadExcel(`${action}/template`, '', 'Template.xlsx');
+    downloadFile(`${action}/template`, '', 'Template.xlsx');
 });
 
 $(document).on('click', '#btn_upload', function() {
@@ -1140,16 +1201,9 @@ $(document).on('select2:open', () => {
 });
 
 let specialkeypress = false;
-$(document).keydown(function (e) {
+$(document).on('keydown', '.modal', function (e) {
     if(e.ctrlKey && e.which === 13 || e.ctrlKey && e.which === 65) {
         e.preventDefault();
-    }
-
-    if($('.btn-update').length) {
-        if(e.which == 116 || e.keyCode == 116) {
-            e.preventDefault();
-            $('.btn-update').click();
-        }
     }
 
     specialkeypress = ($.inArray(e.which, [1, 16, 17]) ? true : false);
@@ -1158,8 +1212,16 @@ $(document).keydown(function (e) {
         $('.btn-primary.btn-md.modal-form').click();
     }
 
-    if(e.which === 13 && e.altKey) {
-        $('#btn-form-action').click();
+    if(e.which === 13 && e.ctrlKey) {
+        let modal = $(this).attr('id');
+
+        if($(`#${modal} #btn-form-action`).length) {
+            $(`#${modal} #btn-form-action`).click();
+        }
+
+        if($(`#${modal} #btn-create-comment`).length) {
+            $(`#${modal} #btn-create-comment`).click();
+        }
     }
 });
 
@@ -1185,17 +1247,42 @@ $(document).on('click', '#btn_select_quote', function() {
     }
 });
 
+const deleteItem = (id_tr) => {
+    $(`#${id_tr}`).remove();
+    id_tr = id_tr.split('_');
+
+    delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
+    totalCarrito(id_tr[0]);
+
+    $('.tooltip.bs-tooltip-auto.fade.show').remove();
+}
+
 $(document).on('click', '.btn-delete-item', function() {
     if(typeof $(this).data('id-tr') !== 'undefined') {
         let id_tr = $(this).data('id-tr');
+        let array = id_tr.split('_');
 
-        $(`#${id_tr}`).remove();
-        id_tr = id_tr.split('_');
-
-        delete carrito[id_tr[0]][id_tr[1]][id_tr[2]];
-        totalCarrito(id_tr[0]);
-
-        $('.tooltip.bs-tooltip-auto.fade.show').remove();
+        if($.inArray(array[0], ['liquidacion']) > -1) {
+            if(typeof carrito[array[0]][array[1]][array[2]] !== 'undefined') {
+                Swal.fire({
+                    icon: 'question',
+                    title: 'Eliminar Ítem',
+                    text: `Desea eliminar el ítem: ${carrito[array[0]][array[1]][array[2]]['descripcion']}?`,
+                    showCancelButton: true,
+                    confirmButtonText: 'Continuar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true,
+                    confirmButtonColor: '#fe0115c4',
+                    cancelButtonColor: '#6e7d88',
+                }).then((result) => {
+                    if(result.isConfirmed) {
+                        deleteItem(id_tr);
+                    }
+                });
+            }
+        } else {
+            deleteItem(id_tr);
+        }
     }
 });
 
@@ -1426,7 +1513,7 @@ $(document).on('click', '#btn-create-comment, .btn-download-format', function(e)
     if(action === '') return false;
 
     if(action === 'send') {
-        downloadExcel(`${url}`, '', 'Reporte.xlsx');
+        downloadFile(`${url}`, '', 'Reporte.xlsx');
         return false;
     }
 
@@ -1606,15 +1693,35 @@ $(document).on('click', '.menuToggle', () => {
 $(document).on('click', '#btn_download_consolidado', () => {
     let id_consolidado = $('#btn_download_consolidado').data('consolidado');
 
-    downloadExcel(`deals/exportDeal?deal=${id_consolidado}`, '', 'Reporte.xlsx');
+    downloadFile(`deals/exportDeal?deal=${id_consolidado}`, '', 'Reporte.xlsx');
 });
 
 $(document).on('hide.bs.modal', '.modal', function() {
     if($(this).attr('id').length) {
         $(this).remove();
+        mz_index -= 1;
+        bz_index -= 1;
 
         $('.modal').each((i, element) => {
             $(element).focus();
         });
     }
+});
+
+$(document).on('click', '.kv-avatar .fileinput-upload-button', function(e){
+    e.preventDefault();
+
+    let action = $(this).closest('form').attr('action');
+    let modal = $(this).closest('.modal').attr('id');
+    let reload = $(`#${modal}`).data('reload');
+    let form = $(this).closest('form');
+    let select = $(`#${modal}`).data('select');
+    let reload_location = $(`#${modal}`).data('reload-location');
+    
+    if($('#campos_reporte').length){
+        $('#campos_reporte option').prop('selected', true);
+    }
+    
+    let data = new FormData(form[0]);
+    sendAjaxForm(action, data, reload, select, modal, reload_location);
 });

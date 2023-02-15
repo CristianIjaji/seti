@@ -199,16 +199,43 @@
 </div>
 
 <script type="application/javascript">
+    var id_almacen = 0;
+
     $('#id_tercero_almacen').change(function() {
+        if(typeof carrito['orden'] !== 'undefined' && carrito['orden'].length === 0) {
+            id_almacen = $(this).val();
+        }
+
+        if(typeof carrito['orden'] !== 'undefined' && carrito['orden'].length > 0 && parseInt(id_almacen) !== parseInt($(this).val())) {
+            swalConfirm('Cambiar almacén', '¿Seguro quiere cambiar de almacén?',
+                () => {
+                    id_almacen = $('#id_tercero_almacen').val();
+                    $('tr.item_{!! session("id_dominio_tipo_orden_compra") !!}').remove();
+                    carrito['orden'] = [];
+                    totalCarrito('orden');
+                },
+                () => {
+                    $('#id_tercero_almacen').val(id_almacen).trigger('change');
+                }
+            )
+        }
+
         let id_tercero_almacen = $(this).val();
         let tipo_carrito = "orden";
 
-        if(id_tercero_almacen !== '') {
-            let action = new String($('.tr_orden').data('action')).split('/');
-            action[4] = id_tercero_almacen;
-            action = action.join('/');
-            $('.tr_orden').data('action', action);
-        }
+        let action = new String($('.tr_orden').data('action')).split('/');
+        action[4] = (id_tercero_almacen !== '' ? id_tercero_almacen : -1);
+        action = action.join('/');
+        $('.tr_orden').data('action', action);
+
+        // if(id_tercero_almacen !== '') {
+        //     let action = new String($('.tr_orden').data('action')).split('/');
+        //     action[4] = id_tercero_almacen;
+        //     action = action.join('/');
+        //     $('.tr_orden').data('action', action);
+        // } else {
+        //     $('.tr_orden').data('action', action);
+        // }
     });
 
     $('#id_tercero_proveedor').change(function() {

@@ -8,6 +8,7 @@ use App\Http\Controllers\EstadoController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\KardexController;
+use App\Http\Controllers\LiquidacionController;
 use App\Http\Controllers\ListaPrecioController;
 use App\Http\Controllers\MenuTipoTerceroController;
 use App\Http\Controllers\MessagesController;
@@ -86,7 +87,7 @@ Route::post('kardex/grid', [KardexController::class, 'grid'])->name('kardex.grid
 // Controlador de orden de compra
 Route::get('purchases/exportPurchase', [OrdenCompraController::class, 'exportPurchase'])->name('purchases.exportPurchase');
 Route::get('purchases/{purchase}/seguimiento', [OrdenCompraController::class, 'seguimiento'])->name('purchases.seguimiento');
-Route::get('purchases/{id_tercero_proveedor}/{id_tercero_almacen}/getOrdenesActivas', [OrdenCompraController::class, 'getOrdenesActivas'])->name('purchases.getOrdenesActivas');
+Route::get('purchases/{id_tercero_proveedor}/{id_tercero_almacen}/getDocumentos', [OrdenCompraController::class, 'getDocumentos'])->name('purchases.getDocumentos');
 Route::resource('purchases', OrdenCompraController::class);
 Route::post('purchases/grid', [OrdenCompraController::class, 'grid'])->name('purchases.grid');
 Route::post('purchases/{purchase}/handlePurchase', [OrdenCompraController::class, 'handlePurchase'])->name('purchases.handlePurchase');
@@ -107,11 +108,17 @@ Route::resource('states', EstadoController::class);
 Route::post('states/grid', [EstadoController::class, 'grid'])->name('states.grid');
 
 // Controlador de actividades
+Route::get('activities/getResponsablesInventario', [ActividadController::class, 'getResponsablesInventario'])->name('activities.getResponsablesInventario');
 Route::get('activities/{activity}/seguimiento', [ActividadController::class, 'seguimiento'])->name('activities.seguimiento');
 Route::get('activities/{activity}/client_quote', [ActividadController::class, 'cotizacionesCliente'])->name('activities.client_quote');
+Route::get('activities/{activity}/downloadReport', [ActividadController::class, 'downloadReport'])->name('activities.downloadReport');
+Route::get('activities/{id_tercero_responsable}/{id_tercero_almacen}/getDocumentos', [ActividadController::class, 'getDocumentos'])->name('activities.getDocumentos');
 Route::resource('activities', ActividadController::class);
+Route::post('activities/{activity}/uploadReport', [ActividadController::class, 'uploadReport'])->name('activities.uploadReport');
 Route::post('activities/grid', [ActividadController::class, 'grid'])->name('activities.grid');
 Route::post('activities/{activity}/handleActivity', [ActividadController::class, 'handleActivity'])->name('activities.handleActivity');
+
+Route::resource('closeouts', LiquidacionController::class);
 
 // Controlador estado activities
 // Route::resource('stateactivities', EstadoActividadController::class);

@@ -2,6 +2,7 @@
     $create = isset($activity->id_actividad) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
     $existe_cotizacion = false;
+
     if(isset($quote) && isset($quote->id_cotizacion)) {
         $existe_cotizacion = true;
 
@@ -11,23 +12,28 @@
         $activity->id_estacion = $quote->id_estacion;
         $activity->id_tipo_actividad = $quote->id_dominio_tipo_trabajo;
         $activity->fecha_solicitud = $quote->fecha_solicitud;
-        $activity->valor = $quote->total_sin_iva;
+        $activity->valor = $quote->valor;
         $activity->id_tercero_resposable_contratista = $quote->id_tercero_responsable;
         $activity->descripcion = $quote->descripcion;
     }
 
-    $movimiento = $activity->getInventario();
+    $movimiento = (isset($movimiento) ? $movimiento : null);
 
-    $route = (!$movimiento ? 'moves.create' : 'moves.edit');
+    $classModal = (!$movimiento ? 'primary' : ($edit ? 'warning' : 'info'));
+    $classBtn = (!$movimiento ? 'danger' : ($edit ? 'warning' : 'info'));
+    $route = (!$movimiento ? 'moves.create' : ($edit ? 'moves.edit' : 'moves.show'));
+    $title = (!$movimiento && $edit ? 'Cargar inventario' : 'Ver inventario');
+    $dataTitle = (!$movimiento && $edit ? "Cargar inventario actividad $activity->id_actividad" : "Ver inventario actividad $activity->id_actividad");
     $params = (!$movimiento
         ? "tipo_movimiento=".session('id_dominio_movimiento_salida_actividad')."&tercero=".$activity->id_tercero_resposable_contratista."&actividad=".$activity->id_actividad
         : $movimiento['id_movimiento']
     );
-    $classModal = (!$movimiento ? 'bg-primary bg-opacity-75 text-white' : 'bg-warning bg-opacity-75 text-white');
-    $classBtn = (!$movimiento ? 'btn btn-outline-danger border modal-form' : 'btn btn-outline-warning border modal-form');
 @endphp
 
 @if (!$create)
+    <div class="alert alert-success" role="alert"></div>
+    <div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
+
     <ul class="nav nav-tabs" id="activityTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="true">Actividad</button>
@@ -35,6 +41,16 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="track-tab-activity" data-bs-toggle="tab" data-bs-target="#track-activity" type="button" role="tab" aria-controls="track-activity" aria-selected="true">Seguimiento</button>
         </li>
+        @can('liquidatedActivity', $activity)
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="liquidate-tab-activity" data-bs-toggle="tab" data-bs-target="#liquidate-activity" type="button" role="tab" aria-controls="liquidate-activity" aria-selected="true">Liquidación</button>
+            </li>
+        @endcan
+        @can('uploadReport', $activity)
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="report-tab-activity" data-bs-toggle="tab" data-bs-target="#report-activity" type="button" role="tab" aria-controls="report-activity" aria-selected="true">Reporte</button>
+            </li>
+        @endcan
     </ul>
 
     <div class="tab-content pt-3" id="activityTab">
@@ -42,9 +58,6 @@
 @endif
 
     @if ($create || $edit)
-        <div class="alert alert-success" role="alert"></div>
-        <div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
-
         <form action="{{ $create ? route('activities.store') : route('activities.update', $activity) }}" method="POST">
             @csrf
             @if (!$create)
@@ -253,33 +266,37 @@
             </div>
             @if (!$create)
                 <div class="form-group col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 pb-2 my-auto text-center">
-                    <span
-                        class="btn btn-outline-{{!$existe_cotizacion ? 'danger' : 'info'}} border modal-form"
-                        data-title="{{ !$existe_cotizacion ? 'Elegir cotización' : 'Cotización #'.$quote->id_cotizacion }}"
-                        data-size="{{ !$existe_cotizacion ? 'modal-xl' : 'modal-fullscreen' }}"
-                        data-header-class='bg-{{ !$existe_cotizacion ? 'primary' : 'info'}} bg-opacity-75 text-white'
-                        data-reload="false"
-                        data-action="{{ $existe_cotizacion ? route('quotes.show', $quote->id_cotizacion) : route('activities.client_quote', $activity->id_actividad) }}"
-                        data-toggle="tooltip"
-                        data-html="true"
-                        title="{{ !$existe_cotizacion ? 'Cotización pendiente' : 'Ver cotización' }}"
-                    >
-                        {!! !$existe_cotizacion ? '<i class="fa-solid fa-list fs-4"></i>' : '<i class="fa-solid fa-circle-info fs-4"></i>' !!}
-                    </span>
+                    @if ($edit || (!$edit && $existe_cotizacion))
+                        <span
+                            class="btn btn-outline-{{!$existe_cotizacion ? 'danger' : 'info'}} border modal-form"
+                            data-title="{{ !$existe_cotizacion ? 'Elegir cotización' : 'Cotización #'.$quote->id_cotizacion }}"
+                            data-size="{{ !$existe_cotizacion ? 'modal-xl' : 'modal-fullscreen' }}"
+                            data-header-class='bg-{{ !$existe_cotizacion ? 'primary' : 'info'}} bg-opacity-75 text-white'
+                            data-reload="false"
+                            data-action="{{ $existe_cotizacion ? route('quotes.show', $quote->id_cotizacion) : route('activities.client_quote', $activity->id_actividad) }}"
+                            data-toggle="tooltip"
+                            data-html="true"
+                            title="{{ !$existe_cotizacion ? 'Cotización pendiente' : 'Ver cotización' }}"
+                        >
+                            {!! !$existe_cotizacion ? '<i class="fa-solid fa-list fs-4"></i>' : '<i class="fa-solid fa-circle-info fs-4"></i>' !!}
+                        </span>
+                    @endif
 
-                    <span
-                        class="{{ $classBtn }}"
-                        data-title="Cargar inventario actividad {{ $activity->id_actividad }}"
-                        data-size="modal-fullscreen"
-                        data-header-class="{{ $classModal }}"
-                        data-reload="true"
-                        data-reload-location="true"
-                        data-action="{{ route($route, $params) }}"
-                        data-toggle="tooltip"
-                        title="Cargar inventario"
-                    >
-                        <i class="fa-solid fa-cart-shopping fs-4"></i>
-                    </span>
+                    @if ($edit || (!$edit && $movimiento))
+                        <span
+                            class="btn btn-outline-{{$classBtn}} border modal-form"
+                            data-title="{{$dataTitle}}"
+                            data-size="modal-fullscreen"
+                            data-header-class="bg-{{$classModal}} bg-opacity-75 text-white"
+                            data-reload="true"
+                            data-reload-location="true"
+                            data-action="{{ route($route, $params) }}"
+                            data-toggle="tooltip"
+                            title="{{$title}}"
+                        >
+                            <i class="fa-solid fa-cart-shopping fs-4"></i>
+                        </span>
+                    @endif
 
                     @can('createComment', $activity)
                         @if ($edit)
@@ -289,6 +306,7 @@
                                 data-size="modal-md"
                                 data-header-class='bg-primary bg-opacity-75 text-white'
                                 data-reload="true"
+                                data-reload-location="true"
                                 data-action="{{ route('activities.seguimiento', $activity->id_actividad) }}"
                                 data-toggle="tooltip"
                                 title="Nuevo comentario"
@@ -310,12 +328,25 @@
         <div class="tab-pane" id="track-activity" role="tabpanel" aria-labelledby="track-tab-activity">
             @include('partials._track', [$edit, 'model' => $estados_actividad, 'title' => 'Estados actividad', 'route' => 'stateactivities'])
         </div>
+        @can('liquidatedActivity', $activity)
+            <div class="tab-pane" id="liquidate-activity" role="tabpanel" aria-labelledby="liquidate-tab-activity">
+                @include('liquidaciones._form', [
+                    $liquidacion,
+                    $quote,
+                    $carrito
+                ])
+            </div>
+        @endcan
+        @can('uploadReport', $activity)
+            <div class="tab-pane" id="report-activity" role="tabpanel" aria-labelledby="report-tab-activity">
+                @include('actividades.reporte', [$activity])
+            </div>
+        @endcan
     </div>
 @endif
 
 <script type="application/javascript">
     datePicker();
-
     table();
     flexTable();
 </script>

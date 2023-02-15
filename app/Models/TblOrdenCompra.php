@@ -170,9 +170,6 @@ class TblOrdenCompra extends Model
                 'valor_unitario' => $item->valor_unitario,
                 'valor_total' => $item->valor_total,
             ];
-            // if($getAll || $item->cantidad > 0) {
-                
-            // }
         }
 
         return $carrito;

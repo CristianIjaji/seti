@@ -44,13 +44,6 @@
                 @can('executedActivity', $model)
                     <option value="btn-executed-activity">Actividad ejecutada</option>
                 @endcan
-
-                {{-- @can('liquidatedActivity', $model)
-                    <option value="btn-liquidated-activity">Actividad liquidada</option>
-                @endcan --}}
-                {{-- @can('reconciledActivity', $model)
-                    <option value="btn-reconciled-activity">Actividad ejecutada</option>
-                @endcan --}}
             </select>
         </div>
 

@@ -177,7 +177,9 @@ class TblCotizacion extends Model
     }
 
     public function getEstadoAttribute() {
-        return $this->attributes['id_dominio_estado'];
+        return isset($this->attributes['id_dominio_estado'])
+            ? $this->attributes['id_dominio_estado']
+            : (isset($this->attributes['estado']) ? $this->attributes['estado'] : 0);
     }
 
     public function getDetalleCotizacion() {

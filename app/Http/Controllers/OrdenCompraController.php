@@ -336,13 +336,13 @@ class OrdenCompraController extends Controller
         ]);
     }
 
-    public function getOrdenesActivas($id_tercero_proveedor, $id_tercero_almacen) {
+    public function getDocumentos($id_tercero_proveedor, $id_tercero_almacen) {
         if(empty($id_tercero_proveedor) || empty($id_tercero_almacen)) {
             return response()->json(['errors' => 'Error obteniendo ordenes de compra.']);
         }
 
         return response()->json([
-            'ordenes' => TblOrdenCompra::where([
+            'documentos' => TblOrdenCompra::where([
                 'id_tercero_proveedor' => $id_tercero_proveedor,
                 'id_tercero_almacen' => $id_tercero_almacen,
             ])->wherein('id_dominio_estado', [session('id_dominio_orden_abierta'), session('id_dominio_orden_parcial')])->get()
@@ -353,8 +353,6 @@ class OrdenCompraController extends Controller
         if(empty($id_tercero_proveedor)) {
             return response()->json(['errors' => 'Error obteniendo ordenes de compra.']);
         }
-
-
     }
 
     private function generateDonwload($option) {
@@ -385,14 +383,14 @@ class OrdenCompraController extends Controller
     private function createTrack($purchase, $action) {
         try {
             TblEstado::create([
-                'id_tabla' => $purchase->id_orden,
+                'id_tabla' => $purchase->id_orden_compra,
                 'tabla' => $purchase->getTable(),
                 'id_dominio_estado' => $action,
                 'comentario' => $purchase->comentario,
                 'id_usuareg' => auth()->id()
             ]);
         } catch (\Throwable $th) {
-            Log::error("Error creando track cotización: ".$th->getMessage());
+            Log::error("Error creando track orden compra: ".$th->__toString());
         }
     }
 

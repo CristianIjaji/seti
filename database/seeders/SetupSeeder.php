@@ -6,25 +6,29 @@ use App\Models\TblActividad;
 use App\Models\TblConsolidado;
 use App\Models\TblCotizacion;
 use App\Models\TblConsolidadoDetalle;
+use App\Models\TblCotizacionDetalle;
 use App\Models\TblDominio;
 use App\Models\TblEstado;
 use App\Models\TblFactura;
 use App\Models\TblHallazgo;
+use App\Models\TblInformeActivdad;
 use App\Models\TblInventario;
 use App\Models\TblKardex;
+use App\Models\TblLiquidacion;
+use App\Models\TblLiquidacionDetalle;
 use App\Models\TblListaPrecio;
 use App\Models\TblMenu;
 use App\Models\TblMenuTipoTercero;
 use App\Models\TblMovimiento;
 use App\Models\TblMovimientoDetalle;
 use App\Models\TblOrdenCompra;
+use App\Models\TblOrdenCompraDetalle;
 use App\Models\TblParametro;
 use App\Models\TblPuntosInteres;
 use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class SetupSeeder extends Seeder
 {
@@ -125,22 +129,28 @@ class SetupSeeder extends Seeder
         ';
 
         /* Inicio limpieza de tablas */
+            TblInformeActivdad::truncate();
             TblKardex::truncate();
             TblMovimientoDetalle::truncate();
             TblMovimiento::truncate();
             TblInventario::truncate();
             TblConsolidadoDetalle::truncate();
             TblConsolidado::truncate();
+            TblEstado::truncate();
             TblHallazgo::truncate();
+            TblActividad::truncate();
             TblFactura::truncate();
+            TblInformeActivdad::truncate();
+            TblOrdenCompraDetalle::truncate();
             TblOrdenCompra::truncate();
+            TblLiquidacionDetalle::truncate();
+            TblLiquidacion::truncate();            
             TblMenuTipoTercero::truncate();
             TblMenu::truncate();
-            TblPuntosInteres::truncate();
-            TblListaPrecio::truncate();
-            TblEstado::truncate();
-            TblConsolidado::truncate();
+            TblCotizacionDetalle::truncate();
             TblCotizacion::truncate();
+            TblListaPrecio::truncate();
+            TblPuntosInteres::truncate();
             TblTercero::truncate();
             TblParametro::truncate();
             TblDominio::truncate();
@@ -199,21 +209,21 @@ class SetupSeeder extends Seeder
                     'Almacén' => ['id_dominio' => null, 'key' => 'id_dominio_almacen'],
                 ]
             ],
-            'Tipo plantillas correo' => [
+            'Plantillas correo' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_plantilla_correo',
                 'childs' => [
                     'Correo' => ['id_dominio' => null, 'key' => 'id_dominio_plantilla_correo_default', 'descripcion' => $plantilla_correo]
                 ]
             ],
-            'Listado de impuestos' => [
+            'Impuestos' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_impuestos',
                 'childs' => [
                     'IVA 19%' => ['id_dominio' => null, 'key' => '', 'descripcion' => '19%']
                 ]
             ],
-            'Listado de zonas de las estaciones' => [
+            'Zonas estaciones' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_zonas',
                 'childs' => [
@@ -227,7 +237,7 @@ class SetupSeeder extends Seeder
                     'Suroccidente' => ['id_dominio' => null, 'key' => ''],
                 ]
             ],
-            'Listado de transportes de las estaciones' => [
+            'Tipo de transportes de las estaciones' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_transportes',
                 'childs' => [
@@ -238,7 +248,7 @@ class SetupSeeder extends Seeder
                     'No convencional' => ['id_dominio' => null, 'key' => ''],
                 ]
             ],
-            'Listado de accesos de las estaciones' => [
+            'Accesos de las estaciones' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_accesos',
                 'childs' => [
@@ -246,7 +256,7 @@ class SetupSeeder extends Seeder
                     'Fácil acceso' => ['id_dominio' => null, 'key' => ''],
                 ]
             ],
-            'Listado de los tipos de trabajo' => [
+            'Tipos de trabajo' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_tipos_trabajo',
                 'childs' => [
@@ -255,7 +265,7 @@ class SetupSeeder extends Seeder
                     'Emergencia' => ['id_dominio' => null, 'key' => ''],
                 ]
             ],
-            'Listado de los tipos de prioridades' => [
+            'Prioridades' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_tipos_prioridad',
                 'childs' => [
@@ -265,21 +275,21 @@ class SetupSeeder extends Seeder
                     'Baja' => ['id_dominio' => null, 'key' => ''],
                 ]
             ],
-            'Listado de los estados de la cotización' => [
+            'Estados de la cotización' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_tipos_proceso',
                 'childs' => [
-                    'Cotización creada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_creada'],
-                    'Cotización devuelta' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_devuelta'],
-                    'Cotización revisada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_revisada'],
-                    'Cotización enviada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_enviada'],
-                    'Cotización pendiente aprobación' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_pendiente_aprobacion'],
-                    'Cotización rechazada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_rechazada'],
-                    'Cotización cancelada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_cancelada'],
-                    'Cotización aprobada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_aprobada'],
+                    'Creada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_creada'],
+                    'Devuelta' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_devuelta'],
+                    'Revisada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_revisada'],
+                    'Enviada cliente' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_enviada'],
+                    'Pendiente aprobación cliente' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_pendiente_aprobacion'],
+                    'Rechazada cliente' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_rechazada'],
+                    'Cancelada' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_cancelada'],
+                    'Aprobada cliente' => ['id_dominio' => null, 'key' => 'id_dominio_cotizacion_aprobada'],
                 ]
             ],
-            'Listado de los tipos de items' => [
+            'Tipos de items LPU' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_tipo_items',
                 'childs' => [
@@ -288,7 +298,7 @@ class SetupSeeder extends Seeder
                     'Transporte' => ['id_dominio' => null, 'key' => 'id_dominio_transporte'],
                 ]
             ],
-            'Listado de los subsistemas' => [
+            'Subsistemas' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_subsistemas',
                 'childs' => [
@@ -304,26 +314,27 @@ class SetupSeeder extends Seeder
                     'Power' => ['id_dominio' => null, 'key' => ''],
                 ]
             ],
-            'Listado de los estados de la actividad' => [
+            'Estados de la actividad' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_estados_actividad',
                 'childs' => [
-                    'Programado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_programado'],
+                    'Programada' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_programado'],
                     'Comprando' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_comprando'],
-                    'Reprogramado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_reprogramado'],
-                    'Ejecutado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_ejecutado'],
+                    'Reprogramada' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_reprogramado'],
+                    'Ejecutada' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_ejecutado'],
                     'Informe cargado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_informe_cargado'],
                     'Pausada' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_pausada'],
-                    'Liquidado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_liquidado'],
-                    'Conciliado' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_conciliado'],
+                    'Liquidada' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_liquidado'],
+                    'Conciliada' => ['id_dominio' => null, 'key' => 'id_dominio_actividad_conciliado'],
                 ]
             ],
-            'Listado de los estados del consolidado' => [
+            'Estados del consolidado' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_estados_consolidado',
                 'childs' => [
-                    'Consolidado creado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_creado'],
-                    'Consolidado conciliado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_conciliado'],
+                    'Creado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_creado'],
+                    'Conciliado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_conciliado'],
+                    'Cancelado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_conciliado'],
                 ]
             ],
             'Listado de los medios de pago orden' => [
@@ -334,14 +345,14 @@ class SetupSeeder extends Seeder
                     'Contado' => ['id_dominio' => null, 'key' => 'id_dominio_megio_pago_contado'],
                 ]
             ],
-            'Listado con los tipos de orden de compra' => [
+            'Tipos de orden de compra' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_tipo_orden_compra',
                 'childs' => [
                     'Compra' => ['id_dominio' => null, 'key' => 'id_dominio_orden_compra'],
                 ]
             ],
-            'Listado con los estados de orden de compra' => [
+            'Estados de orden de compra' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_estados_orden',
                 'childs' => [
@@ -351,7 +362,7 @@ class SetupSeeder extends Seeder
                     'Cancelada' => ['id_dominio' => null, 'key' => 'id_dominio_orden_cancelada'],
                 ]
             ],
-            'Lista con los tipos de movimientos de inventario' => [
+            'Tipos de movimientos de inventario' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_tipo_movimiento',
                 'childs' => [
@@ -363,7 +374,7 @@ class SetupSeeder extends Seeder
                             'Devolución material' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_devolucion'],
                             'Inventario inicial' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_inicial'],
                             'Orden compra' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_orden'],
-                            'Prestamo' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_prestamo'],
+                            'traslado' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_entrada_traslado'],
                         ]
                     ],
                     'Salida' => [
@@ -372,13 +383,12 @@ class SetupSeeder extends Seeder
                         'childs' => [
                             'Actividad' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_actividad'],
                             'Ajuste inventario' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_ajuste'],
-                            'Devolución' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_devolucion'],
-                            'Prestamo' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_prestamo']
+                            'traslado' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_salida_traslado']
                         ]
                     ]
                 ]
             ],
-            'Lista estados de movimiento' => [
+            'Estados de movimiento' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_estados_movimiento',
                 'childs' => [
@@ -388,12 +398,21 @@ class SetupSeeder extends Seeder
                     'En proceso' => ['id_dominio' => null, 'key' => 'id_dominio_movimiento_proceso'],
                 ]
             ],
-            'Lista clasificación inventario' => [
+            'Clasificación inventario' => [
                 'id_dominio' => null,
                 'key' => 'id_dominio_clasificacion_inventario',
                 'childs' => [
                     'Material' => ['id_dominio' => null, 'key' => ''],
                     'Herramienta' => ['id_dominio' => null, 'key' => ''],
+                ]
+            ],
+            'Estados de la liquidacion' => [
+                'id_dominio' => null,
+                'key' => 'id_dominio_estados_liquidacion',
+                'childs' => [
+                    'Creada' => ['id_dominio' => null, 'key' => 'id_dominio_liquidacion_creada'],
+                    'Cancelada' => ['id_dominio' => null, 'key' => 'id_dominio_liquidacion_cancelada'],
+                    'Aprobada' => ['id_dominio' => null, 'key' => 'id_dominio_liquidacion_aprobada'],
                 ]
             ]
         ];

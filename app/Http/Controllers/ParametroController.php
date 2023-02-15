@@ -85,7 +85,7 @@ class ParametroController extends Controller
     {
         try {
             $this->authorize('create', new TblParametro);
-            $parametro = TblParametro::create($request->validated());
+            TblParametro::create($request->validated());
 
             return response()->json(([
                 'success' => 'Parametro creado exitosamente!',

@@ -11,7 +11,6 @@ use App\Models\TblKardex;
 use App\Models\TblMovimiento;
 use App\Models\TblMovimientoDetalle;
 use App\Models\TblOrdenCompra;
-use App\Models\TblOrdenCompraDetalle;
 use App\Models\TblTercero;
 use Exception;
 use Illuminate\Http\Request;
@@ -83,7 +82,7 @@ class MovimientoController extends Controller
             $detalle->save();
             $total += $detalle->valor_total;
 
-            if($entrada || $salida) {
+            if(request()->cantidad[$index] > 0 && ($entrada || $salida)) {
                 $producto = TblInventario::where('id_inventario', '=', request()->id_item[$index])->first();
                 $cantidad = ($entrada
                     ? 1
@@ -95,6 +94,10 @@ class MovimientoController extends Controller
                     : $detalle->valor_unitario
                 );
 
+                if($entrada && request()->id_dominio_tipo_movimiento == session('id_dominio_movimiento_salida_traslado')) {
+                    $producto->id_tercero_almacen = request()->id_tercero_recibe;
+                }
+
                 $producto->cantidad += $cantidad;
                 $producto->valor_unitario = $valor_unitario;
                 $producto->save();
@@ -102,6 +105,9 @@ class MovimientoController extends Controller
                 $concepto = "";
 
                 switch (request()->id_dominio_tipo_movimiento) {
+                    case session('id_dominio_movimiento_entrada_devolucion'):
+                        $concepto = "Entrada devolución inventario actividad";
+                        break;
                     case session('id_dominio_movimiento_entrada_orden'):
                         $concepto = "Entrada orden compra";
                         break;
@@ -161,7 +167,9 @@ class MovimientoController extends Controller
                 ->whereNotIn('id_dominio', [
                     session('id_dominio_movimiento_entrada_inicial'),
                     session('id_dominio_movimiento_salida_ajuste'),
-                    session('id_dominio_movimiento_entrada_ajuste')
+                    session('id_dominio_movimiento_entrada_ajuste'),
+                    session('id_dominio_movimiento_salida_actividad'),
+                    session('id_dominio_movimiento_entrada_traslado')
                 ])
                 ->get(),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
@@ -192,122 +200,60 @@ class MovimientoController extends Controller
 
             $agotados = "";
             $carrito = [];
-            $entrada = false;
-            $salida = false;
-            if(in_array($request->id_dominio_tipo_movimiento, [session('id_dominio_movimiento_salida_actividad')])) {
-                // Se valida stock del producto
-                foreach (request()->id_dominio_tipo_item as $index => $valor) {
-                    $producto = TblInventario::find(request()->id_item[$index]);
-                    if(floatval($producto->cantidad) - floatval(request()->cantidad[$index]) < 0) {
-                        $agotados .= "
-                            <tr>
-                                <td class='text-justify'>$producto->descripcion</td>
-                                <td class='text-end'>".floatval(request()->cantidad[$index])."</td>
-                                <td class='text-end text-danger'>$producto->cantidad</th>
-                                <td class='text-end'>".floatval(request()->cantidad[$index] - $producto->cantidad)."</td>
-                            </tr>
-                        ";
+            $entrada = ['success' => false];
+            $salida = ['success' => false];
 
-                        $carrito[session('id_dominio_tipo_orden_compra')][$producto->id_inventario] = [
-                            'item' => $producto->id_inventario,
-                            'descripcion' => $producto->descripcion,
-                            'cantidad' => floatval(request()->cantidad[$index] - $producto->cantidad),
-                            'valor_unitario' => $producto->valor_unitario,
-                            'valor_total' => $producto->valor_total,
-                        ];
+            switch ($request->id_dominio_tipo_movimiento) {
+                case session('id_dominio_movimiento_entrada_devolucion'):
+                    $entrada = $this->entradaDevolucionActividad();
+                    if(!$entrada['success']) {
+                        throw new Exception($entrada['error']);
                     }
-
-                    $salida = true;
-                }
-
-                if($agotados != "") {
-                    session_start();
-    
-                    $_SESSION['carrito'] = [
-                        'id_tercero_almacen' => $request->id_tercero_entrega,
-                        'carrito' => $carrito
-                    ];
-    
-                    $table = "
-                        <span class='text-start'>Los siguientes productos no tienen stock suficiente</span>:
-                        <br><br>
-                        <table class='table table-bordered fs-6'>
-                            <tr>
-                                <th>Descripción</th>
-                                <th class='text-nowrap align-middle'>Solicitado</th>
-                                <th class='text-nowrap align-middle text-danger'>Stock</th>
-                                <th class='text-nowrap align-middle'>Faltantes</th>
-                            </tr>
-                            $agotados
-                        </table>
-                        <button
-                            class='btn btn-danger modal-form'
-                            data-title='Crear orden'
-                            data-header-class='bg-primary bg-opacity-75 text-white'
-                            data-size='modal-fullscreen'
-                            data-action='".route('purchases.create')."'
-                            data-reload-location='true'
-                            onclick="."$('.swal2-confirm').click();"."
-                        >Generar Orden compra</button>
-                    ";
-                    throw new Exception($table);
-                }
-            }
-
-            if(in_array($request->id_dominio_tipo_movimiento, [session('id_dominio_movimiento_entrada_orden')])) {
-                $saldoOrden = TblOrdenCompra::getCarritoOrden($request->documento);
-                foreach (request()->id_dominio_tipo_item as $index => $id_tipo_movimiento) {
-                    if(!array_key_exists(request()->id_item[$index], $saldoOrden[$id_tipo_movimiento])) {
-                        continue;
+                    break;
+                case session('id_dominio_movimiento_entrada_orden'):
+                    $entrada = $this->entradaOrdenCompra();
+                    if(!$entrada['success']) {
+                        throw new Exception($entrada['error']);
                     }
+                    break;
 
-                    $producto = $saldoOrden[$id_tipo_movimiento][request()->id_item[$index]];
-
-                    if($producto['cantidad'] < request()->cantidad[$index] || request()->cantidad[$index] <= 0) {
-                        $agotados .= "
-                            <tr>
-                                <td class='text-start'>$producto[descripcion]</td>
-                                <td class='text-end'>$producto[solicitado]</td>
-                                <td class='text-end'>$producto[recibido]</td>
-                                <td class='text-end fw-bold'>$producto[cantidad]</th>
-                                <td class='text-end text-danger fw-bold'>".request()->cantidad[$index]."</th>
-                            </tr>
-                        ";
+                case session('id_dominio_movimiento_salida_actividad'):
+                    $salida = $this->salidaActividad();
+                    if(!$salida['success']) {
+                        throw new Exception($salida['error']);
                     }
+                    break;
+                case session('id_dominio_movimiento_salida_traslado'):
+                    // Se crea el movimiento de entrada al nuevo almacen
+                    $movimiento = TblMovimiento::create([
+                        'id_dominio_tipo_movimiento' => session('id_dominio_movimiento_entrada_traslado'),
+                        'id_tercero_recibe' => request()->id_tercero_entrega,
+                        'id_tercero_entrega' => request()->id_tercero_recibe,
+                        'documento' => request()->documento,
+                        'observaciones' => 'Entrada traslado',
+                        'id_dominio_iva' => request()->id_dominio_iva,
+                        'total' => 0,
+                        'saldo' => 0,
+                        'id_dominio_estado' => session('id_dominio_movimiento_pendiente'),
+                        'id_usuareg' => auth()->id()
+                    ]);
 
-                    unset($saldoOrden[$id_tipo_movimiento][request()->id_item[$index]]);
-                }
+                    $movimiento->total = $this->getDetailMove($movimiento, true, false);
+                    $movimiento->id_dominio_estado = session('id_dominio_movimiento_completado');
+                    $movimiento->save();
 
-                if($agotados !== '') {
-                    $table = "
-                        <span class='text-start'>Por favor revise la cantidad ingresada de los siguientes productos</span>:
-                        <br><br>
-                        <table class='table table-bordered fs-6'>
-                            <tr>
-                                <th rowspan='2' class='text-nowrap align-middle'>Descripción</th>
-                                <th colspan='4'>Cantidades</th>
-                            </tr>
-                            <tr>
-                                <th class='text-nowrap align-middle'>Ordenado</th>
-                                <th class='text-nowrap align-middle'>Recibido</th>
-                                <th class='text-nowrap align-middle'>Saldo</th>
-                                <th class='text-nowrap align-middle'>Ingresado</th>
-                            </tr>
-                            $agotados
-                        </table>
-                    ";
-
-                    throw new Exception($table);
-                }
-
-                $entrada = true;
-                $orden = TblOrdenCompra::where('id_orden_compra', '=', $request->documento)->first();
-                $orden->id_dominio_estado = session(count($saldoOrden[session('id_dominio_tipo_movimiento')]) == 0 ? 'id_dominio_orden_cerrada' : 'id_dominio_orden_parcial');
-                $orden->save();
+                    $salida = $this->salidaTraslado();
+                    if(!$salida['success']) {
+                        throw new Exception($salida['error']);
+                    }
+                    break;
+                default:
+                    # code...
+                    break;
             }
 
             $movimiento = TblMovimiento::create($request->validated());
-            $movimiento->total = $this->getDetailMove($movimiento, $entrada, $salida);
+            $movimiento->total = $this->getDetailMove($movimiento, $entrada['success'], $salida['success']);
 
             $movimiento->id_dominio_estado = session('id_dominio_movimiento_completado');
             $movimiento->save();
@@ -322,7 +268,7 @@ class MovimientoController extends Controller
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error("Error creando movimiento: ".$th->getMessage());
+            Log::error("Error creando movimiento: ".$th->__toString());
             return response()->json([
                 'errors' => $th->getMessage()
             ]);
@@ -492,10 +438,12 @@ class MovimientoController extends Controller
 
     public function getViewDetalle($edit, $id_tipo_movimiento, $id) {
         switch ($id_tipo_movimiento) {
+            case session('id_dominio_movimiento_entrada_devolucion'):
+                $carrito = TblActividad::getCarritoActividad($id);
+                break;
             case session('id_dominio_movimiento_entrada_orden'):
                 $carrito = TblOrdenCompra::getCarritoOrden($id);
                 break;
-            
             default:
                 # code...
                 break;
@@ -508,5 +456,250 @@ class MovimientoController extends Controller
             'detalleCarrito' => $carrito
             ]
         );
+    }
+
+    private function entradaDevolucionActividad() {
+        try {
+            $agotados = '';
+
+            $saldoActividad = TblActividad::getCarritoActividad(request()->documento);
+            foreach (request()->id_dominio_tipo_item as $index => $id_tipo_movimiento) {
+                if(!array_key_exists(request()->id_item[$index], $saldoActividad[$id_tipo_movimiento])) {
+                    continue;
+                }
+
+                $producto = $saldoActividad[$id_tipo_movimiento][request()->id_item[$index]];
+                if($producto['cantidad'] < request()->cantidad[$index]) {
+                    $agotados .= "
+                        <tr>
+                            <td class='text-start'>$producto[descripcion]</td>
+                            <td class='text-end'>$producto[cantidad]</td>
+                            <td class='text-end text-danger fw-bold'>".request()->cantidad[$index]."</th>
+                        </tr>
+                    ";
+                }
+
+                if($agotados !== '') {
+                    $table = "
+                        <span class='text-start'>Por favor revise la cantidad ingresada de los siguientes productos</span>:
+                        <br><br>
+                        <table class='table table-bordered fs-6'>
+                            <tr>
+                                <th rowspan='2' class='text-nowrap align-middle'>Descripción</th>
+                                <th colspan='2'>Cantidades</th>
+                            </tr>
+                            <tr>
+                                <th class='text-nowrap align-middle'>Cargado</th>
+                                <th class='text-nowrap align-middle'>Ingresado</th>
+                            </tr>
+                            $agotados
+                        </table>
+                    ";
+    
+                    throw new Exception($table);
+                }
+            }
+
+            return [
+                'success' => true,
+                'entrada' => true
+            ];
+        } catch (\Throwable $th) {
+            return [
+                'success' => false,
+                'error' => $th->getMessage()
+            ];
+        }
+    }
+
+    private function entradaOrdenCompra() {
+        try {
+            $agotados = '';
+
+            $saldoOrden = TblOrdenCompra::getCarritoOrden(request()->documento);
+            foreach (request()->id_dominio_tipo_item as $index => $id_tipo_movimiento) {
+                if(!array_key_exists(request()->id_item[$index], $saldoOrden[$id_tipo_movimiento])) {
+                    continue;
+                }
+
+                $producto = $saldoOrden[$id_tipo_movimiento][request()->id_item[$index]];
+
+                if($producto['cantidad'] < request()->cantidad[$index] || request()->cantidad[$index] <= 0) {
+                    $agotados .= "
+                        <tr>
+                            <td class='text-start'>$producto[descripcion]</td>
+                            <td class='text-end'>$producto[solicitado]</td>
+                            <td class='text-end'>$producto[recibido]</td>
+                            <td class='text-end fw-bold'>$producto[cantidad]</th>
+                            <td class='text-end text-danger fw-bold'>".request()->cantidad[$index]."</th>
+                        </tr>
+                    ";
+                }
+
+                unset($saldoOrden[$id_tipo_movimiento][request()->id_item[$index]]);
+            }
+
+            if($agotados !== '') {
+                $table = "
+                    <span class='text-start'>Por favor revise la cantidad ingresada de los siguientes productos</span>:
+                    <br><br>
+                    <table class='table table-bordered fs-6'>
+                        <tr>
+                            <th rowspan='2' class='text-nowrap align-middle'>Descripción</th>
+                            <th colspan='4'>Cantidades</th>
+                        </tr>
+                        <tr>
+                            <th class='text-nowrap align-middle'>Ordenado</th>
+                            <th class='text-nowrap align-middle'>Recibido</th>
+                            <th class='text-nowrap align-middle'>Saldo</th>
+                            <th class='text-nowrap align-middle'>Ingresado</th>
+                        </tr>
+                        $agotados
+                    </table>
+                ";
+
+                throw new Exception($table);
+            }
+
+            $orden = TblOrdenCompra::where('id_orden_compra', '=', request()->documento)->first();
+            $orden->id_dominio_estado = session(count($saldoOrden[session('id_dominio_tipo_movimiento')]) == 0 ? 'id_dominio_orden_cerrada' : 'id_dominio_orden_parcial');
+            $orden->save();
+
+            return [
+                'success' => true,
+                'entrada' => true
+            ];
+        } catch (\Throwable $th) {
+            return [
+                'success' => false,
+                'error' => $th->getMessage()
+            ];
+        }
+    }
+
+    private function salidaActividad() {
+        try {
+            $agotados = '';
+
+            // Se valida stock del producto
+            foreach (request()->id_dominio_tipo_item as $index => $valor) {
+                $producto = TblInventario::find(request()->id_item[$index]);
+                if(floatval($producto->cantidad) - floatval(request()->cantidad[$index]) < 0) {
+                    $agotados .= "
+                        <tr>
+                            <td class='text-justify'>$producto->descripcion</td>
+                            <td class='text-end'>".floatval(request()->cantidad[$index])."</td>
+                            <td class='text-end text-danger'>$producto->cantidad</th>
+                            <td class='text-end'>".floatval(request()->cantidad[$index] - $producto->cantidad)."</td>
+                        </tr>
+                    ";
+
+                    $carrito[session('id_dominio_tipo_orden_compra')][$producto->id_inventario] = [
+                        'item' => $producto->id_inventario,
+                        'descripcion' => $producto->descripcion,
+                        'cantidad' => floatval(request()->cantidad[$index] - $producto->cantidad),
+                        'valor_unitario' => $producto->valor_unitario,
+                        'valor_total' => $producto->valor_total,
+                    ];
+                }
+            }
+
+            if($agotados != "") {
+                session_start();
+
+                $_SESSION['carrito'] = [
+                    'id_tercero_almacen' => request()->id_tercero_entrega,
+                    'carrito' => $carrito
+                ];
+
+                $table = "
+                    <span class='text-start'>Los siguientes productos no tienen stock suficiente</span>:
+                    <br><br>
+                    <table class='table table-bordered fs-6'>
+                        <tr>
+                            <th>Descripción</th>
+                            <th class='text-nowrap align-middle'>Solicitado</th>
+                            <th class='text-nowrap align-middle text-danger'>Stock</th>
+                            <th class='text-nowrap align-middle'>Faltantes</th>
+                        </tr>
+                        $agotados
+                    </table>
+                    <button
+                        class='btn btn-danger modal-form'
+                        data-title='Crear orden'
+                        data-header-class='bg-primary bg-opacity-75 text-white'
+                        data-size='modal-fullscreen'
+                        data-action='".route('purchases.create')."'
+                        data-reload-location='true'
+                        onclick="."$('.swal2-confirm').click();"."
+                    >Generar Orden compra</button>
+                ";
+
+                throw new Exception($table);
+            }
+
+            return [
+                'success' => true,
+                'salida' => true
+            ];
+        } catch (\Throwable $th) {
+            Log::error("Error cargando inventario a actividad: ".$th->__toString());
+            return [
+                'success' => false,
+                'error' => $th->getMessage()
+            ];
+        }
+    }
+
+    private function salidaTraslado() {
+        try {
+            $agotados = '';
+
+            if(request()->id_tercero_recibe == request()->id_tercero_entrega) {
+                throw new Exception("No puede realizar un traslado de inventario al mismo almacén");
+            }
+
+            // se recorren los elementos a trasladar
+            foreach (request()->id_dominio_tipo_item as $index => $valor) {
+                $producto = TblInventario::find(request()->id_item[$index]);
+                if(floatval($producto->cantidad) <= 0) {
+                    $agotados .= "
+                        <tr>
+                            <td class='text-justify'>$producto->descripcion</td>
+                            <td class='text-end text-danger'>$producto->cantidad</th>
+                        </tr>
+                    ";
+                }
+
+                $producto->id_tercero_almacen = request()->id_tercero_recibe;
+            }
+
+            if($agotados != "") {
+                $table = "
+                    <span class='text-start'>Los siguientes productos no tienen stock</span>:
+                    <br><br>
+                    <table class='table table-bordered fs-6'>
+                        <tr>
+                            <th>Descripción</th>
+                            <th class='text-nowrap align-middle text-danger'>Stock</th>
+                        </tr>
+                        $agotados
+                    </table>
+                ";
+
+                throw new Exception($table);
+            }
+
+            return [
+                'success' => true,
+                'salida' => true
+            ];
+        } catch (\Throwable $th) {
+            Log::error("Error realizando traslado: ".$th->__toString());
+            return [
+                'success' => false,
+                'error' => $th->getMessage()
+            ];
+        }
     }
 }

@@ -36,6 +36,7 @@
                         data-item="{{ $producto->id_inventario }}"
                         data-descripcion="{{ $producto->descripcion }}"
                         data-cantidad="1"
+                        data-stock="{{ $producto->cantidad }}"
                         data-valor_unitario={{ str_replace(',', '', $producto->valor_unitario) }}
                         value="{{ $producto->id_inventario }}"
                     >

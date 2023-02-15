@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class TblInformeActivdad extends Model
 {
@@ -15,21 +17,12 @@ class TblInformeActivdad extends Model
 
     protected $fillable = [
         'id_actividad',
-        'id_tercero_encargado',
-        'id_dominio_estado',
+        'link',
         'id_usuareg'
     ];
 
     public function tblactividad() {
         return $this->belongsTo(TblActividad::class, 'id_actividad');
-    }
-
-    public function tblencargado() {
-        return $this->belongsTo(TblTercero::class, 'id_tercero_encargado');
-    }
-
-    public function tblestadoinforme() {
-        return $this->belongsTo(TblDominio::class, 'id_dominio_estado');
     }
 
     public function tblusuario() {
