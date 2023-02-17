@@ -334,7 +334,7 @@ class SetupSeeder extends Seeder
                 'childs' => [
                     'Creado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_creado'],
                     'Conciliado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_conciliado'],
-                    'Cancelado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_conciliado'],
+                    'Cancelado' => ['id_dominio' => null, 'key' => 'id_dominio_consolidado_cancelado'],
                 ]
             ],
             'Listado de los medios de pago orden' => [

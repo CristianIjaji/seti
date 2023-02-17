@@ -37,7 +37,7 @@ class TblTercerosTable extends Migration
             $table->foreign('id_dominio_tipo_tercero')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_tercero_responsable')->references('id_tercero')->on('tbl_terceros')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->onDelete('set null')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');
         });

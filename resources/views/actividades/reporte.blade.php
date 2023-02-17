@@ -2,41 +2,6 @@
     $linkReporte = isset($activity->tblinforme) ? $activity->tblinforme->link : '';
 @endphp
 
-<style>
-    /* .kv-avatar .krajee-default.file-preview-frame,.kv-avatar .krajee-default.file-preview-frame:hover {
-        margin: 0;
-        padding: 0;
-        border: none;
-        box-shadow: none;
-        text-align: center;
-    }
-    .kv-avatar {
-        display: inline-block;
-        width: calc(100vw - 3vw);
-    }
-    .kv-avatar .file-input {
-        display: table-cell;
-        width: calc(100vw - 3vw);
-    }
-    .kv-avatar .krajee-default.file-preview-frame,
-    .kv-avatar .krajee-default.file-preview-frame .kv-file-content {
-        width: calc(100vw - 10vw);
-        padding: 10px;
-    }
-
-    .kv-avatar .krajee-default.file-preview-frame .kv-file-content,
-    .kv-avatar .kv-file-content .kv-preview-data{
-        height: 50vh !important;
-    }
-
-    .kv-reqd {
-        color: red;
-        font-family: monospace;
-        font-weight: normal;
-    } */
-</style>
-
-
 <div class="row">
     <form class="col-12" action="{{ route('activities.uploadReport', $activity->id_actividad) }}" method="POST" enctype="multipart/form-data">
         @csrf
@@ -56,8 +21,9 @@
         previewImage = "{!! $linkReporte !!}";
     }
 
-    var show = (!"{!! $create !!}" && !"{!! $edit !!}") ? false : true;
+    var show = ("{!! $uploadReport !!}" === '1' && "{!! $edit !!}" === '1' ? true : false);
     var id = "{!! $activity->id_actividad !!}";
+    console.log(show, "{!! $uploadReport !!}", "{!! $edit !!}")
 
     $("#file_report").fileinput({
         language: 'es',
@@ -67,7 +33,7 @@
         showRemove: show,
         showUpload: show,
         showCancel: false,
-        maxFileSize: 1500,
+        maxFileSize: 10000,
         showClose: false,
         browseLabel: '',
         removeLabel: '',
@@ -94,7 +60,4 @@
     });
 
     $('.kv-avatar .fileinput-upload-button').addClass('d-none');
-    // if($(this).val() !== '') {
-    //     $('.kv-avatar .fileinput-upload-button').removeClass('d-none');
-    // }
 </script>

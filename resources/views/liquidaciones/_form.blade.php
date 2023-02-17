@@ -1,13 +1,15 @@
 @php
-    $create = isset($liquidacion->id_liquidacion) ? false : true;
+    $create = $liquidate && isset($liquidacion->id_liquidacion) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
 @endphp
 
+@if ($liquidate)
 <form action="{{ $create ? route('closeouts.store') : route('closeouts.update', $liquidacion) }}" method="POST">
     @csrf
     @if (!$create)
         @method('PATCH')
     @endif
+@endif
     <div class="row">
         <input type="hidden" id="id_cotizacion" name="id_cotizacion" value="{{ $quote->id_cotizacion }}">
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
@@ -49,7 +51,10 @@
 
         <div class="clearfix"><hr></div>
     </div>
-    @include('partials._detalle', ['edit' => true, 'tipo_carrito' => 'liquidacion', 'detalleCarrito' => $carrito])
-
-    @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear liquidación' : 'Editar liquidación'])
+    @include('partials._detalle', ['edit' => $liquidate, 'tipo_carrito' => 'liquidacion', 'detalleCarrito' => $carrito])
+    @if ($liquidate)
+        @include('partials.buttons', [$create, $liquidate, 'label' => $create ? 'Crear liquidación' : 'Editar liquidación'])
+    @endif
+@if ($liquidate)
 </form>
+@endif

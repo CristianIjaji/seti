@@ -1262,27 +1262,7 @@ $(document).on('click', '.btn-delete-item', function() {
         let id_tr = $(this).data('id-tr');
         let array = id_tr.split('_');
 
-        if($.inArray(array[0], ['liquidacion']) > -1) {
-            if(typeof carrito[array[0]][array[1]][array[2]] !== 'undefined') {
-                Swal.fire({
-                    icon: 'question',
-                    title: 'Eliminar Ítem',
-                    text: `Desea eliminar el ítem: ${carrito[array[0]][array[1]][array[2]]['descripcion']}?`,
-                    showCancelButton: true,
-                    confirmButtonText: 'Continuar',
-                    cancelButtonText: 'Cancelar',
-                    reverseButtons: true,
-                    confirmButtonColor: '#fe0115c4',
-                    cancelButtonColor: '#6e7d88',
-                }).then((result) => {
-                    if(result.isConfirmed) {
-                        deleteItem(id_tr);
-                    }
-                });
-            }
-        } else {
-            deleteItem(id_tr);
-        }
+        deleteItem(id_tr);
     }
 });
 

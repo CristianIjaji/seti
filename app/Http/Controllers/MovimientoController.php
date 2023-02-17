@@ -270,7 +270,7 @@ class MovimientoController extends Controller
             DB::rollBack();
             Log::error("Error creando movimiento: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => "Error creando movimiento."
             ]);
         }
     }

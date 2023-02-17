@@ -184,6 +184,8 @@ class CotizacionController extends Controller
     {
         try {
             $this->authorize('create', new TblCotizacion);
+
+            DB::beginTransaction();
             $cotizacion = TblCotizacion::create($request->validated());
 
             $cotizacion->valor = $this->getDetailQuote($cotizacion);
@@ -196,6 +198,7 @@ class CotizacionController extends Controller
                 $this->sendNotification($cotizacion, 'user-'.$cotizacion->tblContratista->tbluser->id_usuario, 'quote-created');
             }
 
+            DB::commit();
             return response()->json([
                 'success' => 'Cotización creada exitosamente!',
                 'response' => [
@@ -204,8 +207,10 @@ class CotizacionController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error creando cotización: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error creando cotización.'
             ]);
         }
     }
@@ -279,6 +284,7 @@ class CotizacionController extends Controller
         try {
             $this->authorize('update', $quote);
 
+            DB::beginTransaction();
             $estado = $quote->id_dominio_estado;
             $quote->update($request->validated());
 
@@ -299,12 +305,15 @@ class CotizacionController extends Controller
                 }
             }
 
+            DB::commit();
             return response()->json([
                 'success' => 'Cotización actualizada correctamente!'
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error editando cotización: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error editando cotización.'
             ]);
         }
     }

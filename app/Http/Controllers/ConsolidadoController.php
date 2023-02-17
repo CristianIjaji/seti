@@ -128,10 +128,11 @@ class ConsolidadoController extends Controller
      */
     public function store(SaveConsolidadoRequest $request)
     {
-        DB::beginTransaction();
         try {
+            $this->authorize('create', new TblConsolidado);
+
+            DB::beginTransaction();
             $deal = TblConsolidado::create($request->validated());
-            $this->authorize('create', $deal);
 
             $this->saveDetalleConsolidado($deal);
             DB::commit();
@@ -145,10 +146,10 @@ class ConsolidadoController extends Controller
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error($th->__toString());
+            Log::error("Error creando consolidado: ".$th->__toString());
 
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error creando consolidado.'
             ]);
         }
     }
@@ -248,22 +249,22 @@ class ConsolidadoController extends Controller
      */
     public function update(SaveConsolidadoRequest $request, TblConsolidado $deal)
     {
-        DB::beginTransaction();
         try {
             $this->authorize('update', $deal);
-
+       
+            DB::beginTransaction();
             $deal->update($request->validated());
             $this->saveDetalleConsolidado($deal);
 
             DB::commit();
-
             return response()->json([
                 'success' => 'Consolidado actualizado correctamente!'
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
+            Log::error("Error editando consolidado: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error editando consolidado.'
             ]);
         }
     }

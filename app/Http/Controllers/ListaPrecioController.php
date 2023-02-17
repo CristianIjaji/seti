@@ -11,6 +11,7 @@ use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 
 class ListaPrecioController extends Controller
@@ -111,8 +112,9 @@ class ListaPrecioController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            Log::error("Error creando lista de precio: ".$e->__toString());
             return response()->json([
-                'errors' => $e->getMessage()
+                'errors' => 'Error creando lista de precio.'
             ]);
         }
     }
@@ -174,8 +176,9 @@ class ListaPrecioController extends Controller
                 'success' => 'Ítem actualizado correctamente!'
             ]);
         } catch (\Throwable $th) {
+            Log::error("Error editando lista de precio: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error editando lista de precio.'
             ]);
         }
     }

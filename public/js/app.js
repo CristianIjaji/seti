@@ -10255,28 +10255,7 @@ $(document).on('click', '.btn-delete-item', function () {
   if (typeof $(this).data('id-tr') !== 'undefined') {
     var id_tr = $(this).data('id-tr');
     var array = id_tr.split('_');
-
-    if ($.inArray(array[0], ['liquidacion']) > -1) {
-      if (typeof carrito[array[0]][array[1]][array[2]] !== 'undefined') {
-        Swal.fire({
-          icon: 'question',
-          title: 'Eliminar Ítem',
-          text: "Desea eliminar el \xEDtem: ".concat(carrito[array[0]][array[1]][array[2]]['descripcion'], "?"),
-          showCancelButton: true,
-          confirmButtonText: 'Continuar',
-          cancelButtonText: 'Cancelar',
-          reverseButtons: true,
-          confirmButtonColor: '#fe0115c4',
-          cancelButtonColor: '#6e7d88'
-        }).then(function (result) {
-          if (result.isConfirmed) {
-            deleteItem(id_tr);
-          }
-        });
-      }
-    } else {
-      deleteItem(id_tr);
-    }
+    deleteItem(id_tr);
   }
 });
 $(document).on('keydown', '.txt-totales', function () {

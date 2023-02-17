@@ -24,7 +24,7 @@ class TblParametrosTable extends Migration
             $table->timestamps();
 
             $table->foreign('id_parametro_padre')->references('id_parametro_aplicacion')->on('tbl_parametros_aplicacion')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->onDelete('set null')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');
         });

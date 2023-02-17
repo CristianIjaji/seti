@@ -134,17 +134,20 @@ class MenuTipoTerceroController extends Controller
     {
         try {
             $this->authorize('create', new TblMenuTipoTercero);
+            DB::beginTransaction();
 
             $request->validated();
             $this->savePermisosTercero();
 
+            DB::commit();
             return response()->json([
                 'success' => 'Permiso creado exitosamente!',
             ]);
         } catch (\Throwable $th) {
-            Log::error($th->__toString());
+            DB::rollBack();
+            Log::error("Error creando perfil: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => "Error creando perfil."
             ]);
         }
     }
@@ -199,16 +202,20 @@ class MenuTipoTerceroController extends Controller
         try {
             $this->authorize('update', $profile);
 
+            DB::beginTransaction();
             $request->validated();
             $this->savePermisosTercero();
 
+            DB::commit();
             return response()->json([
                 'success' => 'Permiso actualizado exitosamente!',
             ]);
 
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error editando perfil: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error editando perfil.'
             ]);
         }
     }

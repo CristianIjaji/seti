@@ -124,11 +124,8 @@ class TblActividadPolicy
         return false;
     }
 
-    public function liquidatedActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+    public function viewLiquidate(TblUsuario $tblUsuario, TblActividad $tblActividad) {
         $mostrar_liquidacion = [
-            session('id_dominio_actividad_ejecutado'),
-            session('id_dominio_actividad_liquidado'),
-            session('id_dominio_actividad_conciliado'),
             session('id_dominio_actividad_informe_cargado')
         ];
 
@@ -139,19 +136,46 @@ class TblActividadPolicy
         return false;
     }
 
+    public function liquidatedActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        $mostrar_liquidacion = [
+            session('id_dominio_actividad_informe_cargado')
+        ];
+
+        if(in_array($tblActividad->estado, $mostrar_liquidacion)
+            && $tblActividad->id_cotizacion
+            && in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_analista'), session('id_dominio_coordinador'), session('id_dominio_contratista')])) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function reconciledActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
         return true;
+    }
+
+    public function viewReport(TblUsuario $tblUsuario, TblActividad $tblActividad) {
+        $mostrar_liquidacion = [
+            session('id_dominio_actividad_ejecutado'),
+            session('id_dominio_actividad_informe_cargado')
+        ];
+
+        if(in_array($tblActividad->estado, $mostrar_liquidacion) && $tblActividad->id_cotizacion) {
+            return true;
+        }
+
+        return false;
     }
 
     public function uploadReport(TblUsuario $tblUsuario, TblActividad $tblActividad) {
         $mostrar_liquidacion = [
             session('id_dominio_actividad_ejecutado'),
-            session('id_dominio_actividad_liquidado'),
-            session('id_dominio_actividad_conciliado'),
             session('id_dominio_actividad_informe_cargado')
         ];
 
-        if(in_array($tblActividad->estado, $mostrar_liquidacion) && $tblActividad->id_cotizacion) {
+        if(in_array($tblActividad->estado, $mostrar_liquidacion)
+            && $tblActividad->id_cotizacion
+            && in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_analista'), session('id_dominio_coordinador'), session('id_dominio_contratista')])) {
             return true;
         }
 

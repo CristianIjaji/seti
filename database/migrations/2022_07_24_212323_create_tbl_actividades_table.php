@@ -41,7 +41,7 @@ class CreateTblActividadesTable extends Migration
             $table->foreign('id_tipo_actividad')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_dominio_subsistema')->references('id_dominio')->on('tbl_dominios')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->onDelete('set null')->onUpdate('cascade');
             $table->foreign('id_tercero_encargado_cliente')->references('id_tercero')->on('tbl_terceros')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_tercero_resposable_contratista')->references('id_tercero')->on('tbl_terceros')
@@ -51,11 +51,10 @@ class CreateTblActividadesTable extends Migration
             $table->foreign('id_dominio_estado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones')
-                ->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('id_informe_actividad')->references('id_informe_actividad')->on('tbl_informes_actividades')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->onDelete('set null')->onUpdate('cascade');
+            
             $table->foreign('id_liquidacion')->references('id_liquidacion')->on('tbl_liquidaciones')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->onDelete('set null')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');
         });

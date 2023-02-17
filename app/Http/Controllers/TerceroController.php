@@ -11,6 +11,7 @@ use App\Models\TblUsuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 
@@ -73,7 +74,6 @@ class TerceroController extends Controller
     public function index()
     {
         $this->authorize('view', new TblTercero);
-
         return $this->getView('terceros.index');
     }
 
@@ -114,8 +114,8 @@ class TerceroController extends Controller
     public function store(SaveTerceroRequest $request)
     {
         try {
+            $this->authorize('create', new TblTercero);
             $tercero = new TblTercero($request->validated());
-            $this->authorize('create', $tercero);
             $tercero->logo = $request->hasFile('logo') ? $request->file('logo')->store('images') : '';
             $tercero->save();
 
@@ -127,8 +127,9 @@ class TerceroController extends Controller
                 ],
             ]);
         } catch (\Exception $e) {
+            Log::error("Error creando tercero: ".$e->__toString());
             return response()->json([
-                'errors' => $e->getMessage()
+                'errors' => 'Error creando tercero.'
             ]);
         }
     }
@@ -203,8 +204,9 @@ class TerceroController extends Controller
                 'success' => 'Tercero actualizado correctamente!'
             ]);
         } catch (\Exception $e) {
+            Log::error("Error actualizando tercero: ".$e->__toString());
             return response()->json([
-                'errors' => $e->getMessage()
+                'errors' => 'Error actualizando tercero.'
             ]);
         }
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SaveDominioRequest;
 use App\Models\TblDominio;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class DominioController extends Controller
 {
@@ -83,8 +84,9 @@ class DominioController extends Controller
                 'success' => 'Dominio creado exitosamente!',
             ]);
         } catch (\Exception $e) {
+            Log::error("Error creando dominio: ".$e->__toString());
             return response()->json([
-                'errors' => $e->getMessage(),
+                'errors' => 'Error creando dominio.',
             ]);
         }
     }
@@ -145,8 +147,9 @@ class DominioController extends Controller
                 'success' => 'Dominio actualizado correctamente!',
             ]);
         } catch (\Exception $e) {
+            Log::error("Error editando dominio: ".$e->__toString());
             return response()->json([
-                'errors' => $e->getMessage(),
+                'errors' => 'Error editando dominio.',
             ]);
         }
     }

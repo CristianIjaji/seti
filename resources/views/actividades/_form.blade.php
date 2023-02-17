@@ -41,14 +41,14 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="track-tab-activity" data-bs-toggle="tab" data-bs-target="#track-activity" type="button" role="tab" aria-controls="track-activity" aria-selected="true">Seguimiento</button>
         </li>
-        @can('liquidatedActivity', $activity)
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="liquidate-tab-activity" data-bs-toggle="tab" data-bs-target="#liquidate-activity" type="button" role="tab" aria-controls="liquidate-activity" aria-selected="true">Liquidación</button>
-            </li>
-        @endcan
-        @can('uploadReport', $activity)
+        @can('viewReport', $activity)
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="report-tab-activity" data-bs-toggle="tab" data-bs-target="#report-activity" type="button" role="tab" aria-controls="report-activity" aria-selected="true">Reporte</button>
+            </li>
+        @endcan
+        @can('viewLiquidate', $activity)
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="liquidate-tab-activity" data-bs-toggle="tab" data-bs-target="#liquidate-activity" type="button" role="tab" aria-controls="liquidate-activity" aria-selected="true">Liquidación</button>
             </li>
         @endcan
     </ul>
@@ -328,18 +328,19 @@
         <div class="tab-pane" id="track-activity" role="tabpanel" aria-labelledby="track-tab-activity">
             @include('partials._track', [$edit, 'model' => $estados_actividad, 'title' => 'Estados actividad', 'route' => 'stateactivities'])
         </div>
-        @can('liquidatedActivity', $activity)
+        @can('viewReport', $activity)
+            <div class="tab-pane" id="report-activity" role="tabpanel" aria-labelledby="report-tab-activity">
+                @include('actividades.reporte', [$activity, $uploadReport])
+            </div>
+        @endcan
+        @can('viewLiquidate', $activity)
             <div class="tab-pane" id="liquidate-activity" role="tabpanel" aria-labelledby="liquidate-tab-activity">
                 @include('liquidaciones._form', [
                     $liquidacion,
                     $quote,
-                    $carrito
+                    $carrito,
+                    $liquidate
                 ])
-            </div>
-        @endcan
-        @can('uploadReport', $activity)
-            <div class="tab-pane" id="report-activity" role="tabpanel" aria-labelledby="report-tab-activity">
-                @include('actividades.reporte', [$activity])
             </div>
         @endcan
     </div>

@@ -11,6 +11,7 @@ use App\Models\TblTercero;
 use App\Models\TblUsuario;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 
 class PuntosInteresController extends Controller
@@ -100,8 +101,8 @@ class PuntosInteresController extends Controller
     public function store(SavePuntosInteresRequest $request)
     {
         try {
+            $this->authorize('create', new TblPuntosInteres);
             $sitio = TblPuntosInteres::create($request->validated());
-            $this->authorize('create', $sitio);
 
             return response()->json([
                 'success' => 'Punto de interés creado exitosamente!',
@@ -111,8 +112,9 @@ class PuntosInteresController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
+            Log::error("Error creando punto de interes: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error creando punto de interes.'
             ]);
         }
     }
@@ -177,8 +179,9 @@ class PuntosInteresController extends Controller
                 'success' => 'Punto de interés actualizado correctamente!'
             ]);
         } catch (\Throwable $th) {
+            Log::error("Error editando punto de interes: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error editando punto de interés.'
             ]);
         }
     }

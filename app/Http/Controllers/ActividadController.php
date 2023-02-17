@@ -53,7 +53,6 @@ class ActividadController extends Controller
     }
 
     private function sendNotification($actividad, $channel, $event) {
-        // $activity
         $options = [
             'cluster' => 'us2',
             'useTLS' => true
@@ -153,8 +152,9 @@ class ActividadController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
+            Log::error("Error creando actividad: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error creando actividad.'
             ]);
         }
     }
@@ -176,7 +176,9 @@ class ActividadController extends Controller
             'quote' => isset($activity->id_cotizacion) ? $activity->tblcotizacion : [],
             'movimiento' => $activity->getMovimientoInventario(),
             'carrito' => isset($activity->id_cotizacion) ? TblLiquidacion::getDetalleLiquidacion($activity->id_cotizacion) : [],
-            'liquidacion' => TblLiquidacion::where(['id_cotizacion' => $activity->id_cotizacion])->first()
+            'liquidacion' => TblLiquidacion::where(['id_cotizacion' => $activity->id_cotizacion])->first(),
+            'uploadReport' => false,
+            'liquidate' => false
         ]);
     }
 
@@ -225,7 +227,9 @@ class ActividadController extends Controller
             'quote' => isset($activity->id_cotizacion) ? $activity->tblcotizacion : [],
             'movimiento' => $activity->getMovimientoInventario(),
             'carrito' => isset($activity->id_cotizacion) ? TblLiquidacion::getDetalleLiquidacion($activity->id_cotizacion) : [],
-            'liquidacion' => TblLiquidacion::where(['id_cotizacion' => $activity->id_cotizacion])->first()
+            'liquidacion' => TblLiquidacion::where(['id_cotizacion' => $activity->id_cotizacion])->first(),
+            'uploadReport' => Gate::allows('uploadReport', $activity),
+            'liquidate' => Gate::allows('liquidatedActivity', $activity),
         ]);
     }
 
@@ -256,9 +260,9 @@ class ActividadController extends Controller
                 'success' => 'Cotización actualizada correctamente!'
             ]);
         } catch (\Throwable $th) {
-            Log::error("Error actualizando actividad: ".$th->__toString());
+            Log::error("Error editando actividad: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error editando actividad.'
             ]);
         }
     }
@@ -557,6 +561,10 @@ class ActividadController extends Controller
 
     public function uploadReport(TblActividad $activity) {
         try {
+            if($activity->id_dominio_estado != session('id_dominio_actividad_ejecutado') && $activity->id_informe_actividad) {
+                throw new Exception("El reporte ya se cargo");
+            }
+
             if(!isset($activity->id_informe_actividad)) {
                 $fileName = Storage::disk('google')->put('', Request()->file('file_report'));
                 $link = Storage::disk('google')->url($fileName);
@@ -568,7 +576,6 @@ class ActividadController extends Controller
                 ]);
 
                 $activity->id_informe_actividad = $informe->id_informe_actividad;
-                $activity->save();
             } else {
                 if(!empty($activity->tblinforme->link)) {
                     $parts = parse_url($activity->tblinforme->link);
@@ -588,6 +595,11 @@ class ActividadController extends Controller
                 $informe->link = $link;
                 $informe->save();
             }
+
+            $activity->id_dominio_estado = session('id_dominio_actividad_informe_cargado');
+            $activity->save();
+            $activity->comentario = "Reporte cargado al drive";
+            $this->createTrack($activity, $activity->id_dominio_estado);
 
             return response()->json([
                 'success' => 'Reporte subido con exito!',

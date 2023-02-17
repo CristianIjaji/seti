@@ -309,7 +309,14 @@
                     <tr id="tr_{{ session('id_dominio_materiales') }}" class="detail-{{session('id_dominio_materiales')}}">
                         <th colspan="7" class="border rounded">
                             <span
-                                class="w-100 bg-primary bg-opacity-75 fw-bold py-2 rounded d-flex justify-content-center text-white tr_suministros"
+                                class="w-100 bg-primary bg-opacity-75 fw-bold {{ $edit ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_suministros"
+                                data-toggle="tooltip"
+                                {{ $edit ? 'title=Agregar ítem' : '' }}
+                                data-title="Buscar ítems suministro materiales"
+                                data-size='modal-xl'
+                                data-header-class='bg-primary bg-opacity-75 text-white'
+                                data-action='{{ route('priceList.search', ['type' => session('id_dominio_materiales'), 'client' => isset($quote->tblCliente->id_tercero_responsable) ? $quote->tblCliente->id_tercero_responsable : -1, 'tipo_carrito' => $tipo_carrito]) }}'
+                                data-toggle="tooltip"
                             >
                                 <label>SUMINISTRO DE MATERIALES</label>
                             </span>

@@ -28,6 +28,7 @@ class CreateTblCotizacionesTable extends Migration
             $table->unsignedBigInteger('id_dominio_iva');
             $table->text('descripcion');
             $table->decimal('valor_reasignado', 20, 2)->nullable();
+            $table->unsignedBigInteger('id_actividad')->nullable();
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 

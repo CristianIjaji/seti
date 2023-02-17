@@ -6,6 +6,7 @@ use App\Http\Requests\SaveParametroRequest;
 use App\Models\TblDominio;
 use App\Models\TblParametro;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 
 class ParametroController extends Controller
 {
@@ -91,7 +92,10 @@ class ParametroController extends Controller
                 'success' => 'Parametro creado exitosamente!',
             ]));
         } catch (\Exception $e) {
-            return $e->getMessage();
+            Log::error("Error creando parametro: ".$e->__toString());
+            return response()->json([
+                'errors' => 'Error creando parametro.',
+            ]);
         }
     }
 
@@ -152,8 +156,9 @@ class ParametroController extends Controller
                 'success' => 'Parametro actualizado correctamente!',
             ]);
         } catch (\Exception $e) {
+            Log::error("Error editando parametro: ".$e->__toString());
             return response()->json([
-                'errors' => $e->getMessage(),
+                'errors' => 'Error editando parametro.',
             ]);
         }
     }

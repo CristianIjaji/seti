@@ -23,7 +23,7 @@ class TblDominiosTable extends Migration
             $table->timestamps();
 
             $table->foreign('id_dominio_padre')->references('id_dominio')->on('tbl_dominios')
-                ->onDelete('cascade')->onUpdate('cascade');
+                ->onDelete('set null')->onUpdate('cascade');
             $table->foreign('id_usuareg')->references('id_usuario')->on('tbl_usuarios')
                 ->onDelete('cascade')->onUpdate('cascade');
         });

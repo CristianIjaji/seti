@@ -11,6 +11,7 @@ use App\Models\TblOrdenCompra;
 use App\Models\TblOrdenCompraDetalle;
 use App\Models\TblTercero;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
@@ -131,6 +132,8 @@ class OrdenCompraController extends Controller
     {
         try {
             $this->authorize('create', new TblOrdenCompra);
+
+            DB::beginTransaction();
             $orden = TblOrdenCompra::create($request->validated());
 
             $orden->cupo_actual = $this->getDetailPurshase($orden);
@@ -139,6 +142,7 @@ class OrdenCompraController extends Controller
             $orden->comentario = "Orden creada # $orden->id_orden_compra.";
             $this->createTrack($orden, session('id_dominio_orden_abierta'));
 
+            DB::commit();
             return response()->json([
                 'success' => 'Orden creada exitosamente!',
                 'response' => [
@@ -147,8 +151,10 @@ class OrdenCompraController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error creando orden de compra: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error creando orden de compra.'
             ]);
         }
     }
@@ -212,6 +218,8 @@ class OrdenCompraController extends Controller
                 throw new Exception("no se puede modificar la orden, porque ya se hizo una entrega a bodega");
             }
 
+            DB::beginTransaction();
+
             $estado = $purchase->id_dominio_estado;
             $purchase->update($request->validated());
 
@@ -228,12 +236,15 @@ class OrdenCompraController extends Controller
                 $this->createTrack($purchase, session('id_dominio_orden_abierta'));
             }
 
+            DB::commit();
             return response()->json([
                 'success' => 'Orden actualizada correctamente!'
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error editando orden de compra: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error editando orden de compra.'
             ]);
         }
     }

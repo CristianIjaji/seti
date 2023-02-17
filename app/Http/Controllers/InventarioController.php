@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
-use Maatwebsite\Excel\Validators\ValidationException;
 
 class InventarioController extends Controller
 {
@@ -110,8 +109,11 @@ class InventarioController extends Controller
     public function store(SaveInventarioRequest $request)
     {
         try {
+            
+            $this->authorize('create', new TblInventario);
+            DB::beginTransaction();
+
             $inventario = TblInventario::create($request->validated());
-            $this->authorize('create', $inventario);
 
             $movimiento = TblMovimiento::create([
                 'id_dominio_tipo_movimiento' => session('id_dominio_movimiento_entrada_inicial'),
@@ -152,6 +154,7 @@ class InventarioController extends Controller
             $movimiento->id_dominio_estado = session('id_dominio_movimiento_completado');
             $movimiento->save();
 
+            DB::commit();
             return response()->json([
                 'success' => 'Producto creado exitosamente!',
                 'reponse' => [
@@ -160,8 +163,10 @@ class InventarioController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error creando producto: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error creando producto.'
             ]);
         }
     }
@@ -234,6 +239,8 @@ class InventarioController extends Controller
     {
         try {
             $this->authorize('update', $store);
+            
+            DB::beginTransaction();
             $movimiento = null;
 
             if($store->cantidad != $request->cantidad) {
@@ -300,12 +307,15 @@ class InventarioController extends Controller
                 $movimiento->save();
             }
 
+            DB::commit();
             return response()->json([
                 'success' => 'Producto actualizado correctamente!'
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error editando producto: ".$th->__toString());
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error editando producto.'
             ]);
         }
     }

@@ -15,7 +15,7 @@ class CreateTblInformesActividadesTable extends Migration
     {
         Schema::create('tbl_informes_actividades', function (Blueprint $table) {
             $table->bigIncrements('id_informe_actividad');
-            $table->integer('id_actividad')->nullable();
+            $table->unsignedBigInteger('id_actividad')->nullable();
             $table->unsignedBigInteger('id_usuareg');
             $table->string('link');
             $table->timestamps();
