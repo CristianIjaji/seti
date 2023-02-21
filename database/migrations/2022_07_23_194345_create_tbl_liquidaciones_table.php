@@ -15,13 +15,13 @@ class CreateTblLiquidacionesTable extends Migration
     {
         Schema::create('tbl_liquidaciones', function (Blueprint $table) {
             $table->bigIncrements('id_liquidacion');
-            $table->unsignedBigInteger('id_cotizacion');
+            $table->unsignedBigInteger('id_actividad')->nullable();
             $table->decimal('valor', 20, 2)->nullable();
             $table->unsignedBigInteger('id_dominio_estado');
             $table->unsignedBigInteger('id_usuareg');
             $table->timestamps();
 
-            $table->foreign('id_cotizacion')->references('id_cotizacion')->on('tbl_cotizaciones')
+            $table->foreign('id_actividad')->references('id_actividad')->on('tbl_actividades')
                 ->onDelete('cascade')->onUpdate('cascade');
             $table->foreign('id_dominio_estado')->references('id_dominio')->on('tbl_dominios')
                 ->onDelete('cascade')->onUpdate('cascade');

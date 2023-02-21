@@ -7,12 +7,20 @@ use App\Models\TblCotizacionDetalle;
 use App\Models\TblInventario;
 use App\Models\TblLiquidacion;
 use App\Models\TblLiquidacionDetalle;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Excel;
 
 class LiquidacionController extends Controller
 {
+    protected $excel;
+
+    public function __construct(Excel $excel)
+    {
+        $this->middleware('auth');
+        $this->excel = $excel;
+    }
+
     private function getDetailCloseout($closeout) {
         if(!isset(request()->id_item)) {
             return 0;
@@ -27,7 +35,10 @@ class LiquidacionController extends Controller
                 $detalle = new TblLiquidacionDetalle;
             }
 
-            $item = TblCotizacionDetalle::where(['id_cotizacion' => $closeout->id_cotizacion, 'id_lista_precio' => request()->id_item[$index]])->first();
+            $item = TblCotizacionDetalle::where(['id_cotizacion' => $closeout->tblactividad->id_cotizacion, 'id_lista_precio' => request()->id_item[$index]])->first();
+            if(!$item) {
+                $item = TblInventario::find(request()->id_item[$index]);
+            }
 
             $detalle->id_liquidacion = $closeout->id_liquidacion;
             $detalle->id_dominio_tipo_item = request()->id_dominio_tipo_item[$index];
@@ -73,14 +84,21 @@ class LiquidacionController extends Controller
      */
     public function store(SaveLiquidacionRequest $request)
     {
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
+
             $liquidacion = TblLiquidacion::create($request->validated());
             $liquidacion->valor = $this->getDetailCloseout($liquidacion);
             $liquidacion->save();
 
-            DB::commit();
+            $controller = new ActividadController($this->excel);
+            request()->merge([
+                'action' => 'liquid-activity',
+                'comentario' => 'Actividad liquidada por '.$liquidacion->tblusereg->tbltercero->full_name
+            ]);
+            $controller->handleActivity($liquidacion->tblactividad);
 
+            DB::commit();
             return response()->json([
                 'success' => 'Liquidación creada exitosamente!',
                 'response' => [
@@ -93,7 +111,7 @@ class LiquidacionController extends Controller
             Log::error($th->__toString());
 
             return response()->json([
-                'errors' => $th->getMessage()
+                'errors' => 'Error creando la liquidación.'
             ]);
         }
     }
@@ -129,14 +147,21 @@ class LiquidacionController extends Controller
      */
     public function update(SaveLiquidacionRequest $request, TblLiquidacion $closeout)
     {
-        DB::beginTransaction();
         try {
+            DB::beginTransaction();
+
             $closeout->update($request->validated());
             $closeout->valor = $this->getDetailCloseout($closeout);
             $closeout->save();
 
-            DB::commit();
+            $controller = new ActividadController($this->excel);
+            request()->merge([
+                'action' => 'liquid-activity',
+                'comentario' => 'Actividad liquidada por '.$closeout->tblusereg->tbltercero->full_name
+            ]);
+            $controller->handleActivity($closeout->tblactividad);
 
+            DB::commit();
             return response()->json([
                 'success' => 'Liquidación actualizada correctamente!'
             ]);

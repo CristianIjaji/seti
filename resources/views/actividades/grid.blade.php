@@ -11,6 +11,7 @@
     'headers' => [
         ['name' => 'id_actividad', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'ot', 'label' => 'OT', 'col' => 'col-1'],
+        ['name' => 'id_cotizacion', 'label' => '# Cotizacion'],
         ['name' => 'id_tercero_encargado_cliente', 'label' => 'Cliente', 'options' => $clientes, 'col' => 'col-2'],
         ['name' => 'id_tipo_actividad', 'label' => 'Tipo trabajo', 'options' => $tipos_trabajo, 'col' => 'col-1'],
         ['name' => 'tblestacion', 'label' => 'Sitio', 'foreign' => 'nombre', 'col' => 'col-1'],

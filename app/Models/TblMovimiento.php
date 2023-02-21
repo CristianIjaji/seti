@@ -73,7 +73,7 @@ class TblMovimiento extends Model
         foreach ($items as $item) {
             $carrito[session('id_dominio_tipo_movimiento')][$item->id_inventario] = [
                 'item' => $item->id_inventario,
-                'descripcion' => $item->tblinventario->descripcion."\nDisponible: ".$item->cantidad,
+                'descripcion' => $item->tblinventario->descripcion,
                 'cantidad' => $item->cantidad,
                 // 'unidad' => $item->tblinventario->unidad,
                 'valor_unitario' => $item->valor_unitario,

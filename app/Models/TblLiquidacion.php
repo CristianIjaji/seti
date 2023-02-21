@@ -15,7 +15,7 @@ class TblLiquidacion extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'id_cotizacion',
+        'id_actividad',
         'valor',
         'id_dominio_estado',
         'id_usuareg'
@@ -25,8 +25,8 @@ class TblLiquidacion extends Model
         return $this->hasMany(TblLiquidacionDetalle::class, 'id_liquidacion');
     }
 
-    public function tblcotizacion() {
-        return $this->belongsTo(TblCotizacion::class, 'id_cotizacion');
+    public function tblactividad() {
+        return $this->belongsTo(TblActividad::class, 'id_actividad');
     }
 
     public function tbldominioestado() {
@@ -34,18 +34,17 @@ class TblLiquidacion extends Model
     }
 
     public function tblusereg() {
-        return $this->hasOne(TblUsuario::class, 'id_usuareg');
+        return $this->belongsTo(TblUsuario::class, 'id_usuareg');
     }
 
-    public static function getDetalleLiquidacion($id_cotizacion) {
+    public static function getDetalleLiquidacion($actividad) {
         $carrito = [];
-        $items = TblLiquidacion::where(['id_cotizacion' => $id_cotizacion])->first();
+        $items = TblLiquidacion::where(['id_actividad' => $actividad->id_actividad])->first();
 
         if(!$items) {
-            $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $id_cotizacion])->get();
+            $items = TblCotizacionDetalle::with(['tblListaprecio'])->where(['id_cotizacion' => $actividad->id_cotizacion])->get();
         } else {
             $items = $items->tblliquidaciondetalle;
-            Log::info("Items: ".print_r($items, 1));
         }
 
         foreach($items as $item) {

@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TblConsolidado extends Model
 {
@@ -54,5 +55,14 @@ class TblConsolidado extends Model
 
     public function getMesFormAttribute() {
         return isset($this->attributes['mes']) ? $this->attributes['mes'] : '';
+    }
+
+    public static function getCarritoConsolidado($id_tercero_cliente, $id_tercero_responsable, $id_consolidado) {
+        return DB::select("
+            SELECT
+                act.id_actividad
+            FROM tbl_actividades as act
+            
+        ");
     }
 }

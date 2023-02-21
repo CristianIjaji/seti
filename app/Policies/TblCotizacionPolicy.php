@@ -145,7 +145,7 @@ class TblCotizacionPolicy
     }
 
     public function aproveQuote(TblUsuario $tblUsuario, TblCotizacion $tblCotizacion) {
-        if(!in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_pendiente_aprobacion')])) {
+        if(!in_array($tblCotizacion->id_dominio_estado, [session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_pendiente_aprobacion')])) {
             return false;
         }
 

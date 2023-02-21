@@ -3,7 +3,10 @@
         <select
             id="lista_items"
             class="form-control"
-            data-minimuminputlength="2" data-maximumselectionlength="10" multiple data-closeonselect="false"
+            data-minimuminputlength="{{ isset($minimuminputlength) ? $minimuminputlength : 2 }}"
+            data-maximumselectionlength="10"
+            {{ isset($multiple) && $multiple ? 'multiple' : '' }}
+            data-closeonselect="false"
             style="width: 100%"
             >
             @isset($items)
@@ -25,7 +28,7 @@
             @isset($cotizaciones)
                 <option value="">Elegir cotización</option>
                 @foreach ($cotizaciones as $cotizacion)
-                    <option value="{{ $cotizacion->id_cotizacion }}">{{ $cotizacion->cotizacion }}</option>
+                    <option value="{{ $cotizacion->id_cotizacion }}" data-ot="{{ $cotizacion->ot_trabajo }}">{{ $cotizacion->cotizacion }}</option>
                 @endforeach
             @endisset
             @isset($productos)

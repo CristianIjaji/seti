@@ -1,6 +1,8 @@
 @php
     $create = $liquidate && isset($liquidacion->id_liquidacion) ? false : true;
     $edit = isset($edit) ? $edit : ($create == true ? true : false);
+
+    echo "Crear: $create.";
 @endphp
 
 @if ($liquidate)
@@ -10,8 +12,8 @@
         @method('PATCH')
     @endif
 @endif
-    <div class="row">
-        <input type="hidden" id="id_cotizacion" name="id_cotizacion" value="{{ $quote->id_cotizacion }}">
+        <input type="hidden" id="id_actividad" name="id_actividad" value="{{ $activity->id_actividad }}">
+    {{-- <div class="row">
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
             <label>OT</label>
             <input type="text" class="form-control text-uppercase" value="{{ $quote->ot_trabajo }}" disabled>
@@ -50,7 +52,7 @@
         </div>
 
         <div class="clearfix"><hr></div>
-    </div>
+    </div> --}}
     @include('partials._detalle', ['edit' => $liquidate, 'tipo_carrito' => 'liquidacion', 'detalleCarrito' => $carrito])
     @if ($liquidate)
         @include('partials.buttons', [$create, $liquidate, 'label' => $create ? 'Crear liquidación' : 'Editar liquidación'])

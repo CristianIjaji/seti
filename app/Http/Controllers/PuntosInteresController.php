@@ -26,30 +26,19 @@ class PuntosInteresController extends Controller
     }
 
     private function dinamyFilters($querybuilder, $fields = []) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
                 if(!in_array($key, ['full_name'])){
-                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                    $querybuilder->where($key, $query['operator'], $query['value']);
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->whereHas('tblcliente', function($q) use($value){
-                        $q->where('razon_social', 'like', strtolower("%$value%"));
-                        $q->orwhere('nombres', 'like', strtolower("%$value%"));
-                        $q->orwhere('apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblcliente', function($q) use($query){
+                        $q->where('razon_social', $query['operator'], $query['value']);
+                        $q->orwhere('nombres', $query['operator'], $query['value']);
+                        $q->orwhere('apellidos', $query['operator'], $query['value']);
                     });
                 }
             }

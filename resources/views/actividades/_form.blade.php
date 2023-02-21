@@ -6,15 +6,17 @@
     if(isset($quote) && isset($quote->id_cotizacion)) {
         $existe_cotizacion = true;
 
-        $activity->id_cotizacion = $quote->id_cotizacion;
-        $activity->ot = $quote->ot_trabajo;
-        $activity->id_tercero_encargado_cliente = $quote->id_tercero_cliente;
-        $activity->id_estacion = $quote->id_estacion;
-        $activity->id_tipo_actividad = $quote->id_dominio_tipo_trabajo;
-        $activity->fecha_solicitud = $quote->fecha_solicitud;
-        $activity->valor = $quote->valor;
-        $activity->id_tercero_resposable_contratista = $quote->id_tercero_responsable;
-        $activity->descripcion = $quote->descripcion;
+        if($create) {
+            $activity->id_cotizacion = $quote->id_cotizacion;
+            $activity->ot = $quote->ot_trabajo;
+            $activity->id_tercero_encargado_cliente = $quote->id_tercero_cliente;
+            $activity->id_estacion = $quote->id_estacion;
+            $activity->id_tipo_actividad = $quote->id_dominio_tipo_trabajo;
+            $activity->fecha_solicitud = $quote->fecha_solicitud;
+            $activity->valor = $quote->valor;
+            $activity->id_tercero_resposable_contratista = $quote->id_tercero_responsable;
+            $activity->descripcion = $quote->descripcion;
+        }
     }
 
     $movimiento = (isset($movimiento) ? $movimiento : null);
@@ -30,10 +32,10 @@
     );
 @endphp
 
-@if (!$create)
-    <div class="alert alert-success" role="alert"></div>
-    <div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
+<div class="alert alert-success" role="alert"></div>
+<div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
 
+@if (!$create)
     <ul class="nav nav-tabs" id="activityTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="activity-tab" data-bs-toggle="tab" data-bs-target="#activity" type="button" role="tab" aria-controls="activity" aria-selected="true">Actividad</button>
@@ -56,7 +58,6 @@
     <div class="tab-content pt-3" id="activityTab">
         <div class="tab-pane fade show active" id="activity" role="tabpanel" aria-labelledby="activity-tab">
 @endif
-
     @if ($create || $edit)
         <form action="{{ $create ? route('activities.store') : route('activities.update', $activity) }}" method="POST">
             @csrf
@@ -70,7 +71,7 @@
             <input type="hidden" name="id_cotizacion" id="id_cotizacion_actividad" value="{{ $activity->id_cotizacion }}">
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2">
                 <label for="ot">OT</label>
-                <input type="text" class="form-control text-uppercase" @if ($edit) name="ot" @endif id="ot" value="{{ old('ot', $activity->ot) }}" @if (!$edit) readonly @endif >
+                <input type="text" class="form-control text-uppercase" @if ($edit) name="ot" @endif id="ot" value="{{ old('ot', $activity->ot) }}" @if (!$edit || $existe_cotizacion) readonly @endif >
             </div>
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-4 col-xl-4">
                 <label for="id_tercero_encargado_cliente" class="required">Cliente</label>
@@ -255,7 +256,6 @@
                     <input type="text" class="form-control" id="id_cliente_cotizacion" value="{{ $activity->tblresposablecontratista->full_name.(isset($activity->tblresposablecontratista->razon_social) ? ' - '.$activity->tblresposablecontratista->nombres.' '.$activity->tblresposablecontratista->apellidos : '') }}" readonly>
                 @endif
             </div>
-
             <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
                 <label for="descripcion" class="required">Descripción actividad</label>
                 <textarea class="form-control" @if ($edit) name="descripcion" @endif id="descripcion" rows="2" style="resize: none" @if ($edit) required @else readonly @endif>{{ old('nombre', $activity->descripcion) }}</textarea>
@@ -278,7 +278,7 @@
                             data-html="true"
                             title="{{ !$existe_cotizacion ? 'Cotización pendiente' : 'Ver cotización' }}"
                         >
-                            {!! !$existe_cotizacion ? '<i class="fa-solid fa-list fs-4"></i>' : '<i class="fa-solid fa-circle-info fs-4"></i>' !!}
+                            {!! !$existe_cotizacion ? '<i class="fa-solid fa-clipboard-list fs-4"></i>' : '<i class="fa-solid fa-circle-info fs-4"></i>' !!}
                         </span>
                     @endif
 
@@ -337,7 +337,7 @@
             <div class="tab-pane" id="liquidate-activity" role="tabpanel" aria-labelledby="liquidate-tab-activity">
                 @include('liquidaciones._form', [
                     $liquidacion,
-                    $quote,
+                    $activity,
                     $carrito,
                     $liquidate
                 ])

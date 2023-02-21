@@ -22,7 +22,7 @@ class SaveLiquidacionRequest extends FormRequest
         $this->merge([
             'valor' => 0,
             'id_dominio_estado' => session('id_dominio_liquidacion_creada'),
-            'id_usuareg' => (auth()->guest() ? 1 : auth()->id()),
+            'id_usuareg' => (auth()->guest() ? 1 : auth()->id())
         ]);
     }
 
@@ -34,9 +34,9 @@ class SaveLiquidacionRequest extends FormRequest
     public function rules()
     {
         return [
-            'id_cotizacion' => [
+            'id_actividad' => [
                 'required',
-                'exists:tbl_cotizaciones,id_cotizacion',
+                'exists:tbl_actividades,id_cotizacion',
                 Rule::unique('tbl_liquidaciones')->ignore($this->route('closeout'))
             ],
             'id_dominio_estado' => [

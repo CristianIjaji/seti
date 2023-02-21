@@ -128,7 +128,7 @@ class SaveCotizacionRequest extends FormRequest
             'valor_total.*' => [
                 'required',
                 'numeric',
-                'min:1'
+                'min:0'
             ]
         ];
     }

@@ -117,7 +117,11 @@ class TblActividadPolicy
     }
 
     public function executedActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
-        if(!in_array($tblActividad->estado, [session('id_dominio_actividad_ejecutado'), session('id_dominio_actividad_liquidado'), session('id_dominio_actividad_conciliado')])) {
+        if(!in_array($tblActividad->estado, [
+            session('id_dominio_actividad_ejecutado'),
+            session('id_dominio_actividad_liquidado'),
+            session('id_dominio_actividad_conciliado')
+        ])) {
             return true;
         }
 
@@ -126,7 +130,8 @@ class TblActividadPolicy
 
     public function viewLiquidate(TblUsuario $tblUsuario, TblActividad $tblActividad) {
         $mostrar_liquidacion = [
-            session('id_dominio_actividad_informe_cargado')
+            session('id_dominio_actividad_informe_cargado'),
+            session('id_dominio_actividad_liquidado')
         ];
 
         if(in_array($tblActividad->estado, $mostrar_liquidacion) && $tblActividad->id_cotizacion) {
@@ -138,12 +143,17 @@ class TblActividadPolicy
 
     public function liquidatedActivity(TblUsuario $tblUsuario, TblActividad $tblActividad) {
         $mostrar_liquidacion = [
-            session('id_dominio_actividad_informe_cargado')
+            session('id_dominio_actividad_informe_cargado'),
+            session('id_dominio_actividad_liquidado')
         ];
 
         if(in_array($tblActividad->estado, $mostrar_liquidacion)
             && $tblActividad->id_cotizacion
-            && in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_analista'), session('id_dominio_coordinador'), session('id_dominio_contratista')])) {
+            && in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [
+                session('id_dominio_analista'),
+                session('id_dominio_coordinador'),
+                session('id_dominio_contratista')
+            ])) {
             return true;
         }
 
@@ -157,7 +167,8 @@ class TblActividadPolicy
     public function viewReport(TblUsuario $tblUsuario, TblActividad $tblActividad) {
         $mostrar_liquidacion = [
             session('id_dominio_actividad_ejecutado'),
-            session('id_dominio_actividad_informe_cargado')
+            session('id_dominio_actividad_informe_cargado'),
+            session('id_dominio_actividad_liquidado')
         ];
 
         if(in_array($tblActividad->estado, $mostrar_liquidacion) && $tblActividad->id_cotizacion) {
@@ -175,7 +186,11 @@ class TblActividadPolicy
 
         if(in_array($tblActividad->estado, $mostrar_liquidacion)
             && $tblActividad->id_cotizacion
-            && in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [session('id_dominio_analista'), session('id_dominio_coordinador'), session('id_dominio_contratista')])) {
+            && in_array($tblUsuario->tbltercero->id_dominio_tipo_tercero, [
+                session('id_dominio_analista'),
+                session('id_dominio_coordinador'),
+                session('id_dominio_contratista')
+            ])) {
             return true;
         }
 

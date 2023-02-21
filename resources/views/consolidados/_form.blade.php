@@ -16,7 +16,7 @@
     <div class="row">
         <input type="hidden" id="id_consolidado" value="{{ $consolidado->id_consolidado }}">
 
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-5">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5">
             <label for="id_tercero_cliente" class="required">Cliente</label>
             @if ($edit)
                 <select name="id_tercero_cliente" id="id_tercero_cliente" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
@@ -31,14 +31,14 @@
                 <input type="text" class="form-control" value="{{ $consolidado->tblCliente->full_name }} {{ (isset($consolidado->tblCliente->tblterceroresponsable) ? ' - '.$consolidado->tblCliente->tblterceroresponsable->razon_social : '') }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-12 col-md-12 col-lg-5">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-5 col-xl-5">
             <label for="id_tercero_responsable" class="required">Encargado cliente</label>
             @if ($edit)
                 <select name="id_tercero_responsable" id="id_tercero_responsable" class="form-control" style="width: 100%" @if ($edit) required @else disabled @endif>
                     @forelse ($contratistas as $contratista)
                         <option
                             value="{{ $contratista->id_tercero }}" {{ old('id_responsable', $consolidado->id_tercero_responsable) == $contratista->id_tercero ? 'selected' : '' }}>
-                            {{ $contratista->full_name }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
+                            {{ $contratista->full_name.(isset($contratista->razon_social) ? ' - '.$contratista->nombres.' '.$contratista->apellidos : '') }} {{ (isset($contratista->tblterceroresponsable) ? ' - '.$contratista->tblterceroresponsable->razon_social : '' ) }}
                         </option>
                     @empty
                         <option value="">Elegir contratista</option>
@@ -48,7 +48,7 @@
                 <input type="text" class="form-control" value="{{ $consolidado->tblresponsablecliente->full_name }} {{ (isset($consolidado->tblresponsablecliente->tblterceroresponsable) ? ' - '.$consolidado->tblresponsablecliente->tblterceroresponsable->razon_social : '') }}" disabled>
             @endif
         </div>
-        <div class="form-group col-12 col-sm-6 col-md-6 col-lg-2 input-months">
+        <div class="form-group col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2 input-months">
             <label for="mes">Mes</label>
             <input type="text" class="form-control text-capitalize" @if ($edit) name="mes" @endif id="mes" value="{{ old('mes', $consolidado->mes_form) }}" data-format="YYYY-MMMM" data-viewMode="months"  @if ($edit) required @else disabled @endif>
         </div>
@@ -65,6 +65,20 @@
                 </button>
             @endif
         </div>
+        {{-- @if ($edit)
+            <div class="col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2 py-2 text-center my-auto">
+                <button id="btn-get-activities" class="btn bg-info bg-gradient text-white">
+                    <i class="fa-solid fa-magnifying-glass"></i> Consultar actividades
+                </button>
+            </div>
+        @endif
+        @if (!$create)
+            <div class="col-12 col-sm-12 col-md-6 col-lg-2 col-xl-2 py-2 text-center my-auto">
+                <button id="btn_download_consolidado" type="button" class="btn btn-outline-success " data-consolidado="{{ $consolidado->id_consolidado }}">
+                    <i class="fa-solid fa-file-excel fs-4"></i> Descargar consolidado
+                </button>
+            </div>
+        @endif --}}
         <div class="clearfix"></div>
         <hr>
         <div id="div_detalle_consolidado" class="table-responsive">

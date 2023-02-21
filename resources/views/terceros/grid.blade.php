@@ -9,7 +9,9 @@
     'headers' => [
         ['name' => 'id_tercero', 'label' => '#', 'align' => 'text-end', 'col' => 'col-1'],
         ['name' => 'documento', 'label' => 'Identificación', 'col' => 'col-2'],
-        ['name' => 'full_name', 'label' => 'Nombre o Razón social', 'col' => 'col-3'],
+        ['name' => 'razon_social', 'label' => 'Razón social', 'col' => 'col-2'],
+        ['name' => 'nombres', 'label' => 'Nombres', 'col' => 'col-2'],
+        ['name' => 'apellidos', 'label' => 'Apellidos', 'col' => 'col-2'],
         ['name' => 'ciudad', 'label' => 'Ciudad', 'col' => 'col-2'],
         ['name' => 'id_dominio_tipo_tercero', 'label' => 'Tipo tercero', 'col' => 'col-2', 'options' => $tipo_terceros],
         ['name' => 'estado', 'label' => 'Estado', 'html' => true, 'align' => 'text-center', 'options' => [0 => 'Inactivo', 1 => 'Activo'], 'col' => 'col-1'],

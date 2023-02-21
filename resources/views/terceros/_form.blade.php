@@ -207,7 +207,7 @@
             $('#div_dependencia').removeClass('d-none');
         }
 
-        $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', true);
+        $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', true).trigger('change');
         
         if(valor == {!! session('id_dominio_almacen') !!}) {
             $(`#id_dominio_tipo_documento option[value="${tipo_almacen}"]`).prop('disabled', false);
@@ -215,6 +215,9 @@
             $('#id_dominio_tipo_documento').val({!! session('id_dominio_documento_almacen') !!}).change();
             $('#lbl-tipo-documento').removeClass('d-none').text($('#id_dominio_tipo_documento option:selected').text());
             $('#documento').val(RandomString());
+        } else if("{!! $create !!}") {
+            $('#documento').val('');
+            $(`#id_dominio_tipo_documento`).val('').trigger('change');
         }
     });
 

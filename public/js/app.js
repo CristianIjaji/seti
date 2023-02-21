@@ -10029,10 +10029,10 @@ window.RandomString = function () {
 
 $(function () {
   AOS.init();
-  $('.nav-item > .nav-link').click(function (e) {
+  $('.nav-item > .nav-link').on('click', function (e) {
     if ($('.navbar-toggler').is(":visible")) {
       setTimeout(function () {
-        $('.navbar-toggler').click();
+        $('.navbar-toggler').on('click');
       }, 550);
     }
   });
@@ -10208,18 +10208,18 @@ $(document).on('keydown', '.modal', function (e) {
   specialkeypress = $.inArray(e.which, [1, 16, 17]) ? true : false;
 
   if (e.which === 65 && e.ctrlKey) {
-    $('.btn-primary.btn-md.modal-form').click();
+    $('.btn-primary.btn-md.modal-form').on('click');
   }
 
   if (e.which === 13 && e.ctrlKey) {
     var modal = $(this).attr('id');
 
     if ($("#".concat(modal, " #btn-form-action")).length) {
-      $("#".concat(modal, " #btn-form-action")).click();
+      $("#".concat(modal, " #btn-form-action")).on('click');
     }
 
     if ($("#".concat(modal, " #btn-create-comment")).length) {
-      $("#".concat(modal, " #btn-create-comment")).click();
+      $("#".concat(modal, " #btn-create-comment")).on('click');
     }
   }
 });
@@ -10227,6 +10227,8 @@ $(document).on('click', '#kvFileinputModal .btn-kv-close', function (e) {
   $('#kvFileinputModal').modal('hide');
 });
 $(document).on('click', '#btn_add_items', function () {
+  showLoader(true);
+
   if ($("#lista_items option:selected").length) {
     var tipo_carrito = $(this).data('tipo_carrito');
     addItems(tipo_carrito, $('#lista_items option:selected'));
@@ -10234,11 +10236,15 @@ $(document).on('click', '#btn_add_items', function () {
 
   var id = $('#btn_add_items').closest('.modal').attr('id');
   $("#".concat(id)).modal('hide');
+  showLoader(false);
 });
 $(document).on('click', '#btn_select_quote', function () {
   if ($('#lista_items').val() !== '') {
     $('#id_cotizacion_actividad').val($('#lista_items').val());
+    var ot = $('#lista_items option:selected').data('ot');
     var id = $('#btn_select_quote').closest('.modal').attr('id');
+    console.log('ot: ', $("#".concat(id, " #ot")));
+    $("#".concat(id, " #ot")).val(ot);
     $("#".concat(id)).modal('hide');
   }
 });
@@ -10391,6 +10397,12 @@ $(document).on('click', '#btn-create-comment, .btn-download-format', function (e
     case 'btn-send-purchase':
       action = 'send';
       url = "".concat(url_orden, "/exportPurchase?purchase=").concat($('#id_orden_compra').val());
+      break;
+
+    case 'btn-cancel-purchase':
+      setupSwal = getSwalConfig('question', "<h2 class='fw-bold text-danger'>Cancelar orden</h2>", '¿Seguro quiere cancelar la orden?', true, true, "var(--bs-danger)", 'Sí, cancelar orden');
+      action = 'cancel';
+      url = "".concat(url_orden, "/").concat($('#id_orden_compra').val(), "/handlePurchase");
       break;
 
     default:

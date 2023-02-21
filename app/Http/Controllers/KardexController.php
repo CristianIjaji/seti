@@ -23,35 +23,24 @@ class KardexController extends Controller
     }
 
     private function dinamyFilters($querybuilder, $fields = []) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
                 if(!in_array($key, ['descripcion', 'tipo_movimiento'])){
-                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                    $querybuilder->where($key, $query['operator'], $query['value']);
                 } else if($key == 'descripcion' && $value) {
-                    $querybuilder->whereHas('tblinventario', function($q) use($value){
-                        $q->where('tbl_inventario.descripcion', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblinventario', function($q) use($query){
+                        $q->where('tbl_inventario.descripcion', $query['operator'], $query['value']);
                     });
                 } else if($key == 'tipo_movimiento') {
-                    $querybuilder->whereHas('tblmovimientodetalle', function($q) use($operador) {
-                        $q->whereHas('tblmovimiento', function($q2) use($operador) {
-                            $q2->whereHas('tbltipomovimiento', function($q3) use($operador) {
-                                $q3->whereHas('tbldominio', function($q4) use($operador) {
-                                    $q4->where('laravel_reserved_0.id_dominio', '=', $operador[1]);
+                    $querybuilder->whereHas('tblmovimientodetalle', function($q) use($query) {
+                        $q->whereHas('tblmovimiento', function($q2) use($query) {
+                            $q2->whereHas('tbltipomovimiento', function($q3) use($query) {
+                                $q3->whereHas('tbldominio', function($q4) use($query) {
+                                    $q4->where('laravel_reserved_0.id_dominio', $query['operator'], $query['value']);
                                 });
                             });
                         });
@@ -59,6 +48,7 @@ class KardexController extends Controller
                     
                 }
             }
+
             $this->filtros[$key] = $value;
         }
 

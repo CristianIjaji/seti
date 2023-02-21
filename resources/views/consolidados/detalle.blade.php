@@ -28,82 +28,84 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($model as $item)
-                            <tr id="tr_{{ $item->item }}" class="border">
-                                @if (!$edit)
-                                    <td class="col-1 my-auto border-0">
-                                        <input type="text" class="form-control text-md-end text-end border-0" value="{{ $item->item }}" disabled>
+                        @isset($model)
+                            @forelse ($model as $item)
+                                <tr id="tr_{{ $item->item }}" class="border">
+                                    @if (!$edit)
+                                        <td class="col-1 my-auto border-0">
+                                            <input type="text" class="form-control text-md-end text-end border-0" value="{{ $item->item }}" disabled>
+                                        </td>
+                                    @endif
+                                    <td class="col-2 my-auto border-0">
+                                        <input type="hidden" name="id_actividad[]" value="{{ $item->id_actividad }}">
+                                        <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->zona }}" disabled>
                                     </td>
-                                @endif
-                                <td class="col-2 my-auto border-0">
-                                    <input type="hidden" name="id_actividad[]" value="{{ $item->id_actividad }}">
-                                    <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->zona }}" disabled>
-                                </td>
-                                <td class="col-1 my-auto border-0">
-                                    <input type="text" class="form-control text-md-center text-end border-0" value="{{ $item->ot }}" disabled>
-                                </td>
-                                <td class="col-2 my-auto border-0">
-                                    <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->estacion }}" disabled>
-                                </td>
-                                <td class="col-2 my-auto border-0">
-                                    <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->fecha_ejecucion }}" disabled>
-                                </td>
-                                <td class="col-3 my-auto border-0">
-                                    <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->descripcion }}" disabled>
-                                </td>
-                                <td class="col-2 my-auto border-0">
-                                    <input type="text" class="form-control text-end border-0" value="{{ $item->valor_cotizado }}" disabled>
-                                </td>
-                                <td class="col-3 my-auto border-0">
-                                    <textarea class="form-control border-bottom border-info" name="observacion[]" rows="3" style="resize: none;" @if (!$edit) disabled @endif>{{ $item->observacion }}</textarea>
-                                </td>
-                                @if ($edit)
                                     <td class="col-1 my-auto border-0">
-                                        <div class="d-flex flex-nowrap justify-content-center">
-                                            <span
-                                                class="btn modal-form"
-                                                data-title="{{ "Detalle actividad ".$item->id_actividad }}"
-                                                data-size="modal-fullscreen"
-                                                data-reload="false"
-                                                data-action={{ route("activities.show", $item->id_actividad) }}
-                                                data-toggle="tooltip"
-                                                data-header-class="bg-info text-white"
-                                                data-placement="top"
-                                                title="{{ "Ver Actividad ".$item->id_actividad }}"
-                                            >
-                                                <i class="fas fa-eye text-info fs-5 fw-bold"></i>
-                                            </span>
-                                            <span
-                                                class="btn delete-item modal-form-2"
-                                                id="{{ $item->item }}"
-                                                data-toggle="tooltip"
-                                                data-placement="top"
-                                                data-toggle="modal"
-                                                data-title="{{ "Quitar activdad ".$item->id_actividad }}"
-                                                title="Eliminar"
-                                            >
-                                                <i class="fa-solid fa-trash-can text-danger fs-5 fw-bold"></i>
-                                            </span>
-                                        </div>
+                                        <input type="text" class="form-control text-md-center text-end border-0" value="{{ $item->ot }}" disabled>
                                     </td>
-                                @endif
-
-                                @php
-                                    $total += $item->valor;
-                                @endphp
-                            </tr>
-                        @empty
-                            <tr><td colspan="8">No hay registros para mostrar</td></tr>
-                        @endforelse
+                                    <td class="col-2 my-auto border-0">
+                                        <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->estacion }}" disabled>
+                                    </td>
+                                    <td class="col-2 my-auto border-0">
+                                        <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->fecha_ejecucion }}" disabled>
+                                    </td>
+                                    <td class="col-3 my-auto border-0">
+                                        <input type="text" class="form-control text-md-start text-end border-0" value="{{ $item->descripcion }}" disabled>
+                                    </td>
+                                    <td class="col-2 my-auto border-0">
+                                        <input type="text" class="form-control text-end border-0" value="{{ $item->valor_cotizado }}" disabled>
+                                    </td>
+                                    <td class="col-3 my-auto border-0">
+                                        <textarea class="form-control border-bottom border-info" name="observacion[]" rows="3" style="resize: none;" @if (!$edit) disabled @endif>{{ $item->observacion }}</textarea>
+                                    </td>
+                                    @if ($edit)
+                                        <td class="col-1 my-auto border-0">
+                                            <div class="d-flex flex-nowrap justify-content-center">
+                                                <span
+                                                    class="btn modal-form"
+                                                    data-title="{{ "Detalle actividad ".$item->id_actividad }}"
+                                                    data-size="modal-fullscreen"
+                                                    data-reload="false"
+                                                    data-action={{ route("activities.show", $item->id_actividad) }}
+                                                    data-toggle="tooltip"
+                                                    data-header-class="bg-info text-white"
+                                                    data-placement="top"
+                                                    title="{{ "Ver Actividad ".$item->id_actividad }}"
+                                                >
+                                                    <i class="fas fa-eye text-info fs-5 fw-bold"></i>
+                                                </span>
+                                                <span
+                                                    class="btn delete-item modal-form-2"
+                                                    id="{{ $item->item }}"
+                                                    data-toggle="tooltip"
+                                                    data-placement="top"
+                                                    data-toggle="modal"
+                                                    data-title="{{ "Quitar activdad ".$item->id_actividad }}"
+                                                    title="Eliminar"
+                                                >
+                                                    <i class="fa-solid fa-trash-can text-danger fs-5 fw-bold"></i>
+                                                </span>
+                                            </div>
+                                        </td>
+                                    @endif
+                                    @php
+                                        $total += $item->valor;
+                                    @endphp
+                                </tr>
+                            @empty
+                                <tr><td colspan="8">No hay registros para mostrar</td></tr>
+                            @endforelse
+                        @endisset
+                        
                     </tbody>
-                    {{-- <tbody>
+                    <tbody>
                         <tr>
                             <td class="{{ $edit ? 'col-6' : 'col-7' }}"></td>
                             <td class="col-3 fw-bold text-center">Totales</td>
                             <td class="col-2 fw-bold text-end">{{ number_format($total, 1) }}</td>
                             <td class="col-4"></td>
                         </tr>
-                    </tbody> --}}
+                    </tbody>
                 </table>
             </div>
         </div>

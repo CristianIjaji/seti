@@ -13,7 +13,6 @@ use App\Models\TblMovimientoDetalle;
 use App\Models\TblOrdenCompra;
 use App\Models\TblTercero;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
@@ -31,31 +30,14 @@ class MovimientoController extends Controller
     }
 
     private function dinamyFilters($querybuilder, $fields = []) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
-
-                if(!in_array($key, ['nombre'])){
-                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
-                } else if($key == 'nombre' && $value) {
-                    // $querybuilder->wherehas('tbltipomovimiento', function($q) use($value) {
-                    //     $q->where('tbl_dominios.nombre', 'like', strtolower("%$value%"));
-                    // });
-                }
+                $querybuilder->where($key, $query['operator'], $query['value']);
             }
+
             $this->filtros[$key] = $value;
         }
 
@@ -63,7 +45,6 @@ class MovimientoController extends Controller
     }
 
     private function getDetailMove($movimiento, $entrada = false, $salida = false) {
-        TblMovimientoDetalle::where('id_movimiento', '=', $movimiento->id_movimiento)->wherenotin('id_inventario', request()->id_item)->delete();
         $total = 0;
 
         foreach (request()->id_dominio_tipo_item as $index => $valor) {
@@ -198,8 +179,6 @@ class MovimientoController extends Controller
 
             DB::beginTransaction();
 
-            $agotados = "";
-            $carrito = [];
             $entrada = ['success' => false];
             $salida = ['success' => false];
 
@@ -207,20 +186,20 @@ class MovimientoController extends Controller
                 case session('id_dominio_movimiento_entrada_devolucion'):
                     $entrada = $this->entradaDevolucionActividad();
                     if(!$entrada['success']) {
-                        throw new Exception($entrada['error']);
+                        throw new Exception($entrada['error'], $entrada['code']);
                     }
                     break;
                 case session('id_dominio_movimiento_entrada_orden'):
                     $entrada = $this->entradaOrdenCompra();
                     if(!$entrada['success']) {
-                        throw new Exception($entrada['error']);
+                        throw new Exception($entrada['error'], $entrada['code']);
                     }
                     break;
 
                 case session('id_dominio_movimiento_salida_actividad'):
                     $salida = $this->salidaActividad();
                     if(!$salida['success']) {
-                        throw new Exception($salida['error']);
+                        throw new Exception($salida['error'], $salida['code']);
                     }
                     break;
                 case session('id_dominio_movimiento_salida_traslado'):
@@ -244,7 +223,7 @@ class MovimientoController extends Controller
 
                     $salida = $this->salidaTraslado();
                     if(!$salida['success']) {
-                        throw new Exception($salida['error']);
+                        throw new Exception($salida['error'], $salida['code']);
                     }
                     break;
                 default:
@@ -270,7 +249,7 @@ class MovimientoController extends Controller
             DB::rollBack();
             Log::error("Error creando movimiento: ".$th->__toString());
             return response()->json([
-                'errors' => "Error creando movimiento."
+                'errors' => ($th->getCode() != -911 ? "Error creando movimiento." : $th->getMessage())
             ]);
         }
     }
@@ -301,6 +280,17 @@ class MovimientoController extends Controller
     {
         $this->authorize('update', $move);
 
+        if(in_array($move->id_dominio_tipo_movimiento, [session('id_dominio_movimiento_salida_actividad')])) {
+            $actividad = TblActividad::where(['id_actividad' => $move->documento])
+                ->whereNotin('id_dominio_estado', [
+                    session('id_dominio_actividad_ejecutado'),
+                    session('id_dominio_actividad_informe_cargado'),
+                    session('id_dominio_actividad_liquidado'),
+                    session('id_dominio_actividad_conciliado'),
+                ])
+                ->first();
+        }
+
         return view('movimientos._form', [
             'edit' => (in_array($move->id_dominio_estado, [session('id_dominio_movimiento_pendiente')]) ? true : false),
             'movimiento' => $move,
@@ -315,6 +305,7 @@ class MovimientoController extends Controller
                 ])
                 ->get(),
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
+            'editar_movimiento' => ($actividad ? true : false)
         ]);
     }
 
@@ -325,9 +316,85 @@ class MovimientoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(SaveMovimientoRequest $request, TblMovimiento $move)
     {
-        //
+        try {
+            $this->authorize('update', $move);
+
+            DB::beginTransaction();
+            $entrada = ['success' => false];
+            $salida = ['success' => false];
+
+            switch ($request->id_dominio_tipo_movimiento) {
+                case session('id_dominio_movimiento_entrada_devolucion'):
+                    $entrada = $this->entradaDevolucionActividad();
+                    if(!$entrada['success']) {
+                        throw new Exception($entrada['error'], $entrada['code']);
+                    }
+                    break;
+                case session('id_dominio_movimiento_entrada_orden'):
+                    $entrada = $this->entradaOrdenCompra();
+                    if(!$entrada['success']) {
+                        throw new Exception($entrada['error'], $entrada['code']);
+                    }
+                    break;
+
+                case session('id_dominio_movimiento_salida_actividad'):
+                    $salida = $this->salidaActividad();
+                    if(!$salida['success']) {
+                        throw new Exception($salida['error'], $salida['code']);
+                    }
+                    break;
+                case session('id_dominio_movimiento_salida_traslado'):
+                    // Se crea el movimiento de entrada al nuevo almacen
+                    $movimiento = TblMovimiento::create([
+                        'id_dominio_tipo_movimiento' => session('id_dominio_movimiento_entrada_traslado'),
+                        'id_tercero_recibe' => request()->id_tercero_entrega,
+                        'id_tercero_entrega' => request()->id_tercero_recibe,
+                        'documento' => request()->documento,
+                        'observaciones' => 'Entrada traslado',
+                        'id_dominio_iva' => request()->id_dominio_iva,
+                        'total' => 0,
+                        'saldo' => 0,
+                        'id_dominio_estado' => session('id_dominio_movimiento_pendiente'),
+                        'id_usuareg' => auth()->id()
+                    ]);
+
+                    $movimiento->total = $this->getDetailMove($movimiento, true, false);
+                    $movimiento->id_dominio_estado = session('id_dominio_movimiento_completado');
+                    $movimiento->save();
+
+                    $salida = $this->salidaTraslado();
+                    if(!$salida['success']) {
+                        throw new Exception($salida['error'], $salida['code']);
+                    }
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+
+            $move->fill($request->validated());
+            $move->total = $this->getDetailMove($move, $entrada['success'], $salida['success']);
+
+            $move->id_dominio_estado = session('id_dominio_movimiento_completado');
+            $move->save();
+
+            DB::commit();
+            return response()->json([
+                'success' => 'Movimiento actualizado exitosamente!',
+                'response' => [
+                    'value' => $move->id_movimiento,
+                    'option' => $move->tbltipomovimiento->nombre
+                ]
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            Log::error("Error editando movimiento: ".$th->__toString());
+            return response()->json([
+                'errors' => ($th->getCode() != -911 ? "Error editando movimiento." : $th->getMessage())
+            ]);
+        }
     }
 
     /**
@@ -558,12 +625,15 @@ class MovimientoController extends Controller
                     </table>
                 ";
 
-                throw new Exception($table);
+                throw new Exception($table, -911);
             }
 
             $orden = TblOrdenCompra::where('id_orden_compra', '=', request()->documento)->first();
-            $orden->id_dominio_estado = session(count($saldoOrden[session('id_dominio_tipo_movimiento')]) == 0 ? 'id_dominio_orden_cerrada' : 'id_dominio_orden_parcial');
-            $orden->save();
+            $controller = new OrdenCompraController($this->excel);
+            request()->merge([
+                'action' => (count($saldoOrden[session('id_dominio_tipo_movimiento')]) == 0 ? 'cerrada' : 'parcial')
+            ]);
+            $controller->handlePurchase($orden);
 
             return [
                 'success' => true,
@@ -572,7 +642,8 @@ class MovimientoController extends Controller
         } catch (\Throwable $th) {
             return [
                 'success' => false,
-                'error' => $th->getMessage()
+                'error' => $th->getMessage(),
+                'code' => $th->getCode()
             ];
         }
     }
@@ -635,7 +706,7 @@ class MovimientoController extends Controller
                     >Generar Orden compra</button>
                 ";
 
-                throw new Exception($table);
+                throw new Exception($table, -911);
             }
 
             return [
@@ -646,7 +717,8 @@ class MovimientoController extends Controller
             Log::error("Error cargando inventario a actividad: ".$th->__toString());
             return [
                 'success' => false,
-                'error' => $th->getMessage()
+                'error' => $th->getMessage(),
+                'code' => $th->getCode()
             ];
         }
     }
@@ -687,7 +759,7 @@ class MovimientoController extends Controller
                     </table>
                 ";
 
-                throw new Exception($table);
+                throw new Exception($table, -911);
             }
 
             return [
@@ -698,7 +770,8 @@ class MovimientoController extends Controller
             Log::error("Error realizando traslado: ".$th->__toString());
             return [
                 'success' => false,
-                'error' => $th->getMessage()
+                'error' => $th->getMessage(),
+                'code' => $th->getCode()
             ];
         }
     }

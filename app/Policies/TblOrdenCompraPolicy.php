@@ -117,10 +117,18 @@ class TblOrdenCompraPolicy
     }
 
     public function createComment(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra) {
-        // if(in_array($tblOrdenCompra->id_dominio_estado, [session('id_dominio_orden_cerrada'), session('id_dominio_orden_cancelada')])) {
-        //     return false;
-        // }
+        if(in_array($tblOrdenCompra->id_dominio_estado, [session('id_dominio_orden_abierta')])) {
+            return true;
+        }
 
-        return true;
+        return false;
+    }
+
+    public function cancelOrden(TblUsuario $tblUsuario, TblOrdenCompra $tblOrdenCompra) {
+        if(in_array($tblOrdenCompra->id_dominio_estado, [session('id_dominio_orden_abierta')])) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SaveActividadRequest;
+use App\Http\Requests\SaveCotizacionRequest;
 use App\Models\TblActividad;
 use App\Models\TblCotizacion;
 use App\Models\TblDominio;
@@ -18,34 +19,36 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Pusher\Pusher;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Excel;
 
 class ActividadController extends Controller
 {
     protected $filtros;
+    protected $excel;
 
-    public function __construct()
+    public function __construct(Excel $excel)
     {
         $this->middleware('auth');
+        $this->excel = $excel;
     }
 
-    private function dinamyFilters($querybuilder) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
+    private function dinamyFilters($querybuilder, $fields = []) {
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
+                $query = getValoresConsulta($value);
 
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
+                $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
+                if(!in_array($key, ['nombre'])) {
+                    $querybuilder->where($key, $query['operator'], $query['value']);
+                } else if($key == 'nombre') {
+                    $querybuilder->whereHas('tblestacion', function($q) use($query) {
+                        $q->where('nombre', $query['operator'], $query['value']);
+                    });
                 }
 
-                $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
             }
+
             $this->filtros[$key] = $value;
         }
 
@@ -137,13 +140,22 @@ class ActividadController extends Controller
      */
     public function store(SaveActividadRequest $request)
     {
-        try {
+        try {            
+            $this->authorize('create', new TblActividad);
+
+            DB::beginTransaction();
             $actividad = TblActividad::create($request->validated());
-            $this->authorize('create', $actividad);
 
             $actividad->comentario = $actividad->observaciones;
             $this->createTrack($actividad, $actividad->id_dominio_estado);
 
+            if(!empty($actividad->ot) && !empty($actividad->id_cotizacion) && $actividad->tblcotizacion->ot_trabajo != $actividad->ot) {
+                $cotizacion = TblCotizacion::find($actividad->id_cotizacion);
+                $cotizacion->ot_trabajo = $actividad->ot;
+                $cotizacion->save();
+            }
+
+            DB::commit();
             return response()->json([
                 'success' => 'Actividad creada exitosamente!',
                 'response' => [
@@ -152,6 +164,7 @@ class ActividadController extends Controller
                 ],
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
             Log::error("Error creando actividad: ".$th->__toString());
             return response()->json([
                 'errors' => 'Error creando actividad.'
@@ -172,11 +185,11 @@ class ActividadController extends Controller
         return view('actividades._form', [
             'edit' => false,
             'activity' => $activity,
-            'estados_actividad' => TblEstado::where(['id_tabla' => $activity->id_actividad, 'tabla' => $activity->getTable()])->orderby('created_at', 'desc')->paginate(10),
+            'estados_actividad' => TblEstado::where(['id_tabla' => $activity->id_actividad, 'tabla' => $activity->getTable()])->orderby('created_at', 'desc')->paginate(1000000),
             'quote' => isset($activity->id_cotizacion) ? $activity->tblcotizacion : [],
             'movimiento' => $activity->getMovimientoInventario(),
-            'carrito' => isset($activity->id_cotizacion) ? TblLiquidacion::getDetalleLiquidacion($activity->id_cotizacion) : [],
-            'liquidacion' => TblLiquidacion::where(['id_cotizacion' => $activity->id_cotizacion])->first(),
+            'carrito' => isset($activity->id_cotizacion) ? TblLiquidacion::getDetalleLiquidacion($activity) : [],
+            'liquidacion' => TblLiquidacion::where(['id_actividad' => $activity->id_actividad])->first(),
             'uploadReport' => false,
             'liquidate' => false
         ]);
@@ -207,7 +220,7 @@ class ActividadController extends Controller
             'estaciones' => TblPuntosInteres::where(['estado' => 1, 'id_tercero_cliente' => $id_tercero_cliente])->pluck('nombre', 'id_punto_interes'),
             'tipos_trabajo' => TblDominio::getListaDominios(session('id_dominio_tipos_trabajo'), 'nombre'),
             'subsistemas' => TblDominio::getListaDominios(session('id_dominio_subsistemas'), 'nombre'),
-            'estados_actividad' => TblEstado::where(['id_tabla' => $activity->id_actividad, 'tabla' => $activity->getTable()])->orderby('created_at','desc')->paginate(10),
+            'estados_actividad' => TblEstado::where(['id_tabla' => $activity->id_actividad, 'tabla' => $activity->getTable()])->orderby('created_at','desc')->paginate(1000000),
             'estados' => TblDominio::where(['id_dominio_padre' => session('id_dominio_estados_actividad')])->get(),
             'contratistas' => TblTercero::where('estado', '=', '1')
                 ->wherein('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
@@ -226,8 +239,8 @@ class ActividadController extends Controller
             'create_site' => isset(TblUsuario::getPermisosMenu('sites.index')->create) ? TblUsuario::getPermisosMenu('sites.index')->create : false,
             'quote' => isset($activity->id_cotizacion) ? $activity->tblcotizacion : [],
             'movimiento' => $activity->getMovimientoInventario(),
-            'carrito' => isset($activity->id_cotizacion) ? TblLiquidacion::getDetalleLiquidacion($activity->id_cotizacion) : [],
-            'liquidacion' => TblLiquidacion::where(['id_cotizacion' => $activity->id_cotizacion])->first(),
+            'carrito' => isset($activity->id_cotizacion) ? TblLiquidacion::getDetalleLiquidacion($activity) : [],
+            'liquidacion' => TblLiquidacion::where(['id_actividad' => $activity->id_actividad])->first(),
             'uploadReport' => Gate::allows('uploadReport', $activity),
             'liquidate' => Gate::allows('liquidatedActivity', $activity),
         ]);
@@ -244,6 +257,8 @@ class ActividadController extends Controller
     {
         try {
             $this->authorize('update', $activity);
+            DB::beginTransaction();
+
             $activity->update($request->validated());
 
             if(isset($activity->tblcotizacion)) {
@@ -256,10 +271,18 @@ class ActividadController extends Controller
             $activity->comentario = $activity->observaciones;
             $this->createTrack($activity, $activity->id_dominio_estado);
 
+            if(!empty($activity->id_cotizacion) && $activity->tblcotizacion->ot_trabajo != $activity->ot) {
+                $cotizacion = TblCotizacion::find($activity->id_cotizacion);
+                $cotizacion->ot_trabajo = $activity->ot;
+                $cotizacion->save();
+            }
+
+            DB::commit();
             return response()->json([
                 'success' => 'Cotización actualizada correctamente!'
             ]);
         } catch (\Throwable $th) {
+            DB::rollBack();
             Log::error("Error editando actividad: ".$th->__toString());
             return response()->json([
                 'errors' => 'Error editando actividad.'
@@ -323,6 +346,21 @@ class ActividadController extends Controller
                         [session('id_dominio_actividad_programado'), session('id_dominio_actividad_reprogramado'), session('id_dominio_actividad_pausada')],
                         session('id_dominio_actividad_ejecutado'),
                         'Actividad ejecutada',
+                        ''
+                    );
+                    break;
+                case 'liquid-activity':
+                    $activity->comentario = (
+                        isset(request()->comentario) && trim(request()->comentario) != ''
+                            ? request()->comentario
+                            : 'Actividad liquidada.'
+                    );
+                    $activity->fecha_liquidado = date('Y-m-d');
+                    $response = $this->updateActivity(
+                        $activity,
+                        [session('id_dominio_actividad_informe_cargado')],
+                        session('id_dominio_actividad_liquidado'),
+                        'Actividad liquidada',
                         ''
                     );
                     break;
@@ -417,6 +455,8 @@ class ActividadController extends Controller
 
     public function cotizacionesCliente(TblActividad $activity) {
         return view('partials._search', [
+            'minimuminputlength' => 0,
+            'multiple' => false,
             'cotizaciones' => TblCotizacion::select(DB::raw('DISTINCT tbl_cotizaciones.*'))
             ->leftjoin('tbl_actividades as act', 'tbl_cotizaciones.id_cotizacion', '=', 'act.id_cotizacion')
             ->where('act.id_cotizacion')

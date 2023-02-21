@@ -8,9 +8,10 @@
     );
     $id_tercero = isset($tercero->id_tercero) ? $tercero->id_tercero : '';
     $nombre_tercero = isset($tercero->id_tercero) ? $tercero->nombres.' '.$tercero->apellidos : '';
+    $editar_movimiento = isset($editar_movimiento) ? $editar_movimiento : false;
 @endphp
 
-@if ($create || $edit)
+@if ($create || $editar_movimiento)
     <div class="alert alert-success" role="alert"></div>
     <div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
 
@@ -38,7 +39,7 @@
                 </select>
             @else
                 <input type="text" class="form-control" value="{{ $movimiento->tbltipomovimiento->tbldominio->nombre.' '.$movimiento->tbltipomovimiento->nombre }}" disabled readonly>
-                <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $movimiento->tbltipomovimiento }}">
+                <input type="hidden" name="id_dominio_tipo_movimiento" id="id_dominio_tipo_movimiento" value="{{ $movimiento->id_dominio_tipo_movimiento }}">
             @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
@@ -49,7 +50,7 @@
                 </select>
             @else
                 <input type="text" class="form-control" value="{{ $movimiento->tblterceroentrega->full_name }}" disabled readonly>
-                <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $movimiento->id_tercero_entrega }}">
+                <input type="hidden" name="id_tercero_entrega" id="id_tercero_entrega" value="{{ $movimiento->id_tercero_entrega }}">
             @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-4">
@@ -60,7 +61,7 @@
                 </select>
             @else
                 <input type="text" class="form-control" value="{{ $movimiento->tbltercerorecibe->full_name }}" disabled readonly>
-                <input type="hidden" name="id_tercero_almacen" id="id_tercero_almacen" value="{{ $movimiento->id_tercero_recibe }}">
+                <input type="hidden" name="id_tercero_recibe" id="id_tercero_recibe" value="{{ $movimiento->id_tercero_recibe }}">
             @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2">
@@ -74,31 +75,27 @@
                     @endforeach
                 </select>
             @else
-                <input type="hidden" id="id_dominio_iva" value="{{ $movimiento->tblIva->nombre }}">
+                <input type="hidden" name="id_dominio_iva" id="id_dominio_iva" value="{{ $movimiento->id_dominio_iva }}">
                 <input type="text" class="form-control text-end" value="{{ $movimiento->tblIva->nombre }}" disabled>
             @endif
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-2" id="div_documento">
             <label for="">Documento</label>
-            @if (!isset($actividad->id_actividad))
-                <input type="text" class="form-control" @if ($edit) name="documento" @endif id="documento" value="{{ old('documento', $movimiento->documento) }}" @if ($edit) required @else disabled @endif>
-            @else
-                <input type="text" class="form-control" name="documento" id="documento" value="{{ old('documento', $actividad->id_actividad) }}" required readonly>
-            @endif
+            <input type="text" class="form-control" name="documento" id="documento" value="{{ old('documento', $movimiento->documento) }}" @if ($edit) required @else readonly @endif>
         </div>
         <div class="form-group col-12 col-sm-12 col-md-6 col-lg-6 col-xl-8">
             <label for="observaciones" class="required">Observaciones</label>
-            <textarea class="form-control" @if ($edit) name="observaciones" @endif id="observaciones" rows="2" style="resize: none" @if ($edit) required @else disabled @endif>{{ old('nombre', $movimiento->observaciones) }}</textarea>
+            <textarea class="form-control" name="observaciones" id="observaciones" rows="2" style="resize: none" @if ($edit) required @else readonly @endif>{{ old('nombre', $movimiento->observaciones) }}</textarea>
         </div>
 
         <div class="clearfix"><hr></div>
 
         <div id="div_detalle" class="col-12">
-            @include('partials._detalle', ['edit' => $editable, 'tipo_carrito' => 'movimiento', 'detalleCarrito' => $movimiento->getDetalleMovimiento()])
+            @include('partials._detalle', ['edit' => $editable, 'editable' => $editar_movimiento, 'tipo_carrito' => 'movimiento', 'detalleCarrito' => $movimiento->getDetalleMovimiento()])
         </div>
     </div>
 
-    @include('partials.buttons', [$create, $edit, 'label' => $create ? 'Crear movimiento' : 'Editar movimiento'])
+    @include('partials.buttons', [$create, 'edit' => $editar_movimiento, 'label' => $create ? 'Crear movimiento' : 'Editar movimiento'])
 @if ($create || $edit)
     </form>
 @endif
@@ -164,6 +161,7 @@
             url: `${controller}/${id_tercero_proveedor}/${id_tercero_almacen}/getDocumentos`,
             method: 'GET',
             beforeSend: function() {
+                $(`#${element}`).empty().append('<option value="">Elegir</option>');
                 showLoader(true);
             }
         }).done(function(data) {
@@ -234,7 +232,7 @@
 
                     $('.tr_movimiento').addClass('disabled');
                     $('#documento').prop('disabled', true).addClass('d-none');
-                    $('#div_documento').append('<select name="documento" id="select-documento" style="width: 100%"><option>Elegir actividad</option></select>');
+                    $('#div_documento').append('<select name="documento" id="select-documento" style="width: 100%"><option value="">Elegir actividad</option></select>');
                     getTercerosInventario('id_tercero_entrega');
                     getTercerosTipo({!! session('id_dominio_almacen') !!}, 'id_tercero_recibe');
 
@@ -253,7 +251,7 @@
                     getTercerosTipo({!! session('id_dominio_almacen') !!}, 'id_tercero_recibe');
                     
                     $('#select-documento').select2({
-                        dropdownParent: $(this).closest('form'),
+                        dropdownParent: $('#id_dominio_tipo_movimiento').closest('form'),
                     });
 
                     $('.select2-selection').addClass('form-control');
@@ -385,6 +383,13 @@
                 default:
                     break;
             }
+        }
+    });
+
+    $(function() {
+        if("{!! $editar_movimiento !!}" === '1') {
+            let data_action =  `stores/${$('#id_tercero_entrega').val()}/movimiento/${{!! session('id_dominio_tipo_movimiento') !!}}`
+            $('.tr_movimiento').data('action', data_action);
         }
     });
 

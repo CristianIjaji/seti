@@ -28,22 +28,11 @@ class OrdenCompraController extends Controller
     }
 
     private function dinamyFilters($querybuilder) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
+                $query = getValoresConsulta($value);
 
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
-
-                $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                $querybuilder->where($key, $query['operator'], $query['value']);
             }
 
             $this->filtros[$key] = $value;
@@ -171,7 +160,8 @@ class OrdenCompraController extends Controller
 
         return view('ordenes_compra._form', [
             'edit' => false,
-            'orden' => $purchase
+            'orden' => $purchase,
+            'estados_orden' => TblEstado::where(['id_tabla' => $purchase->id_orden_compra, 'tabla' => $purchase->getTable()])->orderBy('created_at', 'desc')->paginate(1000000),
         ]);
     }
 
@@ -199,6 +189,7 @@ class OrdenCompraController extends Controller
             'impuestos' => TblDominio::getListaDominios(session('id_dominio_impuestos')),
             'medios_pago_ordenes_compra' => TblDominio::getListaDominios(session('id_dominio_medio_pago_orden_compra')),
             'tipos_ordenes_compra' => TblDominio::getListaDominios(session('id_dominio_tipo_orden_compra')),
+            'estados_orden' => TblEstado::where(['id_tabla' => $purchase->id_orden_compra, 'tabla' => $purchase->getTable()])->orderBy('created_at', 'desc')->paginate(1000000),
         ]);
     }
 
@@ -292,7 +283,7 @@ class OrdenCompraController extends Controller
                         ''
                     );
                     break;
-                case 'cancelada':
+                case 'cancel':
                     $purchase->comentario = (
                         isset(request()->comentario) && trim(request()->comentario) != ''
                         ? request()->comentario
@@ -302,7 +293,7 @@ class OrdenCompraController extends Controller
                         $purchase,
                         [session('id_dominio_orden_abierta')],
                         session('id_dominio_orden_cancelada'),
-                        '',
+                        'Orden cancelada!',
                         ''
                     );
                     break;
@@ -311,7 +302,7 @@ class OrdenCompraController extends Controller
                     break;
             }
 
-            if(!isset($response['success'])) {
+            if(!$response['success']) {
                 throw new Exception($response['error']);
             }
 
@@ -319,6 +310,7 @@ class OrdenCompraController extends Controller
                 'success' => $response['success']
             ]);
         } catch (\Throwable $th) {
+            Log::error("Error cambiando el estado de la orden: ".$th->__toString());
             return response()->json([
                 'error' => $th->getMessage()
             ]);
@@ -367,12 +359,34 @@ class OrdenCompraController extends Controller
     }
 
     private function generateDonwload($option) {
-
+        return TblOrdenCompra::select(
+            DB::raw("
+                tbl_ordenes_compra.id_orden_compra,
+                CONCAT(i.nombres, ' ', i.apellidos) as almacen,
+                COALESCE(p.razon_social, CONCAT(p.nombres, ' ', p.apellidos)) as proveedor,
+                tp.nombre as tipo_pago,
+                tbl_ordenes_compra.vencimiento,
+                tbl_ordenes_compra.cupo_actual as valor_orden,
+                estado.nombre as estado
+            ")
+        )
+        ->join('tbl_terceros as i', 'tbl_ordenes_compra.id_tercero_almacen', '=', 'i.id_tercero')
+        ->join('tbl_terceros as p', 'tbl_ordenes_compra.id_tercero_proveedor', '=', 'p.id_tercero')
+        ->join('tbl_dominios as tp', 'tbl_ordenes_compra.id_dominio_modalidad_pago', '=', 'tp.id_dominio')
+        ->join('tbl_dominios as estado', 'tbl_ordenes_compra.id_dominio_estado', '=', 'estado.id_dominio')
+        ->where(function ($q) use($option){
+            if($option == 1) {
+                $this->dinamyFilters($q, [
+                    'estado.nombre' => 'nombre'
+                ]);
+            } else {
+                $q->where('tbl_lista_precios.id_dominio_estado', '=', '-1');
+            }
+        })->get();
     }
 
     public function export() {
-        $headers = [];
-
+        $headers = ['#', 'Almacén', 'Proveedor', 'Tipo pago', 'Vecimiento', 'Valor orden', 'Estado'];
         return $this->excel->download(new ReportsExport($headers, $this->generateDonwload(1)), 'Reporte ordenes.xlsx');
     }
 
@@ -384,7 +398,15 @@ class OrdenCompraController extends Controller
                 $this->createTrack($purchase, $nuevoEstado);
                 unset($purchase->comentario);
                 $purchase->save();
+
+                return ['success' => true];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => 'No es posible realizar el cambio de estado.'
+                ];
             }
+            
         } catch (\Throwable $th) {
             Log::error($th->__toString());
             return ['error' => $th->getMessage()];

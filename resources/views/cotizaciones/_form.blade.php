@@ -23,9 +23,8 @@
     </ul>
 
     <div class="tab-content pt-3" id="quotesTab">
-        <div class="tab-pane fade show active" id="quotes" role="tabpanel" aria-labelledby="quotes-tab">    
+        <div class="tab-pane fade show active" id="quotes" role="tabpanel" aria-labelledby="quotes-tab">
 @endif
-
     @if ($create || $edit)
         <div class="alert alert-success" role="alert"></div>
         <div class="alert alert-danger alert-dismissible pb-0" role="alert"></div>
@@ -290,5 +289,13 @@
 @endif
 
 <script type="application/javascript">
+    $('#id_cliente_cotizacion').change(function () {
+        $('tr.item_{!! session("id_dominio_materiales") !!}').remove();
+        $('tr.item_{!! session("id_dominio_mano_obra") !!}').remove();
+        $('tr.item_{!! session("id_dominio_transporte") !!}').remove();
+        carrito['cotizacion'] = [];
+        totalCarrito('cotizacion');
+    });
+
     datePicker();
 </script>

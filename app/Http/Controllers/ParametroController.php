@@ -18,26 +18,15 @@ class ParametroController extends Controller
     }
 
     private function dinamyFilters($querybuilder) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 if(!in_array($key, ['nombre'])) {
-                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                    $querybuilder->where($key, $query['operator'], $query['value']);
                 } else {
-                    $querybuilder->whereHas('tbldominio', function($q) use($value){
-                        $q->where('nombre', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tbldominio', function($q) use($query){
+                        $q->where('nombre', $query['operator'], $query['value']);
                     });
                 }
             }

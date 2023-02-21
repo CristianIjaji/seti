@@ -1,10 +1,11 @@
 @php
-    function createDetail($id_dominio_tipo_item, $details, $edit, $tipo_carrito) {
+    function createDetail($id_dominio_tipo_item, $details, $edit, $tipo_carrito, $editable = false) {
         $row = '';
         $resize = (!$edit ? 'style="resize: none;"' : '');
         $min = in_array($tipo_carrito, ['liquidacion']) ? '0' : 1;
-
         foreach ($details as $id_item => $detail) {
+            $class = (!$edit && $tipo_carrito == 'orden' && $detail['pendiente'] == 0 ? "fw-bold text-success": "fw-bold text-danger");
+
             $row .= "
                 <tr id='$tipo_carrito".'_'."$id_dominio_tipo_item".'_'."$id_item' class='border-bottom collapse show item_$id_dominio_tipo_item detail-$id_dominio_tipo_item'>
                     <td class='col-1 my-auto border-0 ".($edit ? ':' : 'text-md-center text-end text-uppercase')."'>
@@ -38,7 +39,7 @@
                         "
                         : ''
                     )."
-                    <td class='col-1 my-auto border-0 td-cantidad".($edit ? '' : 'text-end')."'>
+                    <td class='col-1 my-auto border-0 td-cantidad text-end'>
                         ".($edit
                             ? "
                                 <input type='number' min='$min' data-id-tr='$tipo_carrito".'_'."$id_dominio_tipo_item".'_'."$id_item' class='form-control text-end border-0 txt-totales'
@@ -47,6 +48,10 @@
                             : $detail['cantidad']
                         )."
                     </td>
+                    ".(!$edit && $tipo_carrito == 'orden'
+                        ? "<td class='col-1 my-auto border-0 text-end $class'>$detail[pendiente]</td>"
+                        : ''
+                    )."
                     <td class='col-2 my-auto border-0 ".($edit ? '' : 'text-end')."'>
                         ".($edit
                             ? "
@@ -67,7 +72,10 @@
                     </td>
                     ".($edit
                         ? "<td class='text-center col-1 my-auto border-0 td-delete btn-delete-item' ".($edit ? "data-toggle='tooltip' title='Quitar ítem'" : "")." data-id-tr='$tipo_carrito".'_'."$id_dominio_tipo_item".'_'."$id_item'><span class='btn btn-delete-item' data-id-tr='$tipo_carrito".'_'."$id_dominio_tipo_item".'_'."$id_item'><i class='fa-solid fa-trash-can text-danger fs-5 fs-bold'></i></span></td>"
-                        : ""
+                        : ($editable
+                            ? "<td class='text-center col-1 my-auto border-0' data-id-tr='$tipo_carrito".'_'."$id_dominio_tipo_item".'_'."$id_item'><span class='btn btn-delete-item' data-id-tr='$tipo_carrito".'_'."$id_dominio_tipo_item".'_'."$id_item'></td>"
+                            : ""
+                        )
                     )."
                 </tr>
             ";
@@ -201,14 +209,14 @@
                         <th class="text-nowrap col-1 text-center border lbl-cantidad">Cantidad</th>
                         <th class="text-nowrap col-2 text-center border">Valor Unitario</th>
                         <th class="text-nowrap col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
-                        @if ($edit)
+                        @if ($edit || $editable)
                             <th id="th-delete" class="col-1 text-center border rounded-end">Eliminar</th>
                         @endif
                     </tr>
                 </thead>
                 <tbody>
                     <tr id="tr_{{ session('id_dominio_tipo_movimiento') }}" class="detail-{{session('id_dominio_tipo_movimiento')}}">
-                        <th colspan="{{ $edit ? 6 : 5 }}" class="border rounded">
+                        <th colspan="{{ $edit || $editable ? 6 : 5 }}" class="border rounded">
                             <span
                                 class="w-100 bg-primary bg-opacity-75 fw-bold user-select-none {{ $editable ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_movimiento"
                                 data-toggle="tooltip"
@@ -219,7 +227,7 @@
                                 data-action=""
                                 data-toggle="tooltip"
                             >
-                                <label>LISTA DE PRODUCTOS</label>
+                                <label class="fs-6">LISTA DE PRODUCTOS</label>
                             </span>
                             <div class="d-flex justify-content-between">
                                 <div class="my-auto">
@@ -240,7 +248,7 @@
                             </div>
                         </th>
                     </tr>
-                    {!! createDetail(session('id_dominio_tipo_movimiento'), (isset($detalleCarrito[session('id_dominio_tipo_movimiento')]) ? $detalleCarrito[session('id_dominio_tipo_movimiento')] : []), $edit, $tipo_carrito) !!}
+                    {!! createDetail(session('id_dominio_tipo_movimiento'), (isset($detalleCarrito[session('id_dominio_tipo_movimiento')]) ? $detalleCarrito[session('id_dominio_tipo_movimiento')] : []), $edit, $tipo_carrito, $editable) !!}
                 </tbody>
                 @break
             @case('orden')
@@ -249,6 +257,9 @@
                         <th class="text-nowrap col-1 text-center border rounded-start">Ítem</th>
                         <th class="text-nowrap col-4 text-center border">Descripción</th>
                         <th class="text-nowrap col-1 text-center border">Cantidad</th>
+                        @if (!$editable)
+                            <th class="text-nowrap col-1 text-center border rounded-end">Pendiente entrega</th>
+                        @endif
                         <th class="text-nowrap col-2 text-center border">Valor Unitario</th>
                         <th class="text-nowrap col-2 text-center border {{ $edit ? '' : 'rounded-end' }}">Valor Total</th>
                         @if ($edit)
@@ -269,7 +280,7 @@
                                 data-action='{{ route('stores.search', ['id_almacen' => isset($orden->id_tercero_almacen) ? $orden->id_tercero_almacen : -1, 'tipo_carrito' => $tipo_carrito, 'type' => session('id_dominio_tipo_orden_compra')]) }}'
                                 data-toggle="tooltip"
                             >
-                                <label>LISTA DE PRODUCTOS</label>
+                                <label class="fs-6">LISTA DE PRODUCTOS</label>
                             </span>
                             <div class="d-flex justify-content-between">
                                 <div class="my-auto">
@@ -341,7 +352,14 @@
                     <tr id="tr_{{ session('id_dominio_mano_obra') }}" class="detail-{{session('id_dominio_mano_obra')}}">
                         <th colspan="7" class="border rounded">
                             <span
-                                class="w-100 bg-primary bg-opacity-75 fw-bold py-2 rounded d-flex justify-content-center text-white tr_suministros disabled"
+                                class="w-100 bg-primary bg-opacity-75 fw-bold {{ $edit ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_suministros"
+                                data-toggle="tooltip"
+                                {{ $edit ? 'title=Agregar ítem' : '' }}
+                                data-title="Buscar ítems mano obra"
+                                data-size='modal-xl'
+                                data-header-class='bg-primary bg-opacity-75 text-white'
+                                data-action='{{ route('priceList.search', ['type' => session('id_dominio_mano_obra'), 'client' => isset($quote->tblCliente->id_tercero_responsable) ? $quote->tblCliente->id_tercero_responsable : -1, 'tipo_carrito' => $tipo_carrito]) }}'
+                                data-toggle="tooltip"
                             >
                                 <label>MANO DE OBRA</label>
                             </span>
@@ -366,7 +384,14 @@
                     <tr id="tr_{{ session('id_dominio_transporte') }}" class="detail-{{session('id_dominio_transporte')}}">
                         <th colspan="7" class="border rounded">
                             <span
-                                class="w-100 bg-primary bg-opacity-75 fw-bold py-2 rounded d-flex justify-content-center text-white tr_suministros disabled"
+                                class="w-100 bg-primary bg-opacity-75 fw-bold {{ $edit ? 'btn modal-form' : 'py-2 rounded'}} d-flex justify-content-center text-white tr_suministros"
+                                data-toggle="tooltip"
+                                {{ $edit ? 'title=Agregar ítem' : '' }}
+                                data-title="Buscar ítems transporte y peajes"
+                                data-size='modal-xl'
+                                data-header-class='bg-primary bg-opacity-75 text-white'
+                                data-action='{{ route('priceList.search', ['type' => session('id_dominio_transporte'), 'client' => isset($quote->tblCliente->id_tercero_responsable) ? $quote->tblCliente->id_tercero_responsable : -1, 'tipo_carrito' => $tipo_carrito]) }}'
+                                data-toggle="tooltip"
                             >
                                 <label>TRANSPORTE Y PEAJES</label>
                             </span>

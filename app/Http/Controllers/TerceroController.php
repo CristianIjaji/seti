@@ -27,31 +27,21 @@ class TerceroController extends Controller
     }
 
     private function dinamyFilters($querybuilder, $fields = []) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
                 if(!in_array($key, ['full_name'])){
-                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                    $querybuilder->where($key, $query['operator'], $query['value']);
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->where('tbl_terceros.nombres', 'like', strtolower("%$value%"));
-                    $querybuilder->orWhere('tbl_terceros.apellidos', 'like', strtolower("%$value%"));
-                    $querybuilder->orWhere('tbl_terceros.razon_social', 'like', strtolower("%$value%"));
+                    $querybuilder->where('tbl_terceros.nombres', $query['operator'], $query['value']);
+                    $querybuilder->orWhere('tbl_terceros.apellidos', $query['operator'], $query['value']);
+                    $querybuilder->orWhere('tbl_terceros.razon_social', $query['operator'], $query['value']);
                 }
             }
+
             $this->filtros[$key] = $value;
         }
 
@@ -115,7 +105,7 @@ class TerceroController extends Controller
     {
         try {
             $this->authorize('create', new TblTercero);
-            $tercero = new TblTercero($request->validated());
+            $tercero = TblTercero::create($request->validated());
             $tercero->logo = $request->hasFile('logo') ? $request->file('logo')->store('images') : '';
             $tercero->save();
 
@@ -267,7 +257,7 @@ class TerceroController extends Controller
                 tbl_terceros.telefono,
                 tt.nombre as id_dominio_tipo_tercero,
                 CASE WHEN tbl_terceros.estado = 1 THEN 'Activo' ELSE 'Inactivo' END estado_tercero,
-                CONCAT(t.nombres, ' ', t.apellidos) as dependencia
+                COALESCE(t.razon_social, CONCAT(t.nombres, ' ', t.apellidos)) as dependencia
             ")
         )
         ->join('tbl_dominios as td', 'tbl_terceros.id_dominio_tipo_documento', '=', 'td.id_dominio')

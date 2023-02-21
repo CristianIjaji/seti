@@ -34,36 +34,26 @@ class CotizacionController extends Controller
     }
 
     private function dinamyFilters($querybuilder, $fields = []) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
                 if(!in_array($key, ['full_name', 'nombre'])){
-                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                    $querybuilder->where($key, $query['operator'], $query['value']);
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->whereHas('tblCliente', function($q) use($value) {
-                        $q->where('nombres', 'like', strtolower("%$value%"));
-                        $q->orwhere('apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblCliente', function($q) use($query) {
+                        $q->where('nombres', $query['operator'], $query['value']);
+                        $q->orwhere('apellidos', $query['operator'], $query['value']);
                     });
                 } else if($key == 'nombre' && $value) {
-                    $querybuilder->whereHas('tblEstacion', function($q) use($value) {
-                        $q->where('nombre', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblEstacion', function($q) use($query) {
+                        $q->where('nombre', $query['operator'], $query['value']);
                     });
                 }
             }
+
             $this->filtros[$key] = $value;
         }
 
@@ -228,7 +218,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => false,
             'cotizacion' => $quote,
-            'estados_cotizacion' => TblEstado::where(['id_tabla' => $quote->id_cotizacion, 'tabla' => $quote->getTable()])->orderBy('created_at', 'desc')->paginate(10),
+            'estados_cotizacion' => TblEstado::where(['id_tabla' => $quote->id_cotizacion, 'tabla' => $quote->getTable()])->orderBy('created_at', 'desc')->paginate(1000000),
             'actividad' => TblActividad::where(['id_cotizacion' => $quote->id_cotizacion])->first(),
         ]);
     }
@@ -251,7 +241,7 @@ class CotizacionController extends Controller
         return view('cotizaciones._form', [
             'edit' => true,
             'cotizacion' => $quote,
-            'estados_cotizacion' => TblEstado::where(['id_tabla' => $quote->id_cotizacion, 'tabla' => $quote->getTable()])->orderBy('created_at', 'desc')->paginate(10),
+            'estados_cotizacion' => TblEstado::where(['id_tabla' => $quote->id_cotizacion, 'tabla' => $quote->getTable()])->orderBy('created_at', 'desc')->paginate(1000000),
             'carrito' => $quote->getDetalleCotizacion($quote),
             'clientes' => TblTercero::where([
                 'estado' => 1,
@@ -384,7 +374,7 @@ class CotizacionController extends Controller
                     );
                     $response = $this->updateQuote(
                         $quote,
-                        [session('id_dominio_cotizacion_pendiente_aprobacion')],
+                        [session('id_dominio_cotizacion_revisada'), session('id_dominio_cotizacion_pendiente_aprobacion')],
                         session('id_dominio_cotizacion_aprobada'),
                         'Cotización aprobada cliente!',
                         'quote-aprove'
@@ -517,7 +507,7 @@ class CotizacionController extends Controller
     }
 
     public function export() {
-        $headers = ['#', 'OT', 'Proveedor', 'Estación', 'Descripción Orden', 'Fecha Solicitud', 'Fecha Envio',
+        $headers = ['#', 'OT', 'Proveedor', 'Punto interés', 'Descripción Orden', 'Fecha Solicitud', 'Fecha Envio',
             'Tipo Trabajo', 'Prioridad', 'Estado', 'Encargado', 'IVA', 'Valor', 
         ];
 
@@ -525,8 +515,8 @@ class CotizacionController extends Controller
     }
 
     public function downloadTemplate() {
-        $headers = ['OT', 'Proveedor', 'Estación', 'Descripción Orden', 'Fecha Solicitud', 'Fecha Envio',
-            'Tipo Trabajo', 'Prioridad', 'Estado', 'Encargado', 'IVA', 'Valor'
+        $headers = ['OT', 'Cliente', 'Punto interés', 'Tipo trabajo', 'Fecha Solicitud', 'Fecha Envio',
+            'Tipo Trabajo', 'Prioridad', 'Estado', 'Encargado', 'IVA', ''
         ];
         return $this->excel->download(new ReportsExport($headers, $this->generateDownload(2)), 'Template cotizaciones.xlsx');
     }

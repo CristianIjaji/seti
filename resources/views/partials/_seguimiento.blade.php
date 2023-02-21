@@ -44,6 +44,10 @@
                 @can('executedActivity', $model)
                     <option value="btn-executed-activity">Actividad ejecutada</option>
                 @endcan
+
+                @can('cancelOrden', $model)
+                    <option value="btn-cancel-purchase">Cancelar orden</option>
+                @endcan
             </select>
         </div>
 

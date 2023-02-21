@@ -19,23 +19,13 @@ class MenuTipoTerceroController extends Controller
     }
 
     private function dinamyFilters($querybuilder) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
+                $query = getValoresConsulta($value);
 
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
-
-                $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                $querybuilder->where($key, $query['operator'], $query['value']);
             }
+
             $this->filtros[$key] = $value;
         }
 
@@ -134,8 +124,8 @@ class MenuTipoTerceroController extends Controller
     {
         try {
             $this->authorize('create', new TblMenuTipoTercero);
-            DB::beginTransaction();
 
+            DB::beginTransaction();
             $request->validated();
             $this->savePermisosTercero();
 

@@ -29,35 +29,29 @@ class InventarioController extends Controller
     }
 
     private function dinamyFilters($querybuilder, $fields = []) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
                 if(!in_array($key, ['full_name'])){
-                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                    $querybuilder->where($key, $query['operator'], $query['value']);
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->whereHas('tblterceroalmacen', function($q) use($value){
-                        $q->where('tbl_terceros.razon_social', 'like', strtolower("%$value%"));
-                        $q->orwhere('tbl_terceros.nombres', 'like', strtolower("%$value%"));
-                        $q->orwhere('tbl_terceros.apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblterceroalmacen', function($q) use($query){
+                        $q->where('tbl_terceros.razon_social', $query['operator'], $query['value']);
+                        $q->orwhere('tbl_terceros.nombres', $query['operator'], $query['value']);
+                        $q->orwhere('tbl_terceros.apellidos', $query['operator'], $query['value']);
                     });
                 }
             }
+
             $this->filtros[$key] = $value;
         }
+
+        $querybuilder->wherehas('tblterceroalmacen', function($q) {
+            $q->where('id_tercero_responsable', '=', auth()->user()->id_tercero);
+        });
 
         return $querybuilder;
     }
@@ -361,6 +355,7 @@ class InventarioController extends Controller
 
         return view('partials._search', [
             'type' => $type,
+            'multiple' => true,
             'tipo_carrito' => $tipo_carrito,
             'productos' => TblInventario::where(['estado' => 1, 'id_tercero_almacen' => $id_almacen])->get(),
         ]);
@@ -419,7 +414,6 @@ class InventarioController extends Controller
         TblMovimiento::where([
             'id_dominio_tipo_movimiento' => session('id_dominio_movimiento_entrada_inicial'),
             'id_dominio_estado' => session('id_dominio_movimiento_pendiente'),
-            // 'id_tercero_recibe' => $producto->id_tercero_almacen,
             'id_tercero_entrega' => auth()->user()->id_tercero,
         ])->update(['id_dominio_estado' => session('id_dominio_movimiento_completado')]);
 

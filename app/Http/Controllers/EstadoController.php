@@ -15,35 +15,24 @@ class EstadoController extends Controller
     }
 
     private function dinamyFilters($querybuilder, $fields = []) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
                 if(!in_array($key, ['nombre', 'full_name'])){
-                    $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                    $querybuilder->where($key, $query['operator'], $query['value']);
                 } else if($key == 'nombre' && $value) {
-                    $querybuilder->whereHas('tblestado', function($q) use($value) {
-                        $q->where('tbl_dominios.nombre', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblestado', function($q) use($query) {
+                        $q->where('tbl_dominios.nombre', $query['operator'], $query['value']);
                     });
                 } else if($key == 'full_name' && $value) {
-                    $querybuilder->whereHas('tblusuario', function($q) use($value) {
-                        $q->whereHas('tbltercero', function($q2) use($value) {
-                            $q2->where('tbl_terceros.razon_social', 'like', strtolower("%$value%"));
-                            $q2->orwhere('tbl_terceros.nombres', 'like', strtolower("%$value%"));
-                            $q2->orwhere('tbl_terceros.apellidos', 'like', strtolower("%$value%"));
+                    $querybuilder->whereHas('tblusuario', function($q) use($query) {
+                        $q->whereHas('tbltercero', function($q2) use($query) {
+                            $q2->where('tbl_terceros.razon_social', $query['operator'], $query['value']);
+                            $q2->orwhere('tbl_terceros.nombres', $query['operator'], $query['value']);
+                            $q2->orwhere('tbl_terceros.apellidos', $query['operator'], $query['value']);
                         });
                     });
                 }
@@ -141,7 +130,7 @@ class EstadoController extends Controller
             'model' => TblEstado::with(['tblestado', 'tblusuario'])
                 ->where(function ($q) {
                     $this->dinamyFilters($q);
-                })->orderBy('created_at', 'desc')->paginate(10),
+                })->orderBy('created_at', 'desc')->paginate(1000000),
             'request' => $this->filtros,
             'title' => 'Estados cotización',
             'route' => 'statequotes',

@@ -251,7 +251,6 @@
     @csrf
     <input type="hidden" name="table" value="{{$route}}">
     <input type="hidden" name="page" id="page" value="1">
-    {{-- {{ $models->links("pagination::bootstrap-4")}} --}}
     {{ $models->links("pagination::bootstrap-4")}}
 </form>
 

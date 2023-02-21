@@ -86,6 +86,7 @@ Route::post('kardex/grid', [KardexController::class, 'grid'])->name('kardex.grid
 
 // Controlador de orden de compra
 Route::get('purchases/exportPurchase', [OrdenCompraController::class, 'exportPurchase'])->name('purchases.exportPurchase');
+Route::get('purchases/export', [OrdenCompraController::class, 'export'])->name('purchases.export');
 Route::get('purchases/{purchase}/seguimiento', [OrdenCompraController::class, 'seguimiento'])->name('purchases.seguimiento');
 Route::get('purchases/{id_tercero_proveedor}/{id_tercero_almacen}/getDocumentos', [OrdenCompraController::class, 'getDocumentos'])->name('purchases.getDocumentos');
 Route::resource('purchases', OrdenCompraController::class);

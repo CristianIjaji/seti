@@ -26,20 +26,9 @@ class ConsolidadoController extends Controller
     }
 
     private function dinamyFilters($querybuilder, $fields = []) {
-        $operadores = ['>=', '<=', '!=', '=', '>', '<'];
-
         foreach (request()->all() as $key => $value) {
             if($value !== null && !in_array($key, ['_token', 'table', 'page'])) {
-                $operador = [];
-
-                foreach ($operadores as $item) {
-                    $operador = explode($item, trim($value));
-
-                    if(count($operador) > 1){
-                        $operador[0] = $item;
-                        break;
-                    }
-                }
+                $query = getValoresConsulta($value);
 
                 $key = (array_search($key, $fields) ? array_search($key, $fields) : $key);
 
@@ -52,8 +41,9 @@ class ConsolidadoController extends Controller
                     $value = $date[0].'-'.$meses[$month];
                 }
 
-                $querybuilder->where($key, (count($operador) > 1 ? $operador[0] : 'like'), (count($operador) > 1 ? $operador[1] : strtolower("%$value%")));
+                $querybuilder->where($key, $query['operator'], $query['value']);
             }
+
             $this->filtros[$key] = $value;
         }
 
@@ -62,9 +52,9 @@ class ConsolidadoController extends Controller
 
     private function saveDetalleConsolidado($deal) {
         TblActividad::join('tbl_consolidados_detalle as det', 'tbl_actividades.id_actividad', '=', 'det.id_actividad')
-        ->where('det.id_consolidado', '=', $deal->id_consolidado)
-        ->wherenotin('tbl_actividades.id_actividad', request()->id_actividad)
-        ->update(['mes_consolidado' => null]);
+            ->where('det.id_consolidado', '=', $deal->id_consolidado)
+            ->wherenotin('tbl_actividades.id_actividad', request()->id_actividad)
+            ->update(['mes_consolidado' => null]);
 
         TblConsolidadoDetalle::where('id_consolidado', '=', $deal->id_consolidado)->wherenotin('id_actividad', request()->id_actividad)->delete();
 
@@ -113,9 +103,10 @@ class ConsolidadoController extends Controller
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
             ])->where('id_tercero_responsable', '>', 0)->get(),
             'contratistas' => TblTercero::where([
-                'estado' => 1,
-                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
-            ])->where('id_tercero_responsable', '>', 0)->get(),
+                'estado' => 1
+            ])
+            ->whereIN('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
+            ->get(),
             'detalle_consolidado' => TblConsolidadoDetalle::where(['id_consolidado' => -1])->orderBy('id_consolidado_detalle', 'desc')->get()
         ]);
     }
@@ -211,9 +202,10 @@ class ConsolidadoController extends Controller
                 'id_dominio_tipo_tercero' => session('id_dominio_representante_cliente')
             ])->where('id_tercero_responsable', '>', 0)->get(),
             'contratistas' => TblTercero::where([
-                'estado' => 1,
-                'id_dominio_tipo_tercero' => session('id_dominio_coordinador')
-            ])->where('id_tercero_responsable', '>', 0)->get(),
+                'estado' => 1
+            ])
+            ->whereIN('id_dominio_tipo_tercero', [session('id_dominio_coordinador'), session('id_dominio_contratista')])
+            ->get(),
             'detalle_consolidado' => TblConsolidadoDetalle::select(
                 DB::raw("
                     ROW_NUMBER() OVER(PARTITION BY con.id_consolidado) as item,
@@ -323,7 +315,9 @@ class ConsolidadoController extends Controller
             $filters = [
                 'tbl_actividades.id_tercero_encargado_cliente' => $id_tercero_cliente,
                 'tbl_actividades.id_tercero_resposable_contratista' => $id_tercero_responsable,
-                'tbl_actividades.mes_consolidado' => null
+                'tbl_actividades.id_dominio_estado' => session('id_dominio_actividad_liquidado'),
+                // 'det.id_consolidado' => $id_consolidado,
+                // 'tbl_actividades.mes_consolidado' => null,
             ];
 
             return view('consolidados.detalle', [
@@ -347,7 +341,11 @@ class ConsolidadoController extends Controller
                 ->join('tbl_dominios as z', 'e.id_dominio_zona', '=', 'z.id_dominio')
                 ->leftjoin('tbl_consolidados_detalle as det', 'tbl_actividades.id_actividad', '=', 'det.id_actividad')
                 ->where($filters)
-                ->orwhere('det.id_consolidado', '=', $id_consolidado)
+                // ->orwhere([
+                //     'det.id_consolidado' => $id_consolidado,
+                //     'tbl_actividades.id_dominio_estado' => session('id_dominio_actividad_liquidado')
+                // ])
+                // ->orwhere('det.id_consolidado', '=', $id_consolidado)
                 ->orderBy('item', 'asc')
                 ->get()
             ]);
